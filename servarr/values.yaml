@@ -1,0 +1,59 @@
+jellyfin:
+  env:
+    TZ: Europe/Rome
+  service:
+    type: ClusterIP
+    externalTrafficPolicy: 
+  persistence:
+    media:
+      existingClaim: pvc-nfs-media
+    config:
+      storageClass: nfs-csi
+sonarr:
+  env:
+    TZ: Europe/Rome
+  persistence:
+    existingClaim: pvc-nfs-media 
+
+qbittorrent:
+  env:
+    TZ: Europe/Rome
+  persistence:
+    existingClaim: pvc-nfs-media
+
+prowlarr:
+  env:
+    TZ: Europe/Rome
+  persistence:
+    existingClaim: pvc-nfs-media
+
+jellyseerr:
+  env:
+    TZ: Europe/Rome
+  persistence:
+    existingClaim: pvc-nfs-media
+
+bazarr:
+  env:
+    TZ: Europe/Rome
+  persistence:
+    existingClaim: pvc-nfs-media
+
+radarr:
+  env:
+    TZ: Europe/Rome
+  persistence:
+    existingClaim: pvc-nfs-media
+
+readarr:
+  env:
+    TZ: Europe/Rome
+  persistence:
+    existingClaim: pvc-nfs-media
+
+lidarr:
+  env:
+    TZ: Europe/Rome
+  persistence:
+    existingClaim: pvc-nfs-media
+
