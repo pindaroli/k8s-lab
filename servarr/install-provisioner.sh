@@ -1,1 +1,0 @@
-helm install nfs-server nfs-server-provisioner/nfs-server-provisioner -f provisioner-values.yaml

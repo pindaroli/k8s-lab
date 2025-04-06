@@ -6,54 +6,57 @@ jellyfin:
     externalTrafficPolicy: 
   persistence:
     media:
-      existingClaim: pvc-nfs-media
+      existingClaim: servarr-jellyfin-media
     config:
-      storageClass: nfs-csi
+      storageClass: nfs-subdir
+
 sonarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: pvc-nfs-media 
+    existingClaim: servarr-jellyfin-media
 
 qbittorrent:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: pvc-nfs-media
+    existingClaim: servarr-jellyfin-media
 
 prowlarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: pvc-nfs-media
+    storageClass: nfs-subdir
 
 jellyseerr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: pvc-nfs-media
+    storageClass: nfs-subdir
 
 bazarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: pvc-nfs-media
+    storageClass: nfs-subdir
 
 radarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: pvc-nfs-media
+    existingClaim: servarr-jellyfin-media
 
 readarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: pvc-nfs-media
+    existingClaim: servarr-jellyfin-media
+
 
 lidarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: pvc-nfs-media
+    existingClaim: servarr-jellyfin-media
+
 

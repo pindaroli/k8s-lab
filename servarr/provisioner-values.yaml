@@ -1,8 +1,0 @@
-persistence:
-  enabled: true
-  storageClass: manual
-
-nfs:
-  server: 192.168.1.115  # Sostituisci con l'IP o hostname del server NFS
-  path: /mnt/oliraid/k8s  # Percorso dove verranno salvati i volumi su NFS
-  reclaimPolicy: Retain  # Mantiene i dati anche dopo la cancellazione del PVC

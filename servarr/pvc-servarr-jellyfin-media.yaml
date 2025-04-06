@@ -2,12 +2,12 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: arr
-  name: pvc-nfs-media
+  name: servarr-jellyfin-media
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 14000Gi
-  volumeName: pv-nfs-media  # 👉 Collega direttamente il PV senza creare sottocartelle
+  volumeName: pv-servarr-jellyfin-media # 👉 Collega direttamente il PV senza creare sottocartelle
   storageClassName: nfs-csi
