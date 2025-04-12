@@ -1,0 +1,10 @@
+nfs:
+  server: 192.168.1.115
+  path: /mnt/oliraid/k8s-disk
+  mountOptions: ["nfsvers=4.1"]
+
+storageClass:
+  name: nfs-subdir
+  reclaimPolicy: Retain
+  allowVolumeExpansion: true
+  pathPattern: "${.PVC.namespace}-${.PVC.name}"

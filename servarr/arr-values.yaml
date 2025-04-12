@@ -1,9 +1,13 @@
 jellyfin:
   env:
     TZ: Europe/Rome
+  ingress:
+    enabled: true
+    hosts: ["servarr.local"]
+    path: /jellyfin 
   service:
-    type: ClusterIP
-    externalTrafficPolicy: 
+      type: NodePort
+      externalTrafficPolicy: Local
   persistence:
     media:
       existingClaim: servarr-jellyfin-media
@@ -14,13 +18,13 @@ sonarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: servarr-jellyfin-media
+    storageClass: nfs-subdir
 
 qbittorrent:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: servarr-jellyfin-media
+    storageClass: nfs-subdir
 
 prowlarr:
   env:
@@ -44,19 +48,19 @@ radarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: servarr-jellyfin-media
+    storageClass: nfs-subdir
 
 readarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: servarr-jellyfin-media
+    storageClass: nfs-subdir
 
 
 lidarr:
   env:
     TZ: Europe/Rome
   persistence:
-    existingClaim: servarr-jellyfin-media
+    storageClass: nfs-subdir
 
 
