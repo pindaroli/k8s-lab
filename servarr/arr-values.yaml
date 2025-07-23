@@ -6,8 +6,8 @@ jellyfin:
     hosts: ["servarr.local"]
     path: /jellyfin 
   service:
-      type: NodePort
-      externalTrafficPolicy: Local
+      type: ClusterIP 
+      #externalTrafficPolicy: Local
   persistence:
     media:
       existingClaim: servarr-jellyfin-media

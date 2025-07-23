@@ -4,7 +4,7 @@ metadata:
   name: nfs-csi
 provisioner: nfs.csi.k8s.io
 parameters:
-  server: 192.168.1.115
+  server: 192.168.1.250
   share: /mnt/oliraid/k8s-disk
 reclaimPolicy: Retain
 volumeBindingMode: Immediate

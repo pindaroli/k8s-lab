@@ -1,6 +1,6 @@
 nfs:
-  server: 192.168.1.115
-  path: /mnt/oliraid/k8s-disk
+  server: 192.168.1.250
+  path: /mnt/stripe/k8s-disk
   mountOptions: ["nfsvers=4.1"]
 
 storageClass:

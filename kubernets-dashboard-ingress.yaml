@@ -2,13 +2,14 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: kubernetes-dashboard
-  namespace: kube-system
+  namespace: kubernetes-dashboard      
 spec:
   entryPoints:
     - websecure  # <--- AGGIUNTO
   routes:
-    - match: Host(`k8s-dash`) && PathPrefix(`/`)
+    - match: Host(`k8s-dash.local`) && PathPrefix(`/`)
       kind: Rule
       services:
-        - name: kubernetes-dashboard
+        - name: kubernetes-dashboard-kong-proxy 
           port: 443
+          scheme: https

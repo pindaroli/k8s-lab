@@ -1,0 +1,41 @@
+
+# 2. Gateway - punto di ingresso HTTPS
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: traefik-gateway
+  namespace: traefik
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "k8s-dash.local"   # Cambia con il tuo dominio reale
+      tls:
+        mode: Passthrough
+      allowedRoutes:
+        namespaces:
+          from: All
+---
+# 3. HTTPRoute - inoltra al servizio Kong del dashboard
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: dashboard-kong-route
+  namespace: kubernetes-dashboard
+spec:
+  parentRefs:
+    - name: traefik-gateway
+      namespace: traefik
+      sectionName: https
+  hostnames:
+    - "k8s-dash.local"   # Deve combaciare col listener sopra
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: kubernetes-dashboard-kong-proxy
+          port: 443
