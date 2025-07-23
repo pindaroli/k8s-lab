@@ -9,11 +9,8 @@ k apply -f arr-volumes-csi.yaml
 helm repo add kubitodev https://charts.kubito.dev
 helm repo update
 
-helm install servarr kubitodev/servarr \
-  --namespace arr \
-  --create-namespace \
-  --values arr-values.yaml \
-  --wait
+
+
 
 k apply -
 
