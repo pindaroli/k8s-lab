@@ -2,17 +2,23 @@ jellyfin:
   env:
     TZ: Europe/Rome
   ingress:
-    enabled: true
-    hosts: ["servarr.local"]
-    path: /jellyfin 
+    enabled: false
   service:
-      type: ClusterIP 
-      #externalTrafficPolicy: Local
+      type: NodePort
+      externalTrafficPolicy: Local
   persistence:
     media:
       existingClaim: servarr-jellyfin-media
     config:
       storageClass: nfs-subdir
+  resources:
+    requests:
+      cpu: 2000m
+      memory: 2Gi
+  extraVolumeMounts:
+    - name: media
+      mountPath: /media/foto
+      subPath: foto
 
 sonarr:
   env:
@@ -23,6 +29,10 @@ sonarr:
 qbittorrent:
   env:
     TZ: Europe/Rome
+  service:
+    web:
+      type: NodePort
+    externalTrafficPolicy: Local
   persistence:
     storageClass: nfs-subdir
 

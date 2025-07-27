@@ -1,0 +1,15 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: qbittorrent-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`qbittorrent.local`) || Host(`qbittorrent`)
+    kind: Rule
+    services:
+    - name: servarr-qbittorrent-web
+      port: http
+  tls: {}
