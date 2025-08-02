@@ -1,5 +1,7 @@
 jellyfin:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   ingress:
     enabled: false
@@ -10,7 +12,7 @@ jellyfin:
     media:
       existingClaim: servarr-jellyfin-media
     config:
-      storageClass: nfs-subdir
+      storageClass: csi-nfs-stripe-arr-conf
   resources:
     requests:
       cpu: 2000m
@@ -22,55 +24,71 @@ jellyfin:
 
 sonarr:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   persistence:
-    storageClass: nfs-subdir
+    storageClass: csi-nfs-stripe-arr-conf
 
 qbittorrent:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   service:
     web:
       type: NodePort
     externalTrafficPolicy: Local
   persistence:
-    storageClass: nfs-subdir
+    storageClass: csi-nfs-stripe-arr-conf
 
 prowlarr:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   persistence:
-    storageClass: nfs-subdir
+    storageClass: csi-nfs-stripe-arr-conf
 
 jellyseerr:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   persistence:
-    storageClass: nfs-subdir
+    storageClass: csi-nfs-stripe-arr-conf
 
 bazarr:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   persistence:
-    storageClass: nfs-subdir
+    storageClass: csi-nfs-stripe-arr-conf
 
 radarr:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   persistence:
-    storageClass: nfs-subdir
+    storageClass: csi-nfs-stripe-arr-conf
 
 readarr:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   persistence:
-    storageClass: nfs-subdir
+    storageClass: csi-nfs-stripe-arr-conf
 
 
 lidarr:
   env:
+    PUID: "1000"
+    PGID: "1000"
     TZ: Europe/Rome
   persistence:
-    storageClass: nfs-subdir
+    storageClass: csi-nfs-stripe-arr-conf
 
 
