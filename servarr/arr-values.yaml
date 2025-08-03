@@ -1,8 +1,11 @@
 jellyfin:
-  env:
-    PUID: "1000"
-    PGID: "1000"
-    TZ: Europe/Rome
+  extraEnvVars:
+    - name: PUID
+      value: "1000"
+    - name: PGID
+      value: "1000"
+    - name: TZ
+      value: "Europe/Rome"
   ingress:
     enabled: false
   service:
@@ -29,6 +32,8 @@ sonarr:
     TZ: Europe/Rome
   persistence:
     storageClass: csi-nfs-stripe-arr-conf
+    media:
+      existingClaim: pvc-nfs-media
 
 qbittorrent:
   env:
@@ -36,13 +41,14 @@ qbittorrent:
     PGID: "1000"
     TZ: Europe/Rome
   service:
-    web:
-      type: NodePort
     bt:
       type: NodePort
-    externalTrafficPolicy: Local
+      port: 30661
   persistence:
     storageClass: csi-nfs-stripe-arr-conf
+    media:
+      existingClaim: pvc-nfs-media
+
 
 prowlarr:
   env:

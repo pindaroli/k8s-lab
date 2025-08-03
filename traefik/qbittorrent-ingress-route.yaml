@@ -7,9 +7,10 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`qbittorrent.local`) || Host(`qbittorrent`)
+  - match: Host(`qbittorrent.local`) || Host(`qbittorrent.pindaroli.org`)
     kind: Rule
     services:
     - name: servarr-qbittorrent-web
-      port: http
-  tls: {}
+      port: 8080
+  tls:
+    { }

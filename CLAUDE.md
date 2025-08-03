@@ -8,8 +8,11 @@
 - jellyfin-ingressroute.yaml is the traefik ingressRoute for jellyfin
 - in my subnet local domain is "local"
 - my external internet domain provided by cloudflare provider is "pindaroli.org"
-- gh is installed
-- servar helmcart code is in ../helm/servarr
+- gh is installed and you cas use it if needed
+- servar helmcart code is in ../helm/servarr us for analysis
+- for helm installation of servarr use kubitodev/servarr repository
+- router address proxmox.local
+- net gateway 192.168.1.1
 
 ## Personal Information
 

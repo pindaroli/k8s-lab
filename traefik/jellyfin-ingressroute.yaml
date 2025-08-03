@@ -7,9 +7,10 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`jellyfin.local`) || Host(`jellyfin`)
+  - match: Host(`jellyfin.local`) || Host(`jellyfin.pindaroli.org`)
     kind: Rule
     services:
     - name: servarr-jellyfin
-      port: http
-  tls: {}
+      port: 8096
+  tls:
+    {}
