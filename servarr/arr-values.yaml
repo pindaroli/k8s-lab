@@ -38,6 +38,8 @@ qbittorrent:
   service:
     web:
       type: NodePort
+    bt:
+      type: NodePort
     externalTrafficPolicy: Local
   persistence:
     storageClass: csi-nfs-stripe-arr-conf

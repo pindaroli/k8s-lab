@@ -11,7 +11,4 @@ k apply -f arr-volumes-csi.yaml
 helm repo add kubitodev https://charts.kubito.dev
 helm repo update
 
-
-helm install -n arr nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
-    -f nfs-subdir-prov-values.yaml
 ```

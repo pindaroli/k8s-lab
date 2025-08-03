@@ -26,7 +26,7 @@ spec:
     volumeHandle: pv-nfs-media
     volumeAttributes:
       server: 192.168.1.250
-      share: /mnt/oliraid/arrdata/media  # 👉 Monta direttamente questa directory!
+      share: /mnt/oliraid/arrdata/media  # Monta direttamente questa directory
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -45,7 +45,7 @@ spec:
     volumeHandle: pv-servarr-jellyfin-media
     volumeAttributes:
       server: 192.168.1.250
-      share: /mnt/oliraid/arrdata/media  # 👉 Mounts this directory directly!
+      share: /mnt/oliraid/arrdata/media  # Mounts this directory directly
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -58,7 +58,7 @@ spec:
   resources:
     requests:
       storage: 14000Gi
-  volumeName: pv-nfs-media  # 👉 Collega direttamente il PV senza creare sottocartelle
+  volumeName: pv-nfs-media  # Collega direttamente il PV senza creare sottocartelle
   storageClassName: nfs-csi
 ---
 apiVersion: v1
@@ -72,14 +72,13 @@ spec:
   resources:
     requests:
       storage: 14000Gi
-  volumeName: pv-servarr-jellyfin-media # 👉 Collega direttamente il PV senza creare sottocartelle
+  volumeName: pv-servarr-jellyfin-media # Collega direttamente il PV senza creare sottocartelle
   storageClassName: nfs-csi
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: csi-nfs-stripe-arr-conf
-  namespace: arr
   annotations:
     storageclass.kubernetes.io/is-default-class: "false"
 provisioner: nfs.csi.k8s.io
@@ -98,23 +97,15 @@ parameters:
   # Volume deletion policy - retain data when PVC is deleted
   onDelete: retain
 
-# Reclaim policy for the persistent volume - retain PV when PVC is deleted
-reclaimPolicy: Retain
-
+# Reclaim policy for the persistent volume - delete PV when PVC is deleted
+reclaimPolicy: Delete
 # Volume binding mode
 volumeBindingMode: Immediate
-
 # Allow volume expansion
 allowVolumeExpansion: true
-
 # NFS mount options
 mountOptions:
   - nfsvers=4.1
-  # Add uid/gid mount options for ownership
-  # Replace 1000 and 1000 with your desired uid and gid
-  - uid=1000
-  - gid=1000
-  # Additional security and performance options
   - rsize=1048576
   - wsize=1048576
   - hard

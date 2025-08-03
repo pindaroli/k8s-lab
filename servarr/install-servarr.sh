@@ -6,3 +6,5 @@ helm install servarr\
     --namespace=arr \
     --values=arr-values.yaml \
     kubitodev/servarr
+
+helm install servarr /Users/olindo/prj/helm/charts/servarr -n arr -f /Users/olindo/prj/k8s-lab/servarr/arr-values.yaml 
