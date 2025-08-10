@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPNsense os-upnp Plugin - Guida Completa e Risorse</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d94f04;
+            border-bottom: 3px solid #d94f04;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+            border-left: 4px solid #d94f04;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        .resource-item {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .resource-item h4 {
+            margin: 0 0 10px 0;
+            color: #d94f04;
+        }
+        .resource-item a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .resource-item a:hover {
+            text-decoration: underline;
+        }
+        .description {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .code {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+        .category {
+            background-color: #e7f3ff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OPNsense os-upnp Plugin - Guida Completa e Risorse</h1>
+        
+        <div class="info">
+            <strong>Ultimo aggiornamento:</strong> 3 Agosto 2025<br>
+            <strong>Ricerca approfondita:</strong> Tutte le fonti disponibili per il setup del plugin os-upnp in OPNsense
+        </div>
+
+        <h2>🔍 Panoramica</h2>
+        <p>Il plugin <strong>os-upnp</strong> per OPNsense fornisce funzionalità Universal Plug and Play (UPnP) utilizzando miniupnpd. A partire dalla versione 17.1 di OPNsense, il servizio UPnP è stato trasferito dal core a un plugin individuale e deve essere reinstallato come plugin per essere utilizzato.</p>
+
+        <div class="warning">
+            <strong>⚠️ Importante:</strong> Non esiste una documentazione ufficiale specifica per il plugin os-upnp sul sito docs.opnsense.org. La maggior parte delle informazioni proviene da discussioni della community e forum.
+        </div>
+
+        <h2>📚 Risorse Principali</h2>
+
+        <div class="category">
+            <h3>🏛️ Documentazione Ufficiale e Riferimenti</h3>
+            
+            <div class="resource-item">
+                <h4>Community Plugins — OPNsense documentation</h4>
+                <a href="https://docs.opnsense.org/plugins.html" target="_blank">https://docs.opnsense.org/plugins.html</a>
+                <div class="description">Documentazione generale sui plugin della community OPNsense. Nota che non tutti i plugin hanno documentazione dedicata.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>GitHub - opnsense/plugins: OPNsense plugin collection</h4>
+                <a href="https://github.com/opnsense/plugins" target="_blank">https://github.com/opnsense/plugins</a>
+                <div class="description">Repository ufficiale dei plugin OPNsense su GitHub, include il codice sorgente del plugin os-upnp.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>plugins/net/upnp/src/etc/inc/plugins.inc.d/miniupnpd.inc</h4>
+                <a href="https://github.com/opnsense/plugins/blob/master/net/upnp/src/etc/inc/plugins.inc.d/miniupnpd.inc" target="_blank">https://github.com/opnsense/plugins/blob/master/net/upnp/src/etc/inc/plugins.inc.d/miniupnpd.inc</a>
+                <div class="description">Codice sorgente del plugin os-upnp, utile per comprendere la configurazione tecnica.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>How to Install Plugins on OPNsense? - Zenarmor</h4>
+                <a href="https://www.zenarmor.com/docs/network-security-tutorials/how-to-install-plugins-on-opnsense" target="_blank">https://www.zenarmor.com/docs/network-security-tutorials/how-to-install-plugins-on-opnsense</a>
+                <div class="description">Guida generale per l'installazione dei plugin in OPNsense.</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <h3>🎯 Guide di Configurazione Specifiche</h3>
+            
+            <div class="resource-item">
+                <h4>OPNSense UPnP — Luz's Blog</h4>
+                <a href="https://luz.io/home/opnsense-upnp" target="_blank">https://luz.io/home/opnsense-upnp</a>
+                <div class="description">Una delle guide più complete per la configurazione UPnP su OPNsense, con istruzioni dettagliate.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>Using OPNsense with Tailscale · Tailscale Docs</h4>
+                <a href="https://tailscale.com/kb/1097/install-opnsense" target="_blank">https://tailscale.com/kb/1097/install-opnsense</a>
+                <div class="description">Guida ufficiale Tailscale che include istruzioni per configurare UPnP/NAT-PMP su OPNsense.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>UPnP und NAT-PMP auf OPNsense erlauben | IT-Halbwissen</h4>
+                <a href="https://www.it-halbwissen.de/artikel/upnp-und-nat-pmp-auf-opnsense-erlauben/" target="_blank">https://www.it-halbwissen.de/artikel/upnp-und-nat-pmp-auf-opnsense-erlauben/</a>
+                <div class="description">Guida in tedesco per abilitare UPnP e NAT-PMP su OPNsense.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>pfSense Universal Plug and Play UPnP NAT-PMP Configuration – ByteSizedAlex</h4>
+                <a href="https://www.bytesizedalex.com/pfsense-universal-plug-and-play-upnp-nat-pmp-configuration/" target="_blank">https://www.bytesizedalex.com/pfsense-universal-plug-and-play-upnp-nat-pmp-configuration/</a>
+                <div class="description">Guida per pfSense che può essere adattata per OPNsense, data la similarità delle implementazioni.</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <h3>💬 Discussioni Forum e Community</h3>
+            
+            <div class="resource-item">
+                <h4>os-upnp, how to make it work? - OPNsense Forum</h4>
+                <a href="https://forum.opnsense.org/index.php?topic=7211.0" target="_blank">https://forum.opnsense.org/index.php?topic=7211.0</a>
+                <div class="description">Discussione principale nel forum OPNsense su come far funzionare il plugin os-upnp.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>OPNsense 24.1.6: Correct UPnP setup?</h4>
+                <a href="https://forum.opnsense.org/index.php?topic=40280.0" target="_blank">https://forum.opnsense.org/index.php?topic=40280.0</a>
+                <div class="description">Discussione recente (2024) sulla configurazione corretta di UPnP in OPNsense 24.1.6.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>OPNsense and UPNP in 2024</h4>
+                <a href="https://forum.opnsense.org/index.php?topic=40775.0" target="_blank">https://forum.opnsense.org/index.php?topic=40775.0</a>
+                <div class="description">Discussione aggiornata del 2024 su OPNsense e UPnP.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>Strict NAT Gaming - Enable UPNP plugin the way to go?</h4>
+                <a href="https://forum.opnsense.org/index.php?topic=22591.0" target="_blank">https://forum.opnsense.org/index.php?topic=22591.0</a>
+                <div class="description">Discussione specifica per il gaming e la configurazione UPnP per risolvere problemi di NAT stretto.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>Setting up uPNP</h4>
+                <a href="https://forum.opnsense.org/index.php?topic=32068.0" target="_blank">https://forum.opnsense.org/index.php?topic=32068.0</a>
+                <div class="description">Thread generale sulla configurazione UPnP.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>UPDATE: Universal Plug and Play issues</h4>
+                <a href="https://forum.opnsense.org/index.php?topic=33264.0" target="_blank">https://forum.opnsense.org/index.php?topic=33264.0</a>
+                <div class="description">Discussione sui problemi con Universal Plug and Play e relative soluzioni.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>Can't find os-upnp plugin on 22.10 Business Edition</h4>
+                <a href="https://forum.opnsense.org/index.php?topic=31954.0" target="_blank">https://forum.opnsense.org/index.php?topic=31954.0</a>
+                <div class="description">Discussione specifica per l'edizione Business di OPNsense 22.10.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>UPnP - Universal Plug and Play Installation</h4>
+                <a href="https://forum.opnsense.org/index.php?topic=43996.0" target="_blank">https://forum.opnsense.org/index.php?topic=43996.0</a>
+                <div class="description">Thread dedicato all'installazione del plugin UPnP.</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <h3>🐛 Issue Tracker e Bug Reports</h3>
+            
+            <div class="resource-item">
+                <h4>UPnP NAT Rules Not Working · Issue #3241 · opnsense/plugins</h4>
+                <a href="https://github.com/opnsense/plugins/issues/3241" target="_blank">https://github.com/opnsense/plugins/issues/3241</a>
+                <div class="description">Issue GitHub sui problemi con le regole NAT UPnP che non funzionano.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>os-upnp 1.5_5 - Not able to add port forwards · Issue #3747</h4>
+                <a href="https://github.com/opnsense/plugins/issues/3747" target="_blank">https://github.com/opnsense/plugins/issues/3747</a>
+                <div class="description">Bug report specifico per la versione 1.5_5 del plugin os-upnp.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>os-upnp: creates rdr rules beyond intended scope · Issue #534</h4>
+                <a href="https://github.com/opnsense/plugins/issues/534" target="_blank">https://github.com/opnsense/plugins/issues/534</a>
+                <div class="description">Issue riguardante la creazione di regole rdr oltre l'ambito previsto.</div>
+            </div>
+        </div>
+
+        <div class="category">
+            <h3>📖 Documentazione di Riferimento (pfSense)</h3>
+            
+            <div class="resource-item">
+                <h4>UPnP IGD & PCP | pfSense Documentation</h4>
+                <a href="https://docs.netgate.com/pfsense/en/latest/services/upnp.html" target="_blank">https://docs.netgate.com/pfsense/en/latest/services/upnp.html</a>
+                <div class="description">Documentazione ufficiale pfSense per UPnP, applicabile anche a OPNsense data la base comune.</div>
+            </div>
+
+            <div class="resource-item">
+                <h4>What is the proper way to set up UPnP (miniupnpd)? | Netgate Forum</h4>
+                <a href="https://forum.netgate.com/topic/189314/what-is-the-proper-way-to-set-up-upnp-miniupnpd" target="_blank">https://forum.netgate.com/topic/189314/what-is-the-proper-way-to-set-up-upnp-miniupnpd</a>
+                <div class="description">Discussione nel forum Netgate sulla configurazione corretta di UPnP con miniupnpd.</div>
+            </div>
+        </div>
+
+        <h2>🚀 Procedura di Installazione</h2>
+        <div class="code">
+1. Navigare in <strong>System → Firmware → Plugins</strong> nell'interfaccia web OPNsense
+2. Cercare "os-upnp" nella barra di ricerca della colonna Name
+3. Cliccare sul pulsante <strong>Install</strong>
+4. Si verrà reindirizzati alla pagina Updates e il plugin verrà installato
+        </div>
+
+        <h2>⚙️ Configurazione Base</h2>
+        <div class="code">
+1. <strong>Abilitare il Servizio:</strong> Services > Universal Plug and Play
+2. <strong>Disabilitare IGMP Snooping</strong> sulle reti client
+3. <strong>Configurazione Sicurezza:</strong> Impostare UPnP su default-deny
+4. <strong>Aggiungere Regole Allow:</strong> es. "allow 1024-65535 192.168.1.10 1024-65535"
+        </div>
+
+        <h2>🔒 Considerazioni di Sicurezza</h2>
+        <div class="warning">
+            <strong>Importante:</strong> UPnP è intrinsecamente insicuro. Qualsiasi programma sulla rete può consentire e inoltrare qualsiasi traffico. È un classico esempio del compromesso "Sicurezza vs. Convenienza".
+        </div>
+
+        <h2>🔧 Porte Utilizzate da miniupnpd</h2>
+        <ul>
+            <li><strong>UDP 1900:</strong> Simple Service Discovery Protocol (SSDP)</li>
+            <li><strong>UDP 5351:</strong> PCP (Port Control Protocol)</li>
+            <li><strong>TCP 2189:</strong> HTTP e query SOAP</li>
+        </ul>
+
+        <h2>🎮 Configurazione per Gaming</h2>
+        <p>Per il gaming con NAT stretto, è necessario:</p>
+        <ul>
+            <li>Utilizzare mappature porta statiche (Static Port Mapping)</li>
+            <li>Configurare Hybrid NAT per il minor impatto sulla sicurezza</li>
+            <li>Aggiungere regole firewall specifiche se necessario</li>
+        </ul>
+
+        <h2>⚠️ Problemi Noti (2024)</h2>
+        <ul>
+            <li>UPnP può impostare correttamente le mappature porta ma non creare regole NAT per il routing del traffico</li>
+            <li>Alcuni problemi con la versione 1.5_5 che impedisce l'aggiunta di port forward</li>
+            <li>Creazione di regole rdr oltre l'ambito previsto in alcune configurazioni</li>
+        </ul>
+
+        <h2>🔍 Troubleshooting</h2>
+        <p>Per il debug:</p>
+        <ul>
+            <li>Controllare i log del firewall in <strong>Status > System Logs > Firewall</strong></li>
+            <li>Verificare lo stato UPnP in <strong>Status > Universal Plug and Play</strong></li>
+            <li>Assicurarsi che le regole firewall permettano il traffico UDP sulla porta 1900</li>
+        </ul>
+
+        <div class="info">
+            <strong>Nota:</strong> Questa raccolta rappresenta tutte le fonti disponibili al 3 agosto 2025 per il setup del plugin os-upnp in OPNsense. Data la natura community-driven del plugin, molte informazioni provengono da forum e discussioni degli utenti piuttosto che da documentazione ufficiale.
+        </div>
+    </div>
+</body>
+</html>

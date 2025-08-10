@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>macOS Terminal Prompt Examples with Git Branch</title>
+    <style>
+        body {
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1, h2 {
+            color: #569cd6;
+            text-align: center;
+        }
+        
+        .prompt-example {
+            background-color: #2d2d30;
+            border: 1px solid #404040;
+            border-radius: 8px;
+            margin: 20px 0;
+            padding: 20px;
+        }
+        
+        .prompt-title {
+            color: #4ec9b0;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .terminal {
+            background-color: #0c0c0c;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Monaco', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        .prompt-line {
+            margin: 5px 0;
+            white-space: nowrap;
+        }
+        
+        /* Git status colors */
+        .git-clean { color: #4ec9b0; }
+        .git-dirty { color: #f1c40f; }
+        .git-ahead { color: #e74c3c; }
+        .git-behind { color: #9b59b6; }
+        
+        /* User/path colors */
+        .user { color: #569cd6; }
+        .host { color: #4ec9b0; }
+        .path { color: #dcdcaa; }
+        .prompt-symbol { color: #ffffff; font-weight: bold; }
+        
+        /* Powerline symbols */
+        .powerline { color: #404040; }
+        
+        /* Status indicators */
+        .status-ok { color: #4ec9b0; }
+        .status-error { color: #f14c4c; }
+        
+        .installation {
+            background-color: #2a2a2a;
+            border-left: 4px solid #4ec9b0;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .features {
+            background-color: #252526;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .features ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .features li {
+            color: #d4d4d4;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>macOS Terminal Prompt Examples with Git Branch Display</h1>
+        
+        <div class="prompt-example">
+            <div class="prompt-title">1. Powerlevel10k (Recommended)</div>
+            <div class="features">
+                <strong>Features:</strong>
+                <ul>
+                    <li>Fast rendering and extensive customization</li>
+                    <li>Interactive configuration wizard</li>
+                    <li>Git status with visual indicators</li>
+                    <li>Works with or without Nerd Fonts</li>
+                </ul>
+            </div>
+            <div class="terminal">
+                <div class="prompt-line">
+                    <span class="user">olindo</span><span class="powerline">@</span><span class="host">MacBook-Pro</span> 
+                    <span class="path">~/prj/k8s-lab</span> 
+                    <span class="git-clean">⎇ main</span> 
+                    <span class="status-ok">✓</span>
+                </div>
+                <div class="prompt-line">
+                    <span class="prompt-symbol">❯</span> git status
+                </div>
+                <div class="prompt-line">
+                    <span class="user">olindo</span><span class="powerline">@</span><span class="host">MacBook-Pro</span> 
+                    <span class="path">~/prj/k8s-lab</span> 
+                    <span class="git-dirty">⎇ feature/new-helm ⚡3</span> 
+                    <span class="status-ok">✓</span>
+                </div>
+                <div class="prompt-line">
+                    <span class="prompt-symbol">❯</span> helm install...
+                </div>
+            </div>
+            <div class="installation">
+                <strong>Installation:</strong><br>
+                <code>git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k</code><br>
+                <code>ZSH_THEME="powerlevel10k/powerlevel10k" # in ~/.zshrc</code><br>
+                <code>p10k configure # run configuration wizard</code>
+            </div>
+        </div>
+
+        <div class="prompt-example">
+            <div class="prompt-title">2. Starship (Cross-Shell)</div>
+            <div class="features">
+                <strong>Features:</strong>
+                <ul>
+                    <li>Works with Bash, Zsh, Fish, PowerShell</li>
+                    <li>Fast and minimal by default</li>
+                    <li>Highly configurable with TOML</li>
+                    <li>Great documentation</li>
+                </ul>
+            </div>
+            <div class="terminal">
+                <div class="prompt-line">
+                    <span class="path">~/prj/k8s-lab</span> 
+                    <span class="git-clean">git:(main)</span> 
+                    <span class="status-ok">❯</span>
+                </div>
+                <div class="prompt-line">kubectl get pods</div>
+                <div class="prompt-line">
+                    <span class="path">~/prj/k8s-lab</span> 
+                    <span class="git-ahead">git:(feature/auth) ↑2</span> 
+                    <span class="status-ok">❯</span>
+                </div>
+                <div class="prompt-line">git push origin feature/auth</div>
+            </div>
+            <div class="installation">
+                <strong>Installation:</strong><br>
+                <code>brew install starship</code><br>
+                <code>echo 'eval "$(starship init zsh)"' >> ~/.zshrc</code>
+            </div>
+        </div>
+
+        <div class="prompt-example">
+            <div class="prompt-title">3. Oh My Zsh - Agnoster Theme</div>
+            <div class="features">
+                <strong>Features:</strong>
+                <ul>
+                    <li>Built into Oh My Zsh</li>
+                    <li>Powerline-style arrows</li>
+                    <li>Clear git status indication</li>
+                    <li>Requires Powerline fonts</li>
+                </ul>
+            </div>
+            <div class="terminal">
+                <div class="prompt-line">
+                    <span style="background-color: #4ec9b0; color: #000; padding: 2px 8px;">olindo</span><span style="color: #4ec9b0;">⮀</span><span style="background-color: #569cd6; color: #fff; padding: 2px 8px;">~/prj/k8s-lab</span><span style="color: #569cd6;">⮀</span><span style="background-color: #4ec9b0; color: #000; padding: 2px 8px;"> main</span><span style="color: #4ec9b0;">⮀</span>
+                </div>
+                <div class="prompt-line">
+                    <span style="background-color: #4ec9b0; color: #000; padding: 2px 8px;">olindo</span><span style="color: #4ec9b0;">⮀</span><span style="background-color: #569cd6; color: #fff; padding: 2px 8px;">~/prj/k8s-lab</span><span style="color: #569cd6;">⮀</span><span style="background-color: #f1c40f; color: #000; padding: 2px 8px;"> feature/helm ±</span><span style="color: #f1c40f;">⮀</span>
+                </div>
+            </div>
+            <div class="installation">
+                <strong>Installation:</strong><br>
+                <code>ZSH_THEME="agnoster" # in ~/.zshrc</code><br>
+                <code># Requires Powerline fonts or Nerd Fonts</code>
+            </div>
+        </div>
+
+        <div class="prompt-example">
+            <div class="prompt-title">4. Spaceship Prompt</div>
+            <div class="features">
+                <strong>Features:</strong>
+                <ul>
+                    <li>Modular sections</li>
+                    <li>Asynchronous rendering</li>
+                    <li>Extensive customization options</li>
+                    <li>Clean, modern design</li>
+                </ul>
+            </div>
+            <div class="terminal">
+                <div class="prompt-line">
+                    <span class="user">olindo</span> <span style="color: #666;">in</span> <span class="path">k8s-lab</span> <span style="color: #666;">on</span> <span class="git-clean"> main</span>
+                </div>
+                <div class="prompt-line">
+                    <span class="prompt-symbol">🚀</span> microk8s status
+                </div>
+                <div class="prompt-line">
+                    <span class="user">olindo</span> <span style="color: #666;">in</span> <span class="path">k8s-lab</span> <span style="color: #666;">on</span> <span class="git-dirty"> feature/servarr</span> <span style="color: #f1c40f;">[!]</span>
+                </div>
+                <div class="prompt-line">
+                    <span class="prompt-symbol">🚀</span> helm template servarr
+                </div>
+            </div>
+            <div class="installation">
+                <strong>Installation:</strong><br>
+                <code>git clone https://github.com/spaceship-prompt/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1</code><br>
+                <code>ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"</code><br>
+                <code>ZSH_THEME="spaceship" # in ~/.zshrc</code>
+            </div>
+        </div>
+
+        <div class="prompt-example">
+            <div class="prompt-title">5. Pure Prompt (Minimalist)</div>
+            <div class="features">
+                <strong>Features:</strong>
+                <ul>
+                    <li>Minimal and fast</li>
+                    <li>Two-line prompt</li>
+                    <li>Async git status</li>
+                    <li>No dependencies</li>
+                </ul>
+            </div>
+            <div class="terminal">
+                <div class="prompt-line">
+                    <span class="path">~/prj/k8s-lab</span> <span class="git-clean">main</span>
+                </div>
+                <div class="prompt-line">
+                    <span class="prompt-symbol">❯</span> kubectl apply -f servarr/
+                </div>
+                <div class="prompt-line">
+                    <span class="path">~/prj/k8s-lab</span> <span class="git-dirty">feature/new-chart</span> <span style="color: #f1c40f;">⚡</span>
+                </div>
+                <div class="prompt-line">
+                    <span class="prompt-symbol">❯</span> git add .
+                </div>
+            </div>
+            <div class="installation">
+                <strong>Installation:</strong><br>
+                <code>npm install --global pure-prompt</code><br>
+                <code># Add to ~/.zshrc: autoload -U promptinit; promptinit; prompt pure</code>
+            </div>
+        </div>
+
+        <div class="prompt-example">
+            <div class="prompt-title">6. Oh My Zsh - Robbyrussell (Default)</div>
+            <div class="features">
+                <strong>Features:</strong>
+                <ul>
+                    <li>Default Oh My Zsh theme</li>
+                    <li>Simple and clean</li>
+                    <li>No special fonts required</li>
+                    <li>Basic git status</li>
+                </ul>
+            </div>
+            <div class="terminal">
+                <div class="prompt-line">
+                    <span class="user">olindo@MacBook-Pro</span> <span class="path">k8s-lab</span> <span class="git-clean">git:(main)</span> <span class="prompt-symbol">$</span> helm list
+                </div>
+                <div class="prompt-line">
+                    <span class="user">olindo@MacBook-Pro</span> <span class="path">k8s-lab</span> <span class="git-dirty">git:(feature/updates ✗)</span> <span class="prompt-symbol">$</span> git status
+                </div>
+            </div>
+            <div class="installation">
+                <strong>Installation:</strong><br>
+                <code>ZSH_THEME="robbyrussell" # in ~/.zshrc (default)</code>
+            </div>
+        </div>
+
+        <h2>Git Status Legend</h2>
+        <div class="terminal">
+            <div class="prompt-line"><span class="git-clean">✓ Clean working directory</span></div>
+            <div class="prompt-line"><span class="git-dirty">⚡ Uncommitted changes</span></div>
+            <div class="prompt-line"><span class="git-ahead">↑ Commits ahead of remote</span></div>
+            <div class="prompt-line"><span class="git-behind">↓ Commits behind remote</span></div>
+            <div class="prompt-line"><span style="color: #f14c4c;">✗ Untracked files</span></div>
+            <div class="prompt-line"><span style="color: #e67e22;">± Staged changes</span></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: #666;">
+            <p>Choose the prompt that best fits your workflow and aesthetic preferences!</p>
+        </div>
+    </div>
+</body>
+</html>
