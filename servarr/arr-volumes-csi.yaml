@@ -12,25 +12,6 @@ mountOptions:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-nfs-media
-spec:
-  capacity:
-    storage: 15000Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-csi
-  volumeMode: Filesystem
-  csi:
-    driver: nfs.csi.k8s.io
-    volumeHandle: pv-nfs-media
-    volumeAttributes:
-      server: 192.168.1.250
-      share: /mnt/oliraid/arrdata/media  # Monta direttamente questa directory
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
   name: pv-servarr-jellyfin-media
 spec:
   capacity:
@@ -46,20 +27,6 @@ spec:
     volumeAttributes:
       server: 192.168.1.250
       share: /mnt/oliraid/arrdata/media  # Mounts this directory directly
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  namespace: arr
-  name: pvc-nfs-media
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 14000Gi
-  volumeName: pv-nfs-media  # Collega direttamente il PV senza creare sottocartelle
-  storageClassName: nfs-csi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

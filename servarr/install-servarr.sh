@@ -6,6 +6,12 @@ helm install servarr kubitodev/servarr\
     --namespace=arr \
     --values=arr-values.yaml \
     --wait
+helm upgrade servarr kubitodev/servarr\
+    --create-namespace \
+    --namespace=arr \
+    --values=arr-values.yaml \
+    --wait
+
 
 
 
