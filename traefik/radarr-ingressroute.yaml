@@ -1,27 +1,14 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: radarr-external
+  name: radarr-ingress-route
   namespace: arr
 spec:
   entryPoints:
-    - web
     - websecure
   routes:
-  - match: Host(`portal.local`) && PathPrefix(`/radarr`) || Host(`radarr.pindaroli.org`) 
-    kind: Rule
-    middlewares:
-    - name: radarr-stripprefix
-    services:
-    - name: servarr-radarr
-      port: 7878
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: radarr-stripprefix
-  namespace: arr
-spec:
-  stripPrefix:
-    prefixes:
-      - /radarr
+    - match: Host(`radarr.local`) 
+      kind: Rule
+      services:
+        - name: servarr-radarr
+          port: 7878
