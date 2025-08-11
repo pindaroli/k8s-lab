@@ -13,6 +13,11 @@
 - for helm installation of servarr use kubitodev/servarr repository
 - router address proxmox.local
 - net gateway 192.168.1.1
+- MetalLB is configured in metallb namespace for LoadBalancer services
+- MetalLB configuration files are in ./metallb/ directory
+- MetalLB uses Helm chart: metallb/metallb installed in metallb namespace
+- MetalLB IP pool configured for 192.168.1.3-192.168.1.13 range with L2Advertisement
+- to access cluster can use kubectl
 
 ## Personal Information
 
