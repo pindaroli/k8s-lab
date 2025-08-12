@@ -27,7 +27,7 @@ api:
 ingressRoute:
   dashboard:
     enabled: true
-    matchRule: Host(`traefik-dash.local`)
+    matchRule: Host(`traefik-dash.pindaroli.org`)
     entryPoints:
       - websecure
     middlewares:
@@ -69,17 +69,20 @@ gateway:
     web:           # HTTP listener that matches entryPoint `web`
       port: 9080
       protocol: HTTP
-      namespacePolicy: All
+      namespacePolicy:
+        from: All
 
     websecure:         # HTTPS listener that matches entryPoint `websecure`
       port: 9443
       protocol: HTTPS  # TLS terminates inside Traefik
-      namespacePolicy: All
+      namespacePolicy:
+        from: All
       mode: Terminate
       certificateRefs:    
         - kind: Secret
-          name: local-selfsigned-tls  # the Secret we created before the installation
+          name: pindaroli-wildcard-tls  # Certificato Let's Encrypt wildcard
           group: ""
+          namespace: traefik
 
 # Security Context to allow binding to privileged ports
 securityContext:

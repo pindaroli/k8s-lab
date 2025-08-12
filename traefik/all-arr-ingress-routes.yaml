@@ -1,0 +1,110 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jellyfin-external
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`jellyfin.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: servarr-jellyfin
+      port: 8096
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lidarr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`lidarr.pindaroli.org`) 
+      kind: Rule
+      services:
+        - name: servarr-lidarr
+          port: 8686
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prowlarr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`prowlarr.pindaroli.org`) 
+      kind: Rule
+      services:
+        - name: servarr-prowlarr
+          port: 9696
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: qbittorrent-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`qbittorrent.pindaroli.org`) 
+    kind: Rule
+    services:
+    - name: servarr-qbittorrent-web
+      port: 8080
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: replace-path
+  namespace: arr
+spec:
+  replacePath:
+    path: /
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: readarr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`readarr.pindaroli.org`) 
+      kind: Rule
+      services:
+        - name: servarr-readarr
+          port: 8787
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sonarr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`sonarr.pindaroli.org`) 
+      kind: Rule
+      services:
+        - name: servarr-sonarr
+          port: 8989
+  tls:
+    secretName: pindaroli-wildcard-tls
