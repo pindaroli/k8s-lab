@@ -1,16 +1,16 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: jellyfin-external
+  name: prowlarr-ingress-route
   namespace: arr
 spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`jellyfin.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: servarr-jellyfin
-      port: 8096
+    - match: Host(`prowlarr.pindaroli.org`) 
+      kind: Rule
+      services:
+        - name: servarr-prowlarr
+          port: 9696
   tls:
     secretName: pindaroli-wildcard-tls

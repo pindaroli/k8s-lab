@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage
+  namespace: default
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  kubernetes.yaml: |
+    mode: cluster
+  settings.yaml: |
+    # No additional settings configured
+  custom.css: |
+    # Add custom CSS here
+  custom.js: |
+    # Add custom JS here
+  bookmarks.yaml: |
+    # Empty bookmarks list
+  services.yaml: |
+    - Media Services:
+        - Jellyfin:
+            href: https://jellyfin.pindaroli.org
+            description: Media server for movies, TV shows and music
+            icon: jellyfin.png
+        - qBittorrent:
+            href: https://qbittorrent.pindaroli.org
+            description: BitTorrent client
+            icon: qbittorrent.png
+    
+    - *arr Services:
+        - Sonarr:
+            href: https://sonarr.pindaroli.org
+            description: TV series management
+            icon: sonarr.png
+        - Radarr:
+            href: https://radarr.pindaroli.org
+            description: Movie management
+            icon: radarr.png
+        - Lidarr:
+            href: https://lidarr.pindaroli.org
+            description: Music management
+            icon: lidarr.png
+        - Readarr:
+            href: https://readarr.pindaroli.org
+            description: Book management
+            icon: readarr.png
+        - Prowlarr:
+            href: https://prowlarr.pindaroli.org
+            description: Indexer management
+            icon: prowlarr.png
+  widgets.yaml: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "K8s Cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    - resources:
+        backend: resources
+        expanded: true
+        cpu: true
+        memory: true
+    - search:
+        provider: duckduckgo
+        target: _blank
+  docker.yaml: |
+    # Docker configuration (empty)
