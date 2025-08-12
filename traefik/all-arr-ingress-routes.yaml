@@ -108,3 +108,20 @@ spec:
           port: 8989
   tls:
     secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: radarr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`radarr.pindaroli.org`) 
+      kind: Rule
+      services:
+        - name: servarr-radarr
+          port: 7878
+  tls:
+    secretName: pindaroli-wildcard-tls
