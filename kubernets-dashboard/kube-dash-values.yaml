@@ -1,0 +1,9 @@
+# Deploy to dashboard namespace
+namespaceOverride: dashboard
+
+app:
+  ingress:
+    enabled: true
+    hosts:
+      - dashboard.local
+    ingressClassName: nginx
