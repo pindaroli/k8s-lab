@@ -18,6 +18,36 @@
 - MetalLB uses Helm chart: metallb/metallb installed in metallb namespace
 - MetalLB IP pool configured for 192.168.1.3-192.168.1.13 range with L2Advertisement
 - to access cluster can use kubectl
+- Claude has automatic permission to run readonly kubectl commands (get, describe, logs, etc.) without asking
+
+## SSH Access
+
+- To ssh access k8s-control use root@k8s-control
+
+## Homepage Dashboard
+
+- Homepage deployed in default namespace with complete Kubernetes manifests
+- Access URL: https://home.pindaroli.org
+- Consolidated deployment file: homepage/homepage.yaml contains all resources
+- Services configured: Traefik, Jellyfin, qBittorrent, and all *arr services
+- Widgets enabled: Kubernetes cluster info, resource monitoring, search functionality
+- Note: Kubernetes Dashboard has been completely uninstalled
+
+## Servarr Services
+
+- All servarr services deployed in arr namespace via Helm (kubitodev/servarr)
+- External access configured via Traefik IngressRoutes in all-arr-ingress-routes.yaml
+- Services with external URLs:
+  - jellyfin.pindaroli.org (media server)
+  - qbittorrent.pindaroli.org (torrent client)
+  - sonarr.pindaroli.org (TV series management)
+  - radarr.pindaroli.org (movie management)
+  - lidarr.pindaroli.org (music management)
+  - readarr.pindaroli.org (book management)
+  - prowlarr.pindaroli.org (indexer management)
+  - bazarr.pindaroli.org (subtitle management)
+  - jellyseerr.pindaroli.org (request management)
+  - flaresolverr.pindaroli.org (CloudFlare solver)
 
 ## Personal Information
 
