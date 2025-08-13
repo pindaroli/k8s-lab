@@ -1,0 +1,43 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dashboard-auth-direct
+  namespace: kubernetes-dashboard
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/api/v1/csrftoken`)
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: dashboard-cors
+      services:
+        - name: kubernetes-dashboard-auth
+          port: 8000
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/api/v1/login`)
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: dashboard-cors
+      services:
+        - name: kubernetes-dashboard-auth
+          port: 8000
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/api/v1/me`)
+      kind: Rule
+      priority: 100
+      middlewares:
+        - name: dashboard-cors
+      services:
+        - name: kubernetes-dashboard-auth
+          port: 8000
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/api`)
+      kind: Rule
+      priority: 50
+      middlewares:
+        - name: dashboard-cors
+      services:
+        - name: kubernetes-dashboard-api
+          port: 8000
+  tls:
+    secretName: pindaroli-wildcard-tls

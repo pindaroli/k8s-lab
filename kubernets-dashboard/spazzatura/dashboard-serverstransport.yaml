@@ -1,0 +1,26 @@
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: dashboard-transport
+  namespace: kubernetes-dashboard
+spec:
+  serverName: localhost
+  insecureSkipVerify: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kube-dash-ingress-route
+  namespace: kubernetes-dashboard
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`dashboard.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-kong-proxy
+          port: 443
+          serversTransport: dashboard-transport
+  tls:
+    secretName: pindaroli-wildcard-tls
