@@ -105,7 +105,7 @@ data:
         - Kubernetes Dashboard:
             href: https://dashboard.pindaroli.org
             description: Kubernetes cluster management dashboard
-            icon: kubernetes.png
+            icon: kubernetes-dashboard.png
         - Traefik Dashboard:
             href: https://traefik-dash.pindaroli.org
             description: Traefik reverse proxy dashboard
@@ -141,6 +141,15 @@ data:
             href: https://prowlarr.pindaroli.org
             description: Indexer management
             icon: prowlarr.png
+        - Bazarr:
+            href: https://bazarr.pindaroli.org
+            description: Subtitle management
+            icon: bazarr.png
+        - Jellyseerr:
+            href: https://jellyseerr.pindaroli.org
+            description: Request management for Jellyfin
+            icon: jellyseerr.png
+       
   widgets.yaml: |
     - kubernetes:
         cluster:

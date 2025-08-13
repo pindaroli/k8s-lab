@@ -125,3 +125,37 @@ spec:
           port: 7878
   tls:
     secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bazarr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`bazarr.pindaroli.org`) 
+      kind: Rule
+      services:
+        - name: servarr-bazarr
+          port: 6767
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jellyseerr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`jellyseerr.pindaroli.org`) 
+      kind: Rule
+      services:
+        - name: servarr-jellyseerr
+          port: 5055
+  tls:
+    secretName: pindaroli-wildcard-tls
