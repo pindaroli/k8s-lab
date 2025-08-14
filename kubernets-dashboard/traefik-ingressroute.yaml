@@ -1,0 +1,203 @@
+# Traefik IngressRoute manifest for Kubernetes Dashboard
+# This replaces Kong Gateway with proper CSRF token routing
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: kubernetes-dashboard-headers
+  namespace: dashboard
+spec:
+  headers:
+    # Preserve CSRF token header and other important headers
+    customRequestHeaders:
+      X-CSRF-TOKEN: ""
+      X-Forwarded-For: ""
+      X-Real-IP: ""
+      X-Original-Forwarded-For: ""
+    # Security headers
+    customResponseHeaders:
+      X-Frame-Options: "DENY"
+      X-Content-Type-Options: "nosniff"
+      X-XSS-Protection: "1; mode=block"
+      Referrer-Policy: "strict-origin-when-cross-origin"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: kubernetes-dashboard-cors
+  namespace: dashboard
+spec:
+  headers:
+    accessControlAllowOriginList:
+      - "https://dashboard.pindaroli.org"
+    accessControlAllowMethods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    accessControlAllowHeaders:
+      - "*"
+    accessControlExposeHeaders:
+      - "*"
+    accessControlAllowCredentials: true
+    accessControlMaxAge: 100
+    addVaryHeader: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: kubernetes-dashboard-stripprefix-api
+  namespace: dashboard
+spec:
+  stripPrefix:
+    prefixes:
+      - /api
+
+---
+# Main IngressRoute for Kubernetes Dashboard
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kubernetes-dashboard
+  namespace: dashboard
+  annotations:
+    # Optional: specify entry points
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # Auth service routes - handle authentication and login CSRF tokens
+    - match: Host(`dashboard.pindaroli.org`) && Path(`/api/v1/login`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-auth
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    - match: Host(`dashboard.pindaroli.org`) && Path(`/api/v1/csrftoken/login`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-auth
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    - match: Host(`dashboard.pindaroli.org`) && Path(`/api/v1/me`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-auth
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    # API service routes - handle all other CSRF tokens and API calls
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/api/v1/csrftoken/`)
+      kind: Rule
+      priority: 100  # Higher priority than general /api/v1/ route
+      services:
+        - name: kubernetes-dashboard-api
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    # General API routes - all other /api/v1/* endpoints
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/api/v1/`)
+      kind: Rule
+      priority: 50
+      services:
+        - name: kubernetes-dashboard-api
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    # Metrics endpoint
+    - match: Host(`dashboard.pindaroli.org`) && Path(`/metrics`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-api
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    # Web service routes - frontend and configuration
+    - match: Host(`dashboard.pindaroli.org`) && Path(`/config`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-web
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    - match: Host(`dashboard.pindaroli.org`) && Path(`/systembanner`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-web
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/settings`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-web
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+    
+    # Root and static assets - catch-all for frontend
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/`)
+      kind: Rule
+      priority: 1  # Lowest priority - catch all remaining requests
+      services:
+        - name: kubernetes-dashboard-web
+          port: 8000
+      middlewares:
+        - name: kubernetes-dashboard-headers
+        - name: kubernetes-dashboard-cors
+  
+  # TLS configuration - adjust based on your setup
+  tls:
+    secretName: pindaroli-wildcard-tls  # Replace with your TLS secret
+
+---
+# Optional: HTTP to HTTPS redirect
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kubernetes-dashboard-redirect
+  namespace: dashboard
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`dashboard.pindaroli.org`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: kubernetes-dashboard-web
+          port: 8000
+      middlewares:
+        - name: redirect-to-https
+        
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-https
+  namespace: dashboard
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
