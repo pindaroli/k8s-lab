@@ -121,10 +121,10 @@ data:
             icon: qbittorrent.png
     
     - "Arr Services":
-        - Sonarr:
-            href: https://sonarr.pindaroli.org
-            description: TV series management
-            icon: sonarr.png
+        # - Sonarr:
+        #     href: https://sonarr.pindaroli.org
+        #     description: TV series management
+        #     icon: sonarr.png
         - Radarr:
             href: https://radarr.pindaroli.org
             description: Movie management
@@ -141,14 +141,14 @@ data:
             href: https://prowlarr.pindaroli.org
             description: Indexer management
             icon: prowlarr.png
-        - Bazarr:
-            href: https://bazarr.pindaroli.org
-            description: Subtitle management
-            icon: bazarr.png
-        - Jellyseerr:
-            href: https://jellyseerr.pindaroli.org
-            description: Request management for Jellyfin
-            icon: jellyseerr.png
+        # - Bazarr:
+        #     href: https://bazarr.pindaroli.org
+        #     description: Subtitle management
+        #     icon: bazarr.png
+        # - Jellyseerr:
+        #     href: https://jellyseerr.pindaroli.org
+        #     description: Request management for Jellyfin
+        #     icon: jellyseerr.png
        
   widgets.yaml: |
     - kubernetes:
