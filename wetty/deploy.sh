@@ -1,63 +1,161 @@
 #!/bin/bash
 
-# Wetty Deployment Script for K8s Lab
-# Usage: ./deploy.sh
+# Wetty Web Terminal Deployment Script
+# Automated deployment for Kubernetes wetty terminals
 
 set -e
 
-echo "🚀 Deploying Wetty Web Terminal..."
+echo "🚀 Starting Wetty Web Terminal Deployment"
 
-# 1. Deploy SSH public key to all targets
-echo "📋 SSH Public Key (add to target hosts):"
-echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIByKEP2s/UBPL9/amLVJTF0pHbclzEwV5QNOBPkxIMTe wetty-service@k8s-lab"
-echo ""
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-read -p "Have you added the SSH public key to all target hosts? (y/N): " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "❌ Please add the SSH public key to target hosts first"
+# Function to print colored output
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if kubectl is available
+if ! command -v kubectl &> /dev/null; then
+    print_error "kubectl not found. Please install kubectl and configure access to your cluster."
     exit 1
 fi
 
-# 2. Copy TLS secret to wetty namespace
-echo "🔐 Creating namespace and copying TLS secret..."
-kubectl apply -f namespace.yaml
-
-# Check if secret exists in default namespace
-if kubectl get secret pindaroli-wildcard-tls >/dev/null 2>&1; then
-    kubectl get secret pindaroli-wildcard-tls -o yaml | sed 's/namespace: .*/namespace: wetty/' | kubectl apply -f -
-    echo "✅ TLS secret copied to wetty namespace"
-else
-    echo "⚠️  Warning: pindaroli-wildcard-tls secret not found in default namespace"
-    echo "   Make sure TLS certificate is available for terminal.pindaroli.org"
+# Check if we can connect to the cluster
+if ! kubectl cluster-info &> /dev/null; then
+    print_error "Cannot connect to Kubernetes cluster. Please check your kubeconfig."
+    exit 1
 fi
 
-# 3. Deploy all components
-echo "📦 Deploying Wetty components..."
+print_success "Connected to Kubernetes cluster"
+
+# Get current directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+print_status "Working directory: $SCRIPT_DIR"
+
+# Check if required files exist
+REQUIRED_FILES=(
+    "secrets.yaml"
+    "configmap.yaml"
+    "middleware.yaml"
+    "deployment.yaml"
+    "wetty-runner.yaml"
+    "wetty-opnsense.yaml"
+    "wetty-truenas.yaml"
+    "ingressroute.yaml"
+)
+
+for file in "${REQUIRED_FILES[@]}"; do
+    if [[ ! -f "$file" ]]; then
+        print_error "Required file not found: $file"
+        exit 1
+    fi
+done
+
+print_success "All required files found"
+
+# Create wetty namespace if it doesn't exist
+print_status "Creating wetty namespace..."
+if kubectl get namespace wetty &> /dev/null; then
+    print_warning "Namespace 'wetty' already exists"
+else
+    kubectl create namespace wetty
+    print_success "Created namespace 'wetty'"
+fi
+
+# Deploy SSH keys and configuration
+print_status "Deploying SSH keys and configuration..."
 kubectl apply -f secrets.yaml
 kubectl apply -f configmap.yaml
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
+print_success "SSH configuration deployed"
+
+# Deploy middleware for security headers
+print_status "Deploying Traefik middleware..."
 kubectl apply -f middleware.yaml
+print_success "Middleware deployed"
+
+# Deploy wetty services
+print_status "Deploying wetty services..."
+
+echo "  - Deploying k8s-control terminal..."
+kubectl apply -f deployment.yaml
+
+echo "  - Deploying k8s-runner-1 terminal..."
+kubectl apply -f wetty-runner.yaml
+
+echo "  - Deploying opnsense terminal..."
+kubectl apply -f wetty-opnsense.yaml
+
+echo "  - Deploying truenas terminal..."
+kubectl apply -f wetty-truenas.yaml
+
+print_success "All wetty services deployed"
+
+# Configure ingress routes
+print_status "Configuring Traefik ingress routes..."
 kubectl apply -f ingressroute.yaml
+print_success "Ingress routes configured"
 
-# 4. Wait for deployment
-echo "⏳ Waiting for deployment to be ready..."
-kubectl wait --for=condition=available --timeout=300s deployment/wetty -n wetty
+# Wait for deployments to be ready
+print_status "Waiting for deployments to be ready..."
 
-# 5. Show status
-echo "📊 Deployment Status:"
-kubectl get all -n wetty
+DEPLOYMENTS=("wetty-k8s-control" "wetty-runner" "wetty-opnsense" "wetty-truenas")
 
+for deployment in "${DEPLOYMENTS[@]}"; do
+    echo "  - Waiting for $deployment..."
+    kubectl wait --for=condition=available --timeout=300s deployment/$deployment -n wetty
+done
+
+print_success "All deployments are ready"
+
+# Check pod status
+print_status "Checking pod status..."
+kubectl get pods -n wetty
+
+# Display access URLs
 echo ""
-echo "✅ Wetty deployed successfully!"
-echo "🌐 Access: https://terminal.pindaroli.org"
-echo "🔑 Credentials: olindo / Compli61!"
+print_success "🎉 Wetty Web Terminal deployment completed successfully!"
 echo ""
-echo "📡 Target Hosts:"
-echo "   • k8s-control (default): https://terminal.pindaroli.org"
-echo "   • k8s-runner-1: https://terminal.pindaroli.org/?host=k8s-runner-1"
-echo "   • Proxmox PVE: https://terminal.pindaroli.org/?host=pve"
-echo "   • TrueNAS: https://terminal.pindaroli.org/?host=truenas"
+echo -e "${BLUE}Access URLs:${NC}"
+echo "  • Kubernetes Control: https://k8s-control.pindaroli.org"
+echo "  • Kubernetes Worker:  https://k8s-runner-1.pindaroli.org"
+echo "  • OPNsense Firewall:  https://opnsense.pindaroli.org"
+echo "  • TrueNAS Storage:     https://truenas.pindaroli.org"
 echo ""
-echo "🔍 To check logs: kubectl logs -n wetty -l app=wetty -f"
+
+echo -e "${BLUE}Authentication:${NC}"
+echo "  • k8s-control, k8s-runner-1, opnsense: SSH key (automatic)"
+echo "  • truenas: Username 'olindo' with password"
+echo ""
+
+echo -e "${BLUE}Useful Commands:${NC}"
+echo "  kubectl get pods -n wetty                    # Check pod status"
+echo "  kubectl logs -n wetty deployment/wetty-k8s-control  # View logs"
+echo "  kubectl get ingressroute -n wetty            # Check ingress routes"
+echo ""
+
+# Optional: Display resource usage
+if command -v kubectl &> /dev/null && kubectl auth can-i get pods --subresource=metrics &> /dev/null; then
+    print_status "Resource usage:"
+    kubectl top pods -n wetty 2>/dev/null || print_warning "Metrics not available (metrics-server might not be installed)"
+fi
+
+print_success "Deployment script completed"
