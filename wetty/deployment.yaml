@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wetty
+  name: wetty-k8s-control
   namespace: wetty
   labels:
-    app: wetty
+    app: wetty-k8s-control
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: wetty
+      app: wetty-k8s-control
   template:
     metadata:
       labels:
-        app: wetty
+        app: wetty-k8s-control
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
