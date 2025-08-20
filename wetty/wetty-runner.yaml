@@ -118,6 +118,7 @@ spec:
         - name: wetty-k8s-runner-1-service
           port: 80
       middlewares:
+        - name: wetty-auth
         - name: wetty-headers
   tls:
     secretName: pindaroli-wildcard-tls
