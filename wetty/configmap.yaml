@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wetty-config
+  namespace: wetty
+data:
+  ssh_config: |
+    Host k8s-control
+        HostName 192.168.1.11
+        User root
+        Port 22
+        IdentityFile /tmp/wetty_key
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+
+    Host k8s-runner-1
+        HostName 192.168.1.249
+        User root
+        Port 22
+        IdentityFile /tmp/wetty_key
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+
+    Host pve
+        HostName 192.168.1.1
+        User root
+        Port 22
+        IdentityFile /tmp/wetty_key
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+
+    Host truenas
+        HostName 192.168.1.250
+        User root
+        Port 22
+        IdentityFile /tmp/wetty_key
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+
+  wetty.js: |
+    const express = require('express');
+    const wetty = require('wetty');
+    const app = express();
+
+    // Parse query parameters for host selection
+    app.get('/', (req, res, next) => {
+      const host = req.query.host || 'k8s-control';
+      const allowedHosts = ['k8s-control', 'k8s-runner-1', 'pve', 'truenas'];
+      
+      if (!allowedHosts.includes(host)) {
+        return res.status(400).send('Invalid host specified');
+      }
+      
+      req.wettyHost = host;
+      next();
+    });
+
+    wetty(app, {
+      sshhost: 'localhost',
+      sshport: 22,
+      sshuser: 'root',
+      sshauth: 'publickey',
+      command: (req) => `ssh ${req.wettyHost}`,
+    });
+
+    app.listen(3000, () => {
+      console.log('Wetty server listening on port 3000');
+    });
