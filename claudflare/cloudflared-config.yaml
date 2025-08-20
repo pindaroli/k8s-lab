@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+  namespace: default
+data:
+  config.yaml: |
+    tunnel: eb4581bd-3011-4f40-8956-29f1ba634f39
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    
+    ingress:
+      # Route all *.pindaroli.org traffic to Traefik
+      - hostname: "*.pindaroli.org"
+        service: http://traefik.traefik.svc.cluster.local:80
+      # Catch-all rule (required as last rule)
+      - service: http_status:404
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tunnel-credentials
+  namespace: default
+type: Opaque
+data:
+  credentials.json: eyJBY2NvdW50VGFnIjoiMGYyZDVkNjFiOTIxMzQxZmRkODNkOTEyNDBmNzQwNjIiLCJUdW5uZWxTZWNyZXQiOiJNbUZtTXpBeU5tSXROV1ZrTXkwMFpqSTJMVGxrTnprdFltVmpZalZsWkdWa00yTTAiLCJUdW5uZWxJRCI6ImViNDU4MWJkLTMwMTEtNGY0MC04OTU2LTI5ZjFiYTYzNGYzOSIsIkVuZHBvaW50IjoiIn0=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      pod: cloudflared
+  template:
+    metadata:
+      labels:
+        pod: cloudflared
+    spec:
+      securityContext:
+        sysctls:
+        # Allows ICMP traffic (ping, traceroute) to resources behind cloudflared.
+          - name: net.ipv4.ping_group_range
+            value: "65532 65532"
+      containers:
+        - image: cloudflare/cloudflared:2025.8.0
+          name: cloudflared
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "50m"
+            limits:
+              memory: "200Mi"
+              cpu: "200m"
+          command:
+            - cloudflared
+            - tunnel
+            - --no-autoupdate
+            - --loglevel
+            - debug
+            - --metrics
+            - 0.0.0.0:2000
+            - --config
+            - /etc/cloudflared/config/config.yaml
+            - run
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared/config
+              readOnly: true
+            - name: creds
+              mountPath: /etc/cloudflared/creds
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 2000
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: cloudflared-config
+        - name: creds
+          secret:
+            secretName: tunnel-credentials
