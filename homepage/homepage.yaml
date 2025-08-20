@@ -292,5 +292,7 @@ spec:
       services:
         - name: homepage
           port: 3000
+      middlewares:
+        - name: oauth2-auth
   tls:
     secretName: pindaroli-wildcard-tls

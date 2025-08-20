@@ -115,7 +115,7 @@ spec:
         - name: wetty-truenas-service
           port: 80
       middlewares:
-        - name: wetty-auth
+        - name: oauth2-auth
         - name: wetty-headers
   tls:
     secretName: pindaroli-wildcard-tls
