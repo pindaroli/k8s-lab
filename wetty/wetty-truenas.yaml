@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wetty-truenas
+  namespace: wetty
+  labels:
+    app: wetty-truenas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wetty-truenas
+  template:
+    metadata:
+      labels:
+        app: wetty-truenas
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      hostAliases:
+      - ip: "192.168.1.250"
+        hostnames:
+        - "truenas"
+      containers:
+      - name: wetty
+        image: wettyoss/wetty:latest
+        ports:
+        - containerPort: 3003
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        command:
+        - sh
+        - -c
+        - |
+          cp /root/.ssh/keys/ssh-privatekey /tmp/wetty_key
+          chmod 600 /tmp/wetty_key
+          exec node . --ssh-host 192.168.1.250 --ssh-user olindo --ssh-auth publickey,password,keyboard-interactive --ssh-key /tmp/wetty_key --port 3003 --title "Terminal - TrueNAS" --base /
+        volumeMounts:
+        - name: ssh-key-rsa
+          mountPath: /root/.ssh/keys
+          readOnly: true
+        - name: ssh-config
+          mountPath: /root/.ssh/ssh_config
+          readOnly: true
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 0
+          capabilities:
+            drop:
+            - ALL
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3003
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: ssh-key-rsa
+        secret:
+          secretName: wetty-ssh-key
+          defaultMode: 0400
+      - name: ssh-config
+        configMap:
+          name: wetty-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wetty-truenas-service
+  namespace: wetty
+  labels:
+    app: wetty-truenas
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3003
+    protocol: TCP
+    name: http
+  selector:
+    app: wetty-truenas
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wetty-truenas-ingressroute
+  namespace: wetty
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`truenas.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: wetty-truenas-service
+          port: 80
+      middlewares:
+        - name: wetty-headers
+  tls:
+    secretName: pindaroli-wildcard-tls
