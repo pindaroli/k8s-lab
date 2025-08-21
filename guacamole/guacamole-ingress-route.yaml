@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: guacamole-ingress-route
+  namespace: guacamole
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`guacamole.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: guacamole-guacamole
+          port: 80
+      middlewares:
+        - name: oauth2-auth
+  tls:
+    secretName: pindaroli-wildcard-tls
