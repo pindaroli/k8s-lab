@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kasmweb
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kasmweb-secret
+  namespace: kasmweb
+type: Opaque
+data:
+  password: cGFzc3dvcmQ=  # base64 encoded "password"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kasmweb
+  namespace: kasmweb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kasmweb
+  template:
+    metadata:
+      labels:
+        app: kasmweb
+    spec:
+      containers:
+      - name: kasmweb
+        image: kasmweb/almalinux-9-desktop:1.17.0
+        ports:
+        - containerPort: 6901
+        env:
+        - name: VNC_PW
+          valueFrom:
+            secretKeyRef:
+              name: kasmweb-secret
+              key: password
+        resources:
+          requests:
+            memory: "512Mi"
+          limits:
+            memory: "1Gi"
+        volumeMounts:
+        - name: shm
+          mountPath: /dev/shm
+      volumes:
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kasmweb
+  namespace: kasmweb
+spec:
+  type: ClusterIP
+  selector:
+    app: kasmweb
+  ports:
+  - port: 6901
+    targetPort: 6901
+    protocol: TCP
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kasmweb-ingress-route
+  namespace: kasmweb
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`kasmweb.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: kasmweb
+          port: 6901
+      middlewares:
+        - name: oauth2-auth
+  tls:
+    secretName: pindaroli-wildcard-tls
