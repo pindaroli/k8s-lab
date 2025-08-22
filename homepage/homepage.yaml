@@ -154,7 +154,7 @@ data:
         - Kasmweb:
             href: https://kasmweb.pindaroli.org
             description: Goto Jumphost
-            icon: kasm.png       
+            icon:  mdi-monitor-dashboard      
   widgets.yaml: |
     - kubernetes:
         cluster:
