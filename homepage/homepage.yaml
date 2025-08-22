@@ -150,24 +150,11 @@ data:
         #     description: Request management for Jellyfin
         #     icon: jellyseerr.png
     
-    - "SSH Consoles":
-        - K8s Control:
-            href: https://k8s-control.pindaroli.org
-            description: Kubernetes control plane terminal
-            icon: kubernetes.png
-        - K8s Worker:
-            href: https://k8s-runner-1.pindaroli.org
-            description: Kubernetes worker node terminal
-            icon: kubernetes.png
-        - OPNsense:
-            href: https://opnsense.pindaroli.org
-            description: Firewall/Router web terminal
-            icon: opnsense.png
-        - TrueNAS:
-            href: https://truenas.pindaroli.org
-            description: Storage system web terminal
-            icon: truenas.png
-       
+    - "Remote Access":
+        - Kasmweb:
+            href: https://kasmweb.pindaroli.org
+            description: Goto Jumphost
+            icon: kasm.png       
   widgets.yaml: |
     - kubernetes:
         cluster:

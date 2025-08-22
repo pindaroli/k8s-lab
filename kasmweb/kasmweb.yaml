@@ -3,6 +3,14 @@ kind: Namespace
 metadata:
   name: kasmweb
 ---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: skip-verify
+  namespace: kasmweb
+spec:
+  insecureSkipVerify: true
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -80,6 +88,8 @@ spec:
       services:
         - name: kasmweb
           port: 6901
+          scheme: https
+          serversTransport: skip-verify
       middlewares:
         - name: oauth2-auth
   tls:
