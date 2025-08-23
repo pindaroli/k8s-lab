@@ -33,7 +33,7 @@ spec:
           port: 8686
       middlewares:
         - name: oauth2-auth
-      tls:
+  tls:
     secretName: pindaroli-wildcard-tls
 ---
 apiVersion: traefik.io/v1alpha1
@@ -52,7 +52,7 @@ spec:
           port: 9696
       middlewares:
         - name: oauth2-auth
-      tls:
+  tls:
     secretName: pindaroli-wildcard-tls
 ---
 apiVersion: traefik.io/v1alpha1
@@ -99,7 +99,7 @@ spec:
           port: 8787
       middlewares:
         - name: oauth2-auth
-      tls:
+  tls:
     secretName: pindaroli-wildcard-tls
 ---
 apiVersion: traefik.io/v1alpha1
@@ -118,7 +118,7 @@ spec:
           port: 8989
       middlewares:
         - name: oauth2-auth
-      tls:
+  tls:
     secretName: pindaroli-wildcard-tls
 ---
 apiVersion: traefik.io/v1alpha1
@@ -137,7 +137,7 @@ spec:
           port: 7878
       middlewares:
         - name: oauth2-auth
-      tls:
+  tls:
     secretName: pindaroli-wildcard-tls
 ---
 apiVersion: traefik.io/v1alpha1
@@ -156,7 +156,7 @@ spec:
           port: 6767
       middlewares:
         - name: oauth2-auth
-      tls:
+  tls:
     secretName: pindaroli-wildcard-tls
 ---
 apiVersion: traefik.io/v1alpha1
@@ -175,7 +175,7 @@ spec:
           port: 5055
       middlewares:
         - name: oauth2-auth
-      tls:
+  tls:
     secretName: pindaroli-wildcard-tls
 ---
 apiVersion: v1

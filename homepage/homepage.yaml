@@ -127,6 +127,10 @@ data:
             href: https://opnsense.pindaroli.org
             description: OPNsense firewall
             icon: opnsense.png
+        - Proxmox:
+            href: https://pve.pindaroli.org
+            description: Proxmox server
+            icon: proxmox.png
     
     - "Arr Services":
         # - Sonarr:
@@ -375,6 +379,47 @@ spec:
     services:
     - name: opnsense-external
       port: 443
+      scheme: https
+      serversTransport: skip-verify
+    middlewares:
+    - name: oauth2-auth
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+# Proxmox su 192.168.1.10:8006
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxmox-external
+spec:
+  ports:
+  - port: 8006
+    targetPort: 8006
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: proxmox-external
+subsets:
+- addresses:
+  - ip: "192.168.1.10"
+  ports:
+  - port: 8006
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxmox-route
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`pve.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: proxmox-external
+      port: 8006
       scheme: https
       serversTransport: skip-verify
     middlewares:
