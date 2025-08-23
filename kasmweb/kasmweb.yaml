@@ -37,7 +37,8 @@ spec:
     spec:
       containers:
       - name: kasmweb
-        image: kasmweb/almalinux-9-desktop:1.17.0
+        #image: kasmweb/almalinux-9-desktop:1.17.0
+        image:  olindo/almalinux-9-oli-desktop:latest
         ports:
         - containerPort: 6901
         env:
