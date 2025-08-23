@@ -11,3 +11,5 @@ spec:
   dnsNames:
   - "*.pindaroli.org"
   - "pindaroli.org"
+  privateKey:
+    rotationPolicy: Always
