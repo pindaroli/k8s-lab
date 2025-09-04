@@ -1,0 +1,32 @@
+image:
+  repository: lscr.io/linuxserver/calibre
+  tag: 8.9.0
+
+persistence:
+  config:
+    enabled: true
+    storageClass: csi-nfs-stripe-arr-conf
+    size: 1Gi
+  media:
+    enabled: true
+    existingClaim: calibre-media
+    mountPath: /media/books
+    subPath: books
+
+devices:
+  - /dev/dri:/dev/dri
+
+env:
+  PUID: 1000
+  PGID: 1000
+  TZ: Europe/Rome
+  LC_ALL: it_IT.UTF-8
+  QTWEBENGINE_DISABLE_SANDBOX: 1
+  QTWEBENGINE_CHROMIUM_FLAGS: "--no-sandbox --disable-dev-shm-usage"
+  
+
+service:
+  main:
+    ports:
+      http:
+        port: 8080

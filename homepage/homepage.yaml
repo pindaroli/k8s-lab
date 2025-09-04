@@ -141,14 +141,14 @@ data:
             href: https://radarr.pindaroli.org
             description: Movie management
             icon: radarr.png
+        - Calibre-web:
+            href: https://calibre-web.pindaroli.org
+            description: Web-based ebook library management
+            icon: calibre-web.png
         - Lidarr:
             href: https://lidarr.pindaroli.org
             description: Music management
             icon: lidarr.png
-        - Readarr:
-            href: https://readarr.pindaroli.org
-            description: Book management
-            icon: readarr.png
         - Prowlarr:
             href: https://prowlarr.pindaroli.org
             description: Indexer management

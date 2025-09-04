@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-calibre-media
+spec:
+  capacity:
+    storage: 15000Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-csi
+  volumeMode: Filesystem
+  csi:
+    driver: nfs.csi.k8s.io
+    volumeHandle: pv-calibre-media
+    volumeAttributes:
+      server: 192.168.1.250
+      share: /mnt/oliraid/arrdata/media
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: calibre
+  name: calibre-media
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 14000Gi
+  volumeName: pv-calibre-media
+  storageClassName: nfs-csi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-calibre-config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-csi
+  volumeMode: Filesystem
+  csi:
+    driver: nfs.csi.k8s.io
+    volumeHandle: pv-calibre-config
+    volumeAttributes:
+      server: 192.168.1.250
+      share: /mnt/stripe/k8s-arr/calibre-config
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: calibre
+  name: calibre-config
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: pv-calibre-config
+  storageClassName: nfs-csi

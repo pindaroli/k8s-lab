@@ -1,0 +1,24 @@
+image:
+  repository: lscr.io/linuxserver/calibre-web
+  tag: latest
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: calibre-config
+  books:
+    enabled: true
+    existingClaim: calibre-media
+    mountPath: /books
+    subPath: books
+
+env:
+  PUID: 1000
+  PGID: 1000
+  TZ: Europe/Rome
+
+service:
+  main:
+    ports:
+      http:
+        port: 8083
