@@ -1,0 +1,8 @@
+Middleware Name    | Namespace    | Manifest File
+-------------------|--------------|------------------------------------------
+dashboard-auth     | traefik      | traefik/traefik-values.yaml
+oauth2-auth        | oauth2-proxy | oauth2-proxy/oauth2-proxy-complete.yaml
+oauth2-errors      | oauth2-proxy | oauth2-proxy/oauth2-proxy-complete.yaml
+redirect-to-https  | oauth2-proxy | traefik/all-arr-ingress-routes.yaml
+redirect-to-https  | traefik      | cert-manager/redirect-to-https-middleware.yaml
+replace-path       | arr          | traefik/all-arr-ingress-routes.yaml

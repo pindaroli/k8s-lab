@@ -9,9 +9,11 @@ data:
     credentials-file: /etc/cloudflared/creds/credentials.json
     
     ingress:
-      # Route all *.pindaroli.org traffic to Traefik
+      # Route all *.pindaroli.org traffic to Traefik via MetalLB
       - hostname: "*.pindaroli.org"
-        service: http://traefik.traefik.svc.cluster.local:80
+        service: https://192.168.1.3:443
+        originRequest:
+          noTLSVerify: true
       # Catch-all rule (required as last rule)
       - service: http_status:404
 ---

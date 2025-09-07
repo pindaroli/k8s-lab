@@ -293,6 +293,7 @@ spec:
           port: 3000
       middlewares:
         - name: oauth2-auth
+          namespace: oauth2-proxy
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -334,6 +335,7 @@ spec:
       serversTransport: skip-verify
     middlewares:
     - name: oauth2-auth
+      namespace: oauth2-proxy
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -383,6 +385,7 @@ spec:
       serversTransport: skip-verify
     middlewares:
     - name: oauth2-auth
+      namespace: oauth2-proxy
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -424,5 +427,6 @@ spec:
       serversTransport: skip-verify
     middlewares:
     - name: oauth2-auth
+      namespace: oauth2-proxy
   tls:
     secretName: pindaroli-wildcard-tls
