@@ -1,54 +1,132 @@
 ## Kubernetes Cluster Setup
 
-- I use microk8s to implement my 2 node cluster
-- my control-plane is k8s-control
-- k8s-control is a proxmox vm with id 1500
-- my runner is k8s-runner-1
-- prompt running system is macOs
-- jellyfin-ingressroute.yaml is the traefik ingressRoute for jellyfin
-- in my subnet local domain is "local"
-- my external internet domain provided by cloudflare provider is "pindaroli.org"
-- gh is installed and you cas use it if needed
-- servar helmcart code is in ../helm/servarr us for analysis
-- for helm installation of servarr use kubitodev/servarr repository
-- router address proxmox.local
-- net gateway 192.168.1.1
-- MetalLB is configured in metallb namespace for LoadBalancer services
-- MetalLB configuration files are in ./metallb/ directory
-- MetalLB uses Helm chart: metallb/metallb installed in metallb namespace
-- MetalLB IP pool configured for 192.168.1.3-192.168.1.13 range with L2Advertisement
-- to access cluster can use kubectl
-- Claude has automatic permission to run readonly kubectl commands (get, describe, logs, etc.) without asking
+- 2-node microk8s cluster implementation
+- Control plane: k8s-control (Proxmox VM ID 1500)
+- Worker node: k8s-runner-1
+- Management system: macOS
+- Local domain: .local
+- External domain: pindaroli.org (Cloudflare managed)
+- Network gateway: 192.168.1.1
+- Router address: proxmox.local
+- kubectl access available
+- Claude has automatic permission for readonly kubectl commands (get, describe, logs, etc.)
+- GitHub CLI (gh) available for repository operations
 
 ## SSH Access
 
-- To ssh access k8s-control use root@k8s-control
+- Control plane SSH: root@k8s-control
+- Direct microk8s management on control plane node
+
+## Load Balancing & Ingress
+
+### MetalLB
+- Namespace: metallb
+- Configuration files: ./metallb/ directory
+- Helm chart: metallb/metallb
+- IP pool: 192.168.1.3-192.168.1.13 (L2Advertisement)
+
+### Traefik
+- Ingress controller with SSL/TLS termination
+- Configuration files: ./traefik/ directory
+- Main ingress routes: traefik/all-arr-ingress-routes.yaml
+- RBAC configuration: traefik/traefik-rbac.yaml
+- Custom values: traefik/traefik-values.yaml
+
+## Certificate Management
+
+- cert-manager for automated Let's Encrypt certificates
+- Cloudflare DNS challenge provider
+- Wildcard certificate: pindaroli-wildcard-tls
+- Configuration files: ./cert-manager/ directory
+- Cluster issuer and certificate definitions included
+
+## Authentication & Security
+
+### OAuth2 Proxy
+- Namespace: oauth2-proxy
+- Google OAuth provider integration
+- Authorized email: o.pindaro@gmail.com
+- Cookie domain: .pindaroli.org
+- Authentication URL: https://auth.pindaroli.org
+- Configuration files: ./oauth2-proxy/ directory
+- All external services protected via oauth2-auth middleware
 
 ## Homepage Dashboard
 
-- Homepage deployed in default namespace with complete Kubernetes manifests
+- Namespace: default
 - Access URL: https://home.pindaroli.org
-- Consolidated deployment file: homepage/homepage.yaml contains all resources
-- Services configured: Traefik, Jellyfin, qBittorrent, and all *arr services
-- Widgets enabled: Kubernetes cluster info, resource monitoring, search functionality
-- Note: Kubernetes Dashboard has been completely uninstalled
+- Consolidated deployment: homepage/homepage.yaml
+- Services configured: Traefik, Jellyfin, qBittorrent, all *arr services
+- Widgets: Kubernetes cluster info, resource monitoring, search
+- Note: Kubernetes Dashboard completely uninstalled
 
-## Servarr Services
+## Media Stack (Servarr)
 
-- All servarr services deployed in arr namespace via Helm (kubitodev/servarr)
-- External access configured via Traefik IngressRoutes in all-arr-ingress-routes.yaml
-- Services with external URLs:
-  - jellyfin.pindaroli.org (media server)
-  - qbittorrent.pindaroli.org (torrent client)
-  - sonarr.pindaroli.org (TV series management)
-  - radarr.pindaroli.org (movie management)
-  - lidarr.pindaroli.org (music management)
-  - readarr.pindaroli.org (book management)
-  - prowlarr.pindaroli.org (indexer management)
-  - bazarr.pindaroli.org (subtitle management)
-  - jellyseerr.pindaroli.org (request management)
-  - flaresolverr.pindaroli.org (CloudFlare solver)
+### Deployment
+- Namespace: arr
+- Helm chart: kubitodev/servarr (remote) or ../helm/servarr (local development)
+- Configuration files: ./servarr/ directory
+- Values file: servarr/arr-values.yaml
+- CSI volumes: servarr/arr-volumes-csi.yaml
+
+### Services & External Access
+All services protected by OAuth2 authentication:
+- jellyfin.pindaroli.org - Media server
+- qbittorrent.pindaroli.org - Torrent client
+- sonarr.pindaroli.org - TV series management
+- radarr.pindaroli.org - Movie management
+- lidarr.pindaroli.org - Music management
+- readarr.pindaroli.org - Book management
+- prowlarr.pindaroli.org - Indexer management
+- bazarr.pindaroli.org - Subtitle management
+- jellyseerr.pindaroli.org - Request management
+- flaresolverr.pindaroli.org - CloudFlare solver
+
+### Special Configurations
+- qBittorrent BitTorrent port LoadBalancer: servarr/qbittorrent-bittorrent-loadbalancer.yaml
+- Port forwarding documentation: servarr/opnsense-port-forward-config.md
+
+## Additional Services
+
+### Calibre
+- E-book management system
+- Configuration files: ./calibre/ directory
+- CSI volumes: calibre/calibre-volumes-csi.yaml
+- Ingress route: calibre/calibre-web-ingress-route.yaml
+
+### Cloudflare Tunnel
+- Zero Trust network access
+- Configuration files: ./cloudflare/ directory
+- Deployment: cloudflare/cloudflared-deployment.yaml
+
+### KasmWeb
+- Web-based desktop environment
+- Configuration files: ./kasmweb/ directory
+
+## Storage
+
+- NFS CSI driver for dynamic provisioning
+- CSI configuration files in ./CSI-driver/ directory
+- Persistent volumes backed by NFS storage
+- Volume definitions throughout service configurations
+
+## Development Tools & Utilities
+
+### Scripts
+- megasetup.sh - Comprehensive cluster setup
+- terminating-k8s-objects.sh - Cleanup utility
+- uninstall-csi-nfs.sh - NFS CSI removal
+- download_plugins.sh/py - Plugin management
+- pul.sh - Quick operations
+
+### Documentation
+- cert.md - Certificate management guide
+- troubleshooting.md - Common issues and solutions
+- README files in individual service directories
 
 ## Personal Information
 
-- my email is o.pindaro@gmail.com
+- Email: o.pindaro@gmail.com
+- Domain: pindaroli.org (Cloudflare managed)
+- Network: 192.168.1.0/24
+- Infrastructure: Proxmox virtualization platform

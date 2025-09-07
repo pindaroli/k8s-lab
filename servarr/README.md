@@ -14,7 +14,7 @@ helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
 
 2. Create storage volumes:
 ```bash
-kubectl apply -f arr-volumes-csi.yaml
+kubectl apply -f arr-volumes-csi.yaml 
 ```
 
 ## Installation
