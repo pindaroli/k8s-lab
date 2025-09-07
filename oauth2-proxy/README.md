@@ -14,32 +14,61 @@ User Request → Traefik → ForwardAuth (OAuth2-Proxy) → Service
               Google OAuth2 → Redirect back to original URL
 ```
 
-## Components
+## Quick Deployment
 
-### 1. Namespace (`namespace.yaml`)
+**Recommended approach** - Use the consolidated manifest:
+
+```bash
+# 1. Create secrets first (not in version control)
+kubectl create secret generic oauth2-proxy \
+  --from-literal=client-id="YOUR_GOOGLE_CLIENT_ID" \
+  --from-literal=client-secret="YOUR_GOOGLE_CLIENT_SECRET" \
+  --from-literal=cookie-secret="$(openssl rand -base64 32)" \
+  -n oauth2-proxy
+
+# 2. Deploy everything else
+kubectl apply -f oauth2-proxy-complete.yaml
+```
+
+## Components in oauth2-proxy-complete.yaml
+
+The consolidated manifest contains all resources except secrets:
+
+### 1. Namespace
 - Creates dedicated `oauth2-proxy` namespace
 
-### 2. Secrets (`secrets.yaml`)
-- `client-id`: Google OAuth2 Client ID (base64 encoded)
-- `client-secret`: Google OAuth2 Client Secret (base64 encoded)
-- `cookie-secret`: Random secret for cookie encryption (base64 encoded)
-- `allowed-emails`: ConfigMap with allowed email addresses
+### 2. ConfigMap (allowed-emails)
+- Email whitelist configuration
+- Currently allows: `o.pindaro@gmail.com`
 
-### 3. Deployment (`deployment.yaml`)
+### 3. Deployment & Service
 - OAuth2-Proxy v7.6.0 container
 - Google provider configuration
 - Cookie settings optimized for cross-browser compatibility
-- Email restriction to `o.pindaro@gmail.com`
+- ClusterIP service on port 4180
+- Resource limits and health checks
 
-### 4. Middleware (`middleware.yaml`, `middleware-default.yaml`)
-- Traefik ForwardAuth middleware in each namespace
-- Points to OAuth2-Proxy service endpoint `/` (not `/oauth2/auth`)
-- Cross-namespace middleware definitions for `default`, `arr`, and `wetty`
+### 4. IngressRoutes
+- **HTTPS**: Exposes OAuth2-Proxy at `auth.pindaroli.org`
+- **HTTP Redirect**: Automatic redirect to HTTPS
+- Uses wildcard TLS certificate
 
-### 5. IngressRoute (`ingressroute.yaml`)
-- Exposes OAuth2-Proxy at `auth.pindaroli.org`
-- HTTPS with wildcard certificate
-- HTTP to HTTPS redirect
+### 5. Middlewares (Multi-namespace)
+- **oauth2-proxy namespace**: Primary ForwardAuth middleware
+- **default namespace**: For homepage and core services  
+- **arr namespace**: For Servarr stack with error handling
+- **wetty namespace**: For terminal services with error handling
+
+## Alternative Deployment (Individual Files)
+
+For advanced customization, individual manifests are available:
+
+- `namespace.yaml` - Kubernetes namespace
+- `secrets.yaml` - OAuth2 credentials ⚠️ **Contains sensitive data**
+- `deployment.yaml` - OAuth2-Proxy deployment and service  
+- `middleware.yaml` - ForwardAuth middleware (oauth2-proxy namespace)
+- `middleware-default.yaml` - ForwardAuth middleware (other namespaces)
+- `ingressroute.yaml` - External access routes
 
 ## Configuration Details
 
@@ -56,13 +85,13 @@ User Request → Traefik → ForwardAuth (OAuth2-Proxy) → Service
 - **Trust Forward Header**: Enabled
 - **Auth Response Headers**: User, Email, Name, UID
 
-## Deployment
+## Legacy Deployment (Individual Files)
 
-Deploy in order:
+If using individual files instead of the consolidated manifest:
 
 ```bash
 kubectl apply -f namespace.yaml
-kubectl apply -f secrets.yaml
+kubectl apply -f secrets.yaml  # ⚠️ Contains sensitive OAuth2 credentials
 kubectl apply -f deployment.yaml
 kubectl apply -f middleware.yaml
 kubectl apply -f middleware-default.yaml
@@ -133,14 +162,18 @@ curl -I https://auth.pindaroli.org/oauth2/auth
 
 ```
 oauth2-proxy/
-├── README.md                 # This documentation
-├── namespace.yaml           # Kubernetes namespace
-├── secrets.yaml             # OAuth2 credentials and config
-├── deployment.yaml          # OAuth2-Proxy deployment and service
-├── middleware.yaml          # ForwardAuth middleware (oauth2-proxy ns)
-├── middleware-default.yaml  # ForwardAuth middleware (other namespaces)
-└── ingressroute.yaml       # External access route
+├── README.md                    # This documentation
+├── oauth2-proxy-complete.yaml   # 🌟 Consolidated deployment (recommended)
+├── secrets.yaml                 # ⚠️ OAuth2 credentials (sensitive data)
+├── namespace.yaml               # Individual: Kubernetes namespace
+├── deployment.yaml              # Individual: OAuth2-Proxy deployment and service
+├── middleware.yaml              # Individual: ForwardAuth middleware (oauth2-proxy ns)
+├── middleware-default.yaml      # Individual: ForwardAuth middleware (other namespaces)
+└── ingressroute.yaml           # Individual: External access route
 ```
+
+**Recommended:** Use `oauth2-proxy-complete.yaml` for new deployments
+**Legacy:** Individual files available for advanced customization
 
 ## Related Services
 
