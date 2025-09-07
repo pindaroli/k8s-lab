@@ -1,242 +1,201 @@
-# Traefik Ingress Controller Setup
+# Traefik Ingress Controller
 
-⚠️ **IMPORTANT**: This setup requires RBAC to be enabled in your microk8s cluster. Traefik will not function properly without proper RBAC permissions.
+**Current Status**: ✅ **Deployed and Operational** with OAuth2 authentication
+
+This directory contains Traefik ingress controller configuration for the microk8s cluster, providing HTTPS termination, load balancing, and secure external access to all services via `*.pindaroli.org` domains.
+
+## Overview
+
+### Working Components
+- **Traefik v3.x** - Modern ingress controller with dynamic configuration
+- **Let's Encrypt Integration** - Automated SSL certificates via Cloudflare DNS
+- **OAuth2-Proxy Authentication** - Google OAuth2 protection for all services
+- **MetalLB LoadBalancer** - External IP assignment for Traefik service
+- **Wildcard TLS Certificate** - Single cert for all `*.pindaroli.org` subdomains
+
+### Protected Services
+All services require Google OAuth2 authentication (o.pindaro@gmail.com):
+- `home.pindaroli.org` - Homepage dashboard
+- `jellyfin.pindaroli.org` - Media server
+- `qbittorrent.pindaroli.org` - Torrent client
+- `sonarr.pindaroli.org`, `radarr.pindaroli.org`, etc. - Media management stack
 
 ## Prerequisites
 
-### 1. Configure microk8s cluster with RBAC
+- **Working microk8s cluster** (2-node setup with RBAC enabled)
+- **MetalLB LoadBalancer** (IP pool: 192.168.1.3-192.168.1.13)  
+- **cert-manager** (for Let's Encrypt SSL certificates)
+- **Cloudflare DNS management** (pindaroli.org domain)
 
-**Enable RBAC in microk8s** (if not already enabled):
+## Quick Deployment
 
-```bash
-# Enable RBAC addon
-microk8s enable rbac
+The Traefik setup is already deployed and operational. For reference, here's the streamlined installation process:
 
-# Verify RBAC is enabled
-microk8s kubectl auth can-i create clusterroles --as=system:serviceaccount:kube-system:default
-```
-
-**Configure kubectl access**:
+### 1. Deploy Core Components
 
 ```bash
-# Export kubeconfig for easier kubectl usage
-microk8s config > ~/.kube/config
+# Deploy cert-manager (if not already installed)
+kubectl apply -f ../cert-manager/
 
-# Or create an alias (recommended)
-alias kubectl='microk8s kubectl'
-```
-
-**Configure essential cluster RBAC** (required for core services):
-
-```bash
-# 1. Fix CoreDNS RBAC (DNS resolution)
-kubectl create clusterrole system:coredns \
-  --verb=get,list,watch \
-  --resource=endpoints,services,pods,namespaces
-
-kubectl create clusterrolebinding system:coredns \
-  --clusterrole=system:coredns \
-  --serviceaccount=kube-system:coredns
-
-# Add EndpointSlices permission
-kubectl patch clusterrole system:coredns --type='json' -p='[{"op": "add", "path": "/rules/-", "value": {"apiGroups": ["discovery.k8s.io"], "resources": ["endpointslices"], "verbs": ["list", "watch"]}}]'
-
-# Restart CoreDNS
-kubectl rollout restart deployment/coredns -n kube-system
-
-# 2. Fix Metrics-Server RBAC (resource monitoring)
-cat > metrics-server-rbac.yaml << 'EOF'
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: system:metrics-server
-rules:
-- apiGroups: [""]
-  resources: ["pods", "nodes", "nodes/stats", "namespaces", "configmaps"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["extensions"]
-  resources: ["deployments"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["apps"]
-  resources: ["deployments", "replicasets"]
-  verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: system:metrics-server
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: system:metrics-server
-subjects:
-- kind: ServiceAccount
-  name: metrics-server
-  namespace: kube-system
-EOF
-
-kubectl apply -f metrics-server-rbac.yaml
-kubectl rollout restart deployment/metrics-server -n kube-system
-
-# 3. Fix Calico RBAC (if using Calico networking)
-curl -O https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
-kubectl apply -f calico.yaml
-
-# Clean up temporary files
-rm metrics-server-rbac.yaml calico.yaml
-
-# Verify all core services are running
-kubectl get pods -n kube-system | grep -E "(coredns|metrics-server|calico)"
-```
-
-### 2. Other requirements
-
-1. **Kubernetes cluster** running (microk8s with RBAC enabled)
-2. **Helm** installed and configured
-3. **kubectl** configured to access the cluster
-4. **Cloudflare account** with API token (for Let's Encrypt)
-
-## Step 1: Install cert-manager (Required for SSL certificates)
-
-```bash
-# Add Helm repository
-helm repo add jetstack https://charts.jetstack.io
-helm repo update
-
-# Install cert-manager
-helm install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --set installCRDs=true
-```
-
-## Step 2: Configure Let's Encrypt with Cloudflare
-
-### Create Cloudflare API token secret
-
-```bash
-kubectl create secret generic cloudflare-api-token-secret \
-  --from-literal=api-token=<your-cloudflare-api-token> \
-  --namespace cert-manager
-```
-
-### Create ClusterIssuer for Let's Encrypt
-
-```bash
-cat <<EOF | kubectl apply -f -
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-cloudflare
-spec:
-  acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
-    email: o.pindaro@gmail.com
-    privateKeySecretRef:
-      name: letsencrypt-cloudflare
-    solvers:
-    - dns01:
-        cloudflare:
-          apiTokenSecretRef:
-            name: cloudflare-api-token-secret
-            key: api-token
-EOF
-```
-
-## Step 3: Install Traefik with Helm
-
-```bash
-# Add Traefik Helm repository
-helm repo add traefik https://traefik.github.io/charts
-helm repo update
-
-# Install Traefik
+# Deploy Traefik with custom values
 helm install traefik traefik/traefik \
   --namespace traefik \
   --create-namespace \
-  -f traefik-values.yaml \
-  --wait
-```
+  -f traefik-values.yaml
 
-## Step 4: Configure RBAC Permissions
-
-**IMPORTANT**: Traefik needs proper permissions to access IngressRoutes, Services, and Secrets.
-
-```bash
+# Apply RBAC permissions
 kubectl apply -f traefik-rbac.yaml
 ```
 
-## Step 5: Create SSL Certificate
-
-### Generate pindaroli.org wildcard certificate
+### 2. Deploy Application Routes
 
 ```bash
-cat <<EOF | kubectl apply -f -
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: pindaroli-wildcard
-  namespace: traefik
-spec:
-  secretName: pindaroli-wildcard-tls
-  issuerRef:
-    name: letsencrypt-cloudflare
-    kind: ClusterIssuer
-  dnsNames:
-  - "*.pindaroli.org"
-  - "pindaroli.org"
-EOF
-```
-
-### Verify certificate creation
-
-```bash
-# Check certificate status
-kubectl get certificate -n traefik
-
-# Check secret creation
-kubectl get secret pindaroli-wildcard-tls -n traefik
-```
-
-## Step 6: Deploy Application IngressRoutes
-
-```bash
+# Deploy all Servarr application ingress routes
 kubectl apply -f all-arr-ingress-routes.yaml
 ```
+
+## OAuth2-Proxy Integration
+
+All external services are protected with Google OAuth2 authentication via oauth2-proxy middleware.
+
+### Authentication Flow
+1. **User accesses** `https://service.pindaroli.org`
+2. **Traefik applies** `oauth2-auth` middleware
+3. **OAuth2-Proxy checks** authentication status
+4. **If not authenticated**: Redirect to Google OAuth2
+5. **If authenticated**: Forward request to backend service
+
+### Middleware Configuration
+
+Each IngressRoute uses the `oauth2-auth` middleware:
+
+```yaml
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: service-route
+  namespace: arr
+spec:
+  routes:
+  - match: Host(`service.pindaroli.org`)
+    services:
+    - name: service
+      port: 8080
+    middlewares:
+    - name: oauth2-auth  # OAuth2 authentication
+  tls:
+    secretName: pindaroli-wildcard-tls
+```
+
+### Bypass Authentication (if needed)
+
+To disable OAuth2 for a specific service, remove the middleware:
+
+```yaml
+# Remove this line to disable authentication
+middlewares:
+- name: oauth2-auth
+```
+
+## Current Deployment Status
+
+### Verify Working Components
+
+```bash
+# Check Traefik deployment
+kubectl get pods -n traefik
+kubectl get svc -n traefik
+
+# Check external IP assignment (MetalLB)
+kubectl get svc traefik -n traefik -o wide
+
+# Check SSL certificates
+kubectl get certificates -A
+kubectl get secrets -A | grep tls
+
+# Test external access
+curl -I https://home.pindaroli.org
+```
+
+### Key Configuration Files
+
+- `traefik-values.yaml` - Helm chart customization
+- `traefik-rbac.yaml` - RBAC permissions for Traefik
+- `all-arr-ingress-routes.yaml` - External service routes
+- `past-tests/coredns-rbac-fix.yaml` - Historical fix (not needed)
 
 ## Maintenance
 
 ### Upgrade Traefik
 
 ```bash
+# Update Helm repositories
+helm repo update
+
+# Upgrade Traefik installation
 helm upgrade traefik traefik/traefik \
   --namespace traefik \
   -f traefik-values.yaml \
   --wait
 ```
 
-### Alternative: Self-signed certificate for local development
+### Update Application Routes
 
 ```bash
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout tls.key -out tls.crt \
-  -subj "/CN=*.local"
-
-kubectl create secret tls local-selfsigned-tls \
-  --cert=tls.crt --key=tls.key \
-  --namespace traefik 
+# Reapply ingress routes after service changes
+kubectl apply -f all-arr-ingress-routes.yaml
 ```
 
 ## Troubleshooting
 
-### Check RBAC permissions
-If IngressRoutes return 404, check Traefik logs for RBAC errors:
+### Common Issues
 
+**Service returns 404**:
 ```bash
-kubectl logs -n traefik -l app.kubernetes.io/name=traefik --tail=50 | grep -E "forbidden|error"
+# Check IngressRoute configuration
+kubectl get ingressroute -A
+kubectl describe ingressroute <name> -n <namespace>
+
+# Check Traefik logs
+kubectl logs -n traefik -l app.kubernetes.io/name=traefik --tail=50
 ```
 
-### Restart Traefik after RBAC changes
+**SSL certificate issues**:
 ```bash
+# Check cert-manager status
+kubectl get certificates -A
+kubectl describe certificate <name> -n <namespace>
+
+# Check certificate challenges
+kubectl get challenges -A
+```
+
+**OAuth2 authentication failing**:
+```bash
+# Check oauth2-proxy status
+kubectl get pods -n oauth2-proxy
+kubectl logs -n oauth2-proxy -l app=oauth2-proxy
+
+# Verify middleware exists in target namespace
+kubectl get middleware oauth2-auth -n <namespace>
+```
+
+**MetalLB LoadBalancer pending**:
+```bash
+# Check MetalLB speaker pods
+kubectl get pods -n metallb-system
+kubectl logs -n metallb-system -l component=speaker
+```
+
+### Restart Components
+
+```bash
+# Restart Traefik
 kubectl rollout restart deployment/traefik -n traefik
+
+# Restart OAuth2-Proxy
+kubectl rollout restart deployment/oauth2-proxy -n oauth2-proxy
+
+# Restart MetalLB speakers
+kubectl rollout restart daemonset/metallb-speaker -n metallb-system
 ```

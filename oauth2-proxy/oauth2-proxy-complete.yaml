@@ -158,7 +158,7 @@ spec:
           port: 4180
       middlewares:
         - name: redirect-to-https
-          namespace: traefik
+          namespace: oauth2-proxy
 ---
 # OAuth2 middleware for oauth2-proxy namespace
 apiVersion: traefik.io/v1alpha1
@@ -176,50 +176,17 @@ spec:
       - X-Auth-Uid
     trustForwardHeader: true
 ---
-# OAuth2 middleware for default namespace
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: oauth2-auth
-  namespace: default
-spec:
-  forwardAuth:
-    address: http://oauth2-proxy.oauth2-proxy.svc.cluster.local:4180/
-    authResponseHeaders:
-      - X-Auth-User
-      - X-Auth-Email
-      - X-Auth-Name
-      - X-Auth-Uid
-    trustForwardHeader: true
----
-# OAuth2 middleware for arr namespace
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: oauth2-auth
-  namespace: arr
-spec:
-  forwardAuth:
-    address: http://oauth2-proxy.oauth2-proxy.svc.cluster.local:4180/
-    authResponseHeaders:
-      - X-Auth-User
-      - X-Auth-Email
-      - X-Auth-Name
-      - X-Auth-Uid
-    trustForwardHeader: true
----
-# Error handling middleware for arr namespace
+# Error handling middleware for oauth2-proxy namespace
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: oauth2-errors
-  namespace: arr
+  namespace: oauth2-proxy
 spec:
   errors:
     status:
       - "401-403"
     service:
       name: oauth2-proxy
-      namespace: oauth2-proxy
       port: 4180
     query: "/oauth2/start?rd={url}"

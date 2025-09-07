@@ -32,6 +32,7 @@ ingressRoute:
       - websecure
     middlewares:
       - name: dashboard-auth
+        namespace: traefik
 
 # Creates a BasiAuth Middleware and Secret for the Dashboard Security
 extraObjects:
@@ -63,6 +64,9 @@ providers:
      allowEmptyServices: true
   kubernetesGateway:
      enabled: true
+  kubernetesCRD:
+     enabled: true
+     allowCrossNamespace: true
 
 ## Gateway Listeners
 gateway:
