@@ -57,7 +57,6 @@ The consolidated manifest contains all resources except secrets:
 - **oauth2-proxy namespace**: Primary ForwardAuth middleware
 - **default namespace**: For homepage and core services  
 - **arr namespace**: For Servarr stack with error handling
-- **wetty namespace**: For terminal services with error handling
 
 ## Alternative Deployment (Individual Files)
 
@@ -180,6 +179,5 @@ oauth2-proxy/
 This OAuth2 setup protects:
 - **Homepage**: `home.pindaroli.org`
 - **Servarr Stack**: `jellyfin.pindaroli.org`, `sonarr.pindaroli.org`, etc.
-- **Wetty Terminals**: `k8s-control.pindaroli.org`, `truenas.pindaroli.org`, etc.
 
 All services automatically redirect unauthenticated users to Google OAuth2 login.
