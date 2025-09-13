@@ -34,7 +34,8 @@ ingressRoute:
       - name: dashboard-auth
         namespace: traefik
 
-# Creates a BasiAuth Middleware and Secret for the Dashboard Security
+# Creates a BasicAuth Middleware and Secret for the Dashboard Security
+# and all other middlewares used across the cluster
 extraObjects:
   - apiVersion: v1
     kind: Secret
@@ -51,6 +52,46 @@ extraObjects:
     spec:
       basicAuth:
         secret: dashboard-auth-secret
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: replace-path
+    spec:
+      replacePath:
+        path: /
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: oauth2-auth
+    spec:
+      forwardAuth:
+        address: http://oauth2-proxy.oauth2-proxy.svc.cluster.local:4180/
+        authResponseHeaders:
+        - X-Auth-User
+        - X-Auth-Email
+        - X-Auth-Name
+        - X-Auth-Uid
+        trustForwardHeader: true
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: oauth2-errors
+    spec:
+      errors:
+        query: /oauth2/start?rd={url}
+        service:
+          name: oauth2-proxy
+          port: 4180
+        status:
+        - 401-403
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: redirect-to-https
+    spec:
+      redirectScheme:
+        permanent: true
+        scheme: https
 
 # We will route with Gateway API instead.
 ingressClass:
