@@ -1,13 +1,27 @@
 # MetalLB Configuration for k8s-lab
 
-MetalLB provides LoadBalancer services for bare metal Kubernetes clusters. This configuration enables Layer 2 load balancing with IP addresses from the local network range.
+MetalLB provides LoadBalancer services for bare metal Kubernetes clusters. This configuration enables Layer 2 load balancing with IP addresses from the local network range, working in conjunction with the Cloudflare tunnel hybrid architecture.
 
 ## Architecture
 
 - **IP Pool**: `192.168.1.3-192.168.1.13` (11 available IPs)
 - **Mode**: Layer 2 (ARP-based)
 - **Network**: Local subnet `192.168.1.0/24`
-- **Cluster**: microk8s 2-node cluster
+- **Cluster**: microk8s 2-node cluster (k8s-control, k8s-runner-1)
+
+## Hybrid Traffic Flow Integration
+
+MetalLB works alongside Cloudflare tunnel in a hybrid architecture:
+
+```
+Internet Traffic:   Internet → Cloudflare → Tunnel → Traefik Service (Cluster IP) → Applications
+Local LAN Traffic:  LAN → MetalLB (192.168.1.3) → Traefik LoadBalancer → Applications
+```
+
+This design ensures:
+- **No MetalLB bypass**: Internet traffic still uses Traefik infrastructure
+- **Local access**: Direct LAN connectivity via MetalLB external IP
+- **Redundant paths**: Both internet and local access work independently
 
 ## Files
 
@@ -100,3 +114,43 @@ Current LoadBalancer services:
 - Traefik: `192.168.1.3` (ports 80/443)
 
 IP allocation is automatic from the configured pool (`192.168.1.3-192.168.1.13`).
+
+## Recent Fixes (September 2025)
+
+### Inter-node Firewall Resolution
+- **Issue**: UFW blocking cross-node pod communication
+- **Fix**: Updated UFW `DEFAULT_FORWARD_POLICY` from DROP to ACCEPT on k8s-control
+- **Impact**: Enabled pod communication between k8s-control and k8s-runner-1 nodes
+
+### ARP Responder Permissions
+- **Issue**: "bind: permission denied" errors preventing IP advertisement
+- **Fix**: Applied privileged security context via `metallb-speaker-security.yaml`
+- **Result**: Successful Layer 2 advertisement and external IP assignment
+
+### Hybrid Architecture Implementation
+- **Achievement**: Preserved MetalLB role while enabling Cloudflare tunnel
+- **Design**: Cloudflare tunnel routes to cluster IP, MetalLB serves LAN traffic
+- **Benefit**: No bypass issues, redundant connectivity paths
+
+## Testing & Verification
+
+### External Access Test
+```bash
+# Test MetalLB external IP connectivity
+curl -k -I https://192.168.1.3
+# Expected: HTTP 404 from Traefik (confirms connectivity)
+```
+
+### Service Status Check
+```bash
+# Check LoadBalancer service external IP assignment
+kubectl get svc traefik -n traefik
+# Expected: EXTERNAL-IP shows 192.168.1.3
+```
+
+### Inter-node Communication Test
+```bash
+# Verify cross-node pod communication works
+kubectl get pods -o wide -A | grep -E "(k8s-control|k8s-runner-1)"
+# All pods should be Running without network issues
+```
