@@ -293,7 +293,7 @@ spec:
           port: 3000
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -335,17 +335,9 @@ spec:
       serversTransport: skip-verify
     middlewares:
     - name: oauth2-auth
-      namespace: oauth2-proxy
+      namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
----
-apiVersion: traefik.io/v1alpha1
-kind: ServersTransport
-metadata:
-  name: skip-verify
-  namespace: default
-spec:
-  insecureSkipVerify: true
 ---
 # OPNsense su 192.168.1.1:443
 apiVersion: v1
@@ -385,7 +377,7 @@ spec:
       serversTransport: skip-verify
     middlewares:
     - name: oauth2-auth
-      namespace: oauth2-proxy
+      namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -427,6 +419,6 @@ spec:
       serversTransport: skip-verify
     middlewares:
     - name: oauth2-auth
-      namespace: oauth2-proxy
+      namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls

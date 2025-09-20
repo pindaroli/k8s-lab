@@ -1,0 +1,19 @@
+# MetalLB Helm values with enhanced security context for ARP responder operations
+# Use with: helm install metallb metallb/metallb -n metallb-system -f values.yaml
+
+speaker:
+  # Note: The Helm chart doesn't support container-level security context via values
+  # Apply metallb-speaker-security.yaml after Helm installation to fix ARP permissions
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
+controller:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    fsGroup: 65534

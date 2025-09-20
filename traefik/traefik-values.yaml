@@ -80,7 +80,7 @@ extraObjects:
       errors:
         query: /oauth2/start?rd={url}
         service:
-          name: oauth2-proxy
+          name: oauth2-proxy.oauth2-proxy.svc.cluster.local
           port: 4180
         status:
         - 401-403

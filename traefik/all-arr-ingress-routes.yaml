@@ -14,7 +14,7 @@ spec:
       port: 8096
     middlewares:
     - name: oauth2-auth
-      namespace: oauth2-proxy
+      namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -34,7 +34,7 @@ spec:
           port: 8686
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -54,7 +54,7 @@ spec:
           port: 9696
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -74,7 +74,7 @@ spec:
       port: 8080
     middlewares:
     - name: oauth2-auth
-      namespace: oauth2-proxy
+      namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -94,7 +94,7 @@ spec:
           port: 8787
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -114,7 +114,7 @@ spec:
           port: 8989
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -134,7 +134,7 @@ spec:
           port: 7878
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -154,7 +154,7 @@ spec:
           port: 6767
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -174,9 +174,19 @@ spec:
           port: 5055
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-https
+  namespace: traefik
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
 ---
 apiVersion: v1
 kind: Service

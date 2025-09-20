@@ -14,6 +14,6 @@ spec:
           port: 8083
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
