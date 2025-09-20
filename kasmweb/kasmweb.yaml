@@ -93,6 +93,6 @@ spec:
           serversTransport: skip-verify
       middlewares:
         - name: oauth2-auth
-          namespace: oauth2-proxy
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls

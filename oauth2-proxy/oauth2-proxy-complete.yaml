@@ -158,4 +158,4 @@ spec:
           port: 4180
       middlewares:
         - name: redirect-to-https
-          namespace: oauth2-proxy
+          namespace: traefik
