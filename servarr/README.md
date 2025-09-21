@@ -30,3 +30,20 @@ helm install servarr /Users/olindo/prj/helm/charts/servarr -n arr --create-names
 - **Get values**: `helm get values servarr -n arr`
 - **Upgrade**: `helm upgrade servarr /Users/olindo/prj/helm/charts/servarr -n arr -f arr-values.yaml`
 - **Uninstall**: `helm uninstall servarr -n arr`
+
+## Node Affinity Configuration
+
+### Jellyfin Pod Placement
+- **Primary**: Runs on `k8s-control` node
+- **Failover**: Moves to `k8s-runner-1` only if `k8s-control` is down
+- **Configuration**: Node affinity rules in `arr-values.yaml`
+
+#### Behavior
+- Normal operation: Jellyfin on k8s-control
+- Node failure: Automatic failover to k8s-runner-1 (300s grace period)
+- Recovery: Manual pod restart needed to return to k8s-control
+
+#### Check Status
+```bash
+kubectl get pods -n arr -o wide | grep jellyfin
+```
