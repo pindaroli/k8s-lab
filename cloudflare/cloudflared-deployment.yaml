@@ -65,6 +65,9 @@ spec:
       containers:
         - image: cloudflare/cloudflared:2025.8.0
           name: cloudflared
+          env:
+            - name: GODEBUG
+              value: "netdns=cgo"
           resources:
             requests:
               memory: "100Mi"

@@ -1,0 +1,132 @@
+# Descheduler Helm Chart Values
+# Purpose: Automatically rebalance pods across cluster nodes based on resource utilization
+#
+# Installation:
+#   helm repo add descheduler https://kubernetes-sigs.github.io/descheduler/
+#   helm repo update
+#   helm install descheduler descheduler/descheduler -n kube-system -f descheduler-values.yaml
+#
+# Upgrade:
+#   helm upgrade descheduler descheduler/descheduler -n kube-system -f descheduler-values.yaml
+
+# Run every 15 minutes (cron format)
+schedule: "*/15 * * * *"
+
+# Kubernetes version compatibility
+# Use this for Kubernetes 1.26+
+kind: Deployment
+
+# Resource limits for descheduler itself
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# Descheduler policy configuration
+deschedulerPolicy:
+  # Core safety settings
+  #
+  # ignorePvcPods: false allows eviction of pods with NFS-backed PVCs (safe to move)
+  # evictLocalStoragePods: false prevents eviction of pods with emptyDir/hostPath (NOT safe)
+  # evictSystemCriticalPods: false protects system pods (kube-system, etc.)
+  ignorePvcPods: false
+  evictLocalStoragePods: false
+  evictSystemCriticalPods: false
+  evictFailedBarePods: true
+
+  # Maximum number of pods to evict per node per run (safety limit)
+  maxNoOfPodsToEvictPerNode: 3
+
+  strategies:
+    # PRIMARY STRATEGY: Balance nodes based on resource utilization
+    #
+    # This strategy monitors memory usage across nodes and evicts pods from
+    # overutilized nodes, allowing the scheduler to place them on underutilized nodes.
+    #
+    # Behavior:
+    #   - If k8s-control has >65% memory AND k8s-runner-1 has <65% memory
+    #   - Evict pods from k8s-control until both nodes are balanced around 80%
+    #   - Respects resource requests when calculating utilization
+    LowNodeUtilization:
+      enabled: true
+      params:
+        nodeResourceUtilizationThresholds:
+          # Thresholds for considering a node "underutilized"
+          # If a node is below these thresholds, it can receive more pods
+          thresholds:
+            cpu: 50
+            memory: 65
+            pods: 50
+
+          # Target thresholds for balancing
+          # Descheduler will move pods until all nodes are around these values
+          targetThresholds:
+            cpu: 70
+            memory: 80
+            pods: 70
+
+          # Minimum number of nodes required for this strategy to run
+          numberOfNodes: 2
+
+        # Namespace exclusions
+        # Pods in these namespaces will NEVER be evicted
+        namespaces:
+          exclude:
+            - kube-system
+            - metallb-system
+            - cert-manager
+
+    # STRATEGY 2: Remove pods violating node affinity rules
+    #
+    # Useful when node labels change and pods need to be rescheduled
+    RemovePodsViolatingNodeAffinity:
+      enabled: true
+      params:
+        nodeAffinityType:
+          - requiredDuringSchedulingIgnoredDuringExecution
+
+    # STRATEGY 3: Remove pods violating inter-pod anti-affinity
+    #
+    # Ensures pods that should be on different nodes are properly spread
+    RemovePodsViolatingInterPodAntiAffinity:
+      enabled: true
+
+    # STRATEGY 4: Remove duplicate pods on the same node
+    #
+    # If multiple replicas of the same deployment are on one node, spread them
+    RemoveDuplicates:
+      enabled: false  # Disabled by default, enable if you have replica sets
+      params:
+        excludeOwnerKinds:
+          - ReplicaSet
+
+    # STRATEGY 5: Remove pods with too many restarts
+    #
+    # Crashlooping pods get evicted to try scheduling on different nodes
+    RemovePodsHavingTooManyRestarts:
+      enabled: true
+      params:
+        podsHavingTooManyRestarts:
+          podRestartThreshold: 10
+          includingInitContainers: true
+
+# Service account and RBAC
+serviceAccount:
+  create: true
+  name: descheduler
+
+# Pod labels for monitoring/identification
+podLabels:
+  app: descheduler
+
+# Node selector (run descheduler on control plane if needed)
+nodeSelector: {}
+
+# Tolerations (allow running on nodes with taints)
+tolerations: []
+
+# Affinity rules for descheduler pod placement
+affinity: {}

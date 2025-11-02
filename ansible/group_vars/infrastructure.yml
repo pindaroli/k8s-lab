@@ -1,0 +1,53 @@
+---
+# Variables for infrastructure hosts (Proxmox, TrueNAS, OPNsense)
+
+# Proxmox configuration
+proxmox:
+  web_interface_port: 8006
+  vms:
+    k8s_control:
+      vmid: 1500
+      name: k8s-control
+      autostart: true
+      memory: 4096
+      cores: 2
+    k8s_runner_1:
+      vmid: 1100
+      name: k8s-runner-1
+      autostart: true
+      memory: 8192
+      cores: 4
+
+# TrueNAS configuration
+truenas:
+  web_interface_port: 443
+  nfs:
+    enabled: true
+    exports:
+      - /mnt/pool1/k8s-volumes
+      - /mnt/pool1/servarr
+      - /mnt/pool1/calibre
+
+# OPNsense configuration
+opnsense:
+  web_interface_port: 443
+  services:
+    upnp:
+      enabled: true
+      allowed_networks:
+        - 192.168.1.0/24
+    dhcp:
+      enabled: true
+      range_start: 192.168.1.100
+      range_end: 192.168.1.200
+    dns:
+      enabled: true
+      forwarders:
+        - 1.1.1.1
+        - 8.8.8.8
+
+# Backup configuration
+backup:
+  enabled: true
+  retention_days: 30
+  destination: /mnt/pool1/backups

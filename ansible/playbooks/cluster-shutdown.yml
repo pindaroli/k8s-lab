@@ -1,0 +1,120 @@
+---
+# Playbook to gracefully shutdown the Kubernetes cluster
+# Equivalent to cluster-shutdown.sh script
+- name: Graceful Kubernetes Cluster Shutdown
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Display shutdown banner
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   Kubernetes Cluster Graceful Shutdown Sequence           ║"
+          - "║   This will safely stop all cluster nodes                 ║"
+          - "╚════════════════════════════════════════════════════════════╝"
+
+- name: Stop descheduler before shutdown
+  hosts: k8s_control
+  gather_facts: no
+  tasks:
+    - name: Check if descheduler is installed
+      command: microk8s kubectl get deployment descheduler -n kube-system
+      register: descheduler_exists
+      changed_when: false
+      failed_when: false
+
+    - name: Scale down descheduler deployment to 0 replicas
+      command: microk8s kubectl scale deployment descheduler -n kube-system --replicas=0
+      register: scale_result
+      when: descheduler_exists.rc == 0
+      changed_when: true
+
+    - name: Wait for descheduler pod to terminate
+      command: microk8s kubectl wait --for=delete pod -l app.kubernetes.io/name=descheduler -n kube-system --timeout=60s
+      when: descheduler_exists.rc == 0
+      changed_when: false
+      failed_when: false
+
+    - name: Display descheduler stop status
+      debug:
+        msg: "Descheduler stopped (scaled to 0) to prevent interference during shutdown"
+      when: descheduler_exists.rc == 0
+
+    - name: Display descheduler not found
+      debug:
+        msg: "Descheduler not installed - skipping stop"
+      when: descheduler_exists.rc != 0
+
+- name: Drain worker node k8s-runner-1
+  hosts: k8s_control
+  gather_facts: no
+  tasks:
+    - name: Drain k8s-runner-1 node
+      command: microk8s kubectl drain k8s-runner-1 --ignore-daemonsets --delete-emptydir-data --force
+      register: drain_result
+      changed_when: true
+
+    - name: Display drain result
+      debug:
+        msg: "Worker node k8s-runner-1 drained successfully"
+
+    - name: Wait for pods to be evicted
+      pause:
+        seconds: 30
+        prompt: "Waiting for pods to migrate to control plane..."
+
+- name: Shutdown k8s-runner-1 VM
+  hosts: proxmox
+  gather_facts: no
+  tasks:
+    - name: Shutdown k8s-runner-1 VM (ID 1100)
+      command: qm shutdown 1100 --timeout 120
+      register: shutdown_worker
+      changed_when: true
+
+    - name: Wait for VM to stop
+      pause:
+        seconds: 10
+
+    - name: Verify k8s-runner-1 is stopped
+      command: qm status 1100
+      register: vm_status
+      changed_when: false
+
+    - name: Display VM status
+      debug:
+        var: vm_status.stdout
+
+- name: Shutdown k8s-control VM
+  hosts: proxmox
+  gather_facts: no
+  tasks:
+    - name: Shutdown k8s-control VM (ID 1500)
+      command: qm shutdown 1500 --timeout 120
+      register: shutdown_control
+      changed_when: true
+
+    - name: Wait for VM to stop
+      pause:
+        seconds: 10
+
+    - name: Verify k8s-control is stopped
+      command: qm status 1500
+      register: vm_status
+      changed_when: false
+
+    - name: Display VM status
+      debug:
+        var: vm_status.stdout
+
+- name: Display completion message
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Shutdown complete
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   Cluster Shutdown Complete                                ║"
+          - "║   All nodes have been safely stopped                       ║"
+          - "╚════════════════════════════════════════════════════════════╝"

@@ -22,6 +22,8 @@ jellyfin:
     requests:
       cpu: 2000m
       memory: 2Gi
+    limits:
+      memory: 4Gi
   extraVolumeMounts:
     - name: media
       mountPath: /media/foto
@@ -50,6 +52,12 @@ qbittorrent:
     # Subnet bypass for OAuth2 proxy integration
     WEBUI_BYPASS_AUTH_SUBNET_WHITELIST_ENABLED: "true"
     WEBUI_AUTH_SUBNET_WHITELIST: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 8Gi  # Current usage is 12GB, requesting 8GB baseline
+    limits:
+      memory: 16Gi  # Allow burst to 16GB
   service:
     bt:
       type: ClusterIP
@@ -68,6 +76,12 @@ prowlarr:
     PUID: "1000"
     PGID: "1000"
     TZ: Europe/Rome
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   persistence:
     createInitContainer: false
     storageClass: csi-nfs-stripe-arr-conf
@@ -97,6 +111,12 @@ radarr:
     PUID: "1000"
     PGID: "1000"
     TZ: Europe/Rome
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   persistence:
     createInitContainer: false
     storageClass: csi-nfs-stripe-arr-conf
@@ -121,6 +141,12 @@ lidarr:
     PUID: "1000"
     PGID: "1000"
     TZ: Europe/Rome
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   persistence:
     createInitContainer: false
     storageClass: csi-nfs-stripe-arr-conf

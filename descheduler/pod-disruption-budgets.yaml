@@ -1,0 +1,134 @@
+# Pod Disruption Budgets (PDB)
+# Purpose: Protect critical services from excessive disruption during descheduler evictions
+#
+# PDBs ensure that a minimum number of pods remain available during voluntary
+# disruptions (like descheduler evictions, node drains, or rolling updates).
+#
+# Apply with: kubectl apply -f pod-disruption-budgets.yaml
+
+---
+# Servarr Stack PDB
+# Ensures at least one arr service is always available during evictions
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: servarr-pdb
+  namespace: arr
+spec:
+  # Allow maximum 2 pods to be unavailable at the same time
+  # This prevents the descheduler from taking down all services at once
+  maxUnavailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: servarr
+
+---
+# Jellyfin PDB
+# Jellyfin is resource-intensive and should not be disrupted frequently
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: jellyfin-pdb
+  namespace: arr
+spec:
+  # Always keep at least 1 Jellyfin pod running
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: jellyfin
+      app.kubernetes.io/instance: servarr
+
+---
+# qBittorrent PDB
+# qBittorrent handles active downloads and should not be interrupted
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: qbittorrent-pdb
+  namespace: arr
+spec:
+  # Always keep at least 1 qBittorrent pod running
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: qbittorrent
+      app.kubernetes.io/instance: servarr
+
+---
+# OAuth2 Proxy PDB
+# Authentication service should always be available
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: oauth2-proxy-pdb
+  namespace: oauth2-proxy
+spec:
+  # Always keep at least 1 OAuth2 proxy pod running
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: oauth2-proxy
+
+---
+# Traefik PDB
+# Ingress controller should maintain availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: traefik-pdb
+  namespace: traefik
+spec:
+  # Allow at most 1 Traefik pod to be unavailable
+  # Since you have 2 replicas, this ensures at least 1 is always running
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: traefik
+
+---
+# n8n PDB
+# Workflow automation should not be interrupted during active workflows
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: n8n-pdb
+  namespace: default
+spec:
+  # Always keep n8n running (single replica)
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: n8n
+
+---
+# Homepage PDB
+# Dashboard should remain accessible
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: homepage-pdb
+  namespace: default
+spec:
+  # At least one homepage instance should be available
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: homepage
+
+---
+# OPTIONAL: Strict PDB for critical single-replica services
+#
+# Uncomment this section if you want to COMPLETELY PREVENT eviction of n8n
+# Warning: This may prevent descheduler from rebalancing effectively
+#
+# apiVersion: policy/v1
+# kind: PodDisruptionBudget
+# metadata:
+#   name: n8n-strict-pdb
+#   namespace: default
+# spec:
+#   minAvailable: 1
+#   maxUnavailable: 0  # NO pods can be evicted
+#   selector:
+#     matchLabels:
+#       app.kubernetes.io/name: n8n
