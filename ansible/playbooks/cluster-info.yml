@@ -1,0 +1,60 @@
+---
+# Playbook to gather information from all hosts
+- name: Gather cluster information
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Display system information
+      debug:
+        msg:
+          - "Hostname: {{ inventory_hostname }}"
+          - "IP Address: {{ ansible_host }}"
+          - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Kernel: {{ ansible_kernel }}"
+          - "Memory: {{ ansible_memtotal_mb }} MB"
+          - "CPU Cores: {{ ansible_processor_vcpus }}"
+          - "Architecture: {{ ansible_architecture }}"
+
+    - name: Check disk usage
+      shell: df -h | grep -v tmpfs
+      register: disk_usage
+      changed_when: false
+
+    - name: Display disk usage
+      debug:
+        var: disk_usage.stdout_lines
+
+- name: Check Kubernetes nodes status
+  hosts: k8s_control
+  gather_facts: no
+  tasks:
+    - name: Get microk8s status
+      command: microk8s status
+      register: k8s_status
+      changed_when: false
+
+    - name: Display microk8s status
+      debug:
+        var: k8s_status.stdout_lines
+
+    - name: Get node information
+      command: microk8s kubectl get nodes -o wide
+      register: k8s_nodes
+      changed_when: false
+
+    - name: Display nodes
+      debug:
+        var: k8s_nodes.stdout_lines
+
+- name: Check Proxmox VMs status
+  hosts: proxmox
+  gather_facts: no
+  tasks:
+    - name: List all VMs
+      command: qm list
+      register: vm_list
+      changed_when: false
+
+    - name: Display VM list
+      debug:
+        var: vm_list.stdout_lines

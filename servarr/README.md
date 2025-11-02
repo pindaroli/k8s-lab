@@ -28,7 +28,7 @@ helm install servarr /Users/olindo/prj/helm/charts/servarr -n arr --create-names
 
 - **List releases**: `helm list -n arr`
 - **Get values**: `helm get values servarr -n arr`
-- **Upgrade**: `helm upgrade servarr /Users/olindo/prj/helm/charts/servarr -n arr -f arr-values.yaml`
+- **Upgrade**: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`
 - **Uninstall**: `helm uninstall servarr -n arr`
 
 ## Node Affinity Configuration

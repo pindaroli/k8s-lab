@@ -1,0 +1,207 @@
+---
+# Playbook to deploy n8n workflow automation tool
+# Uses Helm chart from 8gears registry
+- name: Deploy n8n Workflow Automation
+  hosts: localhost
+  gather_facts: no
+  become: no
+  vars:
+    n8n_namespace: default
+    n8n_chart_oci: oci://8gears.container-registry.com/library/n8n
+    n8n_chart_version: "1.0.15"
+    n8n_release_name: n8n
+    n8n_manifests_dir: "{{ playbook_dir }}/../../n8n"
+    k8s_control_host: k8s-control
+
+  tasks:
+    - name: Display deployment banner
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   n8n Workflow Automation Deployment                      ║"
+          - "║   Deploying to k8s-lab cluster                            ║"
+          - "╚════════════════════════════════════════════════════════════╝"
+
+    - name: Verify n8n manifest files exist
+      stat:
+        path: "{{ item }}"
+      loop:
+        - "{{ n8n_manifests_dir }}/n8n-values.yaml"
+        - "{{ n8n_manifests_dir }}/n8n-pvc.yaml"
+        - "{{ n8n_manifests_dir }}/n8n-ingress-route.yaml"
+      register: manifest_check
+      failed_when: not manifest_check.stat.exists
+
+    - name: Display configuration summary
+      debug:
+        msg:
+          - "Configuration:"
+          - "  Namespace: {{ n8n_namespace }}"
+          - "  Chart: {{ n8n_chart_oci }}"
+          - "  Chart Version: {{ n8n_chart_version }}"
+          - "  Release Name: {{ n8n_release_name }}"
+          - "  Domain: https://n8n.pindaroli.org"
+          - "  Storage Class: csi-nfs-stripe-arr-conf"
+          - "  Persistence: 5Gi"
+
+- name: Execute deployment on k8s-control
+  hosts: k8s_control
+  gather_facts: no
+  vars:
+    n8n_namespace: default
+    n8n_chart_oci: oci://8gears.container-registry.com/library/n8n
+    n8n_chart_version: "1.0.15"
+    n8n_release_name: n8n
+    n8n_manifests_dir: /tmp/n8n-deploy
+
+  tasks:
+    - name: Create temporary deployment directory
+      file:
+        path: "{{ n8n_manifests_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy n8n manifest files to k8s-control
+      copy:
+        src: "{{ item }}"
+        dest: "{{ n8n_manifests_dir }}/"
+        mode: '0644'
+      loop:
+        - "{{ playbook_dir }}/../../n8n/n8n-values.yaml"
+        - "{{ playbook_dir }}/../../n8n/n8n-pvc.yaml"
+        - "{{ playbook_dir }}/../../n8n/n8n-ingress-route.yaml"
+
+
+    - name: Check if n8n namespace exists
+      command: microk8s kubectl get namespace {{ n8n_namespace }}
+      register: namespace_check
+      changed_when: false
+      failed_when: false
+
+    - name: Create n8n namespace if needed
+      command: microk8s kubectl create namespace {{ n8n_namespace }}
+      when: namespace_check.rc != 0
+      changed_when: true
+
+    - name: Apply PersistentVolumeClaim
+      command: microk8s kubectl apply -f {{ n8n_manifests_dir }}/n8n-pvc.yaml -n {{ n8n_namespace }}
+      register: pvc_apply
+      changed_when: "'created' in pvc_apply.stdout or 'configured' in pvc_apply.stdout"
+
+    - name: Wait for PVC to be bound
+      shell: |
+        timeout=60
+        interval=5
+        elapsed=0
+        while [ $elapsed -lt $timeout ]; do
+          status=$(microk8s kubectl get pvc n8n-data -n {{ n8n_namespace }} -o jsonpath='{.status.phase}' 2>/dev/null || echo "NotFound")
+          if [ "$status" = "Bound" ]; then
+            echo "PVC is bound"
+            exit 0
+          fi
+          echo "Waiting for PVC to be bound... ($elapsed/$timeout seconds)"
+          sleep $interval
+          elapsed=$((elapsed + interval))
+        done
+        echo "Timeout waiting for PVC"
+        exit 1
+      register: pvc_wait
+      changed_when: false
+
+    - name: Check if n8n release already exists
+      shell: microk8s helm list -n {{ n8n_namespace }} | grep -q {{ n8n_release_name }} || echo "not_found"
+      register: release_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install n8n Helm chart
+      command: >
+        microk8s helm install {{ n8n_release_name }} {{ n8n_chart_oci }}
+        --version {{ n8n_chart_version }}
+        -n {{ n8n_namespace }}
+        -f {{ n8n_manifests_dir }}/n8n-values.yaml
+      when: "'not_found' in release_check.stdout"
+      register: helm_install
+      changed_when: true
+
+    - name: Upgrade n8n Helm chart if already exists
+      command: >
+        microk8s helm upgrade {{ n8n_release_name }} {{ n8n_chart_oci }}
+        --version {{ n8n_chart_version }}
+        -n {{ n8n_namespace }}
+        -f {{ n8n_manifests_dir }}/n8n-values.yaml
+      when: "'not_found' not in release_check.stdout"
+      register: helm_upgrade
+      changed_when: true
+
+    - name: Wait for n8n pod to be ready
+      shell: |
+        timeout=300
+        interval=10
+        elapsed=0
+        while [ $elapsed -lt $timeout ]; do
+          ready=$(microk8s kubectl get pods -n {{ n8n_namespace }} -l app.kubernetes.io/name=n8n -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "False")
+          if [ "$ready" = "True" ]; then
+            echo "n8n pod is ready"
+            exit 0
+          fi
+          echo "Waiting for n8n pod to be ready... ($elapsed/$timeout seconds)"
+          sleep $interval
+          elapsed=$((elapsed + interval))
+        done
+        echo "Timeout waiting for n8n pod"
+        exit 1
+      register: pod_wait
+      changed_when: false
+
+    - name: Apply Traefik IngressRoute
+      command: microk8s kubectl apply -f {{ n8n_manifests_dir }}/n8n-ingress-route.yaml -n {{ n8n_namespace }}
+      register: ingress_apply
+      changed_when: "'created' in ingress_apply.stdout or 'configured' in ingress_apply.stdout"
+
+    - name: Get n8n deployment status
+      command: microk8s kubectl get pods -n {{ n8n_namespace }} -l app.kubernetes.io/name=n8n -o wide
+      register: pod_status
+      changed_when: false
+
+    - name: Display pod status
+      debug:
+        var: pod_status.stdout_lines
+
+    - name: Get n8n service details
+      command: microk8s kubectl get svc -n {{ n8n_namespace }} -l app.kubernetes.io/name=n8n
+      register: svc_status
+      changed_when: false
+
+    - name: Display service status
+      debug:
+        var: svc_status.stdout_lines
+
+    - name: Get IngressRoute status
+      command: microk8s kubectl get ingressroute n8n-ingress -n {{ n8n_namespace }} -o wide
+      register: ingress_status
+      changed_when: false
+      failed_when: false
+
+    - name: Display IngressRoute status
+      debug:
+        var: ingress_status.stdout_lines
+      when: ingress_status.rc == 0
+
+    - name: Cleanup temporary deployment directory
+      file:
+        path: "{{ n8n_manifests_dir }}"
+        state: absent
+
+- name: Display completion message
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Deployment complete
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   n8n Deployment Complete                                 ║"
+          - "║   Access at: https://n8n.pindaroli.org                    ║"
+          - "║   Authentication: OAuth2 (o.pindaro@gmail.com)            ║"
+          - "╚════════════════════════════════════════════════════════════╝"

@@ -188,6 +188,157 @@ spec:
     scheme: https
     permanent: true
 ---
+# Basic Authentication Middleware for Local Access
+apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-auth-secret
+  namespace: traefik
+type: Opaque
+data:
+  # Generated with: htpasswd -nb admin 'Compli61!'
+  # Username: admin, Password: Compli61!
+  users: YWRtaW46JGFwcjEkWGpMSDBKL2Qkb1cvSnEzc1daOW5GU1E3VEpJV2ZCLw==
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: basic-auth
+  namespace: traefik
+spec:
+  basicAuth:
+    secret: basic-auth-secret
+    removeHeader: true
+# LOCAL DOMAIN INGRESS ROUTES WITH BASIC AUTH
+# These duplicate all services for *.local access with basic authentication
+
+---
+# Jellyfin Local Access
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jellyfin-local
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`jellyfin.local`)
+    kind: Rule
+    services:
+    - name: servarr-jellyfin
+      port: 8096
+    middlewares:
+    - name: basic-auth
+      namespace: traefik
+  tls:
+    secretName: local-wildcard-tls
+---
+# qBittorrent Local Access
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: qbittorrent-local
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`qbittorrent.local`)
+    kind: Rule
+    services:
+    - name: servarr-qbittorrent-web
+      port: 8080
+    middlewares:
+    - name: basic-auth
+      namespace: traefik
+  tls:
+    secretName: local-wildcard-tls
+---
+# Radarr Local Access
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: radarr-local
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`radarr.local`)
+    kind: Rule
+    services:
+    - name: servarr-radarr
+      port: 7878
+    middlewares:
+    - name: basic-auth
+      namespace: traefik
+  tls:
+    secretName: local-wildcard-tls
+---
+# Lidarr Local Access
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lidarr-local
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`lidarr.local`)
+    kind: Rule
+    services:
+    - name: servarr-lidarr
+      port: 8686
+    middlewares:
+    - name: basic-auth
+      namespace: traefik
+  tls:
+    secretName: local-wildcard-tls
+---
+# Prowlarr Local Access
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prowlarr-local
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`prowlarr.local`)
+    kind: Rule
+    services:
+    - name: servarr-prowlarr
+      port: 9696
+    middlewares:
+    - name: basic-auth
+      namespace: traefik
+  tls:
+    secretName: local-wildcard-tls
+---
+# Readarr Local Access
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: readarr-local
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`readarr.local`)
+    kind: Rule
+    services:
+    - name: servarr-readarr
+      port: 8787
+    middlewares:
+    - name: basic-auth
+      namespace: traefik
+  tls:
+    secretName: local-wildcard-tls
+---
 apiVersion: v1
 kind: Service
 metadata:

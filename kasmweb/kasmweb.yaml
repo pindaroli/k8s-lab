@@ -49,9 +49,9 @@ spec:
               key: password
         resources:
           requests:
-            memory: "512Mi"
-          limits:
             memory: "1Gi"
+          limits:
+            memory: "2Gi"
         volumeMounts:
         - name: shm
           mountPath: /dev/shm

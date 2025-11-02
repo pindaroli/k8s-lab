@@ -2,12 +2,13 @@
 
 - 2-node microk8s cluster implementation
 - Control plane: k8s-control (Proxmox VM ID 1500)
-- Worker node: k8s-runner-1
+- Worker node: k8s-runner-1 (truenas vm )
 - Management system: macOS
 - Local domain: .local
 - External domain: pindaroli.org (Cloudflare managed)
 - Network gateway: 192.168.1.1
 - Router address: proxmox.local
+- truenas.local (192.168.1.250)
 - kubectl access available
 - Claude has automatic permission for readonly kubectl commands (get, describe, logs, etc.)
 - GitHub CLI (gh) available for repository operations
@@ -15,7 +16,7 @@
 ## SSH Access
 
 - Control plane SSH: root@k8s-control
-- Direct microk8s management on control plane node
+- Direct microk8s management on control-plane node
 
 ## Load Balancing & Ingress
 
@@ -64,10 +65,14 @@
 
 ### Deployment
 - Namespace: arr
-- Helm chart: kubitodev/servarr (remote) or ../helm/servarr (local development)
+- Helm chart: ../helm/charts/servarr (local development)
 - Configuration files: ./servarr/ directory
 - Values file: servarr/arr-values.yaml
 - CSI volumes: servarr/arr-volumes-csi.yaml
+- Upgrade command: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`
+
+### Resource Limits
+- Jellyfin: 2Gi request, 4Gi limit (prevents OOM kills on k8s-control node)
 
 ### Services & External Access
 All services protected by OAuth2 authentication:
@@ -130,3 +135,4 @@ All services protected by OAuth2 authentication:
 - Domain: pindaroli.org (Cloudflare managed)
 - Network: 192.168.1.0/24
 - Infrastructure: Proxmox virtualization platform
+- Upgrade command: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`

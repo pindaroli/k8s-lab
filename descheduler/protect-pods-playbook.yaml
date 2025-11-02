@@ -1,0 +1,152 @@
+---
+# Ansible Playbook: Protect pods from descheduler eviction
+#
+# Purpose: Add or remove annotations to prevent descheduler from evicting critical pods
+#
+# Usage:
+#   ansible-playbook protect-pods-playbook.yaml --tags protect
+#   ansible-playbook protect-pods-playbook.yaml --tags unprotect
+#   ansible-playbook protect-pods-playbook.yaml --tags check
+#
+# Requirements:
+#   - ansible
+#   - kubernetes.core collection (ansible-galaxy collection install kubernetes.core)
+#   - kubectl configured with cluster access
+
+- name: Manage Descheduler Pod Protection
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # List of deployments/statefulsets to protect
+    # Format: { namespace: "...", name: "...", type: "deployment|statefulset", reason: "..." }
+    protected_resources:
+      # Example: n8n workflow automation
+      # Uncomment to protect from eviction
+      # - namespace: default
+      #   name: n8n
+      #   type: deployment
+      #   reason: "Active workflow automation - interruption may cause data loss"
+
+      # Example: qBittorrent active downloads
+      # - namespace: arr
+      #   name: servarr-qbittorrent
+      #   type: deployment
+      #   reason: "Active torrent downloads - eviction causes re-checking"
+
+      # Example: Jellyfin media server
+      # - namespace: arr
+      #   name: servarr-jellyfin
+      #   type: deployment
+      #   reason: "Large memory footprint - slow restart affects users"
+
+      # Example: OAuth2 Proxy authentication
+      # - namespace: oauth2-proxy
+      #   name: oauth2-proxy
+      #   type: deployment
+      #   reason: "Critical authentication service"
+
+      # Add your own protected resources here
+      # - namespace: <namespace>
+      #   name: <deployment-name>
+      #   type: deployment
+      #   reason: "<why this should not be evicted>"
+
+  tasks:
+    - name: Check if protected_resources is empty
+      debug:
+        msg: "No resources configured for protection. Edit the playbook to add resources."
+      when: protected_resources | length == 0
+      tags: [always]
+
+    - name: Protect deployments/statefulsets from descheduler eviction
+      kubernetes.core.k8s:
+        state: patched
+        kind: "{{ item.type | capitalize }}"
+        name: "{{ item.name }}"
+        namespace: "{{ item.namespace }}"
+        definition:
+          metadata:
+            annotations:
+              descheduler.alpha.kubernetes.io/evict: "false"
+              protected-reason: "{{ item.reason }}"
+      loop: "{{ protected_resources }}"
+      when: protected_resources | length > 0
+      tags: [protect]
+      register: protect_result
+
+    - name: Display protected resources
+      debug:
+        msg: "✅ Protected {{ item.item.namespace }}/{{ item.item.name }} - {{ item.item.reason }}"
+      loop: "{{ protect_result.results }}"
+      when:
+        - protected_resources | length > 0
+        - not item.skipped | default(false)
+      tags: [protect]
+
+    - name: Remove protection from deployments/statefulsets
+      kubernetes.core.k8s:
+        state: patched
+        kind: "{{ item.type | capitalize }}"
+        name: "{{ item.name }}"
+        namespace: "{{ item.namespace }}"
+        definition:
+          metadata:
+            annotations:
+              descheduler.alpha.kubernetes.io/evict: null
+              protected-reason: null
+      loop: "{{ protected_resources }}"
+      when: protected_resources | length > 0
+      tags: [unprotect, never]
+      register: unprotect_result
+
+    - name: Display unprotected resources
+      debug:
+        msg: "🔓 Removed protection from {{ item.item.namespace }}/{{ item.item.name }}"
+      loop: "{{ unprotect_result.results }}"
+      when:
+        - protected_resources | length > 0
+        - not item.skipped | default(false)
+      tags: [unprotect]
+
+    - name: Check current protection status
+      kubernetes.core.k8s_info:
+        kind: "{{ item.type | capitalize }}"
+        name: "{{ item.name }}"
+        namespace: "{{ item.namespace }}"
+      loop: "{{ protected_resources }}"
+      when: protected_resources | length > 0
+      tags: [check, never]
+      register: check_result
+
+    - name: Display protection status
+      debug:
+        msg: >
+          {{ item.item.namespace }}/{{ item.item.name }}:
+          {% if item.resources[0].metadata.annotations['descheduler.alpha.kubernetes.io/evict'] == 'false' %}
+          🛡️  PROTECTED - {{ item.resources[0].metadata.annotations['protected-reason'] | default('No reason specified') }}
+          {% else %}
+          🔓 NOT PROTECTED
+          {% endif %}
+      loop: "{{ check_result.results }}"
+      when:
+        - protected_resources | length > 0
+        - not item.skipped | default(false)
+      tags: [check]
+
+    - name: List all protected resources in cluster (global check)
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        namespace: ""
+      register: all_deployments
+      tags: [list, never]
+
+    - name: Filter and display all protected deployments
+      debug:
+        msg: "🛡️  {{ item.metadata.namespace }}/{{ item.metadata.name }} - {{ item.metadata.annotations['protected-reason'] | default('No reason') }}"
+      loop: "{{ all_deployments.resources }}"
+      when:
+        - item.metadata.annotations is defined
+        - item.metadata.annotations['descheduler.alpha.kubernetes.io/evict'] is defined
+        - item.metadata.annotations['descheduler.alpha.kubernetes.io/evict'] == 'false'
+      tags: [list]

@@ -1,0 +1,253 @@
+---
+# Playbook to install and configure Kubernetes Descheduler
+#
+# This playbook:
+# - Installs descheduler via Helm with custom configuration
+# - Applies Pod Disruption Budgets for critical services
+# - Verifies installation and displays status
+#
+# Usage:
+#   ansible-playbook playbooks/install-descheduler.yml -i inventory.yml
+#
+# Requirements:
+#   - Helm must be installed on k8s-control node
+#   - kubectl access configured
+#   - Cluster must be running
+
+- name: Install Kubernetes Descheduler
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Display installation banner
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   Kubernetes Descheduler Installation                     ║"
+          - "║   Automatic pod rebalancing across cluster nodes          ║"
+          - "╚════════════════════════════════════════════════════════════╝"
+
+- name: Pre-installation checks
+  hosts: k8s_control
+  gather_facts: no
+  tasks:
+    - name: Check if descheduler is already installed
+      command: microk8s kubectl get cronjob descheduler -n kube-system
+      register: descheduler_exists
+      changed_when: false
+      failed_when: false
+
+    - name: Display warning if already installed
+      debug:
+        msg: "⚠️  Descheduler is already installed. This will upgrade it."
+      when: descheduler_exists.rc == 0
+
+    - name: Check cluster node status
+      command: microk8s kubectl get nodes -o wide
+      register: node_status
+      changed_when: false
+
+    - name: Display node status
+      debug:
+        msg:
+          - "Current cluster nodes:"
+          - "{{ node_status.stdout_lines }}"
+
+    - name: Check current pod distribution
+      shell: |
+        echo "Pods per node:"
+        microk8s kubectl get pods -A -o wide --no-headers | awk '{print $8}' | sort | uniq -c
+      register: pod_distribution
+      changed_when: false
+
+    - name: Display current pod distribution
+      debug:
+        var: pod_distribution.stdout_lines
+
+    - name: Check node resource usage
+      command: microk8s kubectl top nodes
+      register: node_resources
+      changed_when: false
+      failed_when: false
+
+    - name: Display node resource usage
+      debug:
+        var: node_resources.stdout_lines
+      when: node_resources.rc == 0
+
+- name: Install descheduler via Helm
+  hosts: k8s_control
+  gather_facts: no
+  vars:
+    descheduler_values_path: "/tmp/descheduler-values.yaml"
+  tasks:
+    - name: Copy descheduler values file to control plane
+      copy:
+        src: "../../descheduler/descheduler-values.yaml"
+        dest: "{{ descheduler_values_path }}"
+        mode: '0644'
+
+    - name: Add descheduler Helm repository
+      command: microk8s helm repo add descheduler https://kubernetes-sigs.github.io/descheduler/
+      register: helm_repo_add
+      changed_when: "'already exists' not in helm_repo_add.stderr"
+      failed_when: false
+
+    - name: Update Helm repositories
+      command: microk8s helm repo update
+      changed_when: true
+
+    - name: Install/Upgrade descheduler
+      command: >
+        microk8s helm upgrade --install descheduler descheduler/descheduler
+        --namespace kube-system
+        --values {{ descheduler_values_path }}
+        --wait
+      register: helm_install
+      changed_when: true
+
+    - name: Display Helm installation result
+      debug:
+        var: helm_install.stdout_lines
+
+    - name: Wait for descheduler deployment to be created
+      command: microk8s kubectl get deployment descheduler -n kube-system
+      register: deployment_check
+      retries: 10
+      delay: 5
+      until: deployment_check.rc == 0
+      changed_when: false
+
+    - name: Wait for descheduler pod to be ready
+      command: microk8s kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=descheduler -n kube-system --timeout=120s
+      register: pod_ready
+      changed_when: false
+
+    - name: Verify descheduler deployment status
+      command: microk8s kubectl get deployment descheduler -n kube-system -o wide
+      register: deployment_status
+      changed_when: false
+
+    - name: Display deployment status
+      debug:
+        msg:
+          - "✅ Descheduler deployment created successfully:"
+          - "{{ deployment_status.stdout_lines }}"
+
+    - name: Clean up temporary values file
+      file:
+        path: "{{ descheduler_values_path }}"
+        state: absent
+
+- name: Apply Pod Disruption Budgets
+  hosts: k8s_control
+  gather_facts: no
+  vars:
+    pdb_file_path: "/tmp/pod-disruption-budgets.yaml"
+  tasks:
+    - name: Copy PDB configuration to control plane
+      copy:
+        src: "../../descheduler/pod-disruption-budgets.yaml"
+        dest: "{{ pdb_file_path }}"
+        mode: '0644'
+
+    - name: Apply Pod Disruption Budgets
+      command: microk8s kubectl apply -f {{ pdb_file_path }}
+      register: pdb_apply
+      changed_when: true
+
+    - name: Display PDB application result
+      debug:
+        var: pdb_apply.stdout_lines
+
+    - name: Verify PDBs are created
+      command: microk8s kubectl get pdb -A
+      register: pdb_status
+      changed_when: false
+
+    - name: Display PDB status
+      debug:
+        msg:
+          - "✅ Pod Disruption Budgets applied:"
+          - "{{ pdb_status.stdout_lines }}"
+
+    - name: Clean up temporary PDB file
+      file:
+        path: "{{ pdb_file_path }}"
+        state: absent
+
+- name: Post-installation verification
+  hosts: k8s_control
+  gather_facts: no
+  tasks:
+    - name: Check descheduler configuration
+      command: microk8s kubectl describe deployment descheduler -n kube-system
+      register: deployment_describe
+      changed_when: false
+
+    - name: Display configuration summary
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   Descheduler Configuration Summary                        ║"
+          - "╠════════════════════════════════════════════════════════════╣"
+          - "║   Type: Deployment (continuous running)                    ║"
+          - "║   Strategy: LowNodeUtilization (memory-based)              ║"
+          - "║   Threshold: 65% memory usage                              ║"
+          - "║   Target: 80% memory usage                                 ║"
+          - "║   Max evictions per node: 3 pods                           ║"
+          - "║   Descheduling interval: every 15 minutes                  ║"
+          - "╚════════════════════════════════════════════════════════════╝"
+
+    - name: Wait for first descheduler run (optional)
+      pause:
+        seconds: 5
+        prompt: "Waiting for descheduler to initialize..."
+
+    - name: Check for descheduler pods (if any)
+      command: microk8s kubectl get pods -n kube-system -l app.kubernetes.io/name=descheduler
+      register: descheduler_pods
+      changed_when: false
+      failed_when: false
+
+    - name: Display descheduler pods (if running)
+      debug:
+        var: descheduler_pods.stdout_lines
+      when: descheduler_pods.rc == 0 and descheduler_pods.stdout != ""
+
+    - name: Display instructions for monitoring
+      debug:
+        msg:
+          - ""
+          - "📊 Monitoring Commands:"
+          - "  • Watch descheduler logs:"
+          - "    kubectl logs -n kube-system -l app.kubernetes.io/name=descheduler -f"
+          - ""
+          - "  • Check deployment status:"
+          - "    kubectl get deployment descheduler -n kube-system"
+          - ""
+          - "  • Check node balance:"
+          - "    kubectl top nodes"
+          - ""
+          - "  • Check pod distribution:"
+          - "    kubectl get pods -A -o wide | grep -v kube-system"
+          - ""
+          - "  • Check PDB status:"
+          - "    kubectl get pdb -A"
+          - ""
+          - "  • Restart descheduler to force immediate run:"
+          - "    kubectl rollout restart deployment descheduler -n kube-system"
+
+- name: Display completion message
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Installation complete
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   Descheduler Installation Complete                       ║"
+          - "║   ✅ Descheduler deployment created                        ║"
+          - "║   ✅ Pod Disruption Budgets applied                        ║"
+          - "║   ⏰ Descheduling runs every 15 minutes                    ║"
+          - "║   📈 Cluster will auto-rebalance based on memory usage     ║"
+          - "╚════════════════════════════════════════════════════════════╝"

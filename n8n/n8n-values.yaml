@@ -1,0 +1,126 @@
+# n8n Helm Chart Values
+# Chart source: https://8gears.container-registry.com/chartrepo/library
+
+# Deployment configuration
+replicaCount: 1
+
+image:
+  repository: n8nio/n8n
+  tag: "1.117.1"
+  pullPolicy: IfNotPresent
+
+# n8n configuration
+config:
+  # Database - use internal SQLite for simplicity
+  database:
+    type: sqlite
+    sqlite:
+      database: /home/node/.n8n/database.sqlite
+
+  # Execution mode
+  executions:
+    mode: regular
+    timeout: 3600
+    maxTimeout: 3600
+
+  # Timezone
+  timezone: Europe/Rome
+
+  # External access
+  host: n8n.pindaroli.org
+  protocol: https
+  port: 443
+
+# Environment variables
+extraEnv:
+  - name: N8N_EDITOR_BASE_URL
+    value: https://n8n.pindaroli.org
+  - name: N8N_WEBHOOK_URL
+    value: https://n8n.pindaroli.org
+  - name: WEBHOOK_URL
+    value: https://n8n.pindaroli.org
+  - name: GENERIC_TIMEZONE
+    value: Europe/Rome
+  - name: TZ
+    value: Europe/Rome
+
+# Persistence configuration
+persistence:
+  enabled: true
+  type: existing
+  existingClaim: ""  # Will be created separately via n8n-pvc.yaml
+  storageClass: csi-nfs-stripe-arr-conf
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+  annotations: {}
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 5678
+  annotations: {}
+
+# Ingress configuration (for Traefik)
+ingress:
+  enabled: false  # We'll use IngressRoute instead
+
+# Resources
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "2Gi"
+    cpu: "1000m"
+
+# Security context
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  runAsNonRoot: true
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+  runAsGroup: 1000
+
+# Liveness and readiness probes
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /healthz
+    port: 5678
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /healthz
+    port: 5678
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Node affinity (optional - assign to k8s-runner-1 if preferred)
+affinity: {}
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: kubernetes.io/hostname
+  #         operator: In
+  #         values:
+  #         - k8s-runner-1
+
+# Tolerations
+tolerations: []
+
+# Node selector
+nodeSelector: {}

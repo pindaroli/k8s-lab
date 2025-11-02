@@ -1,0 +1,877 @@
+2025-10-19 17:35:31,283 p=17038 u=olindo n=ansible WARNING| [WARNING]: Found duplicate mapping key 'all'.
+Origin: /Users/olindo/prj/k8s-lab/ansible/inventory.yml:91:1
+
+89
+90 # Global variables for all hosts
+91 all:
+   ^ column 1
+
+Using last defined value only.
+
+
+2025-10-19 17:35:31,288 p=17038 u=olindo n=ansible WARNING| [WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+2025-10-19 17:35:33,565 p=17038 u=olindo n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2025-10-19 17:35:33,565 p=17038 u=olindo n=ansible INFO| [DEPRECATION WARNING]: community.general.yaml has been deprecated. The plugin has been superseded by the option `result_format=yaml` in callback plugin ansible.builtin.default from ansible-core 2.13 onwards. This feature will be removed from collection 'community.general' version 12.0.0.
+
+2025-10-19 17:35:33,586 p=17038 u=olindo n=ansible INFO| PLAY [Ping all hosts in inventory] ***********************************************************************************************************************
+2025-10-19 17:35:33,586 p=17038 u=olindo n=ansible INFO| skipping: no hosts matched
+2025-10-19 17:35:33,586 p=17038 u=olindo n=ansible INFO| PLAY RECAP ***********************************************************************************************************************************************
+2025-10-19 17:36:45,268 p=17339 u=olindo n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2025-10-19 17:36:45,268 p=17339 u=olindo n=ansible INFO| [DEPRECATION WARNING]: community.general.yaml has been deprecated. The plugin has been superseded by the option `result_format=yaml` in callback plugin ansible.builtin.default from ansible-core 2.13 onwards. This feature will be removed from collection 'community.general' version 12.0.0.
+
+2025-10-19 17:36:45,275 p=17339 u=olindo n=ansible INFO| PLAY [Ping all hosts in inventory] *********************************************
+2025-10-19 17:36:45,452 p=17339 u=olindo n=ansible INFO| TASK [Ping test] ***************************************************************
+2025-10-19 17:36:45,453 p=17339 u=olindo n=ansible ERROR| [ERROR]: Task failed: Data could not be sent to remote host "192.168.1.1". Make sure this host can be reached over ssh: Warning: Permanently added '192.168.1.1' (ED25519) to the list of known hosts.
+root@192.168.1.1: Permission denied (publickey,password,keyboard-interactive).
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/ping-all.yml:7:7
+
+5   gather_facts: no
+6   tasks:
+7     - name: Ping test
+        ^ column 7
+
+
+2025-10-19 17:36:45,453 p=17339 u=olindo n=ansible INFO| fatal: [opnsense]: UNREACHABLE! => changed=false 
+  msg: |-
+    Task failed: Data could not be sent to remote host "192.168.1.1". Make sure this host can be reached over ssh: Warning: Permanently added '192.168.1.1' (ED25519) to the list of known hosts.
+    root@192.168.1.1: Permission denied (publickey,password,keyboard-interactive).
+  unreachable: true
+2025-10-19 17:36:45,504 p=17339 u=olindo n=ansible ERROR| [ERROR]: Task failed: Data could not be sent to remote host "192.168.1.250". Make sure this host can be reached over ssh: Warning: Permanently added '192.168.1.250' (ED25519) to the list of known hosts.
+root@192.168.1.250: Permission denied (publickey).
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/ping-all.yml:7:7
+
+5   gather_facts: no
+6   tasks:
+7     - name: Ping test
+        ^ column 7
+
+
+2025-10-19 17:36:45,505 p=17339 u=olindo n=ansible INFO| fatal: [truenas]: UNREACHABLE! => changed=false 
+  msg: |-
+    Task failed: Data could not be sent to remote host "192.168.1.250". Make sure this host can be reached over ssh: Warning: Permanently added '192.168.1.250' (ED25519) to the list of known hosts.
+    root@192.168.1.250: Permission denied (publickey).
+  unreachable: true
+2025-10-19 17:36:45,753 p=17339 u=olindo n=ansible INFO| ok: [proxmox]
+2025-10-19 17:36:46,060 p=17339 u=olindo n=ansible INFO| ok: [k8s-runner-1]
+2025-10-19 17:36:46,264 p=17339 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-19 17:36:46,293 p=17339 u=olindo n=ansible INFO| TASK [Display ping result] *****************************************************
+2025-10-19 17:36:46,294 p=17339 u=olindo n=ansible INFO| ok: [k8s-control] => 
+  msg: k8s-control is reachable
+2025-10-19 17:36:46,294 p=17339 u=olindo n=ansible INFO| ok: [k8s-runner-1] => 
+  msg: k8s-runner-1 is reachable
+2025-10-19 17:36:46,295 p=17339 u=olindo n=ansible INFO| ok: [proxmox] => 
+  msg: proxmox is reachable
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| k8s-control                : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| k8s-runner-1               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| opnsense                   : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| proxmox                    : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| truenas                    : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-26 16:42:54,025 p=16791 u=olindo n=ansible INFO| PLAY [Deploy n8n Workflow Automation] ******************************************
+2025-10-26 16:42:54,036 p=16791 u=olindo n=ansible INFO| TASK [Display deployment banner] ***********************************************
+2025-10-26 16:42:54,036 p=16791 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   n8n Workflow Automation Deployment                      ║",
+        "║   Deploying to k8s-lab cluster                            ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-10-26 16:42:54,162 p=16791 u=olindo n=ansible INFO| TASK [Verify n8n manifest files exist] *****************************************
+2025-10-26 16:42:54,163 p=16791 u=olindo n=ansible ERROR| [ERROR]: Task failed: Premature end of stream waiting for become success.
+>>> Standard Error
+sudo: a password is required
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/deploy-n8n.yml:24:7
+
+22           - "╚════════════════════════════════════════════════════════════╝"
+23
+24     - name: Verify n8n manifest files exist
+         ^ column 7
+
+
+2025-10-26 16:42:54,163 p=16791 u=olindo n=ansible INFO| failed: [localhost] (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-values.yaml) => {"ansible_loop_var": "item", "changed": false, "item": "/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-values.yaml", "msg": "Task failed: Premature end of stream waiting for become success.\n>>> Standard Error\nsudo: a password is required"}
+2025-10-26 16:42:54,213 p=16791 u=olindo n=ansible INFO| failed: [localhost] (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-pvc.yaml) => {"ansible_loop_var": "item", "changed": false, "item": "/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-pvc.yaml", "msg": "Task failed: Premature end of stream waiting for become success.\n>>> Standard Error\nsudo: a password is required"}
+2025-10-26 16:42:54,266 p=16791 u=olindo n=ansible INFO| failed: [localhost] (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-ingress-route.yaml) => {"ansible_loop_var": "item", "changed": false, "item": "/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-ingress-route.yaml", "msg": "Task failed: Premature end of stream waiting for become success.\n>>> Standard Error\nsudo: a password is required"}
+2025-10-26 16:42:54,267 p=16791 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-10-26 16:42:54,267 p=16791 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-10-26 16:43:38,242 p=17040 u=olindo n=ansible INFO| PLAY [Deploy n8n Workflow Automation] ******************************************
+2025-10-26 16:43:38,251 p=17040 u=olindo n=ansible INFO| TASK [Display deployment banner] ***********************************************
+2025-10-26 16:43:38,251 p=17040 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   n8n Workflow Automation Deployment                      ║",
+        "║   Deploying to k8s-lab cluster                            ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-10-26 16:43:38,474 p=17040 u=olindo n=ansible INFO| TASK [Verify n8n manifest files exist] *****************************************
+2025-10-26 16:43:38,474 p=17040 u=olindo n=ansible INFO| ok: [localhost] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-values.yaml)
+2025-10-26 16:43:38,629 p=17040 u=olindo n=ansible INFO| ok: [localhost] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-pvc.yaml)
+2025-10-26 16:43:38,783 p=17040 u=olindo n=ansible INFO| ok: [localhost] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-ingress-route.yaml)
+2025-10-26 16:43:38,792 p=17040 u=olindo n=ansible INFO| TASK [Display configuration summary] *******************************************
+2025-10-26 16:43:38,793 p=17040 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "Configuration:",
+        "  Namespace: default",
+        "  Chart Repository: https://8gears.container-registry.com/chartrepo/library",
+        "  Release Name: n8n",
+        "  Domain: https://n8n.pindaroli.org",
+        "  Storage Class: csi-nfs-stripe-arr-conf",
+        "  Persistence: 5Gi"
+    ]
+}
+2025-10-26 16:43:38,793 p=17040 u=olindo n=ansible INFO| PLAY [Execute deployment on k8s-control] ***************************************
+2025-10-26 16:43:39,921 p=17040 u=olindo n=ansible INFO| TASK [Create temporary deployment directory] ***********************************
+2025-10-26 16:43:39,922 p=17040 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-10-26 16:43:40,372 p=17040 u=olindo n=ansible INFO| TASK [Copy n8n manifest files to k8s-control] **********************************
+2025-10-26 16:43:40,372 p=17040 u=olindo n=ansible INFO| changed: [k8s-control] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-values.yaml)
+2025-10-26 16:43:40,739 p=17040 u=olindo n=ansible INFO| changed: [k8s-control] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-pvc.yaml)
+2025-10-26 16:43:41,105 p=17040 u=olindo n=ansible INFO| changed: [k8s-control] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-ingress-route.yaml)
+2025-10-26 16:43:42,755 p=17040 u=olindo n=ansible INFO| TASK [Check if Helm repository already exists] *********************************
+2025-10-26 16:43:42,755 p=17040 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:43:43,343 p=17040 u=olindo n=ansible INFO| TASK [Add 8gears Helm repository] **********************************************
+2025-10-26 16:43:43,344 p=17040 u=olindo n=ansible ERROR| [ERROR]: Task failed: Module failed: non-zero return code
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/deploy-n8n.yml:79:7
+
+77       failed_when: false
+78
+79     - name: Add 8gears Helm repository
+         ^ column 7
+
+
+2025-10-26 16:43:43,344 p=17040 u=olindo n=ansible INFO| fatal: [k8s-control]: FAILED! => {"changed": true, "cmd": ["microk8s", "helm", "repo", "add", "8gears", "https://8gears.container-registry.com/chartrepo/library"], "delta": "0:00:00.411500", "end": "2025-10-26 15:43:43.428763", "msg": "non-zero return code", "rc": 1, "start": "2025-10-26 15:43:43.017263", "stderr": "Error: looks like \"https://8gears.container-registry.com/chartrepo/library\" is not a valid chart repository or cannot be reached: error unmarshaling JSON: while decoding JSON: json: cannot unmarshal string into Go value of type repo.IndexFile", "stderr_lines": ["Error: looks like \"https://8gears.container-registry.com/chartrepo/library\" is not a valid chart repository or cannot be reached: error unmarshaling JSON: while decoding JSON: json: cannot unmarshal string into Go value of type repo.IndexFile"], "stdout": "", "stdout_lines": []}
+2025-10-26 16:43:43,345 p=17040 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-10-26 16:43:43,345 p=17040 u=olindo n=ansible INFO| k8s-control                : ok=3    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-10-26 16:43:43,345 p=17040 u=olindo n=ansible INFO| localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-26 16:46:22,055 p=17931 u=olindo n=ansible INFO| PLAY [Deploy n8n Workflow Automation] ******************************************
+2025-10-26 16:46:22,068 p=17931 u=olindo n=ansible INFO| TASK [Display deployment banner] ***********************************************
+2025-10-26 16:46:22,069 p=17931 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   n8n Workflow Automation Deployment                      ║",
+        "║   Deploying to k8s-lab cluster                            ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-10-26 16:46:22,300 p=17931 u=olindo n=ansible INFO| TASK [Verify n8n manifest files exist] *****************************************
+2025-10-26 16:46:22,300 p=17931 u=olindo n=ansible INFO| ok: [localhost] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-values.yaml)
+2025-10-26 16:46:22,453 p=17931 u=olindo n=ansible INFO| ok: [localhost] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-pvc.yaml)
+2025-10-26 16:46:22,604 p=17931 u=olindo n=ansible INFO| ok: [localhost] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-ingress-route.yaml)
+2025-10-26 16:46:22,614 p=17931 u=olindo n=ansible INFO| TASK [Display configuration summary] *******************************************
+2025-10-26 16:46:22,615 p=17931 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "Configuration:",
+        "  Namespace: default",
+        "  Chart: oci://8gears.container-registry.com/library/n8n",
+        "  Chart Version: 1.0.15",
+        "  Release Name: n8n",
+        "  Domain: https://n8n.pindaroli.org",
+        "  Storage Class: csi-nfs-stripe-arr-conf",
+        "  Persistence: 5Gi"
+    ]
+}
+2025-10-26 16:46:22,616 p=17931 u=olindo n=ansible INFO| PLAY [Execute deployment on k8s-control] ***************************************
+2025-10-26 16:46:23,331 p=17931 u=olindo n=ansible INFO| TASK [Create temporary deployment directory] ***********************************
+2025-10-26 16:46:23,332 p=17931 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:46:23,741 p=17931 u=olindo n=ansible INFO| TASK [Copy n8n manifest files to k8s-control] **********************************
+2025-10-26 16:46:23,741 p=17931 u=olindo n=ansible INFO| ok: [k8s-control] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-values.yaml)
+2025-10-26 16:46:24,094 p=17931 u=olindo n=ansible INFO| ok: [k8s-control] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-pvc.yaml)
+2025-10-26 16:46:24,453 p=17931 u=olindo n=ansible INFO| ok: [k8s-control] => (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-ingress-route.yaml)
+2025-10-26 16:46:25,515 p=17931 u=olindo n=ansible INFO| TASK [Check if n8n namespace exists] *******************************************
+2025-10-26 16:46:25,515 p=17931 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:46:25,966 p=17931 u=olindo n=ansible INFO| TASK [Apply PersistentVolumeClaim] *********************************************
+2025-10-26 16:46:25,966 p=17931 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-10-26 16:46:31,364 p=17931 u=olindo n=ansible INFO| TASK [Wait for PVC to be bound] ************************************************
+2025-10-26 16:46:31,364 p=17931 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:46:31,661 p=17931 u=olindo n=ansible INFO| TASK [Check if n8n release already exists] *************************************
+2025-10-26 16:46:31,661 p=17931 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:46:32,971 p=17931 u=olindo n=ansible INFO| TASK [Install n8n Helm chart] **************************************************
+2025-10-26 16:46:32,971 p=17931 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-10-26 16:47:13,773 p=17931 u=olindo n=ansible INFO| TASK [Wait for n8n pod to be ready] ********************************************
+2025-10-26 16:47:13,773 p=17931 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:47:14,086 p=17931 u=olindo n=ansible INFO| TASK [Apply Traefik IngressRoute] **********************************************
+2025-10-26 16:47:14,086 p=17931 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-10-26 16:47:14,382 p=17931 u=olindo n=ansible INFO| TASK [Get n8n deployment status] ***********************************************
+2025-10-26 16:47:14,382 p=17931 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:47:14,400 p=17931 u=olindo n=ansible INFO| TASK [Display pod status] ******************************************************
+2025-10-26 16:47:14,401 p=17931 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "pod_status.stdout_lines": [
+        "NAME                   READY   STATUS    RESTARTS   AGE   IP            NODE           NOMINATED NODE   READINESS GATES",
+        "n8n-6c9ffbf54d-cpfq2   1/1     Running   0          41s   10.1.17.136   k8s-runner-1   <none>           <none>"
+    ]
+}
+2025-10-26 16:47:14,683 p=17931 u=olindo n=ansible INFO| TASK [Get n8n service details] *************************************************
+2025-10-26 16:47:14,684 p=17931 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:47:14,696 p=17931 u=olindo n=ansible INFO| TASK [Display service status] **************************************************
+2025-10-26 16:47:14,697 p=17931 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "svc_status.stdout_lines": [
+        "NAME   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE",
+        "n8n    ClusterIP   10.152.183.106   <none>        80/TCP    42s"
+    ]
+}
+2025-10-26 16:47:14,990 p=17931 u=olindo n=ansible INFO| TASK [Get IngressRoute status] *************************************************
+2025-10-26 16:47:14,990 p=17931 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-10-26 16:47:15,010 p=17931 u=olindo n=ansible INFO| TASK [Display IngressRoute status] *********************************************
+2025-10-26 16:47:15,010 p=17931 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "ingress_status.stdout_lines": [
+        "NAME          AGE",
+        "n8n-ingress   1s"
+    ]
+}
+2025-10-26 16:47:15,174 p=17931 u=olindo n=ansible INFO| TASK [Cleanup temporary deployment directory] **********************************
+2025-10-26 16:47:15,174 p=17931 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-10-26 16:47:15,175 p=17931 u=olindo n=ansible INFO| PLAY [Display completion message] **********************************************
+2025-10-26 16:47:15,186 p=17931 u=olindo n=ansible INFO| TASK [Deployment complete] *****************************************************
+2025-10-26 16:47:15,186 p=17931 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   n8n Deployment Complete                                 ║",
+        "║   Access at: https://n8n.pindaroli.org                    ║",
+        "║   Authentication: OAuth2 (o.pindaro@gmail.com)            ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-10-26 16:47:15,187 p=17931 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-10-26 16:47:15,187 p=17931 u=olindo n=ansible INFO| k8s-control                : ok=16   changed=4    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+2025-10-26 16:47:15,187 p=17931 u=olindo n=ansible INFO| localhost                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-02 23:38:49,891 p=16129 u=olindo n=ansible INFO| PLAY [Install Kubernetes Descheduler] ************************************************************************************************
+2025-11-02 23:38:49,903 p=16129 u=olindo n=ansible INFO| TASK [Display installation banner] ***************************************************************************************************
+2025-11-02 23:38:49,903 p=16129 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Kubernetes Descheduler Installation                     ║",
+        "║   Automatic pod rebalancing across cluster nodes          ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-02 23:38:49,904 p=16129 u=olindo n=ansible INFO| PLAY [Pre-installation checks] *******************************************************************************************************
+2025-11-02 23:38:50,904 p=16129 u=olindo n=ansible INFO| TASK [Check if descheduler is already installed] *************************************************************************************
+2025-11-02 23:38:50,904 p=16129 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:38:51,202 p=16129 u=olindo n=ansible INFO| TASK [Check cluster node status] *****************************************************************************************************
+2025-11-02 23:38:51,202 p=16129 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:38:51,220 p=16129 u=olindo n=ansible INFO| TASK [Display node status] ***********************************************************************************************************
+2025-11-02 23:38:51,221 p=16129 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "Current cluster nodes:",
+        [
+            "NAME           STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME",
+            "k8s-control    Ready    <none>   57d   v1.34.1   192.168.1.11    <none>        Ubuntu 24.04.3 LTS   6.8.0-86-generic   containerd://1.7.28",
+            "k8s-runner-1   Ready    <none>   57d   v1.34.1   192.168.1.249   <none>        Ubuntu 24.04.2 LTS   6.8.0-62-generic   containerd://1.7.28"
+        ]
+    ]
+}
+2025-11-02 23:38:51,512 p=16129 u=olindo n=ansible INFO| TASK [Check current pod distribution] ************************************************************************************************
+2025-11-02 23:38:51,513 p=16129 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:38:51,530 p=16129 u=olindo n=ansible INFO| TASK [Display current pod distribution] **********************************************************************************************
+2025-11-02 23:38:51,530 p=16129 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "pod_distribution.stdout_lines": [
+        "Pods per node:",
+        "      2 14d",
+        "      5 22d",
+        "      1 26d",
+        "      1 56d",
+        "      1 5h23m",
+        "      1 5h41m",
+        "      2 k8s-control",
+        "     17 k8s-runner-1"
+    ]
+}
+2025-11-02 23:38:51,841 p=16129 u=olindo n=ansible INFO| TASK [Check node resource usage] *****************************************************************************************************
+2025-11-02 23:38:51,842 p=16129 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:38:51,861 p=16129 u=olindo n=ansible INFO| TASK [Display node resource usage] ***************************************************************************************************
+2025-11-02 23:38:51,861 p=16129 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "node_resources.stdout_lines": [
+        "NAME           CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   ",
+        "k8s-control    95m          0%       16105Mi         82%         ",
+        "k8s-runner-1   113m         0%       4609Mi          8%          "
+    ]
+}
+2025-11-02 23:38:51,863 p=16129 u=olindo n=ansible INFO| PLAY [Install descheduler via Helm] **************************************************************************************************
+2025-11-02 23:38:52,379 p=16129 u=olindo n=ansible INFO| TASK [Copy descheduler values file to control plane] *********************************************************************************
+2025-11-02 23:38:52,380 p=16129 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:38:53,517 p=16129 u=olindo n=ansible INFO| TASK [Add descheduler Helm repository] ***********************************************************************************************
+2025-11-02 23:38:53,517 p=16129 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:38:54,162 p=16129 u=olindo n=ansible INFO| TASK [Update Helm repositories] ******************************************************************************************************
+2025-11-02 23:38:54,162 p=16129 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:39:01,303 p=16129 u=olindo n=ansible INFO| TASK [Install/Upgrade descheduler] ***************************************************************************************************
+2025-11-02 23:39:01,303 p=16129 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:39:01,321 p=16129 u=olindo n=ansible INFO| TASK [Display Helm installation result] **********************************************************************************************
+2025-11-02 23:39:01,322 p=16129 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "helm_install.stdout_lines": [
+        "Release \"descheduler\" does not exist. Installing it now.",
+        "NAME: descheduler",
+        "LAST DEPLOYED: Sun Nov  2 22:38:55 2025",
+        "NAMESPACE: kube-system",
+        "STATUS: deployed",
+        "REVISION: 1",
+        "TEST SUITE: None",
+        "NOTES:",
+        "Descheduler installed as a Deployment.",
+        "WARNING: You set replica count as 1 and workload kind as Deployment however leaderElection is not enabled. Consider enabling Leader Election for HA mode.",
+        "A DeschedulerPolicy has been applied for you. You can view the policy with:",
+        "",
+        "kubectl get configmap -n kube-system descheduler -o yaml",
+        "",
+        "If you wish to define your own policies out of band from this chart, you may define a configmap named descheduler.",
+        "To avoid a conflict between helm and your out of band method to deploy the configmap, please set deschedulerPolicy in values.yaml to an empty object as below.",
+        "",
+        "deschedulerPolicy: {}"
+    ]
+}
+2025-11-02 23:39:01,625 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (10 retries left).
+2025-11-02 23:39:06,903 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (9 retries left).
+2025-11-02 23:39:12,180 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (8 retries left).
+2025-11-02 23:39:17,463 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (7 retries left).
+2025-11-02 23:39:22,733 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (6 retries left).
+2025-11-02 23:39:28,014 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (5 retries left).
+2025-11-02 23:39:33,292 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (4 retries left).
+2025-11-02 23:39:38,574 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (3 retries left).
+2025-11-02 23:39:43,846 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (2 retries left).
+2025-11-02 23:39:49,120 p=16129 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (1 retries left).
+2025-11-02 23:39:54,400 p=16129 u=olindo n=ansible INFO| TASK [Wait for descheduler cronjob to be created] ************************************************************************************
+2025-11-02 23:39:54,401 p=16129 u=olindo n=ansible ERROR| [ERROR]: Task failed: Module failed: non-zero return code
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-descheduler.yml:112:7
+
+110         var: helm_install.stdout_lines
+111
+112     - name: Wait for descheduler cronjob to be created
+          ^ column 7
+
+
+2025-11-02 23:39:54,402 p=16129 u=olindo n=ansible INFO| fatal: [k8s-control]: FAILED! => {"attempts": 10, "changed": false, "cmd": ["microk8s", "kubectl", "get", "cronjob", "descheduler", "-n", "kube-system"], "delta": "0:00:00.112147", "end": "2025-11-02 22:39:54.443537", "msg": "non-zero return code", "rc": 1, "start": "2025-11-02 22:39:54.331390", "stderr": "Error from server (NotFound): cronjobs.batch \"descheduler\" not found", "stderr_lines": ["Error from server (NotFound): cronjobs.batch \"descheduler\" not found"], "stdout": "", "stdout_lines": []}
+2025-11-02 23:39:54,402 p=16129 u=olindo n=ansible INFO| PLAY RECAP ***************************************************************************************************************************
+2025-11-02 23:39:54,403 p=16129 u=olindo n=ansible INFO| k8s-control                : ok=12   changed=4    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0   
+2025-11-02 23:39:54,403 p=16129 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-02 23:40:31,641 p=16947 u=olindo n=ansible INFO| PLAY [Install Kubernetes Descheduler] ************************************************************************************************
+2025-11-02 23:40:31,651 p=16947 u=olindo n=ansible INFO| TASK [Display installation banner] ***************************************************************************************************
+2025-11-02 23:40:31,651 p=16947 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Kubernetes Descheduler Installation                     ║",
+        "║   Automatic pod rebalancing across cluster nodes          ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-02 23:40:31,652 p=16947 u=olindo n=ansible INFO| PLAY [Pre-installation checks] *******************************************************************************************************
+2025-11-02 23:40:31,981 p=16947 u=olindo n=ansible INFO| TASK [Check if descheduler is already installed] *************************************************************************************
+2025-11-02 23:40:31,981 p=16947 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:40:32,269 p=16947 u=olindo n=ansible INFO| TASK [Check cluster node status] *****************************************************************************************************
+2025-11-02 23:40:32,269 p=16947 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:40:32,285 p=16947 u=olindo n=ansible INFO| TASK [Display node status] ***********************************************************************************************************
+2025-11-02 23:40:32,285 p=16947 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "Current cluster nodes:",
+        [
+            "NAME           STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME",
+            "k8s-control    Ready    <none>   57d   v1.34.1   192.168.1.11    <none>        Ubuntu 24.04.3 LTS   6.8.0-86-generic   containerd://1.7.28",
+            "k8s-runner-1   Ready    <none>   57d   v1.34.1   192.168.1.249   <none>        Ubuntu 24.04.2 LTS   6.8.0-62-generic   containerd://1.7.28"
+        ]
+    ]
+}
+2025-11-02 23:40:32,565 p=16947 u=olindo n=ansible INFO| TASK [Check current pod distribution] ************************************************************************************************
+2025-11-02 23:40:32,566 p=16947 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:40:32,583 p=16947 u=olindo n=ansible INFO| TASK [Display current pod distribution] **********************************************************************************************
+2025-11-02 23:40:32,583 p=16947 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "pod_distribution.stdout_lines": [
+        "Pods per node:",
+        "      2 14d",
+        "      5 22d",
+        "      1 26d",
+        "      1 56d",
+        "      1 5h25m",
+        "      1 5h43m",
+        "      3 k8s-control",
+        "     17 k8s-runner-1"
+    ]
+}
+2025-11-02 23:40:32,853 p=16947 u=olindo n=ansible INFO| TASK [Check node resource usage] *****************************************************************************************************
+2025-11-02 23:40:32,854 p=16947 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:40:32,865 p=16947 u=olindo n=ansible INFO| TASK [Display node resource usage] ***************************************************************************************************
+2025-11-02 23:40:32,865 p=16947 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "node_resources.stdout_lines": [
+        "NAME           CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   ",
+        "k8s-control    119m         1%       16201Mi         83%         ",
+        "k8s-runner-1   121m         0%       4654Mi          8%          "
+    ]
+}
+2025-11-02 23:40:32,866 p=16947 u=olindo n=ansible INFO| PLAY [Install descheduler via Helm] **************************************************************************************************
+2025-11-02 23:40:33,363 p=16947 u=olindo n=ansible INFO| TASK [Copy descheduler values file to control plane] *********************************************************************************
+2025-11-02 23:40:33,363 p=16947 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:40:33,630 p=16947 u=olindo n=ansible INFO| TASK [Add descheduler Helm repository] ***********************************************************************************************
+2025-11-02 23:40:33,630 p=16947 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:40:34,145 p=16947 u=olindo n=ansible INFO| TASK [Update Helm repositories] ******************************************************************************************************
+2025-11-02 23:40:34,145 p=16947 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:40:35,007 p=16947 u=olindo n=ansible INFO| TASK [Install/Upgrade descheduler] ***************************************************************************************************
+2025-11-02 23:40:35,007 p=16947 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:40:35,020 p=16947 u=olindo n=ansible INFO| TASK [Display Helm installation result] **********************************************************************************************
+2025-11-02 23:40:35,020 p=16947 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "helm_install.stdout_lines": [
+        "Release \"descheduler\" has been upgraded. Happy Helming!",
+        "NAME: descheduler",
+        "LAST DEPLOYED: Sun Nov  2 22:40:34 2025",
+        "NAMESPACE: kube-system",
+        "STATUS: deployed",
+        "REVISION: 2",
+        "TEST SUITE: None",
+        "NOTES:",
+        "Descheduler installed as a Deployment.",
+        "WARNING: You set replica count as 1 and workload kind as Deployment however leaderElection is not enabled. Consider enabling Leader Election for HA mode.",
+        "A DeschedulerPolicy has been applied for you. You can view the policy with:",
+        "",
+        "kubectl get configmap -n kube-system descheduler -o yaml",
+        "",
+        "If you wish to define your own policies out of band from this chart, you may define a configmap named descheduler.",
+        "To avoid a conflict between helm and your out of band method to deploy the configmap, please set deschedulerPolicy in values.yaml to an empty object as below.",
+        "",
+        "deschedulerPolicy: {}"
+    ]
+}
+2025-11-02 23:40:35,294 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (10 retries left).
+2025-11-02 23:40:40,562 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (9 retries left).
+2025-11-02 23:40:45,840 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (8 retries left).
+2025-11-02 23:40:51,114 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (7 retries left).
+2025-11-02 23:40:56,391 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (6 retries left).
+2025-11-02 23:41:01,658 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (5 retries left).
+2025-11-02 23:41:06,932 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (4 retries left).
+2025-11-02 23:41:12,204 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (3 retries left).
+2025-11-02 23:41:17,482 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (2 retries left).
+2025-11-02 23:41:22,747 p=16947 u=olindo n=ansible INFO| FAILED - RETRYING: [k8s-control]: Wait for descheduler cronjob to be created (1 retries left).
+2025-11-02 23:41:28,009 p=16947 u=olindo n=ansible INFO| TASK [Wait for descheduler cronjob to be created] ************************************************************************************
+2025-11-02 23:41:28,010 p=16947 u=olindo n=ansible ERROR| [ERROR]: Task failed: Module failed: non-zero return code
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-descheduler.yml:112:7
+
+110         var: helm_install.stdout_lines
+111
+112     - name: Wait for descheduler cronjob to be created
+          ^ column 7
+
+
+2025-11-02 23:41:28,010 p=16947 u=olindo n=ansible INFO| fatal: [k8s-control]: FAILED! => {"attempts": 10, "changed": false, "cmd": ["microk8s", "kubectl", "get", "cronjob", "descheduler", "-n", "kube-system"], "delta": "0:00:00.107921", "end": "2025-11-02 22:41:28.053512", "msg": "non-zero return code", "rc": 1, "start": "2025-11-02 22:41:27.945591", "stderr": "Error from server (NotFound): cronjobs.batch \"descheduler\" not found", "stderr_lines": ["Error from server (NotFound): cronjobs.batch \"descheduler\" not found"], "stdout": "", "stdout_lines": []}
+2025-11-02 23:41:28,011 p=16947 u=olindo n=ansible INFO| PLAY RECAP ***************************************************************************************************************************
+2025-11-02 23:41:28,011 p=16947 u=olindo n=ansible INFO| k8s-control                : ok=12   changed=3    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0   
+2025-11-02 23:41:28,011 p=16947 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-02 23:44:26,201 p=19171 u=olindo n=ansible INFO| PLAY [Install Kubernetes Descheduler] ******************************************
+2025-11-02 23:44:26,212 p=19171 u=olindo n=ansible INFO| TASK [Display installation banner] *********************************************
+2025-11-02 23:44:26,212 p=19171 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Kubernetes Descheduler Installation                     ║",
+        "║   Automatic pod rebalancing across cluster nodes          ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-02 23:44:26,213 p=19171 u=olindo n=ansible INFO| PLAY [Pre-installation checks] *************************************************
+2025-11-02 23:44:26,994 p=19171 u=olindo n=ansible INFO| TASK [Check if descheduler is already installed] *******************************
+2025-11-02 23:44:26,994 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:27,274 p=19171 u=olindo n=ansible INFO| TASK [Check cluster node status] ***********************************************
+2025-11-02 23:44:27,274 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:27,290 p=19171 u=olindo n=ansible INFO| TASK [Display node status] *****************************************************
+2025-11-02 23:44:27,291 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "Current cluster nodes:",
+        [
+            "NAME           STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME",
+            "k8s-control    Ready    <none>   57d   v1.34.1   192.168.1.11    <none>        Ubuntu 24.04.3 LTS   6.8.0-86-generic   containerd://1.7.28",
+            "k8s-runner-1   Ready    <none>   57d   v1.34.1   192.168.1.249   <none>        Ubuntu 24.04.2 LTS   6.8.0-62-generic   containerd://1.7.28"
+        ]
+    ]
+}
+2025-11-02 23:44:27,570 p=19171 u=olindo n=ansible INFO| TASK [Check current pod distribution] ******************************************
+2025-11-02 23:44:27,571 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:27,587 p=19171 u=olindo n=ansible INFO| TASK [Display current pod distribution] ****************************************
+2025-11-02 23:44:27,588 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "pod_distribution.stdout_lines": [
+        "Pods per node:",
+        "      2 14d",
+        "      5 22d",
+        "      1 26d",
+        "      1 56d",
+        "      1 5h29m",
+        "      1 5h47m",
+        "      3 k8s-control",
+        "     17 k8s-runner-1"
+    ]
+}
+2025-11-02 23:44:27,850 p=19171 u=olindo n=ansible INFO| TASK [Check node resource usage] ***********************************************
+2025-11-02 23:44:27,850 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:27,863 p=19171 u=olindo n=ansible INFO| TASK [Display node resource usage] *********************************************
+2025-11-02 23:44:27,863 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "node_resources.stdout_lines": [
+        "NAME           CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   ",
+        "k8s-control    97m          0%       16222Mi         83%         ",
+        "k8s-runner-1   115m         0%       4763Mi          8%          "
+    ]
+}
+2025-11-02 23:44:27,864 p=19171 u=olindo n=ansible INFO| PLAY [Install descheduler via Helm] ********************************************
+2025-11-02 23:44:28,344 p=19171 u=olindo n=ansible INFO| TASK [Copy descheduler values file to control plane] ***************************
+2025-11-02 23:44:28,344 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:28,603 p=19171 u=olindo n=ansible INFO| TASK [Add descheduler Helm repository] *****************************************
+2025-11-02 23:44:28,603 p=19171 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:44:29,139 p=19171 u=olindo n=ansible INFO| TASK [Update Helm repositories] ************************************************
+2025-11-02 23:44:29,140 p=19171 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:44:30,058 p=19171 u=olindo n=ansible INFO| TASK [Install/Upgrade descheduler] *********************************************
+2025-11-02 23:44:30,058 p=19171 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:44:30,070 p=19171 u=olindo n=ansible INFO| TASK [Display Helm installation result] ****************************************
+2025-11-02 23:44:30,070 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "helm_install.stdout_lines": [
+        "Release \"descheduler\" has been upgraded. Happy Helming!",
+        "NAME: descheduler",
+        "LAST DEPLOYED: Sun Nov  2 22:44:29 2025",
+        "NAMESPACE: kube-system",
+        "STATUS: deployed",
+        "REVISION: 3",
+        "TEST SUITE: None",
+        "NOTES:",
+        "Descheduler installed as a Deployment.",
+        "WARNING: You set replica count as 1 and workload kind as Deployment however leaderElection is not enabled. Consider enabling Leader Election for HA mode.",
+        "A DeschedulerPolicy has been applied for you. You can view the policy with:",
+        "",
+        "kubectl get configmap -n kube-system descheduler -o yaml",
+        "",
+        "If you wish to define your own policies out of band from this chart, you may define a configmap named descheduler.",
+        "To avoid a conflict between helm and your out of band method to deploy the configmap, please set deschedulerPolicy in values.yaml to an empty object as below.",
+        "",
+        "deschedulerPolicy: {}"
+    ]
+}
+2025-11-02 23:44:30,346 p=19171 u=olindo n=ansible INFO| TASK [Wait for descheduler deployment to be created] ***************************
+2025-11-02 23:44:30,347 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:30,725 p=19171 u=olindo n=ansible INFO| TASK [Wait for descheduler pod to be ready] ************************************
+2025-11-02 23:44:30,725 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:30,997 p=19171 u=olindo n=ansible INFO| TASK [Verify descheduler deployment status] ************************************
+2025-11-02 23:44:30,997 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:31,009 p=19171 u=olindo n=ansible INFO| TASK [Display deployment status] ***********************************************
+2025-11-02 23:44:31,010 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "✅ Descheduler deployment created successfully:",
+        [
+            "NAME          READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS    IMAGES                                            SELECTOR",
+            "descheduler   1/1     1            1           5m36s   descheduler   registry.k8s.io/descheduler/descheduler:v0.34.0   app.kubernetes.io/instance=descheduler,app.kubernetes.io/name=descheduler"
+        ]
+    ]
+}
+2025-11-02 23:44:31,170 p=19171 u=olindo n=ansible INFO| TASK [Clean up temporary values file] ******************************************
+2025-11-02 23:44:31,170 p=19171 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:44:31,171 p=19171 u=olindo n=ansible INFO| PLAY [Apply Pod Disruption Budgets] ********************************************
+2025-11-02 23:44:31,601 p=19171 u=olindo n=ansible INFO| TASK [Copy PDB configuration to control plane] *********************************
+2025-11-02 23:44:31,601 p=19171 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:44:31,982 p=19171 u=olindo n=ansible INFO| TASK [Apply Pod Disruption Budgets] ********************************************
+2025-11-02 23:44:31,982 p=19171 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:44:31,994 p=19171 u=olindo n=ansible INFO| TASK [Display PDB application result] ******************************************
+2025-11-02 23:44:31,994 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "pdb_apply.stdout_lines": [
+        "poddisruptionbudget.policy/servarr-pdb created",
+        "poddisruptionbudget.policy/jellyfin-pdb created",
+        "poddisruptionbudget.policy/qbittorrent-pdb created",
+        "poddisruptionbudget.policy/oauth2-proxy-pdb created",
+        "poddisruptionbudget.policy/traefik-pdb created",
+        "poddisruptionbudget.policy/n8n-pdb created",
+        "poddisruptionbudget.policy/homepage-pdb created"
+    ]
+}
+2025-11-02 23:44:32,273 p=19171 u=olindo n=ansible INFO| TASK [Verify PDBs are created] *************************************************
+2025-11-02 23:44:32,273 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:32,290 p=19171 u=olindo n=ansible INFO| TASK [Display PDB status] ******************************************************
+2025-11-02 23:44:32,291 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "✅ Pod Disruption Budgets applied:",
+        [
+            "NAMESPACE      NAME                      MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE",
+            "arr            jellyfin-pdb              1               N/A               0                     1s",
+            "arr            qbittorrent-pdb           1               N/A               0                     1s",
+            "arr            servarr-pdb               N/A             2                 2                     1s",
+            "default        homepage-pdb              N/A             1                 1                     0s",
+            "default        n8n-pdb                   1               N/A               0                     0s",
+            "kube-system    calico-kube-controllers   N/A             1                 1                     57d",
+            "oauth2-proxy   oauth2-proxy-pdb          1               N/A               0                     1s",
+            "traefik        traefik-pdb               N/A             1                 1                     1s"
+        ]
+    ]
+}
+2025-11-02 23:44:32,451 p=19171 u=olindo n=ansible INFO| TASK [Clean up temporary PDB file] *********************************************
+2025-11-02 23:44:32,451 p=19171 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:44:32,452 p=19171 u=olindo n=ansible INFO| PLAY [Post-installation verification] ******************************************
+2025-11-02 23:44:32,724 p=19171 u=olindo n=ansible INFO| TASK [Check descheduler configuration] *****************************************
+2025-11-02 23:44:32,724 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:32,741 p=19171 u=olindo n=ansible INFO| TASK [Display configuration summary] *******************************************
+2025-11-02 23:44:32,741 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Descheduler Configuration Summary                        ║",
+        "╠════════════════════════════════════════════════════════════╣",
+        "║   Type: Deployment (continuous running)                    ║",
+        "║   Strategy: LowNodeUtilization (memory-based)              ║",
+        "║   Threshold: 65% memory usage                              ║",
+        "║   Target: 80% memory usage                                 ║",
+        "║   Max evictions per node: 3 pods                           ║",
+        "║   Descheduling interval: every 15 minutes                  ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-02 23:44:32,752 p=19171 u=olindo n=ansible INFO| Pausing for 5 seconds
+2025-11-02 23:44:32,752 p=19171 u=olindo n=ansible INFO| (ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
+2025-11-02 23:44:37,758 p=19171 u=olindo n=ansible INFO| TASK [Wait for first descheduler run (optional)] *******************************
+2025-11-02 23:44:37,759 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:38,035 p=19171 u=olindo n=ansible INFO| TASK [Check for descheduler pods (if any)] *************************************
+2025-11-02 23:44:38,036 p=19171 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:44:38,047 p=19171 u=olindo n=ansible INFO| TASK [Display descheduler pods (if running)] ***********************************
+2025-11-02 23:44:38,048 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "descheduler_pods.stdout_lines": [
+        "NAME                           READY   STATUS    RESTARTS   AGE",
+        "descheduler-86868bdbf6-486dq   1/1     Running   0          5m43s"
+    ]
+}
+2025-11-02 23:44:38,056 p=19171 u=olindo n=ansible INFO| TASK [Display instructions for monitoring] *************************************
+2025-11-02 23:44:38,056 p=19171 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "",
+        "📊 Monitoring Commands:",
+        "  • Watch descheduler logs:",
+        "    kubectl logs -n kube-system -l app.kubernetes.io/name=descheduler -f",
+        "",
+        "  • Check deployment status:",
+        "    kubectl get deployment descheduler -n kube-system",
+        "",
+        "  • Check node balance:",
+        "    kubectl top nodes",
+        "",
+        "  • Check pod distribution:",
+        "    kubectl get pods -A -o wide | grep -v kube-system",
+        "",
+        "  • Check PDB status:",
+        "    kubectl get pdb -A",
+        "",
+        "  • Restart descheduler to force immediate run:",
+        "    kubectl rollout restart deployment descheduler -n kube-system"
+    ]
+}
+2025-11-02 23:44:38,057 p=19171 u=olindo n=ansible INFO| PLAY [Display completion message] **********************************************
+2025-11-02 23:44:38,065 p=19171 u=olindo n=ansible INFO| TASK [Installation complete] ***************************************************
+2025-11-02 23:44:38,065 p=19171 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Descheduler Installation Complete                       ║",
+        "║   ✅ Descheduler cronjob created                           ║",
+        "║   ✅ Pod Disruption Budgets applied                        ║",
+        "║   ⏰ Next run: within 15 minutes                           ║",
+        "║   📈 Cluster will auto-rebalance based on memory usage     ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-02 23:44:38,066 p=19171 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-11-02 23:44:38,066 p=19171 u=olindo n=ansible INFO| k8s-control                : ok=29   changed=7    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2025-11-02 23:44:38,066 p=19171 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-02 23:45:53,481 p=20063 u=olindo n=ansible INFO| PLAY [Install Kubernetes Descheduler] ******************************************
+2025-11-02 23:45:53,490 p=20063 u=olindo n=ansible INFO| TASK [Display installation banner] *********************************************
+2025-11-02 23:45:53,491 p=20063 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Kubernetes Descheduler Installation                     ║",
+        "║   Automatic pod rebalancing across cluster nodes          ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-02 23:45:53,491 p=20063 u=olindo n=ansible INFO| PLAY [Pre-installation checks] *************************************************
+2025-11-02 23:45:54,267 p=20063 u=olindo n=ansible INFO| TASK [Check if descheduler is already installed] *******************************
+2025-11-02 23:45:54,268 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:54,547 p=20063 u=olindo n=ansible INFO| TASK [Check cluster node status] ***********************************************
+2025-11-02 23:45:54,548 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:54,567 p=20063 u=olindo n=ansible INFO| TASK [Display node status] *****************************************************
+2025-11-02 23:45:54,567 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "Current cluster nodes:",
+        [
+            "NAME           STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME",
+            "k8s-control    Ready    <none>   57d   v1.34.1   192.168.1.11    <none>        Ubuntu 24.04.3 LTS   6.8.0-86-generic   containerd://1.7.28",
+            "k8s-runner-1   Ready    <none>   57d   v1.34.1   192.168.1.249   <none>        Ubuntu 24.04.2 LTS   6.8.0-62-generic   containerd://1.7.28"
+        ]
+    ]
+}
+2025-11-02 23:45:54,848 p=20063 u=olindo n=ansible INFO| TASK [Check current pod distribution] ******************************************
+2025-11-02 23:45:54,849 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:54,863 p=20063 u=olindo n=ansible INFO| TASK [Display current pod distribution] ****************************************
+2025-11-02 23:45:54,863 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "pod_distribution.stdout_lines": [
+        "Pods per node:",
+        "      2 14d",
+        "      5 22d",
+        "      1 26d",
+        "      1 56d",
+        "      1 5h30m",
+        "      1 5h49m",
+        "      3 k8s-control",
+        "     17 k8s-runner-1"
+    ]
+}
+2025-11-02 23:45:55,144 p=20063 u=olindo n=ansible INFO| TASK [Check node resource usage] ***********************************************
+2025-11-02 23:45:55,144 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:55,161 p=20063 u=olindo n=ansible INFO| TASK [Display node resource usage] *********************************************
+2025-11-02 23:45:55,161 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "node_resources.stdout_lines": [
+        "NAME           CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   ",
+        "k8s-control    102m         1%       16231Mi         83%         ",
+        "k8s-runner-1   123m         0%       4803Mi          8%          "
+    ]
+}
+2025-11-02 23:45:55,162 p=20063 u=olindo n=ansible INFO| PLAY [Install descheduler via Helm] ********************************************
+2025-11-02 23:45:55,638 p=20063 u=olindo n=ansible INFO| TASK [Copy descheduler values file to control plane] ***************************
+2025-11-02 23:45:55,638 p=20063 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:45:55,899 p=20063 u=olindo n=ansible INFO| TASK [Add descheduler Helm repository] *****************************************
+2025-11-02 23:45:55,900 p=20063 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:45:56,377 p=20063 u=olindo n=ansible INFO| TASK [Update Helm repositories] ************************************************
+2025-11-02 23:45:56,377 p=20063 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:45:57,126 p=20063 u=olindo n=ansible INFO| TASK [Install/Upgrade descheduler] *********************************************
+2025-11-02 23:45:57,126 p=20063 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:45:57,141 p=20063 u=olindo n=ansible INFO| TASK [Display Helm installation result] ****************************************
+2025-11-02 23:45:57,141 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "helm_install.stdout_lines": [
+        "Release \"descheduler\" has been upgraded. Happy Helming!",
+        "NAME: descheduler",
+        "LAST DEPLOYED: Sun Nov  2 22:45:56 2025",
+        "NAMESPACE: kube-system",
+        "STATUS: deployed",
+        "REVISION: 4",
+        "TEST SUITE: None",
+        "NOTES:",
+        "Descheduler installed as a Deployment.",
+        "WARNING: You set replica count as 1 and workload kind as Deployment however leaderElection is not enabled. Consider enabling Leader Election for HA mode.",
+        "A DeschedulerPolicy has been applied for you. You can view the policy with:",
+        "",
+        "kubectl get configmap -n kube-system descheduler -o yaml",
+        "",
+        "If you wish to define your own policies out of band from this chart, you may define a configmap named descheduler.",
+        "To avoid a conflict between helm and your out of band method to deploy the configmap, please set deschedulerPolicy in values.yaml to an empty object as below.",
+        "",
+        "deschedulerPolicy: {}"
+    ]
+}
+2025-11-02 23:45:57,415 p=20063 u=olindo n=ansible INFO| TASK [Wait for descheduler deployment to be created] ***************************
+2025-11-02 23:45:57,415 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:57,796 p=20063 u=olindo n=ansible INFO| TASK [Wait for descheduler pod to be ready] ************************************
+2025-11-02 23:45:57,796 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:58,075 p=20063 u=olindo n=ansible INFO| TASK [Verify descheduler deployment status] ************************************
+2025-11-02 23:45:58,076 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:58,089 p=20063 u=olindo n=ansible INFO| TASK [Display deployment status] ***********************************************
+2025-11-02 23:45:58,089 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "✅ Descheduler deployment created successfully:",
+        [
+            "NAME          READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS    IMAGES                                            SELECTOR",
+            "descheduler   1/1     1            1           7m3s   descheduler   registry.k8s.io/descheduler/descheduler:v0.34.0   app.kubernetes.io/instance=descheduler,app.kubernetes.io/name=descheduler"
+        ]
+    ]
+}
+2025-11-02 23:45:58,308 p=20063 u=olindo n=ansible INFO| TASK [Clean up temporary values file] ******************************************
+2025-11-02 23:45:58,308 p=20063 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:45:58,309 p=20063 u=olindo n=ansible INFO| PLAY [Apply Pod Disruption Budgets] ********************************************
+2025-11-02 23:45:58,675 p=20063 u=olindo n=ansible INFO| TASK [Copy PDB configuration to control plane] *********************************
+2025-11-02 23:45:58,675 p=20063 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:45:58,999 p=20063 u=olindo n=ansible INFO| TASK [Apply Pod Disruption Budgets] ********************************************
+2025-11-02 23:45:58,999 p=20063 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:45:59,016 p=20063 u=olindo n=ansible INFO| TASK [Display PDB application result] ******************************************
+2025-11-02 23:45:59,017 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "pdb_apply.stdout_lines": [
+        "poddisruptionbudget.policy/servarr-pdb configured",
+        "poddisruptionbudget.policy/jellyfin-pdb configured",
+        "poddisruptionbudget.policy/qbittorrent-pdb configured",
+        "poddisruptionbudget.policy/oauth2-proxy-pdb configured",
+        "poddisruptionbudget.policy/traefik-pdb configured",
+        "poddisruptionbudget.policy/n8n-pdb configured",
+        "poddisruptionbudget.policy/homepage-pdb configured"
+    ]
+}
+2025-11-02 23:45:59,281 p=20063 u=olindo n=ansible INFO| TASK [Verify PDBs are created] *************************************************
+2025-11-02 23:45:59,281 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:59,292 p=20063 u=olindo n=ansible INFO| TASK [Display PDB status] ******************************************************
+2025-11-02 23:45:59,293 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "✅ Pod Disruption Budgets applied:",
+        [
+            "NAMESPACE      NAME                      MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE",
+            "arr            jellyfin-pdb              1               N/A               0                     88s",
+            "arr            qbittorrent-pdb           1               N/A               0                     88s",
+            "arr            servarr-pdb               N/A             2                 2                     88s",
+            "default        homepage-pdb              N/A             1                 1                     87s",
+            "default        n8n-pdb                   1               N/A               0                     87s",
+            "kube-system    calico-kube-controllers   N/A             1                 1                     57d",
+            "oauth2-proxy   oauth2-proxy-pdb          1               N/A               0                     88s",
+            "traefik        traefik-pdb               N/A             1                 1                     88s"
+        ]
+    ]
+}
+2025-11-02 23:45:59,450 p=20063 u=olindo n=ansible INFO| TASK [Clean up temporary PDB file] *********************************************
+2025-11-02 23:45:59,450 p=20063 u=olindo n=ansible INFO| changed: [k8s-control]
+2025-11-02 23:45:59,451 p=20063 u=olindo n=ansible INFO| PLAY [Post-installation verification] ******************************************
+2025-11-02 23:45:59,730 p=20063 u=olindo n=ansible INFO| TASK [Check descheduler configuration] *****************************************
+2025-11-02 23:45:59,730 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:45:59,745 p=20063 u=olindo n=ansible INFO| TASK [Display configuration summary] *******************************************
+2025-11-02 23:45:59,746 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Descheduler Configuration Summary                        ║",
+        "╠════════════════════════════════════════════════════════════╣",
+        "║   Type: Deployment (continuous running)                    ║",
+        "║   Strategy: LowNodeUtilization (memory-based)              ║",
+        "║   Threshold: 65% memory usage                              ║",
+        "║   Target: 80% memory usage                                 ║",
+        "║   Max evictions per node: 3 pods                           ║",
+        "║   Descheduling interval: every 15 minutes                  ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-02 23:45:59,755 p=20063 u=olindo n=ansible INFO| Pausing for 5 seconds
+2025-11-02 23:45:59,755 p=20063 u=olindo n=ansible INFO| (ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
+2025-11-02 23:46:04,761 p=20063 u=olindo n=ansible INFO| TASK [Wait for first descheduler run (optional)] *******************************
+2025-11-02 23:46:04,762 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:46:05,041 p=20063 u=olindo n=ansible INFO| TASK [Check for descheduler pods (if any)] *************************************
+2025-11-02 23:46:05,041 p=20063 u=olindo n=ansible INFO| ok: [k8s-control]
+2025-11-02 23:46:05,058 p=20063 u=olindo n=ansible INFO| TASK [Display descheduler pods (if running)] ***********************************
+2025-11-02 23:46:05,058 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "descheduler_pods.stdout_lines": [
+        "NAME                           READY   STATUS    RESTARTS   AGE",
+        "descheduler-86868bdbf6-486dq   1/1     Running   0          7m10s"
+    ]
+}
+2025-11-02 23:46:05,068 p=20063 u=olindo n=ansible INFO| TASK [Display instructions for monitoring] *************************************
+2025-11-02 23:46:05,068 p=20063 u=olindo n=ansible INFO| ok: [k8s-control] => {
+    "msg": [
+        "",
+        "📊 Monitoring Commands:",
+        "  • Watch descheduler logs:",
+        "    kubectl logs -n kube-system -l app.kubernetes.io/name=descheduler -f",
+        "",
+        "  • Check deployment status:",
+        "    kubectl get deployment descheduler -n kube-system",
+        "",
+        "  • Check node balance:",
+        "    kubectl top nodes",
+        "",
+        "  • Check pod distribution:",
+        "    kubectl get pods -A -o wide | grep -v kube-system",
+        "",
+        "  • Check PDB status:",
+        "    kubectl get pdb -A",
+        "",
+        "  • Restart descheduler to force immediate run:",
+        "    kubectl rollout restart deployment descheduler -n kube-system"
+    ]
+}
+2025-11-02 23:46:05,069 p=20063 u=olindo n=ansible INFO| PLAY [Display completion message] **********************************************
+2025-11-02 23:46:05,076 p=20063 u=olindo n=ansible INFO| TASK [Installation complete] ***************************************************
+2025-11-02 23:46:05,076 p=20063 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Descheduler Installation Complete                       ║",
+        "║   ✅ Descheduler deployment created                        ║",
+        "║   ✅ Pod Disruption Budgets applied                        ║",
+        "║   ⏰ Descheduling runs every 15 minutes                    ║",
+        "║   📈 Cluster will auto-rebalance based on memory usage     ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| k8s-control                : ok=29   changed=8    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

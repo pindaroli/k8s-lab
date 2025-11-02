@@ -1,0 +1,200 @@
+---
+# Playbook to start the Kubernetes cluster
+# Equivalent to cluster-startup.sh script
+- name: Kubernetes Cluster Startup Sequence
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Display startup banner
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   Kubernetes Cluster Startup Sequence                     ║"
+          - "║   Starting cluster nodes in correct order                 ║"
+          - "╚════════════════════════════════════════════════════════════╝"
+
+- name: Start k8s-control VM
+  hosts: proxmox
+  gather_facts: no
+  tasks:
+    - name: Start k8s-control VM (ID 1500)
+      command: qm start 1500
+      register: start_control
+      changed_when: true
+
+    - name: Wait for VM to boot
+      pause:
+        seconds: 10
+
+    - name: Verify k8s-control is running
+      command: qm status 1500
+      register: vm_status
+      changed_when: false
+
+    - name: Display VM status
+      debug:
+        var: vm_status.stdout
+
+- name: Wait for k8s-control to be ready
+  hosts: k8s_control
+  gather_facts: no
+  tasks:
+    - name: Wait for SSH to become available
+      wait_for_connection:
+        timeout: 300
+        delay: 10
+
+    - name: Wait for microk8s to be ready
+      command: microk8s status --wait-ready
+      register: k8s_ready
+      changed_when: false
+      retries: 30
+      delay: 10
+      until: k8s_ready.rc == 0
+
+    - name: Display microk8s status
+      debug:
+        msg: "Control plane is ready"
+
+- name: Start k8s-runner-1 VM
+  hosts: proxmox
+  gather_facts: no
+  tasks:
+    - name: Start k8s-runner-1 VM (ID 1100)
+      command: qm start 1100
+      register: start_worker
+      changed_when: true
+
+    - name: Wait for VM to boot
+      pause:
+        seconds: 10
+
+    - name: Verify k8s-runner-1 is running
+      command: qm status 1100
+      register: vm_status
+      changed_when: false
+
+    - name: Display VM status
+      debug:
+        var: vm_status.stdout
+
+- name: Verify cluster is operational
+  hosts: k8s_control
+  gather_facts: no
+  tasks:
+    - name: Wait for all nodes to be ready
+      shell: |
+        timeout=300
+        interval=10
+        elapsed=0
+        while [ $elapsed -lt $timeout ]; do
+          not_ready=$(microk8s kubectl get nodes --no-headers | grep -c NotReady || true)
+          if [ "$not_ready" -eq 0 ]; then
+            echo "All nodes are ready"
+            exit 0
+          fi
+          echo "Waiting for nodes to be ready... ($elapsed/$timeout seconds)"
+          sleep $interval
+          elapsed=$((elapsed + interval))
+        done
+        echo "Timeout waiting for nodes"
+        exit 1
+      register: nodes_ready
+      changed_when: false
+
+    - name: Get cluster node status
+      command: microk8s kubectl get nodes -o wide
+      register: node_status
+      changed_when: false
+
+    - name: Display node status
+      debug:
+        var: node_status.stdout_lines
+
+    - name: Uncordon k8s-runner-1 if needed
+      command: microk8s kubectl uncordon k8s-runner-1
+      register: uncordon_result
+      changed_when: "'uncordoned' in uncordon_result.stdout"
+      failed_when: false
+
+- name: Start descheduler after startup
+  hosts: k8s_control
+  gather_facts: no
+  tasks:
+    - name: Check if descheduler is installed
+      command: microk8s kubectl get deployment descheduler -n kube-system
+      register: descheduler_exists
+      changed_when: false
+      failed_when: false
+
+    - name: Check descheduler replica count
+      shell: microk8s kubectl get deployment descheduler -n kube-system -o jsonpath='{.spec.replicas}'
+      register: descheduler_replicas
+      when: descheduler_exists.rc == 0
+      changed_when: false
+
+    - name: Scale up descheduler deployment to 1 replica
+      command: microk8s kubectl scale deployment descheduler -n kube-system --replicas=1
+      register: scale_result
+      when:
+        - descheduler_exists.rc == 0
+        - descheduler_replicas.stdout == "0"
+      changed_when: true
+
+    - name: Wait for descheduler pod to be ready
+      command: microk8s kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=descheduler -n kube-system --timeout=120s
+      when:
+        - descheduler_exists.rc == 0
+        - descheduler_replicas.stdout == "0"
+      changed_when: false
+
+    - name: Display descheduler started
+      debug:
+        msg: "Descheduler started (scaled to 1) and will rebalance cluster pods"
+      when:
+        - descheduler_exists.rc == 0
+        - descheduler_replicas.stdout == "0"
+
+    - name: Display descheduler already running
+      debug:
+        msg: "Descheduler is already running"
+      when:
+        - descheduler_exists.rc == 0
+        - descheduler_replicas.stdout != "0"
+
+    - name: Display descheduler not found
+      debug:
+        msg: "Descheduler not installed - cluster will not auto-rebalance pods"
+      when: descheduler_exists.rc != 0
+
+    - name: Wait for cluster to stabilize
+      pause:
+        seconds: 10
+        prompt: "Waiting for cluster to stabilize..."
+      when: descheduler_exists.rc == 0
+
+    - name: Get final pod distribution
+      command: microk8s kubectl get pods -A -o wide
+      register: pod_distribution
+      changed_when: false
+      when: descheduler_exists.rc == 0
+
+    - name: Display pod distribution
+      debug:
+        msg:
+          - "Current pod distribution across nodes:"
+          - "{{ pod_distribution.stdout_lines }}"
+      when: descheduler_exists.rc == 0
+
+- name: Display completion message
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Startup complete
+      debug:
+        msg:
+          - "╔════════════════════════════════════════════════════════════╗"
+          - "║   Cluster Startup Complete                                 ║"
+          - "║   All nodes are running and ready                          ║"
+          - "║   Descheduler will rebalance pods within 15 minutes        ║"
+          - "╚════════════════════════════════════════════════════════════╝"
