@@ -119,6 +119,10 @@ data:
             href: https://qbittorrent.pindaroli.org
             description: BitTorrent client
             icon: qbittorrent.png
+        - n8n:
+            href: https://n8n.pindaroli.org
+            description: Workflow automation platform
+            icon: n8n.png
         - Truenas:
             href: https://nas.pindaroli.org
             description: TrueNAS server
