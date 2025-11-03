@@ -2,12 +2,22 @@
 # Chart source: https://8gears.container-registry.com/chartrepo/library
 
 # Deployment configuration
-replicaCount: 1
+main:
+  replicaCount: 1
 
-image:
-  repository: n8nio/n8n
-  tag: "1.117.1"
-  pullPolicy: IfNotPresent
+  image:
+    repository: n8nio/n8n
+    tag: "1.117.1"
+    pullPolicy: IfNotPresent
+
+  # Persistence configuration
+  persistence:
+    enabled: true
+    type: existing
+    existingClaim: "n8n-data"  # Reference the PVC created via n8n-pvc.yaml
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
 
 # n8n configuration
 config:
@@ -43,17 +53,6 @@ extraEnv:
     value: Europe/Rome
   - name: TZ
     value: Europe/Rome
-
-# Persistence configuration
-persistence:
-  enabled: true
-  type: existing
-  existingClaim: ""  # Will be created separately via n8n-pvc.yaml
-  storageClass: csi-nfs-stripe-arr-conf
-  accessModes:
-    - ReadWriteOnce
-  size: 5Gi
-  annotations: {}
 
 # Service configuration
 service:
