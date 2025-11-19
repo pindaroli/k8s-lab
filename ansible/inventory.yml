@@ -50,10 +50,17 @@ all:
           hosts:
             truenas:
               ansible_host: 192.168.1.250
-              ansible_user: root
+              ansible_user: olindo
               web_port: 443
               nfs_server: true
               description: "TrueNAS storage server (NFS CSI backend)"
+
+        media_servers:
+          hosts:
+            jellyfin-svr:
+              ansible_host: 192.168.1.12
+              ansible_user: root
+              description: "Jellyfin media server"
 
         network:
           hosts:

@@ -875,3 +875,261 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-descheduler.yml:112:
 2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
 2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| k8s-control                : ok=29   changed=8    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
 2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-16 16:15:24,385 p=79393 u=olindo n=ansible WARNING| [WARNING]: Error in vault password prompt (default): Passwords do not match
+
+2025-11-16 16:15:24,386 p=79393 u=olindo n=ansible ERROR| [ERROR]: Passwords do not match
+
+2025-11-16 16:15:44,534 p=79481 u=olindo n=ansible INFO| Encryption successful
+2025-11-16 16:16:23,870 p=79636 u=olindo n=ansible INFO| PLAY [Restart NFS Service on TrueNAS via API] **********************************
+2025-11-16 16:16:23,881 p=79636 u=olindo n=ansible INFO| TASK [Display restart banner] **************************************************
+2025-11-16 16:16:23,881 p=79636 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Restarting NFS Service on TrueNAS via API              ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible INFO| TASK [Check if API key is set] *************************************************
+2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible ERROR| [ERROR]: Task failed: Error while evaluating conditional: 'vault_truenas_api_key' is undefined
+
+Task failed.
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/restart-nfs-truenas-api.yml:19:7
+
+17           - "╚════════════════════════════════════════════════════════════╝"
+18
+19     - name: Check if API key is set
+         ^ column 7
+
+<<< caused by >>>
+
+Error while evaluating conditional.
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/restart-nfs-truenas-api.yml:22:13
+
+20       fail:
+21         msg: "Please set TRUENAS_API_KEY environment variable"
+22       when: truenas_api_key == ""
+               ^ column 13
+
+<<< caused by >>>
+
+'vault_truenas_api_key' is undefined
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/restart-nfs-truenas-api.yml:9:22
+
+7   vars:
+8     truenas_host: "192.168.1.250"
+9     truenas_api_key: "{{ vault_truenas_api_key }}"  # From encrypted vault.yml
+                       ^ column 22
+
+
+2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible INFO| fatal: [localhost]: FAILED! => {"changed": false, "msg": "Task failed: Error while evaluating conditional: 'vault_truenas_api_key' is undefined"}
+2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-11-16 16:17:40,731 p=79912 u=olindo n=ansible INFO| PLAY [Restart NFS Service on TrueNAS via API] **********************************
+2025-11-16 16:17:40,740 p=79912 u=olindo n=ansible INFO| TASK [Display restart banner] **************************************************
+2025-11-16 16:17:40,740 p=79912 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Restarting NFS Service on TrueNAS via API              ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-16 16:17:40,878 p=79912 u=olindo n=ansible INFO| TASK [Get NFS service status] **************************************************
+2025-11-16 16:17:40,878 p=79912 u=olindo n=ansible ERROR| [ERROR]: Task failed: Premature end of stream waiting for become success.
+>>> Standard Error
+sudo: a password is required
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/restart-nfs-truenas-api.yml:26:7
+
+24       when: truenas_api_key == ""
+25
+26     - name: Get NFS service status
+         ^ column 7
+
+
+2025-11-16 16:17:40,878 p=79912 u=olindo n=ansible INFO| fatal: [localhost]: FAILED! => {"changed": false, "msg": "Task failed: Premature end of stream waiting for become success.\n>>> Standard Error\nsudo: a password is required"}
+2025-11-16 16:17:40,878 p=79912 u=olindo n=ansible INFO| ...ignoring
+2025-11-16 16:17:40,939 p=79912 u=olindo n=ansible INFO| TASK [Restart NFS service] *****************************************************
+2025-11-16 16:17:40,939 p=79912 u=olindo n=ansible ERROR| [ERROR]: Task failed: Premature end of stream waiting for become success.
+>>> Standard Error
+sudo: a password is required
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/restart-nfs-truenas-api.yml:42:7
+
+40       when: nfs_status.json is defined
+41
+42     - name: Restart NFS service
+         ^ column 7
+
+
+2025-11-16 16:17:40,940 p=79912 u=olindo n=ansible INFO| fatal: [localhost]: FAILED! => {"changed": false, "msg": "Task failed: Premature end of stream waiting for become success.\n>>> Standard Error\nsudo: a password is required"}
+2025-11-16 16:17:40,940 p=79912 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-11-16 16:17:40,940 p=79912 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=1    skipped=2    rescued=0    ignored=1   
+2025-11-16 16:19:12,687 p=80251 u=olindo n=ansible INFO| PLAY [Restart NFS Service on TrueNAS via API] **********************************
+2025-11-16 16:19:12,695 p=80251 u=olindo n=ansible INFO| TASK [Display restart banner] **************************************************
+2025-11-16 16:19:12,695 p=80251 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   Restarting NFS Service on TrueNAS via API              ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-16 16:19:13,272 p=80251 u=olindo n=ansible INFO| TASK [Get NFS service status] **************************************************
+2025-11-16 16:19:13,272 p=80251 u=olindo n=ansible INFO| ok: [localhost]
+2025-11-16 16:19:13,284 p=80251 u=olindo n=ansible INFO| TASK [Display current NFS status] **********************************************
+2025-11-16 16:19:13,284 p=80251 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": "NFS service state: RUNNING"
+}
+2025-11-16 16:19:14,528 p=80251 u=olindo n=ansible INFO| TASK [Restart NFS service] *****************************************************
+2025-11-16 16:19:14,528 p=80251 u=olindo n=ansible INFO| ok: [localhost]
+2025-11-16 16:19:14,536 p=80251 u=olindo n=ansible INFO| Pausing for 5 seconds
+2025-11-16 16:19:14,537 p=80251 u=olindo n=ansible INFO| (ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
+2025-11-16 16:19:19,544 p=80251 u=olindo n=ansible INFO| TASK [Wait for NFS service to restart] *****************************************
+2025-11-16 16:19:19,544 p=80251 u=olindo n=ansible INFO| ok: [localhost]
+2025-11-16 16:19:20,019 p=80251 u=olindo n=ansible INFO| TASK [Verify NFS service is running] *******************************************
+2025-11-16 16:19:20,020 p=80251 u=olindo n=ansible INFO| ok: [localhost]
+2025-11-16 16:19:20,029 p=80251 u=olindo n=ansible INFO| TASK [Display NFS service status after restart] ********************************
+2025-11-16 16:19:20,029 p=80251 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": "NFS service is now: RUNNING"
+}
+2025-11-16 16:19:20,706 p=80251 u=olindo n=ansible INFO| TASK [Get NFS exports] *********************************************************
+2025-11-16 16:19:20,706 p=80251 u=olindo n=ansible INFO| ok: [localhost]
+2025-11-16 16:19:20,725 p=80251 u=olindo n=ansible INFO| TASK [Display NFS exports] *****************************************************
+2025-11-16 16:19:20,725 p=80251 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": "[\n    {\n        \"aliases\": [],\n        \"comment\": \"media\",\n        \"enabled\": true,\n        \"expose_snapshots\": false,\n        \"hosts\": [\n            \"k8s-control.local\",\n            \"k8s-runner-1.local\",\n            \"k8s-runner-2.local\"\n        ],\n        \"id\": 3,\n        \"locked\": false,\n        \"mapall_group\": \"arrGuid\",\n        \"mapall_user\": \"arrUser\",\n        \"maproot_group\": \"\",\n        \"maproot_user\": \"\",\n        \"networks\": [],\n        \"path\": \"/mnt/oliraid/arrdata/media\",\n        \"ro\": false,\n        \"security\": [\n            \"SYS\"\n        ]\n    },\n    {\n        \"aliases\": [],\n        \"comment\": \"Nfs for arr app\",\n        \"enabled\": true,\n        \"expose_snapshots\": false,\n        \"hosts\": [\n            \"192.168.1.249\",\n            \"192.168.64.6\",\n            \"192.168.1.11\",\n            \"192.168.1.12\"\n        ],\n        \"id\": 4,\n        \"locked\": false,\n        \"mapall_group\": \"arrGuid\",\n        \"mapall_user\": \"arrUser\",\n        \"maproot_group\": null,\n        \"maproot_user\": null,\n        \"networks\": [],\n        \"path\": \"/mnt/stripe/k8s-arr\",\n        \"ro\": false,\n        \"security\": [\n            \"SYS\"\n        ]\n    }\n]"
+}
+2025-11-16 16:19:20,731 p=80251 u=olindo n=ansible INFO| TASK [Completion message] ******************************************************
+2025-11-16 16:19:20,731 p=80251 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   NFS Service Restart Complete                            ║",
+        "║   Service is running and exports are active               ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-16 16:19:20,732 p=80251 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-11-16 16:19:20,732 p=80251 u=olindo n=ansible INFO| localhost                  : ok=10   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2025-11-16 16:21:56,662 p=80858 u=olindo n=ansible INFO| PLAY [Install NFS Client and Configure Mounts on Media Servers] ****************
+2025-11-16 16:21:57,707 p=80858 u=olindo n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2025-11-16 16:21:57,708 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:21:57,721 p=80858 u=olindo n=ansible INFO| TASK [Display installation banner] *********************************************
+2025-11-16 16:21:57,721 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   NFS Client Installation & Mount Configuration           ║",
+        "║   Installing nfs-common and mounting NFS shares           ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-16 16:22:00,194 p=80858 u=olindo n=ansible INFO| TASK [Update apt cache] ********************************************************
+2025-11-16 16:22:00,195 p=80858 u=olindo n=ansible INFO| changed: [jellyfin-svr]
+2025-11-16 16:22:00,808 p=80858 u=olindo n=ansible INFO| TASK [Install NFS client packages] *********************************************
+2025-11-16 16:22:00,809 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:22:00,828 p=80858 u=olindo n=ansible INFO| TASK [Display installation result] *********************************************
+2025-11-16 16:22:00,829 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": "NFS client already installed"
+}
+2025-11-16 16:22:01,050 p=80858 u=olindo n=ansible INFO| TASK [Verify NFS client installation] ******************************************
+2025-11-16 16:22:01,050 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:22:01,213 p=80858 u=olindo n=ansible INFO| TASK [Display NFS client version] **********************************************
+2025-11-16 16:22:01,213 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:22:01,229 p=80858 u=olindo n=ansible INFO| TASK [Show installed version] **************************************************
+2025-11-16 16:22:01,229 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": "Installed: nfs-common 1:2.6.4-3ubuntu5.1"
+}
+2025-11-16 16:22:01,588 p=80858 u=olindo n=ansible INFO| TASK [Ensure rpcbind service is enabled and running] ***************************
+2025-11-16 16:22:01,589 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:22:01,608 p=80858 u=olindo n=ansible INFO| TASK [Display rpcbind status] **************************************************
+2025-11-16 16:22:01,608 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": "rpcbind service is started"
+}
+2025-11-16 16:22:01,820 p=80858 u=olindo n=ansible INFO| TASK [Create NFS mount point directories] **************************************
+2025-11-16 16:22:01,820 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=/mnt/nfs/media)
+2025-11-16 16:22:01,984 p=80858 u=olindo n=ansible INFO| changed: [jellyfin-svr] => (item=/mnt/nfs/k8s-arr)
+2025-11-16 16:22:02,222 p=80858 u=olindo n=ansible INFO| TASK [Configure NFS mounts in /etc/fstab] **************************************
+2025-11-16 16:22:02,223 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=Media Share: 192.168.1.250:/mnt/oliraid/arrdata/media -> /mnt/nfs/media)
+2025-11-16 16:22:02,375 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=Config Share: 192.168.1.250:/mnt/stripe/k8s-arr -> /mnt/nfs/k8s-arr)
+2025-11-16 16:22:02,602 p=80858 u=olindo n=ansible INFO| TASK [Mount all NFS shares] ****************************************************
+2025-11-16 16:22:02,603 p=80858 u=olindo n=ansible ERROR| [ERROR]: Task failed: Module failed: Error mounting /mnt/nfs/media: mount.nfs: mounting 192.168.1.250:/mnt/oliraid/arrdata/media failed, reason given by server: No such file or directory
+
+Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-nfs-client.yml:95:7
+
+93         label: "{{ item.name }}: {{ item.src }} -> {{ item.path }}"
+94
+95     - name: Mount all NFS shares
+         ^ column 7
+
+
+2025-11-16 16:22:02,603 p=80858 u=olindo n=ansible INFO| failed: [jellyfin-svr] (item=Media Share) => {"ansible_loop_var": "item", "changed": false, "item": {"name": "Media Share", "opts": "nfsvers=4.1,hard,_netdev", "path": "/mnt/nfs/media", "src": "192.168.1.250:/mnt/oliraid/arrdata/media"}, "msg": "Error mounting /mnt/nfs/media: mount.nfs: mounting 192.168.1.250:/mnt/oliraid/arrdata/media failed, reason given by server: No such file or directory\n"}
+2025-11-16 16:22:02,758 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=Config Share)
+2025-11-16 16:22:02,761 p=80858 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-11-16 16:22:02,761 p=80858 u=olindo n=ansible INFO| jellyfin-svr               : ok=12   changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-11-16 16:25:24,595 p=81517 u=olindo n=ansible INFO| PLAY [Install NFS Client and Configure Mounts on Media Servers] ****************
+2025-11-16 16:25:24,606 p=81517 u=olindo n=ansible INFO| TASK [Display installation banner] *********************************************
+2025-11-16 16:25:24,607 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   NFS Client Installation & Mount Configuration           ║",
+        "║   Installing nfs-common and mounting NFS shares           ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-16 16:25:25,219 p=81517 u=olindo n=ansible INFO| TASK [Update apt cache] ********************************************************
+2025-11-16 16:25:25,219 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:25:25,767 p=81517 u=olindo n=ansible INFO| TASK [Install NFS client packages] *********************************************
+2025-11-16 16:25:25,768 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:25:25,787 p=81517 u=olindo n=ansible INFO| TASK [Display installation result] *********************************************
+2025-11-16 16:25:25,787 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": "NFS client already installed"
+}
+2025-11-16 16:25:25,997 p=81517 u=olindo n=ansible INFO| TASK [Verify NFS client installation] ******************************************
+2025-11-16 16:25:25,998 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:25:26,156 p=81517 u=olindo n=ansible INFO| TASK [Display NFS client version] **********************************************
+2025-11-16 16:25:26,157 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:25:26,173 p=81517 u=olindo n=ansible INFO| TASK [Show installed version] **************************************************
+2025-11-16 16:25:26,174 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": "Installed: nfs-common 1:2.6.4-3ubuntu5.1"
+}
+2025-11-16 16:25:26,529 p=81517 u=olindo n=ansible INFO| TASK [Ensure rpcbind service is enabled and running] ***************************
+2025-11-16 16:25:26,530 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr]
+2025-11-16 16:25:26,550 p=81517 u=olindo n=ansible INFO| TASK [Display rpcbind status] **************************************************
+2025-11-16 16:25:26,550 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": "rpcbind service is started"
+}
+2025-11-16 16:25:26,760 p=81517 u=olindo n=ansible INFO| TASK [Create NFS mount point directories] **************************************
+2025-11-16 16:25:26,760 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=/mnt/nfs/media)
+2025-11-16 16:25:26,948 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=/mnt/nfs/k8s-arr)
+2025-11-16 16:25:27,176 p=81517 u=olindo n=ansible INFO| TASK [Configure NFS mounts in /etc/fstab] **************************************
+2025-11-16 16:25:27,176 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=Media Share: 192.168.1.250:/mnt/oliraid/arrdata/media -> /mnt/nfs/media)
+2025-11-16 16:25:27,327 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=Config Share: 192.168.1.250:/mnt/stripe/k8s-arr -> /mnt/nfs/k8s-arr)
+2025-11-16 16:25:27,570 p=81517 u=olindo n=ansible INFO| TASK [Mount all NFS shares] ****************************************************
+2025-11-16 16:25:27,571 p=81517 u=olindo n=ansible INFO| changed: [jellyfin-svr] => (item=Media Share)
+2025-11-16 16:25:27,731 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=Config Share)
+2025-11-16 16:25:27,904 p=81517 u=olindo n=ansible INFO| TASK [Verify NFS mounts are active] ********************************************
+2025-11-16 16:25:27,904 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=/mnt/nfs/media)
+2025-11-16 16:25:28,066 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=/mnt/nfs/k8s-arr)
+2025-11-16 16:25:28,103 p=81517 u=olindo n=ansible INFO| TASK [Display mounted NFS shares] **********************************************
+2025-11-16 16:25:28,103 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
+    "msg": [
+        [
+            "Filesystem                                Size  Used Avail Use% Mounted on",
+            "192.168.1.250:/mnt/oliraid/arrdata/media   19T  8.0T   11T  44% /mnt/nfs/media"
+        ],
+        [
+            "Filesystem                         Size  Used Avail Use% Mounted on",
+            "192.168.1.250:/mnt/stripe/k8s-arr  7.1T  7.8G  7.1T   1% /mnt/nfs/k8s-arr"
+        ]
+    ]
+}
+2025-11-16 16:25:28,104 p=81517 u=olindo n=ansible INFO| PLAY [Display completion message] **********************************************
+2025-11-16 16:25:28,112 p=81517 u=olindo n=ansible INFO| TASK [Installation complete] ***************************************************
+2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "╔════════════════════════════════════════════════════════════╗",
+        "║   NFS Client Installation & Mount Complete                ║",
+        "║   Mounted shares:                                         ║",
+        "║   - /mnt/nfs/media (arrdata/media)                        ║",
+        "║   - /mnt/nfs/k8s-arr (stripe/k8s-arr)                     ║",
+        "╚════════════════════════════════════════════════════════════╝"
+    ]
+}
+2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
+2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| jellyfin-svr               : ok=14   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
