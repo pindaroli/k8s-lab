@@ -10,7 +10,7 @@ spec:
   - match: Host(`jellyfin.pindaroli.org`)
     kind: Rule
     services:
-    - name: servarr-jellyfin
+    - name: jellyfin-external-k8s-service
       port: 8096
     middlewares:
     - name: oauth2-auth
@@ -226,7 +226,7 @@ spec:
   - match: Host(`jellyfin.local`)
     kind: Rule
     services:
-    - name: servarr-jellyfin
+    - name: jellyfin-external-k8s-service
       port: 8096
     middlewares:
     - name: basic-auth
@@ -348,3 +348,23 @@ spec:
   type: ClusterIP
   clusterIP: None
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin-external-k8s-service
+  namespace: arr # Same namespace as IngressRoute
+spec:
+  ports:
+  - port: 8096
+    targetPort: 8096
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: jellyfin-external-k8s-service
+  namespace: arr # Same namespace as IngressRoute
+subsets:
+- addresses:
+  - ip: "192.168.1.12"
+  ports:
+  - port: 8096

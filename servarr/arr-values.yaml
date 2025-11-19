@@ -1,4 +1,5 @@
 jellyfin:
+  enabled: false
   image:
     tag: "10.10.7"  # was: 10.10.1
   extraEnvVars:

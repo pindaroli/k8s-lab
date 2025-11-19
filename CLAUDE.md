@@ -17,6 +17,8 @@
 
 - Control plane SSH: root@k8s-control
 - Direct microk8s management on control-plane node
+- jellyfin-svr
+
 
 ## Load Balancing & Ingress
 
@@ -110,9 +112,20 @@ All services protected by OAuth2 authentication:
 
 ## Storage
 
+### TrueNAS SCALE
+- **IMPORTANT**: TrueNAS SCALE uses Debian Linux (NOT FreeBSD)
+- NFS server: 192.168.1.250 (truenas.local)
+- SSH user: olindo (not root)
+- NFS exports configured in /etc/exports
+- Uses standard Linux NFS commands (exportfs, etc.)
+- NFS shares:
+  - /mnt/oliraid/arrdata/media - Media storage
+  - /mnt/stripe/k8s-arr - Kubernetes configuration storage
+
+### NFS CSI Driver
 - NFS CSI driver for dynamic provisioning
 - CSI configuration files in ./CSI-driver/ directory
-- Persistent volumes backed by NFS storage
+- Persistent volumes backed by NFS storage from TrueNAS
 - Volume definitions throughout service configurations
 
 ## Development Tools & Utilities
