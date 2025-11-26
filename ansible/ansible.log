@@ -1133,3 +1133,19 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-nfs-client.yml:95:7
 2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
 2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| jellyfin-svr               : ok=14   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-24 08:14:43,444 p=28868 u=olindo n=ansible INFO| # /opt/homebrew/Cellar/ansible/12.1.0/libexec/lib/python3.13/site-packages/ansible_collections
+Collection        Version
+----------------- -------
+
+2025-11-24 08:14:43,445 p=28868 u=olindo n=ansible INFO| community.general 11.4.0 
+2025-11-24 08:17:04,655 p=29180 u=olindo n=ansible INFO| playbook: playbooks/create_vm.yml
+2025-11-24 08:20:22,656 p=29319 u=olindo n=ansible INFO| playbook: playbooks/create_vm.yml
+2025-11-24 08:23:31,293 p=29520 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
+2025-11-24 08:26:59,776 p=29677 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
+2025-11-24 08:31:27,208 p=29849 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
+2025-11-24 08:35:55,047 p=30015 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
+2025-11-24 08:44:30,577 p=30195 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
+2025-11-24 08:46:45,633 p=30342 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
+2025-11-24 09:00:49,208 p=30561 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
+2025-11-24 09:04:26,362 p=30970 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
+2025-11-24 09:07:32,614 p=31142 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml

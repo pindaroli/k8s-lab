@@ -1,0 +1,14 @@
+---
+# Proxmox Connection Settings
+# API Token is recommended over password
+# Set these in your environment or encrypted vault
+# proxmox_api_user: "root@pam"
+# proxmox_api_token_id: "ansible"
+# proxmox_api_token_secret: "your-secret-here"
+
+proxmox_node_1: pve
+proxmox_node_2: pve2
+
+# Default Storage
+proxmox_storage_local: local-lvm
+proxmox_storage_iso: local

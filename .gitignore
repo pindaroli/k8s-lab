@@ -2,3 +2,6 @@
 # SSL Certificate files (sensitive)
 pindaroli-wildcard.key
 pindaroli-wildcard.crt
+
+# Ansible Secrets
+ansible/vars/secrets.yml

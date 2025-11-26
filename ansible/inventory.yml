@@ -36,15 +36,23 @@ all:
       children:
         hypervisors:
           hosts:
-            proxmox:
+            pve2:
               ansible_host: 192.168.1.10
               ansible_user: root
               ansible_port: 22
               web_port: 8006
-              description: "Proxmox VE virtualization platform"
+              description: "Proxmox VE node 2"
               manages_vms:
                 - k8s-control
                 - k8s-runner-1
+
+            pve:
+              ansible_host: 192.168.1.125
+              ansible_user: root
+              ansible_port: 22
+              web_port: 8006
+              description: "Proxmox VE node 1"
+              manages_vms: []
 
         storage:
           hosts:
