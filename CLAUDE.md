@@ -1,13 +1,13 @@
 ## Kubernetes Cluster Setup
 
-- 2-node microk8s cluster implementation
-- Control plane: k8s-control (Proxmox VM ID 1500)
-- Worker node: k8s-runner-1 (truenas vm )
+- 3-node microk8s cluster implementation
+- Control plane 1: k8s-control (Proxmox VM ID 1500)
+- Control plane 2: k8s-control-2 (stans alone debian bare metal node)
 - Management system: macOS
 - Local domain: .local
 - External domain: pindaroli.org (Cloudflare managed)
 - Network gateway: 192.168.1.1
-- Router address: proxmox.local
+- Router address: pve2.local
 - truenas.local (192.168.1.250)
 - kubectl access available
 - Claude has automatic permission for readonly kubectl commands (get, describe, logs, etc.)
@@ -15,7 +15,7 @@
 
 ## SSH Access
 
-- Control plane SSH: root@k8s-control
+- Control plane SSH: root@k8s-control, olindo@k8s-control-2
 - Direct microk8s management on control-plane node
 - jellyfin-svr
 
@@ -147,5 +147,5 @@ All services protected by OAuth2 authentication:
 - Email: o.pindaro@gmail.com
 - Domain: pindaroli.org (Cloudflare managed)
 - Network: 192.168.1.0/24
-- Infrastructure: Proxmox virtualization platform
+- Infrastructure: Proxmox virtualization platform (pve, pve2)
 - Upgrade command: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`

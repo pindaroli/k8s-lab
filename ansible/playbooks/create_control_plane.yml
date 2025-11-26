@@ -1,0 +1,108 @@
+---
+- name: Provision Control Plane VM on Proxmox
+  hosts: hypervisors
+  gather_facts: false
+  connection: local
+  vars_files:
+    - "../vars/secrets.yml"
+  vars:
+    proxmox_api_user: "{{ lookup('env', 'PROXMOX_API_USER') | default('root@pam', true) }}"
+    proxmox_api_token_id: "{{ lookup('env', 'PROXMOX_API_TOKEN_ID') }}"
+    proxmox_api_token_secret: "{{ lookup('env', 'PROXMOX_API_TOKEN_SECRET') }}"
+    
+    # Control Plane Defaults
+    vm_id: 1501
+    vm_name: k8s-control-plane
+    vm_memory: 4096
+    vm_cores: 4
+    vm_disk_size: 50
+    vm_storage: local-lvm
+    vm_net_bridge: vmbr0
+    vm_tags: "k8-control"
+    # Example ISO: local:iso/debian-12.5.0-amd64-netinst.iso
+    # Set vm_iso to use CDROM installation
+    vm_iso: "local:iso/ubuntu-24.04.1-live-server-amd64.iso" 
+    
+  tasks:
+    - name: Check for API Token
+      fail:
+        msg: "Please set PROXMOX_API_TOKEN_ID and PROXMOX_API_TOKEN_SECRET environment variables."
+      when: proxmox_api_token_id == "" or proxmox_api_token_secret == ""
+
+    - name: Create VM
+      community.general.proxmox_kvm:
+        api_host: "{{ ansible_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id }}"
+        api_token_secret: "{{ proxmox_api_token_secret }}"
+        validate_certs: false
+        node: "{{ inventory_hostname }}"
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        memory: "{{ vm_memory }}"
+        balloon: 0
+        numa: 1
+        cores: "{{ vm_cores }}"
+        cpu: host
+        machine: q35
+        bios: ovmf
+        agent: 1
+        efidisk0:
+          storage: "{{ vm_storage }}"
+          efitype: 4m
+          pre_enrolled_keys: true
+        net:
+          net0: "model=virtio,bridge={{ vm_net_bridge }}"
+        scsihw: virtio-scsi-single
+        virtio:
+          virtio0: "{{ vm_storage }}:{{ vm_disk_size }},ssd=1,aio=io_uring,backup=1"
+        ide:
+          ide2: "{{ vm_iso }},media=cdrom"
+        ciuser: root
+        cipassword: "{{ sys_pass }}"
+        tags: "{{ vm_tags }}"
+        state: present
+      register: vm_creation
+      when: vm_iso != ""
+
+    - name: Create VM (No ISO)
+      community.general.proxmox_kvm:
+        api_host: "{{ ansible_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id }}"
+        api_token_secret: "{{ proxmox_api_token_secret }}"
+        validate_certs: false
+        node: "{{ inventory_hostname }}"
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        memory: "{{ vm_memory }}"
+        balloon: 0
+        numa: 1
+        cores: "{{ vm_cores }}"
+        cpu: host
+        machine: q35
+        bios: ovmf
+        agent: 1
+        net:
+          net0: "model=virtio,bridge={{ vm_net_bridge }}"
+        scsihw: virtio-scsi-single
+        virtio:
+          virtio0: "{{ vm_storage }}:{{ vm_disk_size }},ssd=1,aio=io_uring,backup=1"
+        ciuser: root
+        cipassword: "{{ sys_pass }}"
+        tags: "{{ vm_tags }}"
+        state: present
+      register: vm_creation_no_iso
+      when: vm_iso == ""
+
+    - name: Start VM
+      community.general.proxmox_kvm:
+        api_host: "{{ ansible_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id }}"
+        api_token_secret: "{{ proxmox_api_token_secret }}"
+        validate_certs: false
+        node: "{{ inventory_hostname }}"
+        vmid: "{{ vm_id }}"
+        state: started
+      when: (vm_creation.changed | default(false)) or (vm_creation_no_iso.changed | default(false))
