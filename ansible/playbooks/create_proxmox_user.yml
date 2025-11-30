@@ -1,0 +1,21 @@
+---
+- name: Create Proxmox Admin User
+  hosts: hypervisors
+  become: true
+  vars:
+    username: "olindo"
+    realm: "pve"
+    role: "Administrator"
+    password: "ChangeMe123!" # Temporary password, user should change it
+
+  tasks:
+    - name: Create user in Proxmox (pve realm)
+      command: pveum user add {{ username }}@{{ realm }} --password {{ password }}
+      register: user_add
+      failed_when: user_add.rc != 0 and "already exists" not in user_add.stderr
+      changed_when: user_add.rc == 0
+
+    - name: Assign Administrator role to user
+      command: pveum acl modify / -user {{ username }}@{{ realm }} -role {{ role }}
+      register: acl_mod
+      changed_when: acl_mod.rc == 0

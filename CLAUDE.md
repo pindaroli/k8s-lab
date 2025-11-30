@@ -147,5 +147,5 @@ All services protected by OAuth2 authentication:
 - Email: o.pindaro@gmail.com
 - Domain: pindaroli.org (Cloudflare managed)
 - Network: 192.168.1.0/24
-- Infrastructure: Proxmox virtualization platform (pve, pve2)
+- Infrastructure: Proxmox virtualization platform (pve, pve2) - Clustered
 - Upgrade command: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`

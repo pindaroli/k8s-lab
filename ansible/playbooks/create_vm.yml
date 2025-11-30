@@ -3,10 +3,9 @@
   hosts: hypervisors
   gather_facts: false
   connection: local
+  vars_files:
+    - ../vars/proxmox_secrets.yml
   vars:
-    proxmox_api_user: "{{ lookup('env', 'PROXMOX_API_USER') | default('root@pam', true) }}"
-    proxmox_api_token_id: "{{ lookup('env', 'PROXMOX_API_TOKEN_ID') }}"
-    proxmox_api_token_secret: "{{ lookup('env', 'PROXMOX_API_TOKEN_SECRET') }}"
     
     # VM Defaults - Override these via -e "var=value"
     vm_id: 900
@@ -27,7 +26,7 @@
       when: proxmox_api_token_id == "" or proxmox_api_token_secret == ""
 
     - name: Create VM
-      community.general.proxmox_kvm:
+      community.proxmox.proxmox_kvm:
         api_host: "{{ ansible_host }}"
         api_user: "{{ proxmox_api_user }}"
         api_token_id: "{{ proxmox_api_token_id }}"
@@ -51,7 +50,7 @@
       when: vm_iso != ""
 
     - name: Create VM (No ISO)
-      community.general.proxmox_kvm:
+      community.proxmox.proxmox_kvm:
         api_host: "{{ ansible_host }}"
         api_user: "{{ proxmox_api_user }}"
         api_token_id: "{{ proxmox_api_token_id }}"
@@ -73,7 +72,7 @@
       when: vm_iso == ""
 
     - name: Start VM
-      community.general.proxmox_kvm:
+      community.proxmox.proxmox_kvm:
         api_host: "{{ ansible_host }}"
         api_user: "{{ proxmox_api_user }}"
         api_token_id: "{{ proxmox_api_token_id }}"
