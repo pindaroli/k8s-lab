@@ -85,6 +85,7 @@ all:
 
       vars:
         ansible_python_interpreter: /usr/bin/python3
+        proxmox_cluster: true
 
     # Service Groups (for targeted operations)
     metallb_pool:

@@ -1,0 +1,23 @@
+- name: Configure LXC Mount Points
+  hosts: hypervisors
+  connection: local
+  gather_facts: false
+  vars_files:
+    - ../vars/proxmox_secrets.yml
+
+  tasks:
+    - name: Update mp0 for LXC 2200 (jellyfin-srv clone)
+      community.proxmox.proxmox:
+        api_host: "{{ ansible_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_token_id: "{{ proxmox_api_token_id }}"
+        api_token_secret: "{{ proxmox_api_token_secret }}"
+        validate_certs: false
+        node: "{{ inventory_hostname }}"
+        vmid: 2200
+        hostname: "jellyfin-srv"
+        mounts:
+          mp0: "/mnt/pve/truenas-media,mp=/mnt/media"
+        update: true
+      delegate_to: localhost
+      when: inventory_hostname == 'pve2'
