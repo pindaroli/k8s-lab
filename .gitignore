@@ -5,3 +5,6 @@ pindaroli-wildcard.crt
 
 # Ansible Secrets
 ansible/vars/secrets.yml
+ansible/vars/proxmox_secrets.yml
+ansible/group_vars/all/secrets.yml
+*.tfvars

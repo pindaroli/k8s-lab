@@ -8,6 +8,7 @@
 
 proxmox_node_1: pve
 proxmox_node_2: pve2
+proxmox_node_3: pve3
 
 # Default Storage
 proxmox_storage_local: local-lvm

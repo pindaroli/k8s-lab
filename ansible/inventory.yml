@@ -54,6 +54,15 @@ all:
               description: "Proxmox VE node 1"
               manages_vms: []
 
+            pve3:
+              ansible_host: 192.168.1.148
+              ansible_user: root
+              ansible_password: "{{ pve3_root_password }}"
+              ansible_port: 22
+              web_port: 8006
+              description: "Proxmox VE node 3"
+              manages_vms: []
+
         storage:
           hosts:
             truenas:
