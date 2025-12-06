@@ -1,0 +1,67 @@
+---
+- name: Prepare and Join pve3 to Proxmox Cluster
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Add pve3 to known_hosts locally
+      shell: ssh-keyscan -H 192.168.1.148 >> ~/.ssh/known_hosts
+      ignore_errors: yes
+
+- name: Setup SSH Trust and Join Cluster
+  hosts: pve,pve3
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Ensure SSH key exists
+      user:
+        name: root
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa
+
+    - name: Fetch public keys
+      shell: cat /root/.ssh/id_rsa.pub
+      register: ssh_keys
+      changed_when: false
+
+    - name: Add nodes to known_hosts
+      shell: "ssh-keyscan -H {{ hostvars[item]['ansible_host'] }} >> /root/.ssh/known_hosts"
+      with_items: 
+        - pve
+        - pve3
+      ignore_errors: yes
+      when: hostvars[item]['ansible_host'] is defined
+
+- name: Exchange Keys and Join
+  hosts: pve,pve3
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Add pve key to pve3 and vice versa
+      authorized_key:
+        user: root
+        key: "{{ hostvars[item]['ssh_keys']['stdout'] }}"
+      with_items: 
+        - pve
+        - pve3
+      when: hostvars[item]['ssh_keys'] is defined
+
+- name: Execute Join on pve3
+  hosts: pve3
+  become: yes
+  tasks:
+    - name: Check if already clustered
+      command: pvecm status
+      register: status
+      failed_when: false
+      changed_when: false
+
+    - name: Join Cluster
+      command: "pvecm add {{ hostvars['pve']['ansible_host'] }} --link0 {{ ansible_host }}"
+      when: "'Cluster Name' not in status.stdout"
+      register: join_result
+
+    - name: Show Join Result
+      debug:
+        var: join_result.stdout_lines
+      when: join_result is changed

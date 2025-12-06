@@ -149,3 +149,5 @@ All services protected by OAuth2 authentication:
 - Network: 192.168.1.0/24
 - Infrastructure: Proxmox virtualization platform (pve, pve2) - Clustered
 - Upgrade command: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`
+# Configurazione rete fisica
+- Configurazione dettagliata: [rete.json](file:///Users/olindo/prj/k8s-lab/rete.json) 

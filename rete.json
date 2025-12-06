@@ -1,0 +1,118 @@
+{
+    "description": "configuratione home lab networks",
+    "VLAN": [
+        {
+            "id": "10",
+            "description": "VLAN dei Server Interni",
+            "subnet": "10.10.10.0/24"
+        },
+        {
+            "id": "20",
+            "description": "VLAN dei Client",
+            "subnet": "10.10.20.0/24"
+        },
+        {
+            "id": "999",
+            "description": "VLAN WAN (Internet Modem)",
+            "subnet": "Public IP (DHCP/PPPoE)"
+        }
+    ],
+    "nodi": [
+        {
+            "id": "truenas",
+            "label": "TrueNAS Scale",
+            "type": "Physical/VM",
+            "interfaces": [
+                {
+                    "interface": "bond0",
+                    "role": "Management",
+                    "ip": "192.168.1.250"
+                },
+                {
+                    "interface": "vlan10",
+                    "role": "Storage Server",
+                    "ip": "10.10.10.250"
+                },
+                {
+                    "interface": "vlan20",
+                    "role": "Storage Client",
+                    "ip": "10.10.20.250"
+                }
+            ]
+        },
+        {
+            "id": "switch10g",
+            "label": "Switch Managed (ONTi)",
+            "type": "L3 Switch",
+            "ip": "192.168.2.1",
+            "ports": [
+                {
+                    "id": "2",
+                    "role": "Uplink to Switch WAN (PVID 999)",
+                    "mode": "Trunk",
+                    "native_vlan": "999",
+                    "allowed_vlans": [
+                        "1",
+                        "10",
+                        "20",
+                        "30",
+                        "999"
+                    ]
+                },
+                {
+                    "id": "8",
+                    "role": "Uplink to Switch Client (PVID 20)",
+                    "mode": "Trunk",
+                    "native_vlan": "20",
+                    "allowed_vlans": [
+                        "1",
+                        "20",
+                        "30"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "role": "Safety / Management Port",
+                    "mode": "ACCESS",
+                    "pvid": 1,
+                    "notes": "Punto di accesso di emergenza (PC con IP Statico 192.168.2.99)"
+                },
+                {
+                    "id": "4",
+                    "role": "Direct Server Access",
+                    "mode": "ACCESS",
+                    "pvid": 10
+                },
+                {
+                    "id": "5",
+                    "role": "Direct Client Access",
+                    "mode": "ACCESS",
+                    "pvid": 20
+                }
+            ]
+        },
+        {
+            "id": "switch25g",
+            "description": "Switch non managed with 4 porte 2.5G e 2 1oG fsp+ ports",
+            "model": "zx-s",
+            "vendor": "?",
+            "management IP": null,
+        },
+        {
+            "id": "macbook",
+            "label": "MacBook Pro",
+            "interfaces": [
+                {
+                    "interface": "en0 (Ethernet)",
+                    "network": "Home Lab",
+                    "ip": "192.168.1.x"
+                },
+                {
+                    "interface": "en8 (USB LAN)",
+                    "network": "Switch Management",
+                    "ip": "192.168.2.2"
+                }
+            ]
+        }
+    ]
+}
