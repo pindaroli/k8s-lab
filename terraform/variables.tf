@@ -44,15 +44,6 @@ variable "control_plane_nodes" {
       disk_size = 20
       ip = "192.168.1.201"
     }
-    cp2 = {
-      node_name = "talos-cp-2"
-      target_node = "pve2"
-      vmid = 8002
-      cores = 2
-      memory = 4096
-      disk_size = 20
-      ip = "192.168.1.202"
-    }
     cp3 = {
       node_name = "talos-cp-3"
       target_node = "pve3"
@@ -62,6 +53,7 @@ variable "control_plane_nodes" {
       disk_size = 20
       ip = "192.168.1.203"
     }
+
   }
 }
 
