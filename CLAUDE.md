@@ -4,7 +4,7 @@
 - Control plane 1: k8s-control (Proxmox VM ID 1500)
 - Control plane 2: k8s-control-2 (stans alone debian bare metal node)
 - Management system: macOS
-- Local domain: .local
+- Local domain: local
 - External domain: pindaroli.org (Cloudflare managed)
 - Network gateway: 192.168.1.1
 - Router address: pve2.local

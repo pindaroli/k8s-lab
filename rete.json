@@ -43,6 +43,9 @@
         {
             "id": "switch10g",
             "label": "Switch Managed (ONTi)",
+            "model": "ONT-S508cl-8S",
+            "alias-model": "XikeStor SKS8300-8X",
+            "vendor": "ONTi",
             "type": "L3 Switch",
             "ip": "192.168.2.1",
             "ports": [
@@ -96,7 +99,7 @@
             "description": "Switch non managed with 4 porte 2.5G e 2 1oG fsp+ ports",
             "model": "zx-s",
             "vendor": "?",
-            "management IP": null,
+            "management IP": null
         },
         {
             "id": "macbook",
@@ -113,6 +116,30 @@
                     "ip": "192.168.2.2"
                 }
             ]
+        },
+        {
+            "id": "pve",
+            "label": "Proxmox Node 1",
+            "type": "Hypervisor",
+            "version": "Proxmox VE 9.1",
+            "OS": "Debian 13 (Trixie)",
+            "ip": "192.168.1.125"
+        },
+        {
+            "id": "pve2",
+            "label": "Proxmox Node 2",
+            "type": "Hypervisor",
+            "version": "Proxmox VE 9.1",
+            "OS": "Debian 13 (Trixie)",
+            "ip": "192.168.1.10"
+        },
+        {
+            "id": "pve3",
+            "label": "Proxmox Node 3",
+            "type": "Hypervisor",
+            "version": "Proxmox VE 9.1",
+            "OS": "Debian 13 (Trixie)",
+            "ip": "192.168.1.144"
         }
     ]
 }
