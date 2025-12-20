@@ -210,25 +210,35 @@
                     ]
                 },
                 {
-                    "id": "3",
+                    "id": "igc2",
                     "role": "Unused/Spare",
                     "speed": "2.5Gbs"
                 },
                 {
-                    "id": "4",
-                    "role": "Unused/Spare",
-                    "speed": "2.5Gbs"
+                    "id": "igc3",
+                    "role": "LAN",
+                    "speed": "2.5Gbs",
+                    "description": "Physical LAN Interface",
+                    "logical_interfaces": [
+                        {
+                            "name": "lan",
+                            "interface": "lan",
+                            "subnet": "192.168.1.1/24",
+                            "dhcp": "enabled",
+                            "firewall_policy": "Allow All"
+                        }
+                    ]
                 }
             ]
         },
         {
-            "id": "macbook",
-            "label": "MacBook Pro",
+            "id": "mac mini",
+            "label": "Mac Mini M4 Pro",
             "interfaces": [
                 {
                     "interface": "en0 (Ethernet)",
                     "network": "Home Lab",
-                    "ip": "192.168.1.x"
+                    "ip": "xxx"
                 },
                 {
                     "interface": "en8 (USB LAN)",
