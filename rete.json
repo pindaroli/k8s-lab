@@ -35,7 +35,7 @@
             "ports": [
                 {
                     "id": "1",
-                    "role": "Uplink to switch25gMS Port 6",
+                    "role": "Uplink to switch25gMServer Port 6",
                     "mode": "Trunk",
                     "speed": "10Gbs",
                     "native_vlan": "1",
@@ -72,7 +72,7 @@
                 },
                 {
                     "id": "5",
-                    "role": "Downlink to switch25gML",
+                    "role": "Downlink to switch25gMLetto",
                     "mode": "Trunk",
                     "native_vlan": "1",
                     "allowed_vlans": [
@@ -85,7 +85,7 @@
             ]
         },
         {
-            "id": "switch25gML",
+            "id": "switch25gMLetto",
             "description": "Switch managed with 4 porte 2.5G e 2 1OG fsp+ ports",
             "model": "GT-ST024M",
             "vendor": "GoodTop",
@@ -126,7 +126,7 @@
             ]
         },
         {
-            "id": "switch25gMS",
+            "id": "switch25gMServer",
             "description": "Switch managed with 5 porte 2.5G e 1 1OG fsp+ ports",
             "model": "LG-SG5T1",
             "vendor": "LIAGUO",
@@ -286,13 +286,13 @@
                 {
                     "id": "1",
                     "speed": "2.5Gbs",
-                    "connected_to": "switch25gMS",
+                    "connected_to": "switch25gMServer",
                     "vlan": "20"
                 },
                 {
                     "id": "2",
                     "speed": "2.5Gbs",
-                    "connected_to": "switch25gMS",
+                    "connected_to": "switch25gMServer",
                     "vlan": "30"
                 }
             ]
@@ -307,13 +307,13 @@
                 {
                     "id": "1",
                     "speed": "2.5Gbs",
-                    "connected_to": "switch25gMS",
+                    "connected_to": "switch25gMServer",
                     "vlan": "20"
                 },
                 {
                     "id": "2",
                     "speed": "2.5Gbs",
-                    "connected_to": "switch25gMS",
+                    "connected_to": "switch25gMServer",
                     "vlan": "30"
                 }
             ]
