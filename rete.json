@@ -12,9 +12,9 @@
             "subnet": "10.10.20.0/24"
         },
         {
-            "id": "999",
-            "description": "VLAN WAN (Internet Modem)",
-            "subnet": "Public IP (DHCP/PPPoE)"
+            "id": "30",
+            "description": "VLAN IoT (Isolation, Internet Only)",
+            "subnet": "10.10.30.0/24"
         }
     ],
     "nodi": [
@@ -88,18 +88,116 @@
                 },
                 {
                     "id": "5",
-                    "role": "Direct Client Access",
-                    "mode": "ACCESS",
-                    "pvid": 20
+                    "role": "Downlink to switch25gML",
+                    "mode": "Trunk",
+                    "native_vlan": "1",
+                    "allowed_vlans": [
+                        "1",
+                        "10",
+                        "20",
+                        "30",
+                        "999"
+                    ]
                 }
             ]
         },
         {
-            "id": "switch25g",
-            "description": "Switch non managed with 4 porte 2.5G e 2 1oG fsp+ ports",
-            "model": "zx-s",
-            "vendor": "?",
-            "management IP": null
+            "id": "switch25gML",
+            "description": "Switch managed with 4 porte 2.5G e 2 1OG fsp+ ports",
+            "model": "GT-ST024M",
+            "vendor": "GoodTop",
+            "location": "stanza da letto",
+            "management IP": "192.168.2.2",
+            "ports": [
+                {
+                    "id": "4",
+                    "role": "Client Access",
+                    "mode": "ACCESS",
+                    "speed": "2.5Gbs",
+                    "pvid": 20
+                },
+                {
+                    "id": "5",
+                    "role": "Trunk Port",
+                    "mode": "Trunk",
+                    "speed": "10Gbs",
+                    "native_vlan": "1",
+                    "allowed_vlans": [
+                        "1",
+                        "10",
+                        "20",
+                        "30",
+                        "999"
+                    ]
+                },
+                {
+                    "id": "6",
+                    "role": "Trunk Port",
+                    "mode": "Trunk",
+                    "speed": "10Gbs",
+                    "native_vlan": "20",
+                    "allowed_vlans": [
+                        "20",
+                        "30"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "switch25gMS",
+            "description": "Switch managed with 5 porte 2.5G e 1 1OG fsp+ ports",
+            "model": "LG-SG5T1",
+            "vendor": "LIAGUO",
+            "support": "www.sodola-network.com",
+            "location": "Sala Server",
+            "management IP": "192.168.2.3",
+            "ports": [
+                {
+                    "id": "5",
+                    "role": "Uplink to opnSense Port 2",
+                    "mode": "Trunk",
+                    "speed": "2.5Gbs",
+                    "native_vlan": "1",
+                    "allowed_vlans": [
+                        "20",
+                        "30"
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "opnSense",
+            "label": "OPNsense Firewall",
+            "type": "Firewall/Router",
+            "model": "Mini PC (4x 2.5GbE)",
+            "ports": [
+                {
+                    "id": "1",
+                    "role": "Direct WAN (Modem)",
+                    "speed": "2.5Gbs",
+                    "note": "Direct physical connection to Modem (No VLAN)"
+                },
+                {
+                    "id": "2",
+                    "role": "Trunk LAN (VLAN 20 + 30) to switch25gMS Port 5",
+                    "speed": "2.5Gbs",
+                    "mode": "Trunk",
+                    "allowed_vlans": [
+                        "20",
+                        "30"
+                    ]
+                },
+                {
+                    "id": "3",
+                    "role": "Unused/Spare",
+                    "speed": "2.5Gbs"
+                },
+                {
+                    "id": "4",
+                    "role": "Unused/Spare",
+                    "speed": "2.5Gbs"
+                }
+            ]
         },
         {
             "id": "macbook",
