@@ -89,6 +89,13 @@
             "management IP": "192.168.2.2",
             "ports": [
                 {
+                    "id": "2",
+                    "role": "Server Access / Free",
+                    "mode": "ACCESS",
+                    "speed": "2.5Gbs",
+                    "pvid": 10
+                },
+                {
                     "id": "3",
                     "role": "Management / Free",
                     "mode": "ACCESS",
@@ -137,6 +144,34 @@
             "location": "Sala Server",
             "management IP": "192.168.2.3",
             "ports": [
+                {
+                    "id": "1",
+                    "role": "Connection to pve2 Port 1",
+                    "mode": "ACCESS",
+                    "speed": "2.5Gbs",
+                    "pvid": 20
+                },
+                {
+                    "id": "2",
+                    "role": "Connection to pve2 Port 2",
+                    "mode": "ACCESS",
+                    "speed": "2.5Gbs",
+                    "pvid": 30
+                },
+                {
+                    "id": "3",
+                    "role": "Connection to pve3 Port 1",
+                    "mode": "ACCESS",
+                    "speed": "2.5Gbs",
+                    "pvid": 20
+                },
+                {
+                    "id": "4",
+                    "role": "Connection to pve3 Port 2",
+                    "mode": "ACCESS",
+                    "speed": "2.5Gbs",
+                    "pvid": 30
+                },
                 {
                     "id": "5",
                     "role": "Uplink to opnSense Port 2",
