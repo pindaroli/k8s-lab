@@ -34,6 +34,20 @@
             "ip": "192.168.2.1",
             "ports": [
                 {
+                    "id": "1",
+                    "role": "Uplink to switch25gMS Port 6",
+                    "mode": "Trunk",
+                    "speed": "10Gbs",
+                    "native_vlan": "1",
+                    "allowed_vlans": [
+                        "1",
+                        "10",
+                        "20",
+                        "30",
+                        "999"
+                    ]
+                },
+                {
                     "id": "8",
                     "role": "Uplink to Switch Client (PVID 20)",
                     "mode": "Trunk",
@@ -105,7 +119,7 @@
                     "id": "6",
                     "role": "Trunk Port",
                     "mode": "Trunk",
-                    "speed": "10bs",
+                    "speed": "10Gbs",
                     "native_vlan": "20",
                     "allowed_vlans": [
                         "20",
@@ -132,6 +146,20 @@
                     "allowed_vlans": [
                         "20",
                         "30"
+                    ]
+                },
+                {
+                    "id": "6",
+                    "role": "Downlink to switch10g Port 1",
+                    "mode": "Trunk",
+                    "speed": "10Gbs",
+                    "native_vlan": "1",
+                    "allowed_vlans": [
+                        "1",
+                        "10",
+                        "20",
+                        "30",
+                        "999"
                     ]
                 }
             ]
