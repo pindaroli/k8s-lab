@@ -167,13 +167,13 @@
             "model": "Mini PC (4x 2.5GbE)",
             "ports": [
                 {
-                    "id": "0",
+                    "id": "igc0",
                     "role": "Direct WAN (Modem)",
                     "speed": "2.5Gbs",
                     "note": "Direct physical connection to Modem (No VLAN)"
                 },
                 {
-                    "id": "2",
+                    "id": "igc1",
                     "role": "Trunk LAN Master",
                     "speed": "2.5Gbs",
                     "mode": "Trunk",
@@ -184,24 +184,24 @@
                     ],
                     "logical_interfaces": [
                         {
-                            "name": "LAN_CLIENT",
-                            "interface": "opt1",
+                            "name": "igc1_vlan20",
+                            "interface": "opt2",
                             "vlan_tag": "20",
                             "subnet": "10.10.20.1/24",
                             "dhcp": "enabled",
                             "firewall_policy": "Allow All"
                         },
                         {
-                            "name": "LAN_IOT",
-                            "interface": "opt2",
+                            "name": "igc1_vlan30",
+                            "interface": "opt3",
                             "vlan_tag": "30",
                             "subnet": "10.10.30.1/24",
                             "dhcp": "enabled",
                             "firewall_policy": "Block Private Networks (RFC1918), Allow Internet"
                         },
                         {
-                            "name": "LAN_SERVER",
-                            "interface": "opt3",
+                            "name": "igc1_vlan10",
+                            "interface": "opt1",
                             "vlan_tag": "10",
                             "subnet": "10.10.10.1/24",
                             "dhcp": "static_only",
