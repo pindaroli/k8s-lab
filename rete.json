@@ -44,7 +44,7 @@
                         "30"
                     ]
                 },
-                { 
+                {
                     "id": "3",
                     "role": "Safety / Management Port",
                     "mode": "ACCESS",
@@ -191,22 +191,71 @@
             "label": "Proxmox Node 1",
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)"
+            "OS": "Debian 13 (Trixie)",
+            "ports": [
+                {
+                    "id": "1",
+                    "speed": "10Gbs",
+                    "connected_to": "switch10g",
+                    "vlan": "20",
+                    "note": "Bridge port"
+                },
+                {
+                    "id": "2",
+                    "speed": "10Gbs",
+                    "connected_to": "switch10g",
+                    "vlan": "30",
+                    "note": "Bridge port"
+                },
+                {
+                    "id": "3",
+                    "speed": "2.5Gbs",
+                    "connected_to": "free",
+                    "vlan": "1"
+                }
+            ]
         },
         {
             "id": "pve2",
             "label": "Proxmox Node 2",
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)"
-            
+            "OS": "Debian 13 (Trixie)",
+            "ports": [
+                {
+                    "id": "1",
+                    "speed": "2.5Gbs",
+                    "connected_to": "switch25gMS",
+                    "vlan": "20"
+                },
+                {
+                    "id": "2",
+                    "speed": "2.5Gbs",
+                    "connected_to": "switch25gMS",
+                    "vlan": "30"
+                }
+            ]
         },
         {
             "id": "pve3",
             "label": "Proxmox Node 3",
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)"
+            "OS": "Debian 13 (Trixie)",
+            "ports": [
+                {
+                    "id": "1",
+                    "speed": "2.5Gbs",
+                    "connected_to": "switch25gMS",
+                    "vlan": "20"
+                },
+                {
+                    "id": "2",
+                    "speed": "2.5Gbs",
+                    "connected_to": "switch25gMS",
+                    "vlan": "30"
+                }
+            ]
         }
     ]
 }
