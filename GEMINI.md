@@ -107,7 +107,7 @@ All services protected by OAuth2 authentication:
 
 ### TrueNAS SCALE
 - **IMPORTANT**: TrueNAS SCALE uses Debian Linux (NOT FreeBSD)
-- NFS server: 10.10.10.5 (Storage VLAN Access)
+- NFS server: to be defined (Storage VLAN Access)
 - SSH user: olindo (not root)
 - NFS exports configured in /etc/exports
 - Uses standard Linux NFS commands (exportfs, etc.)
@@ -139,8 +139,6 @@ All services protected by OAuth2 authentication:
 
 - Email: o.pindaro@gmail.com
 - Domain: pindaroli.org (Cloudflare managed)
-- Network: 10.10.0.0/16 (VLAN 10, 20, 30)
-- Infrastructure: Proxmox virtualization platform (pve, pve2) - Clustered
 - Upgrade command: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`
 # Configurazione rete fisica
 - Configurazione dettagliata: [rete.json](file:///Users/olindo/prj/k8s-lab/rete.json) 
