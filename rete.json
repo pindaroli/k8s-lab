@@ -105,7 +105,7 @@
                     "id": "6",
                     "role": "Trunk Port",
                     "mode": "Trunk",
-                    "speed": "10Gbs",
+                    "speed": "10bs",
                     "native_vlan": "20",
                     "allowed_vlans": [
                         "20",
@@ -191,24 +191,22 @@
             "label": "Proxmox Node 1",
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)",
-            "ip": "192.168.1.125"
+            "OS": "Debian 13 (Trixie)"
         },
         {
             "id": "pve2",
             "label": "Proxmox Node 2",
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)",
-            "ip": "192.168.1.10"
+            "OS": "Debian 13 (Trixie)"
+            
         },
         {
             "id": "pve3",
             "label": "Proxmox Node 3",
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)",
-            "ip": "192.168.1.144"
+            "OS": "Debian 13 (Trixie)"
         }
     ]
 }
