@@ -1,6 +1,9 @@
-# Configurazione Rete PVE3
+# Configurazione Rete (Vecchio Documento - Riferimento)
 
-Dato che PVE3 si trova su **VLAN 10 (Server)** e **VLAN 20 (Client VM)**, ecco come configurare `/etc/network/interfaces`.
+**NOTA**: Questo documento è stato superato da `configurazione_pve_usb.md`.
+
+Dato che PVE3 si trova su **VLAN 10 (Server)** e **VLAN 20 (Client VM)**...
+(Il resto del contenuto rimane valido come riferimento teorico ma la config pratica è nei nuovi file).
 
 ## 1. Identificare le Porte Fisiche
 Prima di applicare la configurazione, dobbiamo essere sicuri di quale interfaccia linux (`eno1`, `eno2`, `enp1s0`, ecc.) corrisponde a quale cavo.
