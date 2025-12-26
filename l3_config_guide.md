@@ -289,75 +289,22 @@ Se risponde, OPNsense ha preso il controllo ed è pronto a portarti su Internet!
 
 ---
 
-## 6. Configurazione VM OPNsense (Proxmox Hardware)
-> **Metodo Automatico**: Abbiamo creato uno script per configurare le 5 schede di rete virtuali correttamente.
 
-1.  **Copia lo script su PVE2**:
-    ```bash
-    scp configure_opnsense.sh root@pve2:/root/
-    ```
-2.  **Contenuto Script `configure_opnsense.sh`**:
-    ```bash
-    #!/bin/bash
-    
-    # Configuration
-    VMID=2100
-    
-    echo "Configurazione Network per OPNsense VM $VMID..."
-    
-    # 1. Stop VM (per applicare cambi hardware)
-    echo "Stopping VM $VMID..."
-    qm stop $VMID
-    sleep 5
-    
-    # 2. Configura Interfacce di Rete
-    # net0 -> WAN (Native VLAN su switch stupido) -> vmbr999
-    # net1 -> Management/Transit (VLAN 1) -> vmbr0
-    # net2 -> Server (VLAN 10) -> vmbr10
-    # net3 -> Client (VLAN 20) -> vmbr20
-    # net4 -> IoT (VLAN 30) -> vmbr30
-    
-    echo "Applying Network Interface settings..."
-    qm set $VMID --net0 virtio,bridge=vmbr999
-    qm set $VMID --net1 virtio,bridge=vmbr0
-    qm set $VMID --net2 virtio,bridge=vmbr10
-    qm set $VMID --net3 virtio,bridge=vmbr20
-    qm set $VMID --net4 virtio,bridge=vmbr30
-    
-    # 3. Start VM
-    echo "Starting VM $VMID..."
-    qm start $VMID
-    
-    echo "Done! OPNsense configuration applied."
-    ```
+## 6. Configurazione Hardware OPNsense (Mini PC)
+> **Nota**: OPNsense è installato su Mini PC fisico dedicato (4x 2.5GbE).
 
-3.  **Lancia lo script (Safe Mode)**:
-    ```bash
-    ssh root@pve2 "nohup bash /root/configure_opnsense.sh > /root/opnsense_log.txt 2>&1 &"
-    ```
-    *Questo script spegnerà la VM, imposterà le 5 interfacce e riavvierà.*
+### A. Accesso Console
+Per accedere alla console (menu testuale) hai due opzioni:
+1.  **Fisica**: Collega un Monitor (HDMI) e una Tastiera USB direttamente al Mini PC.
+2.  **Seriale (Se disponibile)**: Se il Mini PC ha una porta Console/Serial, usa un cavo console.
+3.  **SSH**: Se hai abilitato SSH e conosci l'IP (es. `192.168.2.254` o `10.10.x.254`).
 
-3.  **IMPORTANTE: Console Check & Troubleshooting**:
-    Appena la VM si riavvia, l'ordine delle interfacce (`vtnet0`, `vtnet1`...) potrebbe cambiare (es. WAN diventa LAN).
-    
-    1.  **Apri la Console** di OPNsense da Proxmox.
-    2.  **Verifica MAC Address**:
-        -   Sulla Console OPNsense vedi i MAC address accanto a `vtnetX`.
-        -   Confrontali con Proxmox -> VM -> Hardware per capire chi è chi (es. Quale bridge corrisponde a quale vtnet).
-    3.  **Se le interfacce sono sbagliate**:
-        -   Usa l'opzione **1) Assign Interfaces**.
-        -   Il sistema ti chiederà se vuoi configurare le VLAN (Rispondi **N** / No, le VLAN le gestisce Proxmox).
-        -   Assegna le interfacce fisiche corrette:
-            -   **WAN** -> `vtnet0` (quella su `vmbr999`)
-            -   **LAN** -> `vtnet1` (quella su `vmbr0`)
-            -   **OPT1** -> `vtnet2` (quella su `vmbr10`)
-            -   **OPT2** -> `vtnet3` (quella su `vmbr20`)
-        -   Conferma e procedi.
-    4.  **Se perdi l'IP della LAN**:
-        -   Usa l'opzione **2) Set interface IP address**.
-        -   Seleziona la LAN e rimetti `192.168.2.254` / `24`.
+### B. Mappatura Porte (Tipica per 4 porte)
+Assicurati di identificare correttamente le porte `igc0`, `igc1`, ecc.
+*   **WAN**: Solitamente la prima porta (`igc0` o `eth0`).
+*   **LAN**: Solitamente la seconda porta (`igc1` o `eth1`).
+*   Verifica sempre collegando/scollegando il cavo e osservando la console ("link up/down").
 
----
 
 ## 7. Configurazione TrueNAS Scale (VM su Proxmox)
 > **Obiettivo**: TrueNAS (Virtualizzato) deve avere "tre gambe": Management, Server e Client.
@@ -413,4 +360,26 @@ Invece di complicarci la vita con le VLAN dentro TrueNAS, diamo alla VM tre sche
 3.  **Range**: `10.10.20.50` - `10.10.20.100`.
 4.  **Gateway**: `10.10.20.1` (IP dello Switch!).
 5.  **DNS**: `192.168.2.254` o `1.1.1.1`.
+
+---
+
+## 9. Configurazione DNS (Unbound ACL)
+> **Problema**: Di default, il DNS Resolver (Unbound) risponde solo alle reti direttamente connesse (WAN, LAN). Le VLAN 10 e 20 arrivano dallo Switch, quindi Unbound le ignora.
+
+### A. OPNsense GUI
+1.  Vai su **Services** -> **Unbound DNS** -> **Access Lists**.
+2.  Clicca su **Add** (+) per creare una nuova lista.
+3.  **Access List Name**: `VLAN_Subnets`.
+4.  **Action**: `Allow`.
+5.  **Networks**: Aggiungi le subnet che devono poter risolvere i nomi:
+    -   `10.10.10.0/24` (Server)
+    -   `10.10.20.0/24` (Client)
+6.  Clicca **Save** e poi **Apply Configuration**.
+
+### B. Verifica
+Prova di nuovo dal Mac:
+```bash
+nslookup google.com 192.168.2.254
+```
+Se risponde, il DNS è sbloccato!
 

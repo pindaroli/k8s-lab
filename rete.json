@@ -228,7 +228,7 @@
                             "name": "igc1_vlan20",
                             "interface": "opt2",
                             "vlan_tag": "20",
-                            "subnet": "10.10.20.1/24",
+                            "subnet": "10.10.20.254/24",
                             "dhcp": "enabled",
                             "firewall_policy": "Allow All"
                         },
@@ -236,7 +236,7 @@
                             "name": "igc1_vlan30",
                             "interface": "opt3",
                             "vlan_tag": "30",
-                            "subnet": "10.10.30.1/24",
+                            "subnet": "10.10.30.254/24",
                             "dhcp": "enabled",
                             "firewall_policy": "Block Private Networks (RFC1918), Allow Internet"
                         },
@@ -244,7 +244,7 @@
                             "name": "igc1_vlan10",
                             "interface": "opt1",
                             "vlan_tag": "10",
-                            "subnet": "10.10.10.1/24",
+                            "subnet": "10.10.10.254/24",
                             "dhcp": "static_only",
                             "firewall_policy": "Allow Internet, Allow from LAN_CLIENT"
                         }
@@ -284,7 +284,9 @@
                 {
                     "interface": "en10 (10Gb Thunderbolt)",
                     "network": "Client (VLAN 20)",
-                    "ip": "10.10.20.100"
+                    "ip": "10.10.20.100",
+                    "gateway": "10.10.20.1",
+                    "connected_to": "switch25gMLetto Port 5"
                 }
             ]
         },
@@ -294,26 +296,28 @@
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
+            "management_ip": "10.10.10.11",
             "ports": [
                 {
                     "id": "1",
                     "speed": "10Gbs",
                     "connected_to": "switch10g Port 3",
                     "vlan": "10",
-                    "note": "LAN Server Bridge port"
+                    "note": "LAN Server Bridge (vmbr10)"
                 },
                 {
                     "id": "2",
                     "speed": "10Gbs",
                     "connected_to": "switch10g Port 5",
                     "vlan": "20",
-                    "note": "LAN Client Bridge port"
+                    "note": "LAN Client Bridge (vmbr20)"
                 },
                 {
                     "id": "3",
                     "speed": "2.5Gbs",
-                    "connected_to": "free",
-                    "vlan": "1"
+                    "connected_to": "Direct Access",
+                    "ip": "192.168.99.2",
+                    "note": "Service Port (No Gateway)"
                 }
             ]
         },
@@ -323,18 +327,21 @@
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
+            "management_ip": "10.10.10.12",
             "ports": [
                 {
                     "id": "1",
                     "speed": "2.5Gbs",
                     "connected_to": "switch25gMServer",
-                    "vlan": "20"
+                    "vlan": "10",
+                    "note": "LAN Server Bridge (vmbr10)"
                 },
                 {
                     "id": "2",
                     "speed": "2.5Gbs",
                     "connected_to": "switch25gMServer",
-                    "vlan": "30"
+                    "vlan": "20",
+                    "note": "LAN Client Bridge (vmbr20)"
                 }
             ]
         },
@@ -344,18 +351,21 @@
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
+            "management_ip": "10.10.10.13",
             "ports": [
                 {
                     "id": "1",
                     "speed": "2.5Gbs",
                     "connected_to": "switch25gMServer",
-                    "vlan": "20"
+                    "vlan": "10",
+                    "note": "LAN Server Bridge (vmbr10)"
                 },
                 {
                     "id": "2",
                     "speed": "2.5Gbs",
                     "connected_to": "switch25gMServer",
-                    "vlan": "30"
+                    "vlan": "20",
+                    "note": "LAN Client Bridge (vmbr20)"
                 }
             ]
         },
