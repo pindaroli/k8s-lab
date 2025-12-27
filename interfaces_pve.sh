@@ -23,8 +23,8 @@ iface vmbr999 inet manual
 # Management / Transit Bridge (VLAN 1)
 auto vmbr0
 iface vmbr0 inet static
-    address 192.168.1.125/24
-    gateway 192.168.1.1
+    address 192.168.2.125/24
+    gateway 192.168.2.254
     bridge-ports bond0.1
     bridge-stp off
     bridge-fd 0

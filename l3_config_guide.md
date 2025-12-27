@@ -11,9 +11,9 @@ Questa guida dettaglia i parametri esatti da inserire.
 2.  **IP Statico sul PC**:
     -   Il DHCP smetterà di funzionare durante il riavvio di OPNsense.
     -   Imposta manualmente sul tuo PC:
-        -   **IP**: `192.168.2.99`
+        -   **IP**: `192.168.100.99` (Se collegato a igc3)
         -   **Subnet**: `255.255.255.0`
-        -   **Gateway**: `192.168.2.1`
+        -   **Gateway**: `192.168.100.1`
     -   *Così rimani connesso allo Switch e a Proxmox anche se OPNsense si riavvia.*
 
 ---
@@ -32,14 +32,14 @@ Vai nel menu **VLAN Interface** (o "Layer 3 Interface"):
     -   **Subnet Mask**: `255.255.255.0` (o `/24`)
     -   **Status**: Enable
 3.  **VLAN 1** (Management/Transit):
-    -   **IP Address**: `192.168.2.1` (Già presente, NON cambiare se accedi da qui!)
+    -   **IP Address**: `192.168.2.1` (VLAN 1 Switch)
     -   **Subnet Mask**: `255.255.255.0`
 
 ### B. Rotta di Default (Per Internet)
 Vai nel menu **Routing** > **Static Route**:
 -   **Destination**: `0.0.0.0`
 -   **Mask**: `0.0.0.0`
--   **Next Hop (Gateway)**: `192.168.2.254` (Nuovo IP di OPNsense)
+-   **Next Hop (Gateway)**: `192.168.2.254` (IP OPNsense su Transit)
 -   *Significato*: "Se non conosci la destinazione, chiedi a OPNsense sulla rete di transito".
 
 ---
@@ -49,10 +49,10 @@ Vai nel menu **Routing** > **Static Route**:
 
 ### A. Configura Interfaccia
 Vai su **Interfaces** -> **Assignments** (o usa un'interfaccia esistente se c'è):
--   **IP Address**: `192.168.2.254`
+-   **IP Address**: `192.168.2.254` (su interfaccia TRANSIT/igc1)
 -   **Subnet**: `/24` (255.255.255.0)
-    -   *Nota*: Questa interfaccia deve essere collegata a una porta dello switch che ha la **VLAN 1** (Native/Untagged).
-    - In alternativa, se usi la porta 3 (Management), configura il tuo PC con IP statico `192.168.2.99`.
+    -   *Nota*: Questa interfaccia TRANSIT (igc1) collega lo switch.
+    -   La porta `igc3` (ADMIN) avrà IP `192.168.100.1` per emergenza.
 
 ---
 
@@ -150,7 +150,7 @@ Qui serve la WAN Nativa.
 ### B. PROXMOX (PVE2 - Su Switch Stupido WAN)
 Ecco i file di configurazione `/etc/network/interfaces` completi da usare.
 
-**1. File per PVE (Nodo 1 - 192.168.1.125)**
+**1. File per PVE (Nodo 1 - 192.168.100.125)**
 `vim /etc/network/interfaces`:
 ```auto
 auto lo
@@ -178,8 +178,8 @@ iface vmbr999 inet manual
 # Management / Transit Bridge (VLAN 1)
 auto vmbr0
 iface vmbr0 inet static
-    address 192.168.1.125/24
-    gateway 192.168.1.1
+    address 192.168.100.125/24
+    gateway 192.168.100.1
     bridge-ports bond0.1
     bridge-stp off
     bridge-fd 0
@@ -207,7 +207,7 @@ iface vmbr30 inet manual
     bridge-fd 0
 ```
 
-**2. File per PVE2 (Nodo 2 - 192.168.1.10 - SU SWITCH WAN)**
+**2. File per PVE2 (Nodo 2 - 192.168.100.10 - SU SWITCH WAN)**
 `vim /etc/network/interfaces`:
 ```auto
 auto lo
@@ -235,8 +235,8 @@ iface vmbr999 inet manual
 # Management / Transit Bridge (VLAN 1)
 auto vmbr0
 iface vmbr0 inet static
-    address 192.168.1.10/24
-    gateway 192.168.1.1
+    address 192.168.100.10/24
+    gateway 192.168.100.1
     bridge-ports bond0.1
     bridge-stp off
     bridge-fd 0
@@ -270,22 +270,24 @@ iface vmbr30 inet manual
 
 ---
 
-## 5. Gateway Legacy (Recuperare 192.168.1.1)
-> **Problema**: Spostando il modem, la rete `192.168.1.x` perde il suo gateway fisico (1.1).
-> **Soluzione**: OPNsense deve diventare il nuovo 192.168.1.1.
+## 5. Gateway Transit (192.168.2.254)
+> **Obiettivo**: OPNsense ha la porta `igc1` collegata allo switch. Deve fare da Gateway per la rete 192.168.2.x.
 
-### A. OPNSENSE
-1.  Vai su **Interfaces** -> **Virtual IPs** -> **Settings**.
-2.  Clicca **Add** (+).
+### A. OPNSENSE (TRANSIT Interface)
+1.  Vai su **Interfaces** -> **Assignments**.
+2.  Crea una nuova interfaccia assegnata a **`igc1`** (se non c'è già, es. OPT4).
+3.  Chiamala **TRANSIT**.
+4.  Abilita, IPv4 Static: **`192.168.2.254` / 24**.
 3.  **Mode**: `IP Alias`.
-4.  **Interface**: `vlan1` (La tua interfaccia di gestione/transito "LAN").
-5.  **Address**: `192.168.1.1` / `24` (`255.255.255.0`).
-6.  **Description**: `Gateway Legacy LAN`.
+4.  **Interface**: `TRANSIT` (Interfaccia su igc1).
+5.  **Address**: `192.168.2.254` / `24`.
+6.  **Description**: `Gateway Transit Switch`.
 7.  **Salva e Applica**.
 
 ### B. Verifica
-Dai server proxmox, prova a pingare `192.168.1.1`.
-Se risponde, OPNsense ha preso il controllo ed è pronto a portarti su Internet!
+### B. Verifica
+Collegati alla porta **ADMIN_LAN** (igc3) per gestire OPNsense su `192.168.100.1`.
+I server e gli switch continueranno a usare `192.168.2.1` e `192.168.2.254` sulla rete di transito.
 
 ---
 

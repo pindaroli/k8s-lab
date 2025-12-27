@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 
 # Step 1: Start control plane VM
 echo -e "${YELLOW}Step 1: Starting control plane (k8s-control)...${NC}"
-ssh root@192.168.1.10 "qm start 1500"
+ssh root@192.168.2.10 "qm start 1500"
 echo -e "${GREEN}Control plane VM started${NC}"
 echo ""
 
@@ -28,7 +28,7 @@ echo ""
 
 # Step 3: Check control plane status
 echo -e "${YELLOW}Step 3: Checking control plane status...${NC}"
-ssh root@192.168.1.10 "qm status 1500"
+ssh root@192.168.2.10 "qm status 1500"
 echo ""
 
 # Step 4: Wait for Kubernetes API to be ready
@@ -54,7 +54,7 @@ echo ""
 
 # Step 6: Start worker node VM
 echo -e "${YELLOW}Step 6: Starting worker node (k8s-runner-1)...${NC}"
-ssh root@192.168.1.10 "qm start 1100"
+ssh root@192.168.2.10 "qm start 1100"
 echo -e "${GREEN}Worker node VM started${NC}"
 echo ""
 
@@ -65,7 +65,7 @@ echo ""
 
 # Step 8: Check worker node status
 echo -e "${YELLOW}Step 8: Checking worker node status...${NC}"
-ssh root@192.168.1.10 "qm status 1100"
+ssh root@192.168.2.10 "qm status 1100"
 echo ""
 
 # Step 9: Wait for worker node to join cluster

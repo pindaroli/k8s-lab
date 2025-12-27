@@ -1,0 +1,7 @@
+Conferma al 100% che è una Regola del Firewall su OPNsense che manca. Il firewall sta facendo passare il traffico "attraverso" di lui (verso Internet), ma sta bloccando il traffico "diretto a lui" (Ping e DNS).
+
+Devi aggiungere questa Regola (Fondamentale): Vai su Firewall -> Rules -> [Interfaccia Trunk/LAN]:
+
+Clicca Add (+).
+Action: Pass
+Protocol: Any (così includi Ping, DNS e GUI).
