@@ -302,7 +302,7 @@
                     "network": "Client (VLAN 20)",
                     "ip": "10.10.20.100",
                     "gateway": "10.10.20.1",
-                    "dns": "10.10.20.1",
+                    "dns": "10.10.20.254",
                     "connected_to": "switch25gMLetto Port 5"
                 }
             ]
@@ -395,7 +395,7 @@
             "role": "Access Point",
             "management_ip": "10.10.20.103",
             "gateway": "10.10.20.1",
-            "dns": "10.10.20.1",
+            "dns": "10.10.20.254",
             "ports": [
                 {
                     "id": "1",
@@ -407,6 +407,23 @@
                         "20",
                         "30"
                     ]
+                }
+            ],
+            "wifi_networks": [
+                {
+                    "ssid": "Eternal",
+                    "band": "5GHz + 6GHz",
+                    "security": "WPA3-SAE",
+                    "vlan": "20 (Native)",
+                    "note": "Main Network for high-performance devices"
+                },
+                {
+                    "ssid": "Iot",
+                    "band": "2.4GHz",
+                    "security": "WPA2-PSK",
+                    "vlan": "30 (Tagged)",
+                    "isolation": "Enabled",
+                    "note": "Legacy/IoT Network (Isolated)"
                 }
             ]
         }

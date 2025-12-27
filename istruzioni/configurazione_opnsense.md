@@ -135,5 +135,5 @@ Se i client ricevono errori `Time to live exceeded` da OPNsense (`.254`):
 ## Riassunto IP Chiave
 *   **Gateway LAN/Server/Client**: Switch (10.10.x.1)
 *   **Gateway IoT**: OPNsense (10.10.30.1)
-*   **DNS Server**: OPNsense (10.10.x.254 o .1)
+*   **DNS Server**: OPNsense (10.10.x.254)
 *   **Gateway di Transito**: Switch (192.168.2.1) <-> OPNsense (192.168.2.254)
