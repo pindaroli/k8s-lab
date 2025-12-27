@@ -387,10 +387,10 @@
             ]
         },
         {
-            "id": "ap1100",
+            "id": "ap11000",
             "label": "Access Point (Cudy)",
             "brand": "Cudy",
-            "model": "AP1100",
+            "model": "AP11000",
             "type": "Network Device",
             "role": "Access Point",
             "management_ip": "10.10.20.103",
