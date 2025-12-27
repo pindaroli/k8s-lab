@@ -101,13 +101,34 @@ Essenziale per dare accesso a Internet alle VLAN (che hanno IP privati).
     *   **Description**: NAT per VLAN Interne.
 
 ### B. Regole Firewall (Rules)
-*   **TRANSIT**: Allow All (o ristretto a necessità).
+*   **TRANSIT**: **CRITICO**. Crea una regola **PASS**, Source `Any`, Destination `Any`.
+    *   *Nota*: Senza questa regola, tutto il traffico dallo Switch (VLAN 10, 20) viene bloccato di default. OPNsense non crea regole automatiche per le interfacce OPT.
 *   **VLAN 10 / 20**:
     *   Allow IPv4/IPv6 any to any (se vuoi permettere accesso a internet).
     *   *Nota*: Il traffico tra 10 e 20 passa dallo switch, ma se arrivano pacchetti a OPNsense (es. DHCP, DNS), devono essere accettati.
 *   **VLAN 30 (IoT)**:
-    *   Block destination RFC1918 (Reti private: 192.168.x.x, 10.x.x.x).
+    *   Block destination `RFC1918` (Reti private): **SOLO** se applicata all'interfaccia VLAN 30 specifica.
+    *   ⚠️ **ATTENZIONE**: NON applicare mai blocchi RFC1918 sull'interfaccia **TRANSIT** (verso lo switch), altrimenti blocchi l'accesso a Internet per tutte le VLAN!
     *   Allow destination Any (Internet).
+
+### C. Impostazioni Avanzate (CRITICO per Routing Asimmetrico)
+Poiché il traffico di ritorno dai client non passa dallo switch ma va diretto al client (Routing Asimmetrico), il firewall di OPNsense potrebbe bloccare i pacchetti legittimi.
+
+1.  Vai su **Firewall > Settings > Advanced**.
+2.  Cerca l'opzione **Static route filtering**.
+3.  **ABILITA** (spunta) la voce: `Bypass firewall rules for traffic on the same interface`.
+4.  Scorri in fondo e **Save**.
+
+> **Nota**: Senza questa spunta, il ping verso Internet fallirà con errori di "State violation" o "Default deny".
+
+---
+
+## 7. Troubleshooting
+
+### Loop di Routing (Time to live exceeded)
+Se i client ricevono errori `Time to live exceeded` da OPNsense (`.254`):
+1.  **Controlla la WAN**: Se l'interfaccia WAN è **Down**, OPNsense potrebbe eleggere automaticamente lo Switch (`SWITCH_L3`) come Gateway di Default (se configurato come Gateway), rimandando indietro i pacchetti e creando un loop infinito.
+2.  **Soluzione**: Assicurati che la WAN sia **Up** o che il gateway `SWITCH_L3` non sia marcato come "Upstream Gateway" (se possibile) o abbia priority 255. Tuttavia, senza WAN, OPNsense non può comunque navigare.
 
 ---
 
