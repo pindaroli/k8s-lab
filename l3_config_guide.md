@@ -54,6 +54,14 @@ Vai su **Interfaces** -> **Assignments** (o usa un'interfaccia esistente se c'è
     -   *Nota*: Questa interfaccia TRANSIT (igc1) collega lo switch.
     -   La porta `igc3` (ADMIN) avrà IP `192.168.100.1` per emergenza.
 
+### B. Modifica IP Interfacce VLAN (Evitare Conflitti)
+> **Critico**: Ora che lo Switch è `10.10.10.1` e `10.10.20.1`, OPNsense **NON** può avere gli stessi IP.
+1.  Vai su **Interfaces** -> **[VLAN10]**:
+    -   Cambia IP a `10.10.10.254`.
+2.  Vai su **Interfaces** -> **[VLAN20]**:
+    -   Cambia IP a `10.10.20.254`.
+    -   *Serve solo affinché il servizio DHCP possa ascoltare/ricevere il Relay.*
+
 ---
 
 ## 10. Impostazione SSH Key su Switch (Bonus)
@@ -361,7 +369,7 @@ Invece di complicarci la vita con le VLAN dentro TrueNAS, diamo alla VM tre sche
 2.  **Enable**: Sì.
 3.  **Range**: `10.10.20.50` - `10.10.20.100`.
 4.  **Gateway**: `10.10.20.1` (IP dello Switch!).
-5.  **DNS**: `192.168.2.254` o `1.1.1.1`.
+5.  **DNS**: `10.10.20.254` (IP di OPNsense).
 
 ---
 

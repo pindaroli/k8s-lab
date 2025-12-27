@@ -228,9 +228,9 @@
                             "name": "igc1_vlan20",
                             "interface": "opt2",
                             "vlan_tag": "20",
-                            "subnet": "10.10.20.1/24",
+                            "subnet": "10.10.20.254/24",
                             "dhcp": "enabled",
-                            "dns": "10.10.20.1",
+                            "dns": "10.10.20.254",
                             "firewall_policy": "Allow All"
                         },
                         {
@@ -246,9 +246,9 @@
                             "name": "igc1_vlan10",
                             "interface": "opt1",
                             "vlan_tag": "10",
-                            "subnet": "10.10.10.1/24",
+                            "subnet": "10.10.10.254/24",
                             "dhcp": "static_only",
-                            "dns": "10.10.10.1",
+                            "dns": "10.10.10.254",
                             "firewall_policy": "Allow Internet, Allow from LAN_CLIENT"
                         },
                         {
