@@ -115,13 +115,6 @@
                 },
                 {
                     "id": "5",
-                    "role": "Mac Mini Client (en10)",
-                    "mode": "ACCESS",
-                    "speed": "10Gbs",
-                    "pvid": 20
-                },
-                {
-                    "id": "6",
                     "role": "Uplink to switch10g Port 8",
                     "mode": "Trunk",
                     "speed": "10Gbs",
@@ -132,6 +125,13 @@
                         "20",
                         "30"
                     ]
+                },
+                {
+                    "id": "6",
+                    "role": "Mac Mini Client (en10)",
+                    "mode": "ACCESS",
+                    "speed": "10Gbs",
+                    "pvid": 20
                 }
             ]
         },
@@ -239,8 +239,8 @@
                             "vlan_tag": "30",
                             "subnet": "10.10.30.1/24",
                             "dhcp": "enabled",
-                            "dns": "10.10.30.1",
-                            "firewall_policy": "Block Private Networks (RFC1918), Allow Internet"
+                            "dns": "1.1.1.1, 8.8.8.8",
+                            "firewall_policy": "Block 192.168.0.0/16, Block 10.0.0.0/8, Allow Internet"
                         },
                         {
                             "name": "igc1_vlan10",
@@ -253,9 +253,10 @@
                         },
                         {
                             "name": "igc1_transit",
-                            "interface": "opt4 (or assigned as LAN)",
+                            "interface": "opt4",
                             "vlan_tag": "Native (Untagged)",
                             "subnet": "192.168.2.254/24",
+                            "gateway": "192.168.2.1 (Switch L3)",
                             "dhcp": "disabled",
                             "firewall_policy": "Allow All / Transit"
                         }

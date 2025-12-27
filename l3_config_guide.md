@@ -96,185 +96,110 @@ Vai su **System** -> **Routes** -> **Configuration**:
     -   **Network**: `10.10.20.0/24`
     -   **Gateway**: `SWITCH_L3`
 
-### D. Firewall Rules (IMPORTANTE)
+### D. Outbound NAT (CRITICO / NO INTERNET FIX)
+> **Problema**: Senza questo, i pacchetti escono verso Internet ma non sanno come tornare indietro perché OPNsense non fa NAT per 10.10.x.x in automatico.
+1.  Vai su **Firewall** -> **NAT** -> **Outbound**.
+2.  Imposta **Mode**: `Hybrid outbound NAT rule generation`.
+3.  Clicca **Save**.
+4.  Clicca **Add** (Freccia in su) per aggiungere una regola **in cima**:
+    -   **Interface**: `WAN`.
+    -   **Source Address**: `10.10.0.0/16` (o crea un Alias per le tue VLAN).
+        *   *Alternativa*: Fai due regole, una per `10.10.10.0/24` e una per `10.10.20.0/24`.
+    -   **Translation / Target**: `Interface address`.
+    -   **Description**: `NAT for VLANs behind L3 Switch`.
+5.  **Save** & **Apply Changes**.
+
+### E. Firewall Rules (IMPORTANTE)
 Vai su **Firewall** -> **Rules** -> (Interfaccia 192.168.2.x):
 -   Aggiungi una regola PASS in cima:
     -   **Destination**: `Any`
 
 ---
 
-## 4. WAN VLAN (Native WAN su Switch Stupido)
-> **Scenario**: Il Modem è collegato allo switch stupido. Lo switch stupido è collegato alla Porta 8 dello switch Managed.
-> **Obiettivo**: Tutto il traffico "nudo" (Untagged) dello switch stupido deve essere WAN (999).
+## 4. Configurazione Network Proxmox
+> **Obiettivo**: Configurare le interfacce di rete dei nodi Proxmox in coerenza con `rete.json`.
 
-### A. SWITCH MANAGED (Porte Uplink)
+Ecco i file di configurazione `/etc/network/interfaces` da usare.
 
-**1. PORTA 2 (Verso Switch Stupido WAN: Modem + PVE2)**
-Qui serve la WAN Nativa.
--   **PVID / Native VLAN**: `999` (Traffico modem entra qui).
--   **Tagged VLANs**: `1, 10, 20, 30` (VLAN 30 IoT passante per OPNsense).
-
-**2. PORTA 8 (Verso Switch Stupido Client)**
--   **PVID / Native VLAN**: `20` (Traffico PC Client).
--   **Tagged VLANs**: `1, 30` (VLAN 30 IoT appena aggiunta).
--   **Forbidden**: `10, 999` (Niente Server e niente Internet diretto).
-
----
-
-## 9. Configurazione IoT (VLAN 30 - Isolation)
-> **Obiettivo**: I dispositivi IoT (VLAN 30) devono andare SOLO su Internet (No accesso ai Server 10 o Client 20).
-> **Tecnica**: Non diamo un IP allo Switch sulla VLAN 30. Facciamo passare il traffico L2 diretto a OPNsense.
-
-### A. Switch Managed (Pass-through)
-1.  **VLAN 30 Interface**: **NON CREARLA** (o disabilitala).
-    *   *Lo Switch non deve fare routing per la IoT.*
-2.  Assicurati che la **Porta 2** e **Porta 8** abbiano "Tagged: 30".
-
-### B. Proxmox (PVE2) - Aggiungi Ponte
-1.  Modifica `/etc/network/interfaces`:
-    ```auto
-    auto vmbr30
-    iface vmbr30 inet manual
-        bridge-ports bond0.30
-        bridge-stp off
-        bridge-fd 0
-        # Ponte puro per OPNsense (IoT)
-    ```
-2.  **Applica**: `ifreload -a`.
-3.  **VM OPNsense**: Aggiungi `net4` collegata a `vmbr30`.
-
-### C. OPNsense (Firewall Rules)
-1.  **Interfaces**: Assegna `vtnet4` -> `IOT`.
-2.  **DHCPv4**: Attiva il server DHCP per `IOT` (10.10.30.x).
-3.  **Firewall Rules (IOT)**:
-    *   **Regola 1 (BLOCK LANs)**:
-        *   Action: Block
-        *   Destination: `RFC1918` (Network Alias per 192.168/16, 10/8, 172.16/12).
-    *   **Regola 2 (ALLOW Internet)**:
-        *   Action: Pass
-        *   Destination: Any.
-
-
-### B. PROXMOX (PVE2 - Su Switch Stupido WAN)
-Ecco i file di configurazione `/etc/network/interfaces` completi da usare.
-
-**1. File per PVE (Nodo 1 - 192.168.100.125)**
-`vim /etc/network/interfaces`:
-```auto
-auto lo
-iface lo inet loopback
-
-iface nic0 inet manual
-
-iface nic1 inet manual
-
-auto bond0
-iface bond0 inet manual
-    bond-slaves nic0 nic1
-    bond-miimon 100
-    bond-mode active-backup
-    bond-primary nic0
-
-# WAN Bridge (VLAN 999 - Untagged/Native from Switch)
-auto vmbr999
-iface vmbr999 inet manual
-    bridge-ports bond0
-    bridge-stp off
-    bridge-fd 0
-    # Collegata a OPNsense WAN
-
-# Management / Transit Bridge (VLAN 1)
-auto vmbr0
-iface vmbr0 inet static
-    address 192.168.100.125/24
-    gateway 192.168.100.1
-    bridge-ports bond0.1
-    bridge-stp off
-    bridge-fd 0
-    # Gateway punta al VIP di OPNsense
-
-# Server Bridge (VLAN 10)
-auto vmbr10
-iface vmbr10 inet manual
-    bridge-ports bond0.10
-    bridge-stp off
-    bridge-fd 0
-
-# Client Bridge (VLAN 20)
-auto vmbr20
-iface vmbr20 inet manual
-    bridge-ports bond0.20
-    bridge-stp off
-    bridge-fd 0
-
-# IoT Bridge (VLAN 30)
-auto vmbr30
-iface vmbr30 inet manual
-    bridge-ports bond0.30
-    bridge-stp off
-    bridge-fd 0
-```
-
-**2. File per PVE2 (Nodo 2 - 192.168.100.10 - SU SWITCH WAN)**
+**1. File per PVE (Nodo 1 - 10.10.10.11)**
 `vim /etc/network/interfaces`:
 ```auto
 auto lo
 iface lo inet loopback
 
 iface eno1 inet manual
+# Porta 1 (VLAN 10 - Server)
 
-iface enp2s0 inet manual
+iface eno2 inet manual
+# Porta 2 (VLAN 20 - Client)
 
-auto bond0
-iface bond0 inet manual
-    bond-slaves eno1 enp2s0
-    bond-miimon 100
-    bond-mode active-backup
-    bond-primary eno1
+# -----------------------------------------------------------
+# PORTA DI SERVIZIO (DIRECT ACCESS)
+# -----------------------------------------------------------
+auto eno3
+iface eno3 inet static
+    address 192.168.99.2/24
+    # NESSUN GATEWAY. Collega PC con IP 192.168.99.10
 
-# WAN Bridge (VLAN 999 - Untagged/Native from Switch)
-auto vmbr999
-iface vmbr999 inet manual
-    bridge-ports bond0
-    bridge-stp off
-    bridge-fd 0
-    # Collegata a OPNsense WAN
-
-# Management / Transit Bridge (VLAN 1)
-auto vmbr0
-iface vmbr0 inet static
-    address 192.168.100.10/24
-    gateway 192.168.100.1
-    bridge-ports bond0.1
-    bridge-stp off
-    bridge-fd 0
-    # Gateway punta al VIP di OPNsense
-
-# Server Bridge (VLAN 10)
+# -----------------------------------------------------------
+# BRIDGE MANAGEMENT & SERVER (VLAN 10)
+# -----------------------------------------------------------
 auto vmbr10
-iface vmbr10 inet manual
-    bridge-ports bond0.10
+iface vmbr10 inet static
+    address 10.10.10.11/24
+    gateway 10.10.10.1
+    bridge-ports eno1
     bridge-stp off
     bridge-fd 0
 
-# Client Bridge (VLAN 20)
+# -----------------------------------------------------------
+# BRIDGE CLIENT (VLAN 20)
+# -----------------------------------------------------------
 auto vmbr20
 iface vmbr20 inet manual
-    bridge-ports bond0.20
-    bridge-stp off
-    bridge-fd 0
-
-# IoT Bridge (VLAN 30)
-auto vmbr30
-iface vmbr30 inet manual
-    bridge-ports bond0.30
+    bridge-ports eno2
     bridge-stp off
     bridge-fd 0
 ```
 
-### C. OPNSENSE
-1.  **WAN Interface**: Collegata a `vmbr999`.
-2.  **Management Interface**: Collegata a `vmbr0` (che ora è su VLAN 1).
+**2. File per PVE2 (Nodo 2 - 10.10.10.12)**
+`vim /etc/network/interfaces`:
+```auto
+auto lo
+iface lo inet loopback
+
+# -----------------------------------------------------------
+# NODO: PVE2 (Node 2) - IP: 10.10.10.12
+# -----------------------------------------------------------
+
+iface eno1 inet manual
+# Porta 1 (VLAN 10 - Server)
+
+iface eno2 inet manual
+# Porta 2 (VLAN 20 - Client)
+
+# -----------------------------------------------------------
+# BRIDGE MANAGEMENT & SERVER (VLAN 10)
+# -----------------------------------------------------------
+auto vmbr10
+iface vmbr10 inet static
+    address 10.10.10.12/24
+    gateway 10.10.10.1
+    bridge-ports eno1
+    bridge-stp off
+    bridge-fd 0
+
+# -----------------------------------------------------------
+# BRIDGE CLIENT (VLAN 20)
+# -----------------------------------------------------------
+auto vmbr20
+iface vmbr20 inet manual
+    bridge-ports eno2
+    bridge-stp off
+    bridge-fd 0
+```
+
+
 
 ---
 
