@@ -28,6 +28,12 @@
 - RBAC configuration: traefik/traefik-rbac.yaml
 - Custom values: traefik/traefik-values.yaml
 
+### DNS Configuration
+- **Strategy**: Split-DNS (OPNsense resolves local IPs internally, Cloudflare resolves public IPs externally).
+- **Unbound Bindings**: Must include LAN, VLANs, and TRANSIT (192.168.2.254). Must EXCLUDE WAN.
+- **Rebind Protection**: Enabled. Use `System > Settings > Administration > Alternate Hostnames` for exceptions (e.g. `opnsense.pindaroli.org`).
+
+
 ## Certificate Management
 
 - cert-manager for automated Let's Encrypt certificates

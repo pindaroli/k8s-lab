@@ -206,9 +206,15 @@
             "label": "OPNsense Firewall",
             "type": "Firewall/Router",
             "model": "Mini PC (4x 2.5GbE)",
+            "aliases": [
+                "opnsense",
+                "pippo"
+            ],
             "configuration_notes": [
                 "Enable 'Static route filtering' (Bypass firewall rules for traffic on the same interface) in Firewall > Settings > Advanced to support asymmetric routing with L3 Switch.",
-                "Create an 'ALLOW ALL' (Any to Any) Firewall Rule on the TRANSIT interface. Traffic from the L3 Switch is blocked by default without it."
+                "Create an 'ALLOW ALL' (Any to Any) Firewall Rule on the TRANSIT interface. Traffic from the L3 Switch is blocked by default without it.",
+                "Ensure Unbound DNS is listening on TRANSIT interface (192.168.2.254) to allow infrastructure DNS resolution.",
+                "Ensure Unbound DNS is NOT listening on WAN interface to prevent external DNS amplification attacks."
             ],
             "ports": [
                 {
