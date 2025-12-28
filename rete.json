@@ -105,13 +105,14 @@
                 {
                     "id": "4",
                     "role": "Trunk to AP1100",
-                    "mode": "Trunk",
+                    "mode": "Trunk (Currently in Access 20 workaround)",
                     "speed": "2.5Gbs",
                     "native_vlan": "20",
                     "allowed_vlans": [
                         "20",
                         "30"
-                    ]
+                    ],
+                    "note": "WARNING: Trunk mode with Native VLAN 20 and Tagged 30 currently fails to pass traffic correctly on this port. Using Access VLAN 20 as a temporary fix."
                 },
                 {
                     "id": "5",
@@ -432,6 +433,17 @@
                     "note": "Legacy/IoT Network (Isolated)"
                 }
             ]
+        },
+        {
+            "id": "printer",
+            "label": "Network Printer",
+            "type": "Printer",
+            "brand": "Brother",
+            "model": "HL-L2400DWE",
+            "mac": "d8:b3:2f:1e:0f:1c",
+            "ip": "10.10.20.127",
+            "network": "Client (VLAN 20)",
+            "notes": "Static DHCP reservation on VLAN 20 (Temporary placement due to Trunk issues). mDNS repeater removed as no longer needed for intra-VLAN discovery."
         }
     ]
 }
