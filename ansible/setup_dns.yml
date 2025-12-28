@@ -20,15 +20,24 @@
         msg: "Please provide api_key and api_secret via extra vars or inventory."
       when: api_key == '' or api_secret == ''
 
-    - name: Normalize Hosts from rete.json
+    # ---------------------------------------------------------
+    # STEP 1: INITIALIZE ACCUMULATOR
+    # We create an empty list 'dns_h' to store all our DNS records.
+    # ---------------------------------------------------------
+    - name: Initialize DNS Host List
       set_fact:
         dns_h: []
 
-    - name: Parse Network Nodes
+    # ---------------------------------------------------------
+    # STEP 2: PARSE MAIN NODES (Pass 1)
+    # Loop through every node in rete.json.
+    # Extract its IP and add it to dns_h as a primary record.
+    # ---------------------------------------------------------
+    - name: Parse Main Network Nodes
       set_fact:
-        dns_h: "{{ dns_h + [{ 'hostname': item.id, 'ip': item_ip }] }}"
+        dns_h: "{{ dns_h + [{ 'hostname': item.id, 'domain': domain, 'ip': item_ip, 'desc': 'Host from rete.json' }] }}"
       vars:
-        # Complex logic to find the IP in the inconsistent rete.json structure
+        # Logic to find the IP in the complex rete.json structure
         item_ip: >-
           {{
             item.ip | default(
@@ -44,11 +53,35 @@
       loop: "{{ nodi }}"
       when: item_ip | length > 0
 
-    - name: Display parsed hosts (Debug)
+    # ---------------------------------------------------------
+    # STEP 3: PARSE ALIASES (Pass 2)
+    # Loop ONLY through nodes that have 'aliases'.
+    # 'subelements' gives us a pair: item.0 (Parent Node), item.1 (Alias Name).
+    # We use Parent's IP (item.0) with Alias Name (item.1).
+    # ---------------------------------------------------------
+    - name: Parse Network Aliases
+      set_fact:
+        dns_h: "{{ dns_h + [{ 'hostname': alias_name, 'domain': domain, 'ip': parent_ip, 'desc': 'Alias for ' + parent_node.id }] }}"
+      vars:
+        parent_node: "{{ item.0 }}"
+        alias_name: "{{ item.1 }}"
+        parent_ip: >-
+           {{ parent_node.ip | default(parent_node['management IP'] | default(parent_node.management_ip | default((parent_node.interfaces | selectattr('ip', 'defined') | map(attribute='ip') | first) | default((parent_node.ports | default([]) | selectattr('logical_interfaces', 'defined') | map(attribute='logical_interfaces') | flatten | selectattr('subnet', 'defined') | map(attribute='subnet') | first | regex_replace('/.*$', '') ) | default(''))))) }}
+      loop: "{{ nodi | subelements('aliases', skip_missing=True) }}"
+      when: parent_ip | length > 0
+
+
+    # ---------------------------------------------------------
+    # STEP 4: VERIFY DATA
+    # ---------------------------------------------------------
+    - name: Display calculated DNS records (Debug)
       debug:
-        msg: "Found Host: {{ item.hostname }}.{{ domain }} -> {{ item.ip }}"
+        msg: "Record: {{ item.hostname }}.{{ item.domain }} -> {{ item.ip }} ({{ item.desc }})"
       loop: "{{ dns_h }}"
 
+    # ---------------------------------------------------------
+    # STEP 5: PUSH TO OPNSENSE API
+    # ---------------------------------------------------------
     - name: Add/Update Host Overrides in OPNsense
       uri:
         url: "{{ opnsense_url }}/api/unbound/settings/addHostOverride"
@@ -61,16 +94,15 @@
         body:
           host:
             hostname: "{{ item.hostname }}"
-            domain: "{{ domain }}"
+            domain: "{{ item.domain }}"
             server: "{{ item.ip }}"
-            description: "Auto-configured via Ansible from rete.json"
+            description: "{{ item.desc }}"
             enabled: "1"
-        status_code: [200, 201] # API typically returns 200 on success
+        status_code: [200, 201]
         return_content: yes
       loop: "{{ dns_h }}"
       register: api_result
-      # Use a loop over the normalized list
-
+      
     - name: Apply Unbound Configuration
       uri:
         url: "{{ opnsense_url }}/api/unbound/service/reconfigure"
@@ -80,3 +112,5 @@
         force_basic_auth: yes
         validate_certs: no
         status_code: 200
+
+
