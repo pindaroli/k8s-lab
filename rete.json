@@ -22,7 +22,10 @@
             "id": "truenas",
             "label": "TrueNAS Scale",
             "type": "VM",
-            "role": "NAS"
+            "role": "NAS",
+            "management_ip_vlan10": "10.10.10.50",
+            "client_ip_vlan20": "10.10.20.50",
+            "notes": "Multihomed: NIC1 on vmbr10 (Gateway), NIC2 on vmbr20 (No Gateway) for high-performance direct Client access."
         },
         {
             "id": "switch10g",
@@ -340,8 +343,8 @@
                     "id": "3",
                     "speed": "2.5Gbs",
                     "connected_to": "Direct Access",
-                    "ip": "192.168.99.2",
-                    "note": "Service Port (No Gateway)"
+                    "ip": "192.168.100.11",
+                    "note": "Service Port (VLAN 1 Admin Subnet - No Gateway)"
                 }
             ]
         },

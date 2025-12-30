@@ -13,12 +13,12 @@ iface eno2 inet manual
 # Porta 2 (VLAN 20 - Client)
 
 # -----------------------------------------------------------
-# PORTA DI SERVIZIO (DIRECT ACCESS)
+# PORTA DI SERVIZIO (DIRECT ACCESS - VLAN 1 Admin Subnet)
 # -----------------------------------------------------------
 auto eno3
 iface eno3 inet static
-    address 192.168.99.2/24
-    # NESSUN GATEWAY. Collega PC con IP 192.168.99.10
+    address 192.168.100.11/24
+    # NESSUN GATEWAY. Collega PC con IP 192.168.100.x
 
 # -----------------------------------------------------------
 # BRIDGE MANAGEMENT & SERVER (VLAN 10)

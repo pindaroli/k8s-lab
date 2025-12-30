@@ -1,0 +1,22 @@
+# Guida rapida: Montare una penna USB su Debian / Proxmox
+
+1. Identifica il dispositivo:
+   lsblk
+   (Es. /dev/sdb1)
+
+2. Crea il punto di montaggio:
+   mkdir -p /mnt/usb
+
+3. Monta la chiavetta:
+   - Linux (ext4): mount /dev/sdb1 /mnt/usb
+   - Windows (FAT32): mount -t vfat /dev/sdb1 /mnt/usb
+   - Windows (NTFS): mount -t ntfs-3g /dev/sdb1 /mnt/usb
+
+4. Smontaggio sicuro:
+   umount /mnt/usb
+
+---
+Configurazione permanente (fstab):
+Trova l'UUID con: blkid /dev/sdb1
+Aggiungi a /etc/fstab:
+UUID=IL-TUO-UUID-QUI /mnt/usb ext4 defaults,nofail 0 2
