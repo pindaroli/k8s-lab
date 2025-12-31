@@ -36,8 +36,8 @@ auto eno1
 iface eno1 inet manual
 
 # Bridge di Management (e per VM Server se servono)
-auto vmbr10
-iface vmbr10 inet static
+auto vmbr0
+iface vmbr0 inet static
     address 10.10.10.13/24
     gateway 10.10.10.1
     bridge-ports eno1

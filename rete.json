@@ -22,10 +22,15 @@
             "id": "truenas",
             "label": "TrueNAS Scale",
             "type": "VM",
+            "vm_id": "1100",
             "role": "NAS",
+            "hostname": "truenas",
+            "domain": "pindaroli.org",
             "management_ip_vlan10": "10.10.10.50",
             "client_ip_vlan20": "10.10.20.50",
-            "notes": "Multihomed: NIC1 on vmbr10 (Gateway), NIC2 on vmbr20 (No Gateway) for high-performance direct Client access."
+            "default_gateway": "10.10.10.1 (VLAN 10 only)",
+            "dns": "1.1.1.1, 8.8.8.8",
+            "notes": "Multihomed: NIC1 on vmbr0 (Gateway), NIC2 on vmbr20 (No Gateway) for high-performance direct Client access."
         },
         {
             "id": "switch10g",
@@ -327,13 +332,15 @@
             "ports": [
                 {
                     "id": "1",
+                    "os_name": "enp1s0f0",
                     "speed": "10Gbs",
                     "connected_to": "switch10g Port 3",
                     "vlan": "10",
-                    "note": "LAN Server Bridge (vmbr10)"
+                    "note": "LAN Server Bridge (vmbr0)"
                 },
                 {
                     "id": "2",
+                    "os_name": "enp1s0f1",
                     "speed": "10Gbs",
                     "connected_to": "switch10g Port 5",
                     "vlan": "20",
@@ -341,6 +348,7 @@
                 },
                 {
                     "id": "3",
+                    "os_name": "eno3",
                     "speed": "2.5Gbs",
                     "connected_to": "Direct Access",
                     "ip": "192.168.100.11",
@@ -354,7 +362,7 @@
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
-            "management_ip": "10.10.10.12",
+            "management_ip": "10.10.10.21",
             "ports": [
                 {
                     "id": "1",
@@ -378,7 +386,7 @@
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
-            "management_ip": "10.10.10.13",
+            "management_ip": "10.10.10.31",
             "ports": [
                 {
                     "id": "1",
