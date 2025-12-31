@@ -43,8 +43,10 @@
             item.ip | default(
               item['management IP'] | default(
                 item.management_ip | default(
-                  (item.interfaces | selectattr('ip', 'defined') | map(attribute='ip') | first) | default(
-                    (item.ports | default([]) | selectattr('logical_interfaces', 'defined') | map(attribute='logical_interfaces') | flatten | selectattr('subnet', 'defined') | map(attribute='subnet') | first | regex_replace('/.*$', '') ) | default('')
+                  item.management_ip_vlan10 | default(
+                    (item.interfaces | selectattr('ip', 'defined') | map(attribute='ip') | first) | default(
+                      (item.ports | default([]) | selectattr('logical_interfaces', 'defined') | map(attribute='logical_interfaces') | flatten | selectattr('subnet', 'defined') | map(attribute='subnet') | first | regex_replace('/.*$', '') ) | default('')
+                    )
                   )
                 )
               )
@@ -66,7 +68,7 @@
         parent_node: "{{ item.0 }}"
         alias_name: "{{ item.1 }}"
         parent_ip: >-
-           {{ parent_node.ip | default(parent_node['management IP'] | default(parent_node.management_ip | default((parent_node.interfaces | selectattr('ip', 'defined') | map(attribute='ip') | first) | default((parent_node.ports | default([]) | selectattr('logical_interfaces', 'defined') | map(attribute='logical_interfaces') | flatten | selectattr('subnet', 'defined') | map(attribute='subnet') | first | regex_replace('/.*$', '') ) | default(''))))) }}
+           {{ parent_node.ip | default(parent_node['management IP'] | default(parent_node.management_ip | default(parent_node.management_ip_vlan10 | default((parent_node.interfaces | selectattr('ip', 'defined') | map(attribute='ip') | first) | default((parent_node.ports | default([]) | selectattr('logical_interfaces', 'defined') | map(attribute='logical_interfaces') | flatten | selectattr('subnet', 'defined') | map(attribute='subnet') | first | regex_replace('/.*$', '') ) | default('')))))) }}
       loop: "{{ nodi | subelements('aliases', skip_missing=True) }}"
       when: parent_ip | length > 0
 

@@ -6,16 +6,16 @@ iface lo inet loopback
 # PATH: /etc/network/interfaces
 # -----------------------------------------------------------
 
-iface eno1 inet manual
+iface enp1s0f0 inet manual
 # Porta 1 (VLAN 10 - Server)
 
-iface eno2 inet manual
+iface enp1s0f1 inet manual
 # Porta 2 (VLAN 20 - Client)
 
 # -----------------------------------------------------------
 # PORTA DI SERVIZIO (DIRECT ACCESS - VLAN 1 Admin Subnet)
 # -----------------------------------------------------------
-auto eno3
+auto nic0
 iface eno3 inet static
     address 192.168.100.11/24
     # NESSUN GATEWAY. Collega PC con IP 192.168.100.x
@@ -23,11 +23,11 @@ iface eno3 inet static
 # -----------------------------------------------------------
 # BRIDGE MANAGEMENT & SERVER (VLAN 10)
 # -----------------------------------------------------------
-auto vmbr10
-iface vmbr10 inet static
+auto vmbr0
+iface vmbr0 inet static
     address 10.10.10.11/24
     gateway 10.10.10.1
-    bridge-ports eno1
+    bridge-ports enp1s0f0
     bridge-stp off
     bridge-fd 0
 
@@ -36,6 +36,6 @@ iface vmbr10 inet static
 # -----------------------------------------------------------
 auto vmbr20
 iface vmbr20 inet manual
-    bridge-ports eno2
+    bridge-ports enp1s0f1
     bridge-stp off
     bridge-fd 0
