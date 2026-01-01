@@ -20,18 +20,20 @@
     mkdir -p /mnt/new_hot
     mount /dev/sdb /mnt/new_hot # Format with ext4 if first time: mkfs.ext4 /dev/sdb
     ```
-- [ ] **Mount Old NFS Source**:
+- [ ] **Mount Backup Source (NFS)**:
+    - *Note*: The original `stripe` pool is destroyed. We pull from the backup.
     ```bash
-    mkdir -p /mnt/old_nfs
-    mount 10.10.10.50:/mnt/stripe/k8s-arr /mnt/old_nfs
+    mkdir -p /mnt/backup_source
+    # Mount the backup dataset from the 'oliraid' pool
+    mount 10.10.10.50:/mnt/oliraid/backup-stripe/k8s-arr /mnt/backup_source
     ```
 - [ ] **Copy Data**:
     - **Apps to Copy**: Radarr, Sonarr, Lidarr, Readarr, Prowlarr, Bazarr, Jellyseerr.
     - **SKIP**: **Jellyfin** (External Service - Config managed on LXC), **Transcoder** (Temp).
     ```bash
     # Example for Radarr
-    rsync -avP /mnt/old_nfs/radarr-config/ /mnt/new_hot/radarr-config/
-    # Repeat for others. Ensure directory structure matches what PVC expects (usually root of PVC).
+    rsync -avP /mnt/backup_source/radarr-config/ /mnt/new_hot/radarr-config/
+     # Repeat for others. Ensure directory structure matches what PVC expects (usually root of PVC).
     ```
     *Note: Since we are moving from many PVCs to one big disk with potentially subpaths, check your HostPath structure.*
     *Recommendation: Create subfolders for each PV `mkdir /mnt/new_hot/radarr-config` etc.*
