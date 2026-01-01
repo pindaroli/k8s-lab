@@ -2,6 +2,22 @@
 **Goal**: Enable high-performance block storage backend on TrueNAS and attach it to Proxmox.
 **Prerequisites**: Phase 1 Complete.
 
+## 0. Safety Backup (CRITICAL)
+**Perform this BEFORE destroying any existing datasets.**
+- [ ] **Stop Services**:
+    - Go to TrueNAS > System Settings > Services.
+    - Stop **SMB** and **NFS** to ensure data consistency.
+- [ ] **Create Backup**:
+    - Open TrueNAS Shell.
+    - Copy the existing data to a safe location (e.g., `oliraid` pool).
+    ```bash
+    mkdir -p /mnt/oliraid/backup-stripe/mig-backup
+    # Archive mode (-a) to preserve permissions/times
+    cp -a /mnt/stripe/k8s-arr/* /mnt/oliraid/backup-stripe/mig-backup/
+    ```
+- [ ] **Verify Backup**:
+    - Check size and file count to be sure.
+
 ## 1. TrueNAS Scale Config
 - [ ] **Create Zvol**:
     - Pool: `stripe`
