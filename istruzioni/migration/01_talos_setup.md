@@ -13,8 +13,6 @@ Since we need specific extensions for Proxmox and NVMe/TCP tools, we must genera
     - **Version**: Latest Stable (v1.9.x)
     - **Extensions**:
         - `siderolabs/qemu-guest-agent` (Critical for Proxmox IP reporting & Shutdown).
-        - `siderolabs/util-linux-tools` (For `mkfs`, `lsblk` debugging).
-        - `siderolabs/iscsi-tools` (Optional fallback).
 - [ ] **Download**: 
     - Download the **ISO** (to upload to Proxmox).
     - Note the **Factory Image ID** (e.g., `factory.talos.dev/image/...`).

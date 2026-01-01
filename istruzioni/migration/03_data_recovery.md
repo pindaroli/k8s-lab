@@ -26,9 +26,15 @@
     mount 10.10.10.50:/mnt/stripe/k8s-arr /mnt/old_nfs
     ```
 - [ ] **Copy Data**:
+    - **Apps to Copy**: Radarr, Sonarr, Lidarr, Readarr, Prowlarr, Bazarr, Jellyseerr.
+    - **SKIP**: **Jellyfin** (External Service - Config managed on LXC), **Transcoder** (Temp).
     ```bash
-    rsync -avP /mnt/old_nfs/ /mnt/new_hot/
+    # Example for Radarr
+    rsync -avP /mnt/old_nfs/radarr-config/ /mnt/new_hot/radarr-config/
+    # Repeat for others. Ensure directory structure matches what PVC expects (usually root of PVC).
     ```
+    *Note: Since we are moving from many PVCs to one big disk with potentially subpaths, check your HostPath structure.*
+    *Recommendation: Create subfolders for each PV `mkdir /mnt/new_hot/radarr-config` etc.*
 
 - [ ] **Unmount**:
     ```bash
