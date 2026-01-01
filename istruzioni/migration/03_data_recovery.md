@@ -1,0 +1,45 @@
+# Phase 3: Data Migration (Recovery Mode)
+**Goal**: Move existing data from NFS snapshots to the new Local Hot tier.
+**Prerequisites**: Phases 1 & 2 Complete. Old data exists on TrueNAS NFS share.
+
+## 1. Prepare Recovery VM
+- [ ] **Create VM**: Standard Debian/Ubuntu VM on Proxmox (ID 900).
+- [ ] **Install Tools**: `apt install rsync nfs-common`.
+
+## 2. Enter Maintenance Mode
+- [ ] **Run Script**:
+    ```bash
+    /root/maintenance-mode.sh on
+    ```
+    - *Verifies*: Talos stops. Disk attaches to Recovery. Recovery starts.
+
+## 3. Perform Migration
+- [ ] **SSH into Recovery VM**.
+- [ ] **Mount New Hot Disk**:
+    ```bash
+    mkdir -p /mnt/new_hot
+    mount /dev/sdb /mnt/new_hot # Format with ext4 if first time: mkfs.ext4 /dev/sdb
+    ```
+- [ ] **Mount Old NFS Source**:
+    ```bash
+    mkdir -p /mnt/old_nfs
+    mount 10.10.10.50:/mnt/stripe/k8s-arr /mnt/old_nfs
+    ```
+- [ ] **Copy Data**:
+    ```bash
+    rsync -avP /mnt/old_nfs/ /mnt/new_hot/
+    ```
+
+- [ ] **Unmount**:
+    ```bash
+    umount /mnt/new_hot
+    umount /mnt/old_nfs
+    poweroff
+    ```
+
+## 4. Return to Operation
+- [ ] **Run Script**:
+    ```bash
+    /root/maintenance-mode.sh off
+    ```
+    - *Verifies*: Recovery stops. Disk attaches to Talos. Talos starts.

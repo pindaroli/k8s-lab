@@ -26,6 +26,9 @@
             "role": "NAS",
             "hostname": "truenas",
             "domain": "pindaroli.org",
+            "aliases": [
+                "nas"
+            ],
             "management_ip_vlan10": "10.10.10.50",
             "client_ip_vlan20": "10.10.20.50",
             "default_gateway": "10.10.10.1 (VLAN 10 only)",
