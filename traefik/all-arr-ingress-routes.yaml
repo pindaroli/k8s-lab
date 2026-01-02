@@ -196,8 +196,8 @@ metadata:
   namespace: traefik
 type: Opaque
 data:
-  # Generated with: htpasswd -nb admin 'Compli61!'
-  # Username: admin, Password: Compli61!
+  # Generated with: htpasswd -nb admin 'PASSWORD'
+  # Username: admin, Password: see setEnv.sh
   users: YWRtaW46JGFwcjEkWGpMSDBKL2Qkb1cvSnEzc1daOW5GU1E3VEpJV2ZCLw==
 ---
 apiVersion: traefik.io/v1alpha1

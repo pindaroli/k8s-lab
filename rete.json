@@ -458,6 +458,20 @@
             "ip": "10.10.20.127",
             "network": "Client (VLAN 20)",
             "notes": "Static DHCP reservation on VLAN 20 (Temporary placement due to Trunk issues). mDNS repeater removed as no longer needed for intra-VLAN discovery."
+        },
+        {
+            "id": "xray",
+            "label": "OCI Proxy Server",
+            "type": "Cloud Instance",
+            "provider": "Oracle Cloud (OCI)",
+            "region": "Milan",
+            "shape": "VM.Standard.E2.1.Micro (Always Free)",
+            "os": "Ubuntu 22.04 LTS (x86_64)",
+            "ip": "79.72.44.199",
+            "ip_type": "Ephemeral Public IP",
+            "role": "VLESS-Reality Proxy",
+            "local_client_config": "~/devices-backup/xray_vless.txt",
+            "notes": "External exit node. Secrets (UUID/Keys) stored in Ansible Vault."
         }
     ]
 }
