@@ -10,7 +10,7 @@ Il piano completo è già stato definito e salvato.
 
 Per favore:
 1. Leggi la strategia generale in: `istruzioni/storage_strategy.md`.
-2. Leggi i 4 piani di migrazione in: `istruzioni/migration/`.
-3. Chiedimi quale fase voglio eseguire oggi (01, 02, 03 o 04).
+2. Leggi i 5 piani di migrazione in: `istruzioni/migration/`.
+3. Chiedimi quale fase voglio eseguire oggi (01, 02, 03, 04, 05).   
 4. Guidami passo-passo nell'esecuzione di quella specifica fase, verificando ogni step.
 ```
