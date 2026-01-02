@@ -22,12 +22,13 @@ We evaluated three options. **Option B is selected** for implementation.
 | **Verdict** | Too complex. | **SELECTED**. Best balance. | Alt. for Recovery. |
 
 ## Implementation Plan
-The implementation is broken down into **4 Standalone Phases** for safe execution over multiple sessions:
+The implementation is broken down into **5 Standalone Phases** for safe execution over multiple sessions:
 
 1.  **[01_talos_setup.md](file:///Users/olindo/prj/k8s-lab/istruzioni/migration/01_talos_setup.md)**: Cluster Bootrap & Kernel Config (Custom ISO, 3 Nodes).
 2.  **[02_storage_setup.md](file:///Users/olindo/prj/k8s-lab/istruzioni/migration/02_storage_setup.md)**: Truenas/Proxmox NVMe & Maintenance Script.
 3.  **[03_data_recovery.md](file:///Users/olindo/prj/k8s-lab/istruzioni/migration/03_data_recovery.md)**: Data Migration via Recovery VM.
 4.  **[04_k8s_manifests.md](file:///Users/olindo/prj/k8s-lab/istruzioni/migration/04_k8s_manifests.md)**: Final Kubernetes Configuration.
+5.  **[05_proxmox_backup_setup.md](file:///Users/olindo/prj/k8s-lab/istruzioni/migration/05_proxmox_backup_setup.md)**: Proxmox Backup Server (PBS) & Cluster Backups.
 
 ## Storage Tiers
 
