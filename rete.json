@@ -478,7 +478,8 @@
             "label": "Talos Control Plane 01",
             "type": "VM",
             "host_node": "pve",
-            "ip": "10.10.20.142",
+            "ip": "10.10.20.141",
+            "mac": "bc:24:11:81:6a:19",
             "aliases": [
                 "k1"
             ],
@@ -492,7 +493,8 @@
             "label": "Talos Control Plane 02",
             "type": "VM",
             "host_node": "pve2",
-            "ip": "10.10.20.143",
+            "ip": "10.10.20.142",
+            "mac": "bc:24:11:77:40:fc",
             "aliases": [
                 "k2"
             ],
@@ -506,7 +508,8 @@
             "label": "Talos Control Plane 03",
             "type": "VM",
             "host_node": "pve3",
-            "ip": "10.10.20.144",
+            "ip": "10.10.20.143",
+            "mac": "bc:24:11:0b:e0:61",
             "aliases": [
                 "k3"
             ],
