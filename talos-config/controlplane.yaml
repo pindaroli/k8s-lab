@@ -30,16 +30,16 @@ machine:
         # extraArgs:
         #     key: value
 
-        # # The `extraMounts` field is used to add additional mounts to the kubelet container.
-        # extraMounts:
-        #     - destination: /var/lib/example # Destination is the absolute path where the mount will be placed in the container.
-        #       type: bind # Type specifies the mount kind.
-        #       source: /var/lib/example # Source specifies the source path of the mount.
-        #       # Options are fstab style mount options.
-        #       options:
-        #         - bind
-        #         - rshared
-        #         - rw
+        # The `extraMounts` field is used to add additional mounts to the kubelet container.
+        extraMounts:
+            - destination: /var/mnt/hot # Destination is the absolute path where the mount will be placed in the container.
+              type: bind # Type specifies the mount kind.
+              source: /var/mnt/hot # Source specifies the source path of the mount.
+              # Options are fstab style mount options.
+              options:
+                - bind
+                - rshared
+                - rw
 
         # # The `extraConfig` field is used to provide kubelet configuration overrides.
         # extraConfig:
@@ -67,6 +67,12 @@ machine:
         #         - 10.0.0.0/8
         #         - '!10.0.0.3/32'
         #         - fdc7::/16
+
+    # Provides machine specific disk configuration options.
+    disks:
+        - device: /dev/sdb # Usually sdb if scsi1 and sda is scsi0
+          partitions:
+            - mountpoint: /var/mnt/hot
     # Provides machine specific network configuration options.
     network: {}
     # # `interfaces` is used to define the network interface configuration.
