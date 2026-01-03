@@ -39,6 +39,11 @@
   - `playbooks/opnsense_sync_dns.yml`: Sync `rete.json` hosts to Unbound.
 - **`talos-config/`**: **Source of Truth** for Cluster Access.
   - Contains `talosconfig`, `controlplane.yaml`, `worker.yaml`.
+- **`xray/`**: OCI Proxy Configuration.
+  - Contains `xray_secrets.yml`.
+- **`secrets/`**: Global Environment Secrets.
+  - Contains `setEnv.sh` (Traefik/OAuth variables).
+  - Contains `google_client_secret.json` (Raw OAuth credentials).
 - **`_OLD_ARCHIVE/`**: Legacy/Stale files.
   - `ansible-venv`, old scripts, previous attempts.
 

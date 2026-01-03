@@ -62,7 +62,7 @@ extraObjects:
     type: kubernetes.io/basic-auth
     stringData:
       username: olindo  
-      password: "${TRAEFIK_DASHBOARD_PASSWORD}"      # Set via setEnv.sh
+      password: "${TRAEFIK_DASHBOARD_PASSWORD}"      # Set via secrets/setEnv.sh
   - apiVersion: traefik.io/v1alpha1
     kind: Middleware
     metadata:
