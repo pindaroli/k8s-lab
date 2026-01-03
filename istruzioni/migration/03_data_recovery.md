@@ -3,8 +3,15 @@
 **Prerequisites**: Phases 1 & 2 Complete. Old data exists on TrueNAS NFS share.
 
 ## 1. Prepare Recovery VM
-- [ ] **Create VM**: Standard Debian/Ubuntu VM on Proxmox (ID 900).
-- [ ] **Install Tools**: `apt install rsync nfs-common`.
+- [ ] **Create VM**: Standard VM (ID 900) - **Recommended Distro: SystemRescueCD**.
+    - *Why?* Lightweight, pre-loaded with `rsync`, `nfs-common`, `gparted`, and shell tools.
+    - *Download*: [system-rescue.org](https://www.system-rescue.org/Download/) (approx 800MB).
+    - *Alternative*: Minimal Debian/Ubuntu Server (requires manual apt install).
+- [ ] **Install Tools**:
+    ```bash
+    apt install rsync nfs-common curl
+    curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
+    ```
 
 ## 2. Enter Maintenance Mode
 - [ ] **Run Script**:
@@ -37,6 +44,13 @@
     ```
     *Note: Since we are moving from many PVCs to one big disk with potentially subpaths, check your HostPath structure.*
     *Recommendation: Create subfolders for each PV `mkdir /mnt/new_hot/radarr-config` etc.*
+
+- [ ] **(Optional) Use File Browser**:
+    If you prefer a GUI for moving files:
+    ```bash
+    filebrowser -r /mnt -a 0.0.0.0
+    # Access at http://<Recovery-VM-IP>:8080
+    ```
 
 - [ ] **Unmount**:
     ```bash
