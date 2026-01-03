@@ -197,7 +197,7 @@ metadata:
 type: Opaque
 data:
   # Generated with: htpasswd -nb admin 'PASSWORD'
-  # Username: admin, Password: see setEnv.sh
+  # Username: admin, Password: see secrets/setEnv.sh
   users: YWRtaW46JGFwcjEkWGpMSDBKL2Qkb1cvSnEzc1daOW5GU1E3VEpJV2ZCLw==
 ---
 apiVersion: traefik.io/v1alpha1

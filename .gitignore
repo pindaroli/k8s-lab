@@ -10,12 +10,17 @@ ansible/group_vars/all/secrets.yml
 *.tfvars
 
 # Local Environment & Secrets
-setEnv.sh
 xray_secrets.yml
-client_secret*.json
+
 
 # Backups & Archives
 _OLD_ARCHIVE/
 *.xml
 *.exp
 *.cfg
+
+# Talos Secrets
+talos-config/
+
+# Global Secrets
+secrets/
