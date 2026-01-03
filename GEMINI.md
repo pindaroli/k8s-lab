@@ -17,7 +17,8 @@
 
 ### Operational Cheatsheet
 **Talos Cluster Management**
-- **Config**: `export TALOSCONFIG=talos-config/talosconfig`
+- **Talos Config**: `export TALOSCONFIG=talos-config/talosconfig`
+- **Kube Config**: `export KUBECONFIG=talos-config/kubeconfig`
 - **Dashboard**: `talosctl dashboard`
 - **Node List**: `talosctl get members`
 - **Config Info**: `talosctl config info`
