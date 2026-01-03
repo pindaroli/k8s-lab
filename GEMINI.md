@@ -1,150 +1,80 @@
-## Kubernetes Cluster Setup
+# Project GEMINI: Kubernetes Homelab Migration
 
-- Management system: macOS
-- Local domain: local
-- External domain: pindaroli.org (Cloudflare managed)
-- Network gateway: 10.10.20.1 (Client) / 192.168.2.1 (Mgmt)
-- kubectl access available
-- Gemini has automatic permission for readonly kubectl commands (get, describe, logs, etc.)
-- GitHub CLI (gh) available for repository operations
+> [!IMPORTANT]
+> **Current Status**: **MIGRATION PHASE** (Proxmox -> Talos Linux)
+> We are currenly bootstrapping the Talos Cluster.
+> **Active Goal**: Stabilize networking and storage before deploying workloads.
 
-## SSH Access
+## 1. Quick Reference
 
-- jellyfin-svr
+### Network Summary
+| VLAN | ID | Subnet | Gateway | DHCP | Usage |
+|---|---|---|---|---|---|
+| **Server** | 10 | `10.10.10.0/24` | `10.10.10.254` | Static | TrueNAS, Proxmox Mgmt |
+| **Client** | 20 | `10.10.20.0/24` | `10.10.20.1` | OPNsense | Talos Nodes, Personal Devices |
+| **IoT** | 30 | `10.10.30.0/24` | `10.10.30.1` | OPNsense | Isolated Devices |
+| **Transit** | - | `192.168.2.0/24` | `192.168.2.1` | - | Switch Interconnects |
 
+### Operational Cheatsheet
+**Talos Cluster Management**
+- **Config**: `export TALOSCONFIG=talos-config/talosconfig`
+- **Dashboard**: `talosctl dashboard`
+- **Node List**: `talosctl get members`
+- **Config Info**: `talosctl config info`
 
-## Load Balancing & Ingress
+**Key IPs**
+- **Talos VIP**: `10.10.20.55`
+- **Talos CP 01**: `10.10.20.141`
+- **Talos CP 02**: `10.10.20.142`
+- **Talos CP 03**: `10.10.20.143`
+- **TrueNAS**: `10.10.10.50` (Storage), `10.10.20.50` (Client)
 
-### MetalLB
-- Namespace: metallb
-- Configuration files: ./metallb/ directory
-- Helm chart: metallb/metallb
-- IP pool: to be defined (L2Advertisement)
+---
 
-### Traefik
-- Ingress controller with SSL/TLS termination
-- Configuration files: ./traefik/ directory
-- Main ingress routes: traefik/all-arr-ingress-routes.yaml
-- RBAC configuration: traefik/traefik-rbac.yaml
-- Custom values: traefik/traefik-values.yaml
+## 2. Directory Organization
 
-### DNS Configuration
-- **Strategy**: Split-DNS (OPNsense resolves local IPs internally, Cloudflare resolves public IPs externally).
-- **Unbound Bindings**: Must include LAN, VLANs, and TRANSIT (192.168.2.254). Must EXCLUDE WAN.
-- **Rebind Protection**: Enabled. Use `System > Settings > Administration > Alternate Hostnames` for exceptions (e.g. `opnsense.pindaroli.org`).
+- **`ansible/`**: Active Automation.
+  - `playbooks/dhcp_reservations.yml`: Sync Talos IPs to OPNsense.
+  - `playbooks/opnsense_sync_dns.yml`: Sync `rete.json` hosts to Unbound.
+- **`talos-config/`**: **Source of Truth** for Cluster Access.
+  - Contains `talosconfig`, `controlplane.yaml`, `worker.yaml`.
+- **`_OLD_ARCHIVE/`**: Legacy/Stale files.
+  - `ansible-venv`, old scripts, previous attempts.
 
+---
 
-## Certificate Management
+## 3. Infrastructure Details
 
-- cert-manager for automated Let's Encrypt certificates
-- Cloudflare DNS challenge provider
-- Wildcard certificate: pindaroli-wildcard-tls
-- Configuration files: ./cert-manager/ directory
-- Cluster issuer and certificate definitions included
+### Hardware & OS
+- **Hypervisors**: 3x Proxmox VE (Debian 13/Trixie)
+- **NAS**: TrueNAS SCALE (Debian-based)
+- **Firewall**: OPNsense (FreeBSD)
 
-## Authentication & Security
+### Load Balancing & Ingress
+- **MetalLB**: `metallb/` (L2Advertisement to be defined)
+- **Traefik**: `traefik/` (Ingress Controller + SSL)
+- **DNS Strategy**: Split-DNS.
+  - **Internal**: OPNsense Unbound (Authoritative for `.pindaroli.org` internal).
+  - **External**: Cloudflare.
 
-### OAuth2 Proxy
-- Namespace: oauth2-proxy
-- Google OAuth provider integration
-- Authorized email: o.pindaro@gmail.com
-- Cookie domain: .pindaroli.org
-- Authentication URL: https://auth.pindaroli.org
-- Configuration files: ./oauth2-proxy/ directory
-- All external services protected via oauth2-auth middleware
+### Certs & Auth
+- **Cert-Manager**: `cert-manager/` (Cloudflare DNS Challenge).
+- **OAuth2 Proxy**: `oauth2-proxy/` (Google Auth for all services).
 
-## Homepage Dashboard
+## 4. Workloads (Migration Pending)
 
-- Namespace: default
-- Access URL: https://home.pindaroli.org
-- Consolidated deployment: homepage/homepage.yaml
-- Services configured: Traefik, Jellyfin, qBittorrent, all *arr services
-- Widgets: Kubernetes cluster info, resource monitoring, search
-- Note: Kubernetes Dashboard completely uninstalled
+### Media Stack (Servarr)
+- **Namespace**: `arr`
+- **Helm Chart**: `../helm/charts/servarr` (External Sibling Project - Shared Library)
+- **Config**: `servarr/`
+- **Services**: Jellyfin, *arr apps, qBittorrent.
 
-## Media Stack (Servarr)
+### Storage Integration
+- **NFS CSI Driver**: `CSI-driver/`
+- **Shares**:
+  - `/mnt/oliraid/arrdata/media`
+  - `/mnt/stripe/k8s-arr`
 
-### Deployment
-- Namespace: arr
-- Helm chart: ../helm/charts/servarr (local development)
-- Configuration files: ./servarr/ directory
-- Values file: servarr/arr-values.yaml
-- CSI volumes: servarr/arr-volumes-csi.yaml
-- Upgrade command: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`
-
-### Resource Limits
-- Jellyfin: 2Gi request, 4Gi limit (prevents OOM kills on k8s-control node)
-
-### Services & External Access
-All services protected by OAuth2 authentication:
-- jellyfin.pindaroli.org - Media server
-- qbittorrent.pindaroli.org - Torrent client
-- sonarr.pindaroli.org - TV series management
-- radarr.pindaroli.org - Movie management
-- lidarr.pindaroli.org - Music management
-- readarr.pindaroli.org - Book management
-- prowlarr.pindaroli.org - Indexer management
-- bazarr.pindaroli.org - Subtitle management
-- jellyseerr.pindaroli.org - Request management
-- flaresolverr.pindaroli.org - CloudFlare solver
-
-### Special Configurations
-- qBittorrent BitTorrent port LoadBalancer: servarr/qbittorrent-bittorrent-loadbalancer.yaml
-- Port forwarding documentation: servarr/opnsense-port-forward-config.md
-
-## Additional Services
-
-### Calibre
-- E-book management system
-- Configuration files: ./calibre/ directory
-- CSI volumes: calibre/calibre-volumes-csi.yaml
-- Ingress route: calibre/calibre-web-ingress-route.yaml
-
-### Cloudflare Tunnel
-- Zero Trust network access
-- Configuration files: ./cloudflare/ directory
-- Deployment: cloudflare/cloudflared-deployment.yaml
-
-### KasmWeb
-- Web-based desktop environment
-- Configuration files: ./kasmweb/ directory
-
-## Storage
-
-### TrueNAS SCALE
-- **IMPORTANT**: TrueNAS SCALE uses Debian Linux (NOT FreeBSD)
-- NFS server: to be defined (Storage VLAN Access)
-- SSH user: olindo (not root)
-- NFS exports configured in /etc/exports
-- Uses standard Linux NFS commands (exportfs, etc.)
-- NFS shares:
-  - /mnt/oliraid/arrdata/media - Media storage
-  - /mnt/stripe/k8s-arr - Kubernetes configuration storage
-
-### NFS CSI Driver
-- NFS CSI driver for dynamic provisioning
-- CSI configuration files in ./CSI-driver/ directory
-- Persistent volumes backed by NFS storage from TrueNAS
-- Volume definitions throughout service configurations
-
-## Development Tools & Utilities
-
-### Scripts
-- megasetup.sh - Comprehensive cluster setup
-- terminating-k8s-objects.sh - Cleanup utility
-- uninstall-csi-nfs.sh - NFS CSI removal
-- download_plugins.sh/py - Plugin management
-- pul.sh - Quick operations
-
-### Documentation
-- cert.md - Certificate management guide
-- troubleshooting.md - Common issues and solutions
-- README files in individual service directories
-
-## Personal Information
-
-- Email: o.pindaro@gmail.com
-- Domain: pindaroli.org (Cloudflare managed)
-- Upgrade command: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`
-# Configurazione rete fisica
-- Configurazione dettagliata: [rete.json](file:///Users/olindo/prj/k8s-lab/rete.json) 
+## 5. Reference Files
+- **Network Source of Truth**: [rete.json](file:///Users/olindo/prj/k8s-lab/rete.json)
+- **Ansible Inventory**: `ansible/inventory.ini`

@@ -11,8 +11,8 @@
     domain: "pindaroli.org"
 
   vars_files:
-    - "vars/secrets.yml"
-    - "../rete.json"
+    - "../vars/secrets.yml"
+    - "../../rete.json"
 
   tasks:
     - name: Fail if credentials are missing
