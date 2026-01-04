@@ -1,156 +1,70 @@
-# MetalLB Configuration for k8s-lab
+# MetalLB Configuration for GEMINI (Talos Linux)
 
-MetalLB provides LoadBalancer services for bare metal Kubernetes clusters. This configuration enables Layer 2 load balancing with IP addresses from the local network range, working in conjunction with the Cloudflare tunnel hybrid architecture.
+This directory contains the Load Balancer configuration for the Talos Kubernetes cluster. It enables Layer 2 (ARP) load balancing on the Client VLAN (20).
 
 ## Architecture
 
-- **IP Pool**: `192.168.1.3-192.168.1.13` (11 available IPs)
+- **Cluster**: Talos Linux (3 Control Plane Nodes)
 - **Mode**: Layer 2 (ARP-based)
-- **Network**: Local subnet `192.168.1.0/24`
-- **Cluster**: microk8s 2-node cluster (k8s-control, k8s-runner-1)
+- **Network**: VLAN 20 Client Network (`10.10.20.0/24`)
+- **IP Pool**: `10.10.20.56 - 10.10.20.60` (5 IPs)
+  - *Note: Starts at .56 to avoid conflict with Talos VIP (.55)*
 
-## Hybrid Traffic Flow Integration
+## Configuration Files
 
-MetalLB works alongside Cloudflare tunnel in a hybrid architecture:
+| File | Role | Description |
+|---|---|---|
+| **`values.yaml`** | **Installation Config** | Helm Chart overrides. Configures Pod tolerations for Control Plane nodes and security contexts for the controller. |
+| **`metallb-speaker-security.yaml`** | **Security Patch** | **CRITICAL**. A post-install patch for "Speaker" pods. Grants `NET_ADMIN` and `privileged` access required to broadcast ARP packets on Talos/hardened OS. |
+| **`metallb-complete.yaml`** | **Functional Config** | Defines the *Namespace*, *IPAddressPool* (Range), and *L2Advertisement*. Applies the logic of *what* IPs to serve. |
 
-```
-Internet Traffic:   Internet → Cloudflare → Tunnel → Traefik Service (Cluster IP) → Applications
-Local LAN Traffic:  LAN → MetalLB (192.168.1.3) → Traefik LoadBalancer → Applications
-```
+## Installation Procedure
 
-This design ensures:
-- **No MetalLB bypass**: Internet traffic still uses Traefik infrastructure
-- **Local access**: Direct LAN connectivity via MetalLB external IP
-- **Redundant paths**: Both internet and local access work independently
+The deployment must follow this specific order to handle permissions and CRDs correctly.
 
-## Files
-
-### Core Configuration
-- **`metallb-complete.yaml`** - Complete MetalLB configuration including namespace, IP pool, and L2 advertisement
-- **`values.yaml`** - Helm values for MetalLB installation
-- **`metallb-speaker-security.yaml`** - Security context patch for speaker pods (fixes ARP permission issues)
-
-### Installation Methods
-
-#### Method 1: Direct YAML Application (Recommended)
+### 1. Prepare Namespace
+Manually create the namespace and apply Pod Security Standards to allow privileged containers (required for ARP).
 ```bash
-# Apply complete configuration
-kubectl apply -f metallb-complete.yaml
-
-# Install MetalLB via Helm with custom values
-helm repo add metallb https://metallb.github.io/metallb
-helm install metallb metallb/metallb -n metallb-system -f values.yaml
-
-# Apply speaker security patch to fix ARP permissions
-kubectl patch daemonset metallb-speaker -n metallb-system --patch-file metallb-speaker-security.yaml
+kubectl create ns metallb-system
+kubectl label ns metallb-system \
+  pod-security.kubernetes.io/enforce=privileged \
+  pod-security.kubernetes.io/audit=privileged \
+  pod-security.kubernetes.io/warn=privileged \
+  --overwrite
 ```
 
-#### Method 2: Step by Step
+### 2. Install MetalLB (Helm)
+Installs the binaries, keys, and Custom Resource Definitions (CRDs).
 ```bash
-# 1. Create namespace with Pod Security labels
-kubectl apply -f metallb-complete.yaml
-
-# 2. Install MetalLB
 helm repo add metallb https://metallb.github.io/metallb
-helm install metallb metallb/metallb -n metallb-system -f values.yaml
-
-# 3. Configure IP pool and L2 advertisement
-kubectl apply -f metallb-complete.yaml
-
-# 4. Fix speaker permissions
-kubectl patch daemonset metallb-speaker -n metallb-system --patch-file metallb-speaker-security.yaml
+helm repo update
+helm upgrade --install metallb metallb/metallb -n metallb-system -f metallb/values.yaml
 ```
+
+### 3. Apply Configuration
+Defines the IP pool and advertisement strategy.
+```bash
+kubectl apply -f metallb/metallb-complete.yaml
+```
+
+### 4. Patch Speakers (If Needed)
+If Speaker pods show "Permission Denied" in logs, apply the security boost.
+```bash
+kubectl patch daemonset metallb-speaker -n metallb-system --patch-file metallb/metallb-speaker-security.yaml
+```
+
+---
 
 ## Verification
 
+**Check Status:**
 ```bash
-# Check MetalLB pods
 kubectl get pods -n metallb-system
-
-# Check IP pool and L2 advertisement
-kubectl get ipaddresspool,l2advertisement -n metallb-system
-
-# Check speaker logs (should show no "permission denied" errors)
-kubectl logs -n metallb-system -l app.kubernetes.io/component=speaker
-
-# Test with a LoadBalancer service
-kubectl get svc -o wide | grep LoadBalancer
+kubectl get ipaddresspool -n metallb-system
 ```
 
-## Troubleshooting
-
-### Common Issues
-
-**1. "bind: permission denied" errors in speaker logs**
-- Solution: Apply `metallb-speaker-security.yaml` patch
-- Root cause: MetalLB speaker needs privileged access for ARP operations
-
-**2. LoadBalancer services stuck in "Pending" state**
-- Check IP pool: `kubectl get ipaddresspool -n metallb-system`
-- Check L2 advertisement: `kubectl get l2advertisement -n metallb-system`
-- Verify speaker pods are running: `kubectl get pods -n metallb-system`
-
-**3. External IP assigned but not reachable**
-- Check ARP table: `arp -a | grep <external-ip>`
-- Test Layer 2 connectivity: `arping <external-ip>`
-- Verify network interfaces support ARP
-
-### Pod Security Standards
-
-The namespace is configured with `pod-security.kubernetes.io/enforce: privileged` labels to allow MetalLB speaker pods to perform network operations required for ARP responses.
-
-### Security Context
-
-MetalLB speaker pods run with:
-- `privileged: true`
-- `hostNetwork: true`
-- Capabilities: `NET_ADMIN`, `NET_RAW`, `SYS_ADMIN`, `NET_BIND_SERVICE`
-
-This configuration is required for Layer 2 mode ARP operations in Kubernetes environments with Pod Security Standards.
-
-## Network Configuration
-
-Current LoadBalancer services:
-- Traefik: `192.168.1.3` (ports 80/443)
-
-IP allocation is automatic from the configured pool (`192.168.1.3-192.168.1.13`).
-
-## Recent Fixes (September 2025)
-
-### Inter-node Firewall Resolution
-- **Issue**: UFW blocking cross-node pod communication
-- **Fix**: Updated UFW `DEFAULT_FORWARD_POLICY` from DROP to ACCEPT on k8s-control
-- **Impact**: Enabled pod communication between k8s-control and k8s-runner-1 nodes
-
-### ARP Responder Permissions
-- **Issue**: "bind: permission denied" errors preventing IP advertisement
-- **Fix**: Applied privileged security context via `metallb-speaker-security.yaml`
-- **Result**: Successful Layer 2 advertisement and external IP assignment
-
-### Hybrid Architecture Implementation
-- **Achievement**: Preserved MetalLB role while enabling Cloudflare tunnel
-- **Design**: Cloudflare tunnel routes to cluster IP, MetalLB serves LAN traffic
-- **Benefit**: No bypass issues, redundant connectivity paths
-
-## Testing & Verification
-
-### External Access Test
+**Test Assignment:**
+Deploy a test service or check Traefik (once deployed).
 ```bash
-# Test MetalLB external IP connectivity
-curl -k -I https://192.168.1.3
-# Expected: HTTP 404 from Traefik (confirms connectivity)
-```
-
-### Service Status Check
-```bash
-# Check LoadBalancer service external IP assignment
-kubectl get svc traefik -n traefik
-# Expected: EXTERNAL-IP shows 192.168.1.3
-```
-
-### Inter-node Communication Test
-```bash
-# Verify cross-node pod communication works
-kubectl get pods -o wide -A | grep -E "(k8s-control|k8s-runner-1)"
-# All pods should be Running without network issues
+kubectl get svc -A | grep LoadBalancer
 ```

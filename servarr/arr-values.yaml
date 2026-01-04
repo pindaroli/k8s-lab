@@ -15,10 +15,16 @@ jellyfin:
       type: NodePort
       externalTrafficPolicy: Local
   persistence:
-    media:
-      existingClaim: servarr-jellyfin-media
+    storageClass: local-path
+    storageClassName: local-path
     config:
-      storageClass: csi-nfs-stripe-arr-conf
+      enabled: true
+      storageClass: local-path
+      storageClassName: local-path
+    media:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: servarr-jellyfin-media
   resources:
     requests:
       cpu: 2000m
@@ -58,15 +64,18 @@ qbittorrent:
       cpu: 100m
       memory: 8Gi  # Current usage is 12GB, requesting 8GB baseline
     limits:
-      memory: 16Gi  # Allow burst to 16GB
+      memory: 12Gi  # Allow burst to 12GB (fits in 15GB node)
   service:
     bt:
       type: ClusterIP
       port: 30661
   persistence:
-    createInitContainer: false
-    storageClass: csi-nfs-stripe-arr-conf
+    enabled: true
+    storageClass: local-path
+    config:
+      enabled: true
     media:
+      enabled: true
       existingClaim: servarr-jellyfin-media
 
 
@@ -84,8 +93,14 @@ prowlarr:
     limits:
       memory: 512Mi
   persistence:
-    createInitContainer: false
-    storageClass: csi-nfs-stripe-arr-conf
+    enabled: true
+    storageClass: local-path
+    config:
+      enabled: true
+      createInitContainer: false
+    media:
+      enabled: true
+      existingClaim: servarr-jellyfin-media
 
 jellyseerr:
   enabled: false
@@ -119,8 +134,14 @@ radarr:
     limits:
       memory: 512Mi
   persistence:
-    createInitContainer: false
-    storageClass: csi-nfs-stripe-arr-conf
+    enabled: true
+    storageClass: local-path
+    config:
+      enabled: true
+      createInitContainer: false
+    media:
+      enabled: true
+      existingClaim: servarr-jellyfin-media
 
 readarr:
   enabled: false
@@ -149,7 +170,13 @@ lidarr:
     limits:
       memory: 512Mi
   persistence:
-    createInitContainer: false
-    storageClass: csi-nfs-stripe-arr-conf
+    enabled: true
+    storageClass: local-path
+    config:
+      enabled: true
+      createInitContainer: false
+    media:
+      enabled: true
+      existingClaim: servarr-jellyfin-media
 
 

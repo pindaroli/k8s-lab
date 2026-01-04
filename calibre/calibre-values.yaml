@@ -5,7 +5,7 @@ image:
 persistence:
   config:
     enabled: true
-    storageClass: csi-nfs-stripe-arr-conf
+    storageClass: local-path
     size: 1Gi
   media:
     enabled: true

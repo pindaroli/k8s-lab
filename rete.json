@@ -517,6 +517,31 @@
             "role": "Kubernetes Control Plane",
             "os": "Talos Linux 1.12.0",
             "network": "VLAN 20 (vmbr20)"
+        },
+        {
+            "id": "k8s-recovery",
+            "label": "Kubernetes Recovery VM",
+            "type": "VM",
+            "vm_id": "1900",
+            "host_node": "pve",
+            "ip": "10.10.10.190",
+            "mac": "02:26:44:51:B2:11",
+            "role": "Data Migration & Emergency Access",
+            "os": "Debian 13 (Trixie)",
+            "network": "VLAN 10 (Server) - vmbr0",
+            "notes": "Managed by maintenance-mode.sh. Alternate location for NVMe Hot Disk."
+        },
+        {
+            "id": "jellyfin",
+            "label": "Jellyfin Media Server",
+            "type": "LXC",
+            "vm_id": "100",
+            "host_node": "pve",
+            "ip": "10.10.20.12",
+            "role": "Media Server",
+            "os": "Debian / Ubuntu",
+            "network": "VLAN 20 (vmbr20)",
+            "notes": "External Service not in K8s. Consumes media from TrueNAS via NFS."
         }
     ]
 }

@@ -10,24 +10,26 @@ Sistema, siamo nella fase di migrazione del cluster Kubernetes a Talos Linux con
 STATO ATTUALE (Sessione Precedente):
 - [x] Fase 01: Setup Talos (Bootstrap completato).
 - [x] Fase 02: Storage NVMe Setup (Completata).
-      - TrueNAS configurato (Zvol + NVMe Target).
-      - Proxmox: Maintenance script creato `/root/maintenance-mode.sh`.
-      - Talos: Disco collegato e mountato su `/var/mnt/hot`.
-- [x] Fase 02b: Network Stabilization (Completata).
-      - IP Fissi assegnati su OPNsense (DHCP Reservations).
-      - talos-cp-01: 10.10.20.141
-      - talos-cp-02: 10.10.20.142
-      - talos-cp-03: 10.10.20.143
+- [x] Fase 03: Data Recovery (Completata).
+      - Dati migrati su disco NVMe.
+- [x] **Fase 03b: Cluster DISASTER RECOVERY (Completata con Successo).**
+      - Il cluster aveva perso il quorum (Split Brain).
+      - Eseguito Reset Totale + Bootstrap di nuovo.
+      - Nodi 141, 142, 143 ONLINE e Healthy.
+      - VIP 10.10.20.55 ONLINE e raggiungibile.
+      - Disco NVMe Dati ri-agganciato al nodo 141.
+      - Snapshot "Post-Bootstrap-OK" effettuato su Proxmox.
 
-PROSSIMO OBIETTIVO:
-- [ ] Fase 03: Data Recovery (Migrazione Dati).
-      - Accendere Recovery VM.
-      - Montare vecchio backup NFS.
-      - Copiare dati su nuovo disco NVMe.
-      - Ri-switch su Talos.
+PROSSIMO OBIETTIVO (Immediato):
+- [ ] **Fase 04: Kubernetes Manifests (Deploy).**
+      - **RIPRENDERE DA QUI**: Deploy MetalLB (Namespace creato, Helm da installare).
+      - Deploy Secrets (Xray, Google).
+      - Deploy Ingress (Traefik).
+      - Deploy Storage Class (Local Path Provisioner modificato).
+      - Deploy Applicazioni (Servarr stack).
 
 Per favore:
-1. Leggi la strategia in `istruzioni/storage_strategy.md`.
-2. Leggi il piano per oggi in `istruzioni/migration/03_data_recovery.md`.
-3. Assisti nell'esecuzione passo-passo della Fase 03.
+1. Leggi il piano aggiornato in `implementation_plan.md` e la task list in `task.md`.
+2. Verifica subito la salute del cluster (`kubectl get nodes`).
+3. Procedi con l'installazione di MetalLB come da piano.
 ```
