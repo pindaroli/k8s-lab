@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-hot-mount
+  namespace: default
+spec:
+  nodeName: talos-cp-01
+  restartPolicy: Never
+  containers:
+  - name: debug
+    image: busybox
+    command: ["sh", "-c", "ls -ld /host/hot && touch /host/hot/test-write && echo 'Write success' || echo 'Write failed'"]
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: host-hot
+      mountPath: /host/hot
+  volumes:
+  - name: host-hot
+    hostPath:
+      path: /var/mnt/hot
+      type: Directory

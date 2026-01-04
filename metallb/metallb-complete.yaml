@@ -26,7 +26,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - 192.168.1.3-192.168.1.13
+    - 10.10.20.56-10.10.20.60
 
 ---
 # L2 Advertisement - announces IPs via Layer 2 (ARP) on local network

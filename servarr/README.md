@@ -17,6 +17,19 @@ helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
 kubectl apply -f arr-volumes-csi.yaml 
 ```
 
+## Storage Strategy
+This deployment uses a **Hybrid Storage Strategy** to balance Performance and Capacity:
+
+| Data Type | Path | Storage Class | Backend | Naming Conv. |
+| :--- | :--- | :--- | :--- | :--- |
+| **Configs / DBs** | `/config` | `local-path` | **NVMe (Hot)** | `{{ .PVC.Name }}` (e.g. `servarr-radarr-config`) |
+| **Media Library** | `/media` | `nfs-csi` | **TrueNAS (Warm)** | `servarr-jellyfin-media` (Static PV) |
+
+### Directory Naming
+- **Local Path Provisioner** is configured with `pathPattern: "{{ .PVC.Name }}"`.
+- This ensures that configuration directories on the host NVMe disk (`/var/mnt/hot/`) are clean and readable (e.g., `/var/mnt/hot/servarr-sonarr-config`).
+- **NO RANDOM SUFFIXES**: The default random UUIDs are disabled.
+
 ## Installation
 
 Install servarr stack from local Helm chart:

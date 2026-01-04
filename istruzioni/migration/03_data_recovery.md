@@ -3,10 +3,10 @@
 **Prerequisites**: Phases 1 & 2 Complete. Old data exists on TrueNAS NFS share.
 
 ## 1. Prepare Recovery VM
-- [ ] **Create VM**: Standard VM (ID 900) - **Recommended Distro: SystemRescueCD**.
-    - *Why?* Lightweight, pre-loaded with `rsync`, `nfs-common`, `gparted`, and shell tools.
-    - *Download*: [system-rescue.org](https://www.system-rescue.org/Download/) (approx 800MB).
-    - *Alternative*: Minimal Debian/Ubuntu Server (requires manual apt install).
+- [ ] **Create VM**: **Standard Debian 13 (Trixie) VM** (ID 1900) - *Selected*.
+    - *Why?* Persistent tools, SSH keys, and `filebrowser` config. Best for long-term "Safety Valve".
+    - *Specs*: 1 vCPU, 512MB RAM, 4GB Disk (Local).
+    - *Alternative*: SystemRescueCD (Live ISO) for one-off emergencies.
 - [ ] **Install Tools**:
     ```bash
     apt install rsync nfs-common curl
