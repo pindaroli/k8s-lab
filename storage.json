@@ -1,0 +1,71 @@
+{
+  "nas": {
+    "hostname": "truenas",
+    "ips": {
+      "server_vlan": "10.10.10.50",
+      "client_vlan": "10.10.20.50"
+    },
+    "exports": {
+      "k8s_arr": {
+        "path": "/mnt/stripe/k8s-arr",
+        "description": "Kubernetes PVCs for Arr stack (Config / SQLite)",
+        "protocol": "nfs",
+        "mount_options": [
+          "nfsvers=4.1",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime"
+        ],
+        "networks": [
+          "10.10.10.0/24",
+          "10.10.20.0/24"
+        ]
+      },
+      "media": {
+        "path": "/mnt/oliraid/arrdata/media",
+        "description": "Mass Storage for Media Library",
+        "protocol": "nfs",
+        "mount_options": [
+          "nfsvers=4.1",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime"
+        ],
+        "networks": [
+          "10.10.20.141",
+          "10.10.20.142",
+          "10.10.20.143",
+          "10.10.10.0/24"
+        ]
+      },
+      "backup_proxmox": {
+        "path": "/mnt/oliraid/backup-proxmox",
+        "description": "Proxmox VZDump Backups",
+        "protocol": "nfs",
+        "networks": [
+          "10.10.10.0/24"
+        ]
+      },
+      "backup_k8s_arr": {
+        "path": "/mnt/oliraid/backup-stripe/k8s-arr",
+        "description": "Backup of k8s-arr data",
+        "protocol": "nfs",
+        "networks": [
+          "10.10.10.0/24",
+          "10.10.20.0/24"
+        ]
+      },
+      "k8s_fast_gen": {
+        "path": "/mnt/stripe/k8s-fast-gen",
+        "description": "Fast Storage for General workloads",
+        "protocol": "nfs",
+        "networks": [
+          "10.10.10.0/24",
+          "10.10.20.0/24"
+        ]
+      }
+    }
+  }
+}

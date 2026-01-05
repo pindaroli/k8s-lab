@@ -2,21 +2,14 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: debug-hot-mount
-  namespace: default
+  namespace: kube-system
 spec:
   nodeName: talos-cp-01
   restartPolicy: Never
   containers:
   - name: debug
     image: busybox
-    command: ["sh", "-c", "ls -ld /host/hot && touch /host/hot/test-write && echo 'Write success' || echo 'Write failed'"]
+    command: ["sh", "-c", "mkdir -p /mnt/check && mount -t ext4 /dev/sdb /mnt/check && echo 'MOUNT_SUCCESS_EXT4' && umount /mnt/check || echo 'MOUNT_FAILED'"]
     securityContext:
       privileged: true
-    volumeMounts:
-    - name: host-hot
-      mountPath: /host/hot
-  volumes:
-  - name: host-hot
-    hostPath:
-      path: /var/mnt/hot
-      type: Directory
+  volumes: []

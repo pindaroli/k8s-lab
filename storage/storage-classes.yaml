@@ -6,8 +6,11 @@ provisioner: nfs.csi.k8s.io
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 mountOptions:
-  - hard
   - nfsvers=4.1
+  - soft          # Sblocca il processo se il server non risponde
+  - timeo=50      # Timeout di 5 secondi (in decisecondi)
+  - retrans=3     # Riprova 3 volte
+  - noatime       # Performance: non scrivere access time
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -39,8 +42,42 @@ allowVolumeExpansion: true
 # NFS mount options
 mountOptions:
   - nfsvers=4.1
-  - rsize=1048576
-  - wsize=1048576
-  - hard
-  - timeo=600
-  - retrans=2
+  - soft          # Sblocca il processo se il server non risponde
+  - timeo=50      # Timeout di 5 secondi (in decisecondi)
+  - retrans=3     # Riprova 3 volte
+  - noatime       # Performance: non scrivere access time
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-nfs-fast-gen
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: nfs.csi.k8s.io
+parameters:
+  # NFS server configuration
+  server: 10.10.20.50
+  share: /mnt/stripe/k8s-fast-gen
+  
+  # Dynamic subdirectory naming: service-name-namespace
+  subDir: ${pvc.metadata.name}
+  
+  # Set folder permissions to 777
+  mountPermissions: "0777"
+  
+  # Volume deletion policy
+  onDelete: retain
+
+# Reclaim policy
+reclaimPolicy: Delete
+# Volume binding mode
+volumeBindingMode: Immediate
+# Allow volume expansion
+allowVolumeExpansion: true
+# NFS mount options
+mountOptions:
+  - nfsvers=4.1
+  - soft          # Sblocca il processo se il server non risponde
+  - timeo=50      # Timeout di 5 secondi (in decisecondi)
+  - retrans=3     # Riprova 3 volte
+  - noatime       # Performance: non scrivere access time
