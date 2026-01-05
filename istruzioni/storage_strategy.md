@@ -10,8 +10,10 @@ This document outlines a high-efficiency storage strategy for the `k8s-lab` clus
 - **Storage Backend**: TrueNAS Scale (`truenas`, IP `10.10.10.50`).
 - **ETCD Storage**: Local VirtIO Block storage on each Proxmox node (low latency).
 - **Protocols**:
-  - **NVMe over TCP** (via Proxmox): For "Hot" block storage (App Data).
-  - **NFS v4.1**: For "Warm/Cold" file storage (Media).
+  - **NVMe over TCP** (via Proxmox): *Reserved for high-performance single-instance DBs only.*
+  - **NFS v4.1**: **Primary Storage** for `arr` stack (Config + Media) to ensure multi-node access (RWX).
+  > [!NOTE]
+  > **Strategy Update (2026-01-05)**: We attempted to use NVMe-TCP for qBittorrent Config, but reverted to NFS because the "One Disk per Node" rule of Block Storage prevented failover/migration without complex replication (Longhorn). NFS is the chosen standard for this cluster.
 
 ## Strategic Evaluation (Reference)
 We evaluated three options. **Option B is selected** for implementation.
@@ -32,13 +34,14 @@ The implementation is broken down into **5 Standalone Phases** for safe executio
 
 ## Storage Tiers
 
-### 1. Hot Tier (Performance)
-*Used for: SQLite, Databases, Configs.*
-*Implementation: **Local Path** (`local-path-provisioner`)*
-- **Infrastructure**: One large Zvol on TrueNAS -> Exposed via NVMe/TCP -> Mounted by Proxmox -> Attached as Secondary Disk (`/dev/vdb`) to Talos VM.
+### 1. Hot Tier (Performance) - DEPRECATED / REMOVED
+*Originally planned for: SQLite, Databases, Configs.*
+*Status: **Abandoned** in favor of NFS (Soft Mounts).*
+- **Reason**: Single disk prevented pod failover between nodes. NFS with proper caching/options proved sufficient for SQLite.
+- **Action**: The Proxmox NVMe/TCP disk attachment has been removed.
 
 #### Filesystem Choice
-We explicitly choose **ext4** or **xfs** for the Talos guest filesystem to avoid "CoW on CoW" performance penalties.
+N/A - Disk removed.
 
 ### 2. Warm Tier (Capacity)
 *Implementation: **NFS v4.1** (Direct)*

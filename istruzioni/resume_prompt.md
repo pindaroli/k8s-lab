@@ -13,12 +13,10 @@ STATO ATTUALE (Sessione Precedente):
 - [x] Fase 03: Data Recovery (Completata).
       - Dati migrati su disco NVMe.
 - [x] **Fase 03b: Cluster DISASTER RECOVERY (Completata con Successo).**
-      - Il cluster aveva perso il quorum (Split Brain).
-      - Eseguito Reset Totale + Bootstrap di nuovo.
       - Nodi 141, 142, 143 ONLINE e Healthy.
       - VIP 10.10.20.55 ONLINE e raggiungibile.
-      - Disco NVMe Dati ri-agganciato al nodo 141.
-      - Snapshot "Post-Bootstrap-OK" effettuato su Proxmox.
+      - *Pivot Storage*: NVMe locale abbandonato per qBittorrent in favore di NFS (RWX).
+
 
 PROSSIMO OBIETTIVO (Immediato):
 - [ ] **Fase 04: Kubernetes Manifests (Deploy).**
