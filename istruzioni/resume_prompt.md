@@ -5,7 +5,7 @@ Copia e incolla il seguente testo in una nuova chat per riprendere il lavoro esa
 ---
 
 ```text
-Sistema, siamo nella fase di migrazione del cluster Kubernetes a Talos Linux con storage NVMe/TCP.
+Sistema, siamo nella fase di migrazione del cluster Kubernetes a Talos Linux 
 
 STATO ATTUALE (Sessione Precedente):
 - [x] Fase 01: Setup Talos (Bootstrap completato).

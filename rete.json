@@ -520,16 +520,17 @@
         },
         {
             "id": "k8s-recovery",
-            "label": "Kubernetes Recovery VM",
+            "label": "Kubernetes Recovery VM (REMOVED)",
             "type": "VM",
             "vm_id": "1900",
             "host_node": "pve",
             "ip": "10.10.10.190",
             "mac": "02:26:44:51:B2:11",
-            "role": "Data Migration & Emergency Access",
+            "role": "DECOMMISSIONED",
+            "status": "Removed",
             "os": "Debian 13 (Trixie)",
             "network": "VLAN 10 (Server) - vmbr0",
-            "notes": "Managed by maintenance-mode.sh. Alternate location for NVMe Hot Disk."
+            "notes": "VM REMOVED. IP 10.10.10.190 IS AVAILABLE. Previously managed by maintenance-mode.sh."
         },
         {
             "id": "jellyfin",
@@ -542,6 +543,24 @@
             "os": "Debian / Ubuntu",
             "network": "VLAN 20 (vmbr20)",
             "notes": "External Service not in K8s. Consumes media from TrueNAS via NFS."
+        },
+        {
+            "id": "traefik-lb",
+            "label": "Traefik LoadBalancer VIP",
+            "type": "VIP",
+            "ip": "10.10.20.56",
+            "role": "Ingress Controller VIP",
+            "domain": "pindaroli.org",
+            "aliases": [
+                "auth",
+                "traefik-dash",
+                "radarr",
+                "lidarr",
+                "prowlarr",
+                "qbittorrent",
+                "jellyfin"
+            ],
+            "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
         }
     ]
 }
