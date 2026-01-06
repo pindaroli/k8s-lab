@@ -12,6 +12,15 @@ speaker:
       operator: Exists
       effect: NoSchedule
 
+  # Tell MetalLB to ignore the "exclude-from-external-load-balancers" label
+  # enforced by Talos Linux on CP nodes.
+  ignoreExcludeLB: true
+
+  # Fix: Resolve conflict between privileged=true and allowPrivilegeEscalation=false
+  securityContext:
+    privileged: true
+    allowPrivilegeEscalation: true
+
 controller:
   securityContext:
     runAsNonRoot: true

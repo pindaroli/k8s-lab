@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: net-debug
+  namespace: metallb-system
+spec:
+  hostNetwork: true
+  containers:
+  - name: debug
+    image: alpine
+    command: ["/bin/sh", "-c", "ip addr && sleep 3600"]
+    securityContext:
+      privileged: true
