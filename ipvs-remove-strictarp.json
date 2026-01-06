@@ -1,0 +1,6 @@
+[
+  {
+    "op": "remove",
+    "path": "/cluster/proxy/extraArgs/strictARP"
+  }
+]

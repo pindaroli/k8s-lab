@@ -16,6 +16,12 @@
 | **Transit** | - | `192.168.2.0/24` | `192.168.2.1` | - | Switch Interconnects |
 
 ### Operational Cheatsheet
+**Canonical Configuration Philosophy**
+> [!IMPORTANT]
+> **ALWAYS update `talos-config/controlplane.yaml` (or worker.yaml) first.**
+> Do not rely on `talosctl patch` for permanent changes. Update the source of truth, then apply via `talosctl apply-config`.
+> **After a command, ALWAYS check the response/logs and report the status.**
+
 **Talos Cluster Management**
 - **Talos Config**: `export TALOSCONFIG=talos-config/talosconfig`
 - **Kube Config**: `export KUBECONFIG=talos-config/kubeconfig`

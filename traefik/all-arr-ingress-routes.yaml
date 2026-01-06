@@ -81,46 +81,6 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: readarr-ingress-route
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`readarr.pindaroli.org`) 
-      kind: Rule
-      services:
-        - name: servarr-readarr
-          port: 8787
-      middlewares:
-        - name: oauth2-auth
-          namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: sonarr-ingress-route
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`sonarr.pindaroli.org`) 
-      kind: Rule
-      services:
-        - name: servarr-sonarr
-          port: 8989
-      middlewares:
-        - name: oauth2-auth
-          namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
   name: radarr-ingress-route
   namespace: arr
 spec:
@@ -132,46 +92,6 @@ spec:
       services:
         - name: servarr-radarr
           port: 7878
-      middlewares:
-        - name: oauth2-auth
-          namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: bazarr-ingress-route
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`bazarr.pindaroli.org`) 
-      kind: Rule
-      services:
-        - name: servarr-bazarr
-          port: 6767
-      middlewares:
-        - name: oauth2-auth
-          namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: jellyseerr-ingress-route
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`jellyseerr.pindaroli.org`) 
-      kind: Rule
-      services:
-        - name: servarr-jellyseerr
-          port: 5055
       middlewares:
         - name: oauth2-auth
           namespace: traefik
@@ -317,36 +237,6 @@ spec:
       namespace: traefik
   tls:
     secretName: local-wildcard-tls
----
-# Readarr Local Access
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: readarr-local
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: Host(`readarr.local`)
-    kind: Rule
-    services:
-    - name: servarr-readarr
-      port: 8787
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
-  tls:
-    secretName: local-wildcard-tls
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: dns-upstream
-  namespace: default
-spec:
-  type: ClusterIP
-  clusterIP: None
 ---
 apiVersion: v1
 kind: Service
