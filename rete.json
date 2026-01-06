@@ -563,7 +563,8 @@
                 "lidarr-internal",
                 "prowlarr-internal",
                 "qbittorrent-internal",
-                "jellyfin-internal"
+                "jellyfin-internal",
+                "home-internal"
             ],
             "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
         }

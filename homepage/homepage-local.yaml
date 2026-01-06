@@ -27,11 +27,11 @@ data:
   services.yaml: |
     - "Media Services":
         - Jellyfin:
-            href: https://jellyfin.local
+            href: https://jellyfin-internal.pindaroli.org
             description: Media server for movies, TV shows and music
             icon: jellyfin.png
         - qBittorrent:
-            href: https://qbittorrent.local
+            href: https://qbittorrent-internal.pindaroli.org
             description: BitTorrent client
             icon: qbittorrent.png
 
@@ -51,19 +51,19 @@ data:
 
     - "Arr Services":
         - Radarr:
-            href: https://radarr.local
+            href: https://radarr-internal.pindaroli.org
             description: Movie management
             icon: radarr.png
         - Lidarr:
-            href: https://lidarr.local
+            href: https://lidarr-internal.pindaroli.org
             description: Music management
             icon: lidarr.png
         - Readarr:
-            href: https://readarr.local
+            href: https://readarr-internal.pindaroli.org
             description: Book management
             icon: readarr.png
         - Prowlarr:
-            href: https://prowlarr.local
+            href: https://prowlarr-internal.pindaroli.org
             description: Indexer management
             icon: prowlarr.png
   widgets.yaml: |
@@ -127,7 +127,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "home.local,192.168.1.3,192.168.1.4,192.168.1.5"
+              value: "home-internal.pindaroli.org,192.168.1.3,192.168.1.4,192.168.1.5"
           ports:
             - name: http
               containerPort: 3000
@@ -196,7 +196,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`home.local`)
+    - match: Host(`home-internal.pindaroli.org`)
       kind: Rule
       services:
         - name: homepage-local
@@ -205,4 +205,4 @@ spec:
         - name: basic-auth
           namespace: traefik
   tls:
-    secretName: local-wildcard-tls
+    secretName: pindaroli-wildcard-tls
