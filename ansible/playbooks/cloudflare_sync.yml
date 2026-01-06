@@ -1,0 +1,37 @@
+---
+- name: Sync DNS Records to Cloudflare
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    # Global API Key Strategy
+    cloudflare_email: "{{ cloudflare_email | default('') }}"
+    cloudflare_api_key: "{{ cloudflare_api_key | default('') }}"
+    zone: "pindaroli.org"
+    target_ip: "10.10.20.56" 
+    
+  vars_files:
+    - "../vars/secrets.yml"
+    - "../../rete.json"
+
+  tasks:
+    - name: Fail if credentials missing
+      fail:
+        msg: "cloudflare_email and cloudflare_api_key are required."
+      when: cloudflare_email == '' or cloudflare_api_key == ''
+
+    - name: Find Traefik LB Node
+      set_fact:
+        traefik_node: "{{ nodi | selectattr('id', 'equalto', 'traefik-lb') | first }}"
+
+    - name: Ensure DNS Records exist on Cloudflare
+      community.general.cloudflare_dns:
+        zone: "{{ zone }}"
+        record: "{{ item }}"
+        type: A
+        value: "{{ target_ip }}"
+        account_email: "{{ cloudflare_email }}"
+        account_api_token: "{{ cloudflare_api_key }}"
+        state: present
+        proxied: no
+      loop: "{{ traefik_node.aliases }}"

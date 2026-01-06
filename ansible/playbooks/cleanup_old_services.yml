@@ -1,0 +1,90 @@
+---
+- name: Cleanup Disabled Services DNS
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    # Cloudflare Setup
+    cloudflare_email: "{{ cloudflare_email | default('') }}"
+    cloudflare_api_key: "{{ cloudflare_api_key | default('') }}"
+    zone: "pindaroli.org"
+
+    # Services to Remove
+    stale_services:
+      - sonarr
+      - readarr
+      - bazarr
+      - jellyseerr
+
+    # OPNsense Setup
+    opnsense_url: "https://192.168.2.254"
+    api_key: "{{ opnsense_api_key | default('') }}"
+    api_secret: "{{ opnsense_api_secret | default('') }}"
+
+  vars_files:
+    - "../vars/secrets.yml"
+
+  tasks:
+    # ---------------------------------------------------------
+    # PART 1: CLOUDFLARE CLEANUP
+    # ---------------------------------------------------------
+    - name: Remove Stale Records from Cloudflare
+      community.general.cloudflare_dns:
+        zone: "{{ zone }}"
+        record: "{{ item }}"
+        type: A
+        state: absent
+        account_email: "{{ cloudflare_email }}"
+        account_api_token: "{{ cloudflare_api_key }}"
+      loop: "{{ stale_services }}"
+      ignore_errors: yes
+
+    # ---------------------------------------------------------
+    # PART 2: OPNSENSE CLEANUP (Best Effort)
+    # Strategy: Search for UUID -> Delete by UUID
+    # ---------------------------------------------------------
+    - name: Search Host Overrides in OPNsense
+      uri:
+        url: "{{ opnsense_url }}/api/unbound/settings/searchHostOverride"
+        method: POST # Search endpoint is often POST (or GET with params). Trying POST as it's common for OPNsense grids.
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body: 
+            current: 1
+            rowCount: 1000
+            searchPhrase: ""
+      register: search_results
+      ignore_errors: yes
+    
+    - name: Parse and Delete Stale Overrides
+      uri:
+        url: "{{ opnsense_url }}/api/unbound/settings/delHostOverride/{{ item.uuid }}"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        status_code: [200, 204]
+      # Logic: Iterate ALL rows, check if hostname is in our stale list
+      loop: "{{ search_results.json.rows | default([]) }}"
+      when: 
+        - search_results.json is defined
+        - item.hostname in stale_services
+      loop_control:
+        label: "Deleting {{ item.hostname }}"
+      ignore_errors: yes
+
+    - name: Apply Unbound Configuration
+      uri:
+        url: "{{ opnsense_url }}/api/unbound/service/reconfigure"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+      ignore_errors: yes
