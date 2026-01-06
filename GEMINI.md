@@ -44,6 +44,9 @@
 - **`secrets/`**: Global Environment Secrets.
   - Contains `setEnv.sh` (Traefik/OAuth variables).
   - Contains `google_client_secret.json` (Raw OAuth credentials).
+- **`ansible/vars/secrets.yml`**: Encrypted Ansible Secrets (Cloudflare keys, SSH keys).
+  - **Decryption**: `ansible-vault view ansible/vars/secrets.yml --vault-password-file ~/.vault_pass.txt`
+  - **Vault Password**: Located at `~/.vault_pass.txt` (User Home Directory).
 - **`_OLD_ARCHIVE/`**: Legacy/Stale files.
   - `ansible-venv`, old scripts, previous attempts.
 

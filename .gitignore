@@ -24,3 +24,4 @@ talos-config/
 
 # Global Secrets
 secrets/
+cert-manager/cloudflare-token-secret.yaml
