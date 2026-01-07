@@ -1,0 +1,23 @@
+---
+- name: Restart Unbound
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    api_key: "{{ opnsense_api_key | default('') }}"
+    api_secret: "{{ opnsense_api_secret | default('') }}"
+    opnsense_url: "https://192.168.2.254"
+
+  vars_files:
+    - "../vars/secrets.yml"
+
+  tasks:
+    - name: Restart Unbound Service
+      uri:
+        url: "{{ opnsense_url }}/api/unbound/service/restart"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        status_code: 200

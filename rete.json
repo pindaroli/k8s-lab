@@ -533,7 +533,7 @@
             "notes": "VM REMOVED. IP 10.10.10.190 IS AVAILABLE. Previously managed by maintenance-mode.sh."
         },
         {
-            "id": "jellyfin",
+            "id": "jellyfin-lxc",
             "label": "Jellyfin Media Server",
             "type": "LXC",
             "vm_id": "100",
