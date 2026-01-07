@@ -17,14 +17,11 @@ spec:
     - name: oauth2-auth
       namespace: traefik
   # Internal / Short: Basic Auth
-  - match: Host(`jellyfin-internal.pindaroli.org`)
+  - match: Host(`jellyfin`) || Host(`jellyfin-internal.pindaroli.org`)
     kind: Rule
     services:
     - name: jellyfin-external-k8s-service
       port: 8096
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -51,9 +48,6 @@ spec:
       services:
         - name: servarr-lidarr
           port: 8686
-      middlewares:
-        - name: basic-auth
-          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -81,9 +75,6 @@ spec:
       services:
         - name: servarr-prowlarr
           port: 9696
-      middlewares:
-        - name: basic-auth
-          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -111,9 +102,6 @@ spec:
     services:
     - name: servarr-qbittorrent-web
       port: 8080
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -141,9 +129,6 @@ spec:
       services:
         - name: servarr-radarr
           port: 7878
-      middlewares:
-        - name: basic-auth
-          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---

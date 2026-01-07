@@ -359,12 +359,8 @@ spec:
         - name: homepage
           port: 3000
       middlewares:
-        - name: homepage-content-type
-          namespace: default
         - name: homepage-cache-control
           namespace: default
-        - name: basic-auth
-          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
