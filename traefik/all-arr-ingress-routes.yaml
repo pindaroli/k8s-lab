@@ -7,6 +7,7 @@ spec:
   entryPoints:
     - websecure
   routes:
+  # External / Public: OAuth Protected
   - match: Host(`jellyfin.pindaroli.org`)
     kind: Rule
     services:
@@ -14,6 +15,15 @@ spec:
       port: 8096
     middlewares:
     - name: oauth2-auth
+      namespace: traefik
+  # Internal / Short: Basic Auth
+  - match: Host(`jellyfin-internal.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: jellyfin-external-k8s-service
+      port: 8096
+    middlewares:
+    - name: basic-auth
       namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
@@ -35,6 +45,15 @@ spec:
       middlewares:
         - name: oauth2-auth
           namespace: traefik
+    # Internal / Short: Basic Auth
+    - match: Host(`lidarr`) || Host(`lidarr-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-lidarr
+          port: 8686
+      middlewares:
+        - name: basic-auth
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -47,6 +66,7 @@ spec:
   entryPoints:
     - websecure
   routes:
+    # External / Public: OAuth Protected
     - match: Host(`prowlarr.pindaroli.org`) 
       kind: Rule
       services:
@@ -54,6 +74,15 @@ spec:
           port: 9696
       middlewares:
         - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Basic Auth
+    - match: Host(`prowlarr`) || Host(`prowlarr-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-prowlarr
+          port: 9696
+      middlewares:
+        - name: basic-auth
           namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
@@ -67,6 +96,7 @@ spec:
   entryPoints:
     - websecure
   routes:
+  # External / Public: OAuth Protected
   - match: Host(`qbittorrent.pindaroli.org`) 
     kind: Rule
     services:
@@ -74,6 +104,15 @@ spec:
       port: 8080
     middlewares:
     - name: oauth2-auth
+      namespace: traefik
+  # Internal / Short: Basic Auth
+  - match: Host(`qbittorrent`) || Host(`qbittorrent-internal.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: servarr-qbittorrent-web
+      port: 8080
+    middlewares:
+    - name: basic-auth
       namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
@@ -87,6 +126,7 @@ spec:
   entryPoints:
     - websecure
   routes:
+    # External / Public: OAuth Protected
     - match: Host(`radarr.pindaroli.org`) 
       kind: Rule
       services:
@@ -94,6 +134,15 @@ spec:
           port: 7878
       middlewares:
         - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Basic Auth
+    - match: Host(`radarr`) || Host(`radarr-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-radarr
+          port: 7878
+      middlewares:
+        - name: basic-auth
           namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
@@ -129,115 +178,7 @@ spec:
   basicAuth:
     secret: basic-auth-secret
     removeHeader: true
-# LOCAL DOMAIN INGRESS ROUTES WITH BASIC AUTH
-# These duplicate all services for *.local access with basic authentication
 
----
-# Jellyfin Local Access
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: jellyfin-local
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: Host(`jellyfin-internal.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: jellyfin-external-k8s-service
-      port: 8096
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-# qBittorrent Local Access
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: qbittorrent-local
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: Host(`qbittorrent-internal.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: servarr-qbittorrent-web
-      port: 8080
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-# Radarr Local Access
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: radarr-local
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: Host(`radarr-internal.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: servarr-radarr
-      port: 7878
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-# Lidarr Local Access
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: lidarr-local
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: Host(`lidarr-internal.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: servarr-lidarr
-      port: 8686
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-# Prowlarr Local Access
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: prowlarr-local
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: Host(`prowlarr-internal.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: servarr-prowlarr
-      port: 9696
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
-  tls:
-    secretName: pindaroli-wildcard-tls
----
 apiVersion: v1
 kind: Service
 metadata:

@@ -63,12 +63,31 @@
     # ---------------------------------------------------------
     - name: Parse Network Aliases
       set_fact:
-        dns_h: "{{ dns_h + [{ 'hostname': alias_name, 'domain': domain, 'ip': parent_ip, 'desc': 'Alias for ' + parent_node.id }] }}"
+        dns_h: "{{ dns_h + new_records }}"
       vars:
         parent_node: "{{ item.0 }}"
         alias_name: "{{ item.1 }}"
         parent_ip: >-
            {{ parent_node.ip | default(parent_node['management IP'] | default(parent_node.management_ip | default(parent_node.management_ip_vlan10 | default((parent_node.interfaces | selectattr('ip', 'defined') | map(attribute='ip') | first) | default((parent_node.ports | default([]) | selectattr('logical_interfaces', 'defined') | map(attribute='logical_interfaces') | flatten | selectattr('subnet', 'defined') | map(attribute='subnet') | first | regex_replace('/.*$', '') ) | default('')))))) }}
+        
+        # Standard Record
+        reg_record:
+          hostname: "{{ alias_name }}"
+          domain: "{{ domain }}"
+          ip: "{{ parent_ip }}"
+          desc: "Alias for {{ parent_node.id }}"
+        
+        # Internal Record (Auto-generated for Traefik VIP)
+        int_record:
+          hostname: "{{ alias_name }}-internal"
+          domain: "{{ domain }}"
+          ip: "{{ parent_ip }}"
+          desc: "Internal Alias for {{ parent_node.id }}"
+          
+        new_records: >-
+          {{
+            [reg_record, int_record] if (parent_node.id == 'traefik-lb' and not alias_name.endswith('-internal')) else [reg_record]
+          }}
       loop: "{{ nodi | subelements('aliases', skip_missing=True) }}"
       when: parent_ip | length > 0
 
