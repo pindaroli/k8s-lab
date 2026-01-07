@@ -21,84 +21,24 @@
       when: api_key == '' or api_secret == ''
 
     # ---------------------------------------------------------
-    # STEP 1: INITIALIZE ACCUMULATOR
-    # We create an empty list 'dns_h' to store all our DNS records.
+    # STEP 1: GENERATE DNS RECORDS VIA PYTHON
+    # We delegate the complexity of parsing rete.json and generating
+    # aliases to the python script, which acts as the Source of Truth.
     # ---------------------------------------------------------
-    - name: Initialize DNS Host List
+    - name: Generate DNS Records from rete.json
+      command:
+        cmd: "python3 scripts/validate_rete_dns.py --file ../../rete.json --json"
+      register: dns_gen_result
+      changed_when: false
+
+    - name: Parse Generated JSON
       set_fact:
-        dns_h: []
+        dns_h: "{{ dns_gen_result.stdout | from_json }}"
 
-    # ---------------------------------------------------------
-    # STEP 2: PARSE MAIN NODES (Pass 1)
-    # Loop through every node in rete.json.
-    # Extract its IP and add it to dns_h as a primary record.
-    # ---------------------------------------------------------
-    - name: Parse Main Network Nodes
-      set_fact:
-        dns_h: "{{ dns_h + [{ 'hostname': item.id, 'domain': domain, 'ip': item_ip, 'desc': 'Host from rete.json' }] }}"
-      vars:
-        # Logic to find the IP in the complex rete.json structure
-        item_ip: >-
-          {{
-            item.ip | default(
-              item['management IP'] | default(
-                item.management_ip | default(
-                  item.management_ip_vlan10 | default(
-                    (item.interfaces | selectattr('ip', 'defined') | map(attribute='ip') | first) | default(
-                      (item.ports | default([]) | selectattr('logical_interfaces', 'defined') | map(attribute='logical_interfaces') | flatten | selectattr('subnet', 'defined') | map(attribute='subnet') | first | regex_replace('/.*$', '') ) | default('')
-                    )
-                  )
-                )
-              )
-            )
-          }}
-      loop: "{{ nodi }}"
-      when: item_ip | length > 0
-
-    # ---------------------------------------------------------
-    # STEP 3: PARSE ALIASES (Pass 2)
-    # Loop ONLY through nodes that have 'aliases'.
-    # 'subelements' gives us a pair: item.0 (Parent Node), item.1 (Alias Name).
-    # We use Parent's IP (item.0) with Alias Name (item.1).
-    # ---------------------------------------------------------
-    - name: Parse Network Aliases
-      set_fact:
-        dns_h: "{{ dns_h + new_records }}"
-      vars:
-        parent_node: "{{ item.0 }}"
-        alias_name: "{{ item.1 }}"
-        parent_ip: >-
-           {{ parent_node.ip | default(parent_node['management IP'] | default(parent_node.management_ip | default(parent_node.management_ip_vlan10 | default((parent_node.interfaces | selectattr('ip', 'defined') | map(attribute='ip') | first) | default((parent_node.ports | default([]) | selectattr('logical_interfaces', 'defined') | map(attribute='logical_interfaces') | flatten | selectattr('subnet', 'defined') | map(attribute='subnet') | first | regex_replace('/.*$', '') ) | default('')))))) }}
-        
-        # Standard Record
-        reg_record:
-          hostname: "{{ alias_name }}"
-          domain: "{{ domain }}"
-          ip: "{{ parent_ip }}"
-          desc: "Alias for {{ parent_node.id }}"
-        
-        # Internal Record (Auto-generated for Traefik VIP)
-        int_record:
-          hostname: "{{ alias_name }}-internal"
-          domain: "{{ domain }}"
-          ip: "{{ parent_ip }}"
-          desc: "Internal Alias for {{ parent_node.id }}"
-          
-        new_records: >-
-          {{
-            [reg_record, int_record] if (parent_node.id == 'traefik-lb' and not alias_name.endswith('-internal')) else [reg_record]
-          }}
-      loop: "{{ nodi | subelements('aliases', skip_missing=True) }}"
-      when: parent_ip | length > 0
-
-
-    # ---------------------------------------------------------
-    # STEP 4: VERIFY DATA
-    # ---------------------------------------------------------
-    - name: Display calculated DNS records (Debug)
+    - name: Display DNS Records (Debug)
       debug:
-        msg: "Record: {{ item.hostname }}.{{ item.domain }} -> {{ item.ip }} ({{ item.desc }})"
-      loop: "{{ dns_h }}"
+        msg: "Loaded {{ dns_h | length }} records from Python generator."
+
 
     # ---------------------------------------------------------
     # STEP 5: PUSH TO OPNSENSE API
