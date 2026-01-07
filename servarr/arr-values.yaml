@@ -90,6 +90,9 @@ qbittorrent:
       command: ["/bin/sh", "-c"]
       args:
         - |
+          echo "Current Routing Table:"
+          ip route
+          
           # 1. CAPTURE GATEWAY BEFORE TOUCHING ANYTHING
           # We need to access the original default gateway to route Xray traffic out.
           DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
@@ -100,10 +103,20 @@ qbittorrent:
           REMOTE_IP=$(grep -o '"address": *"[^"]*"' /etc/xray/config.json | head -1 | cut -d'"' -f4)
           echo "Remote Server IP: $REMOTE_IP"
 
+          if [ -z "$DEFAULT_GW" ]; then
+             echo "WARNING: Default Gateway not found via 'ip route show default'."
+             # Fallback: Try to deduce from eth0 route (assuming K8s flannel/cni style)
+             # Often it is the .1 address of the subnet.
+             # This is a hack, but might save the pod from crash loop if netns persisted.
+             echo "Attempting to deduce gateway..."
+             DEFAULT_GW="10.244.0.1" 
+             echo "Fallback Gateway: $DEFAULT_GW"
+          fi
+
           if [ -z "$DEFAULT_GW" ] || [ -z "$REMOTE_IP" ]; then
              echo "CRITICAL: Failed to capture Gateway or Remote IP. Routing will fail."
-             # Do not exit, just sleep to allow debug / prevent crash loop
-             tail -f /dev/null
+             # Dump routes for debug
+             ip route
              exit 1
           fi
 
@@ -118,7 +131,8 @@ qbittorrent:
           echo "Waiting for tun0..."
           while ! ip link show tun0 >/dev/null 2>&1; do sleep 1; done
           ip link set tun0 up
-          echo "tun0 is up!"
+          ip addr add 10.255.0.1/32 dev tun0
+          echo "tun0 is up with IP 10.255.0.1!"
 
           # MSS Clamping: Fix for connection hangs (MTU 1500 + Overhead)
           # We clamp TCP MSS to 1300 to ensure packets fit inside the Xray tunnel.
