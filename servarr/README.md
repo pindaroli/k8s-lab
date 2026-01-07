@@ -60,3 +60,32 @@ helm install servarr /Users/olindo/prj/helm/charts/servarr -n arr --create-names
 ```bash
 kubectl get pods -n arr -o wide | grep jellyfin
 ```
+
+## Privacy & Networking (Tunnel)
+
+Traffic for **qBittorrent** (Download) and **Prowlarr** (Search) is transparently routed through an encrypted **VLESS/Reality** tunnel to an external Oracle Cloud VPS.
+
+### Architecture: The "Sidecar" Pattern
+Each tunneled pod runs 3 containers:
+1.  **Application** (qBittorrent/Prowlarr): Binds to `tun0`.
+2.  **Xray Core**: Establishes the connection to the remote VPS (SOCKS5 on `127.0.0.1:10808`).
+3.  **Tun2Socks**: Creates the `tun0` network interface and routes traffic into the SOCKS5 proxy.
+
+### Critical Configurations
+
+#### 1. qBittorrent - `tun0` Binding Fix
+qBittorrent refuses to bind to a network interface without an IP address. `tun2socks` creates a Layer 3 tunnel but doesn't assign an IP by default.
+**Fix**: We inject a dummy static IP (`10.255.0.1/32`) to the `tun0` interface during pod startup.
+- **Config**: `Arr-Values.yaml` -> `extraContainers` -> `tun2socks` args.
+- **App Setting**: qBittorrent -> Advanced -> Network Interface: `tun0`.
+- **Note**: `UPnP` must be **DISABLED**.
+
+#### 2. Prowlarr - Privileged Mode
+Prowlarr requires similar tunneling. However, `tun2socks` must run in **Privileged Mode** (`privileged: true`) alongside `NET_ADMIN` capabilities to correctly manipulate the pod's routing table.
+
+#### 3. Verification
+To verify the tunnel is active:
+```bash
+# Check External IP (Should be Oracle Cloud IP, not Home ISP)
+kubectl exec -n arr deploy/servarr-prowlarr -c servarr -- curl -s https://ifconfig.me
+```
