@@ -1,5 +1,5 @@
 ---
-- name: Sync DNS Records to Cloudflare
+- name: Clean up Cloudflare DNS Mess
   hosts: localhost
   connection: local
   gather_facts: no
@@ -8,7 +8,6 @@
     cloudflare_email: "{{ cloudflare_email | default('') }}"
     cloudflare_api_key: "{{ cloudflare_api_key | default('') }}"
     zone: "pindaroli.org"
-    target_ip: "10.10.20.56" 
     
   vars_files:
     - "../vars/secrets.yml"
@@ -24,28 +23,22 @@
       set_fact:
         traefik_node: "{{ nodi | selectattr('id', 'equalto', 'traefik-lb') | first }}"
 
-    - name: Ensure DNS Records exist on Cloudflare
+    - name: DELETE Garbage '*-internal-internal' records
       community.general.cloudflare_dns:
         zone: "{{ zone }}"
-        record: "{{ item }}"
+        record: "{{ item }}-internal-internal"
         type: A
-        value: "{{ target_ip }}"
         account_email: "{{ cloudflare_email }}"
         account_api_token: "{{ cloudflare_api_key }}"
-        state: present
-        proxied: no
+        state: absent
       loop: "{{ traefik_node.aliases }}"
-      when: not item.endswith('-internal')
 
-    - name: Ensure Internal DNS Records are BLACKHOLED on Cloudflare
+    - name: DELETE potentially corrupted '*-internal' records (Reset)
       community.general.cloudflare_dns:
         zone: "{{ zone }}"
         record: "{{ item }}-internal"
         type: A
-        value: "0.0.0.0" # Blackhole to override Wildcard and prevent external resolution
         account_email: "{{ cloudflare_email }}"
         account_api_token: "{{ cloudflare_api_key }}"
-        state: present
-        proxied: no
+        state: absent
       loop: "{{ traefik_node.aliases }}"
-      when: not item.endswith('-internal')
