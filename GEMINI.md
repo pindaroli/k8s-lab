@@ -1,9 +1,9 @@
 # Project GEMINI: Kubernetes Homelab Migration
 
 > [!IMPORTANT]
-> **Current Status**: **MIGRATION PHASE** (Proxmox -> Talos Linux)
-> We are currenly bootstrapping the Talos Cluster.
-> **Active Goal**: Stabilize networking and storage before deploying workloads.
+> **Current Status**: **STABILIZATION COMPLETE** (Ready for DB Migration)
+> Servarr Stack is fully operational and Tunneled.
+> **Active Goal**: Deploy PostgreSQL (CloudNativePG) and migrate data.
 
 ## 1. Quick Reference
 
@@ -13,6 +13,7 @@
 | **Server** | 10 | `10.10.10.0/24` | `10.10.10.254` | Static | TrueNAS, Proxmox Mgmt |
 | **Client** | 20 | `10.10.20.0/24` | `10.10.20.1` | OPNsense | Talos Nodes, Personal Devices |
 | **IoT** | 30 | `10.10.30.0/24` | `10.10.30.1` | OPNsense | Isolated Devices |
+| **Tunnel** | - | `10.255.0.1/32` | - | Static | **Dummy IP** for Xray Tunnel Binding |
 | **Transit** | - | `192.168.2.0/24` | `192.168.2.1` | - | Switch Interconnects |
 
 ### Operational Cheatsheet
@@ -84,6 +85,7 @@
 - **Deploy Command**: `helm upgrade --install servarr /Users/olindo/prj/helm/charts/servarr -n arr -f servarr/arr-values.yaml`
 - **Config**: `servarr/`
 - **Services**: Jellyfin, *arr apps, qBittorrent.
+- **Privacy**: Transparent Xray Tunnel (Sidecar) for qBittorrent & Prowlarr.
 
 ### Storage Integration
 - **NFS CSI Driver**: `CSI-driver/`

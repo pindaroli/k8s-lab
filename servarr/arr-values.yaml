@@ -192,6 +192,84 @@ prowlarr:
       memory: 256Mi
     limits:
       memory: 512Mi
+  extraContainers:
+    # 1. Xray Core: Provides SOCKS5 Proxy on localhost:10808
+    - name: xray-core
+      image: ghcr.io/xtls/xray-core:latest
+      command: ["xray", "-c", "/etc/xray/config.json"]
+      volumeMounts:
+        - name: xray-config
+          mountPath: /etc/xray/config.json
+          subPath: config.json
+          readOnly: true
+      resources: {requests: {cpu: 10m, memory: 32Mi}, limits: {memory: 128Mi}}
+
+    # 2. Tun2Socks: Intercepts traffic
+    - name: tun2socks-gateway
+      image: ghcr.io/xjasonlyu/tun2socks:latest
+      securityContext:
+        capabilities: {add: ["NET_ADMIN"]}
+        privileged: true
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          echo "Current Routing Table:"
+          ip route
+          
+          # 1. CAPTURE GATEWAY BEFORE TOUCHING ANYTHING
+          DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
+          echo "Original Gateway: $DEFAULT_GW"
+          
+          # 2. Extract Remote IP (Scanning config)
+          REMOTE_IP=$(grep -o '"address": *"[^"]*"' /etc/xray/config.json | head -1 | cut -d'"' -f4)
+          echo "Remote Server IP: $REMOTE_IP"
+
+          if [ -z "$DEFAULT_GW" ] || [ -z "$REMOTE_IP" ]; then
+             echo "CRITICAL: Failed to capture Gateway or Remote IP. Routing will fail."
+             ip route
+             exit 1
+          fi
+          
+          # Enable IP Forwarding
+          echo 1 > /proc/sys/net/ipv4/ip_forward
+          
+          # 3. Start tun2socks (Background)
+          tun2socks -device tun0 -proxy socks5://127.0.0.1:10808 &
+          PID=$!
+          
+          # Wait for interface
+          echo "Waiting for tun0..."
+          while ! ip link show tun0 >/dev/null 2>&1; do sleep 1; done
+          ip link set tun0 up
+          ip addr add 10.255.0.1/32 dev tun0
+          echo "tun0 is up with IP 10.255.0.1!"
+          
+          # MSS Clamping
+          iptables -t mangle -A POSTROUTING -o tun0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1300
+          
+          # 4. Apply Routing
+          echo "Adding bypass route for Xray Server: $REMOTE_IP via $DEFAULT_GW"
+          ip route add "$REMOTE_IP" via "$DEFAULT_GW"
+          
+          echo "Adding bypass route for K8s Service CIDR (DNS): 10.96.0.0/12 via $DEFAULT_GW"
+          ip route add 10.96.0.0/12 via "$DEFAULT_GW"
+             
+          echo "Replacing default route with tun0..."
+          ip route del default || true
+          ip route add default dev tun0 metric 1
+          
+          # Wait for tun2socks
+          wait $PID
+      volumeMounts:
+        - name: xray-config
+          mountPath: /etc/xray/config.json
+          subPath: config.json
+          readOnly: true
+      resources: {requests: {cpu: 10m, memory: 32Mi}, limits: {memory: 128Mi}}
+  extraVolumes:
+    - name: xray-config
+      secret:
+        secretName: xray-client-config
   persistence:
     enabled: true
     storageClass: csi-nfs-stripe-arr-conf
