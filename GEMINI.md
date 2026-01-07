@@ -80,7 +80,8 @@
 
 ### Media Stack (Servarr)
 - **Namespace**: `arr`
-- **Helm Chart**: `../helm/charts/servarr` (External Sibling Project - Shared Library)
+- **Helm Chart Path**: `/Users/olindo/prj/helm/charts/servarr` (External)
+- **Deploy Command**: `helm upgrade --install servarr /Users/olindo/prj/helm/charts/servarr -n arr -f servarr/arr-values.yaml`
 - **Config**: `servarr/`
 - **Services**: Jellyfin, *arr apps, qBittorrent.
 
