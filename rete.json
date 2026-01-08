@@ -559,9 +559,23 @@
                 "prowlarr",
                 "qbittorrent",
                 "jellyfin",
-                "home"
+                "home",
+                "home-internal"
             ],
             "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
+        },
+        {
+            "id": "postgres-lb",
+            "label": "PostgreSQL LoadBalancer VIP",
+            "type": "VIP",
+            "ip": "10.10.20.57",
+            "role": "Database LoadBalancer",
+            "domain": "pindaroli.org",
+            "aliases": [
+                "postgres",
+                "db"
+            ],
+            "notes": "MetalLB Layer 2 VIP. External access for DBeaver/LAN."
         }
     ]
 }

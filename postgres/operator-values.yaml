@@ -1,0 +1,18 @@
+# CloudNativePG Operator Values
+# Default values are usually sufficient.
+# We explicitly define the controller configuration here for future adjustments.
+
+config:
+  # configMapName: "cnpg-controller-manager-config"
+  # secretName: "cnpg-controller-manager-secret"
+  pass: ""
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 64Mi

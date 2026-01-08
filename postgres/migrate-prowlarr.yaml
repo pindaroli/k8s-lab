@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-prowlarr
+  namespace: arr
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pgloader
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          image: ghcr.io/dimitri/pgloader:latest
+          command:
+            - pgloader
+            - --with
+            - "data only"
+            - --with
+            - "truncate"
+            - --with
+            - "quote identifiers"
+            - /mnt/data/prowlarr.db
+            - postgresql://prowlarr:prowlarr@10.244.0.114:5432/prowlarr
+          volumeMounts:
+            - name: data
+              mountPath: /mnt/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: servarr-prowlarr

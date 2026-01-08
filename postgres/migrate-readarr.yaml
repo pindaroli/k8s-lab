@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: readarr-migrate
+  namespace: arr
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pgloader
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          image: ghcr.io/dimitri/pgloader:latest
+          command:
+            - pgloader
+            - --with
+            - "data only"
+            - --with
+            - "truncate"
+            - --with
+            - "quote identifiers"
+            - /config/readarr.db
+            - postgresql://readarr:readarr@10.108.78.94:5432/readarr
+          volumeMounts:
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: servarr-readarr

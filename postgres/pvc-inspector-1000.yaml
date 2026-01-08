@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-inspector-1000
+  namespace: arr
+spec:
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  containers:
+    - name: inspector
+      image: alpine:latest
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /mnt/data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: servarr-prowlarr
