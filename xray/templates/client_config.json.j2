@@ -45,13 +45,21 @@
           "publicKey": "{{ xray_public_key }}",
           "shortId": "{{ xray_short_id }}",
           "upex": "6423456"
+        },
+        "sockopt": {
+          "mark": 255
         }
       },
       "tag": "proxy"
     },
     {
       "protocol": "freedom",
-      "tag": "direct"
+      "tag": "direct",
+      "streamSettings": {
+        "sockopt": {
+          "mark": 255
+        }
+      }
     },
     {
       "protocol": "blackhole",

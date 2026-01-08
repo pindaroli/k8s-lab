@@ -69,6 +69,11 @@ qbittorrent:
     # 1. Xray Core: Provides SOCKS5 Proxy on localhost:10808
     - name: xray-core
       image: ghcr.io/xtls/xray-core:latest
+      securityContext:
+        privileged: true
+        runAsUser: 0
+        capabilities:
+          add: ["NET_ADMIN"]
       command: ["xray", "-c", "/etc/xray/config.json"]
       volumeMounts:
         - name: xray-config
@@ -76,8 +81,8 @@ qbittorrent:
           subPath: config.json
           readOnly: true
       resources:
-        requests: {cpu: 10m, memory: 32Mi}
-        limits: {memory: 128Mi}
+        requests: {cpu: 50m, memory: 128Mi}
+        limits: {memory: 512Mi}
 
     # 2. Tun2Socks: Creates tun0 and handles routing
     - name: tun2socks-gateway
@@ -138,18 +143,29 @@ qbittorrent:
           # We clamp TCP MSS to 1300 to ensure packets fit inside the Xray tunnel.
           iptables -t mangle -A POSTROUTING -o tun0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1300
 
-          # 4. Apply Routing
-          echo "Adding bypass route for Xray Server: $REMOTE_IP via $DEFAULT_GW"
-          ip route add "$REMOTE_IP" via "$DEFAULT_GW"
+          # 4. Apply Routing (Policy Based Routing)
+          # Create Routing Table 100 for tunneling
+          echo "Setting up Table 100..."
+          ip route add default dev tun0 table 100 || true
+          
+          # Rule 1: Local Loopback
+          ip rule add to 127.0.0.0/8 lookup main priority 400 || true
 
-          # Fix DNS: Exclude Kubernetes Service CIDR (10.96.0.0/12)
-          # Otherwise DNS requests (to 10.96.0.10) go into tunnel and fail.
-          echo "Adding bypass route for K8s Service CIDR (DNS): 10.96.0.0/12 via $DEFAULT_GW"
-          ip route add 10.96.0.0/12 via "$DEFAULT_GW"
-             
-          echo "Replacing default route with tun0..."
-          ip route del default || true
-          ip route add default dev tun0 metric 1
+          # Rule 1.5: Private Class A (Nodes/Pods/Services) -> Main Table
+          echo "Bypassing Private Class A (10.0.0.0/8)..."
+          ip rule add to 10.0.0.0/8 lookup main priority 450 || true
+          
+          # Rule 2: K8s Service CIDR (DNS & ClusterIPs) -> Main Table
+          echo "Bypassing K8s Service CIDR..."
+          ip rule add to 10.96.0.0/12 lookup main priority 500 || true
+          
+          # Rule 3: Xray Traffic (Marked 255) -> Main Table
+          echo "Bypassing Xray Traffic (Mark 255)..."
+          ip rule add fwmark 255 lookup main priority 600 || true
+          
+          # Rule 4: Route everything else through Table 100
+          echo "Routing everything else to tun0..."
+          ip rule add lookup 100 priority 800 || true
           
           # Wait for tun2socks
           wait $PID
@@ -159,8 +175,8 @@ qbittorrent:
           subPath: config.json
           readOnly: true
       resources:
-         requests: {cpu: 10m, memory: 32Mi}
-         limits: {memory: 128Mi}
+        requests: {cpu: 50m, memory: 64Mi}
+        limits: {memory: 512Mi}
   extraVolumes:
     - name: xray-config
       secret:
@@ -196,6 +212,11 @@ prowlarr:
     # 1. Xray Core: Provides SOCKS5 Proxy on localhost:10808
     - name: xray-core
       image: ghcr.io/xtls/xray-core:latest
+      securityContext:
+        privileged: true
+        runAsUser: 0
+        capabilities:
+          add: ["NET_ADMIN"]
       command: ["xray", "-c", "/etc/xray/config.json"]
       volumeMounts:
         - name: xray-config
@@ -247,16 +268,29 @@ prowlarr:
           # MSS Clamping
           iptables -t mangle -A POSTROUTING -o tun0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1300
           
-          # 4. Apply Routing
-          echo "Adding bypass route for Xray Server: $REMOTE_IP via $DEFAULT_GW"
-          ip route add "$REMOTE_IP" via "$DEFAULT_GW"
+          # 4. Apply Routing (Policy Based Routing)
+          # Create Routing Table 100 for tunneling
+          echo "Setting up Table 100..."
+          ip route add default dev tun0 table 100 || true
           
-          echo "Adding bypass route for K8s Service CIDR (DNS): 10.96.0.0/12 via $DEFAULT_GW"
-          ip route add 10.96.0.0/12 via "$DEFAULT_GW"
-             
-          echo "Replacing default route with tun0..."
-          ip route del default || true
-          ip route add default dev tun0 metric 1
+          # Rule 1: Local Loopback
+          ip rule add to 127.0.0.0/8 lookup main priority 400 || true
+
+          # Rule 1.5: Private Class A (Nodes/Pods/Services) -> Main Table
+          echo "Bypassing Private Class A (10.0.0.0/8)..."
+          ip rule add to 10.0.0.0/8 lookup main priority 450 || true
+
+          # Rule 2: K8s Service CIDR (DNS & ClusterIPs) -> Main Table
+          echo "Bypassing K8s Service CIDR..."
+          ip rule add to 10.96.0.0/12 lookup main priority 500 || true
+          
+          # Rule 3: Xray Traffic (Marked 255) -> Main Table
+          echo "Bypassing Xray Traffic (Mark 255)..."
+          ip rule add fwmark 255 lookup main priority 600 || true
+          
+          # Rule 4: Route everything else through Table 100
+          echo "Routing everything else to tun0..."
+          ip rule add lookup 100 priority 800 || true
           
           # Wait for tun2socks
           wait $PID
