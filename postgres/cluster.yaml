@@ -1,0 +1,45 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-main
+  namespace: cnpg-system
+spec:
+  instances: 3
+  
+  # Guarantee one instance per node
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+
+  # Storage Configuration
+  storage:
+    storageClass: local-postgres
+    size: 100Gi
+  
+  # WAL Storage (Optimization)
+  walStorage:
+    storageClass: local-postgres
+    size: 4Gi
+
+  # Bootstrap (Empty DB)
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+      
+  # Monitoring
+  monitoring:
+    enablePodMonitor: true
+
+  # Backup (Placeholder - Enable after credentials setup)
+  # backup:
+  #   barmanObjectStore:
+  #     destinationPath: s3://k8s-postgres-backups/
+  #     endpointURL: http://10.10.10.50:9000
+  #     s3Credentials:
+  #       accessKeyId:
+  #         name: minio-creds
+  #         key: ACCESS_KEY_ID
+  #       secretAccessKey:
+  #         name: minio-creds
+  #         key: SECRET_ACCESS_KEY

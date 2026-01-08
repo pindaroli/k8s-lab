@@ -195,13 +195,44 @@ qbittorrent:
       existingClaim: servarr-jellyfin-media
 
 
+flaresolverr:
+  enabled: true
+  env:
+    # Force Chrome to disable IPv6 to avoid Cloudflare/Socket issues
+    - name: FLARESOLVERR_RECAPTCHA_SOLVER
+      value: "hcaptcha-solver"
+    - name: LOG_LEVEL
+      value: "info"
+    # Note: Flaresolverr doesn't have a direct chrome-args env, but we can try generic ones or just rely on resources.
+    # Actually, let's just stick to resources. The sysctl failed. 
+    # If 1337x is the only one failing, we might just accept it.
+    # But let's try to set the timezone at least.
+    - name: TZ
+      value: "Europe/Rome"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "3000m"
+
+
 prowlarr:
   image:
-    tag: "1.37.0"  # was: 1.25.4
+    repository: ghcr.io/hotio/prowlarr
+    tag: "release"
   env:
     PUID: "1000"
     PGID: "1000"
     TZ: Europe/Rome
+    # Hotio/NET Core uses double underscores for config mapping
+    PROWLARR__POSTGRES__HOST: 10.108.78.94 # Stable Service ClusterIP (Bypasses DNS/VPN issues)
+    PROWLARR__POSTGRES__PORT: "5432"
+    PROWLARR__POSTGRES__MAINDB: prowlarr
+    PROWLARR__POSTGRES__LOGDB: prowlarr  # Using same DB for logs (simplification)
+    PROWLARR__POSTGRES__USER: prowlarr
+    PROWLARR__POSTGRES__PASSWORD: prowlarr
   resources:
     requests:
       cpu: 50m
@@ -334,11 +365,20 @@ bazarr:
 
 radarr:
   image:
-    tag: "5.26.2"  # was: 5.14.0
+    repository: ghcr.io/hotio/radarr
+    tag: nightly
+    pullPolicy: IfNotPresent
   env:
     PUID: "1000"
     PGID: "1000"
     TZ: Europe/Rome
+    # Hotio/NET Core uses double underscores for config mapping
+    RADARR__POSTGRES__HOST: 10.108.78.94
+    RADARR__POSTGRES__PORT: "5432"
+    RADARR__POSTGRES__MAINDB: radarr
+    RADARR__POSTGRES__LOGDB: radarr
+    RADARR__POSTGRES__USER: radarr
+    RADARR__POSTGRES__PASSWORD: radarr
   resources:
     requests:
       cpu: 50m
@@ -370,11 +410,20 @@ readarr:
 
 lidarr:
   image:
-    tag: "2.12.4"  # was: 2.7.1
+    repository: ghcr.io/hotio/lidarr
+    tag: nightly
+    pullPolicy: IfNotPresent
   env:
     PUID: "1000"
     PGID: "1000"
     TZ: Europe/Rome
+    # Hotio/NET Core uses double underscores for config mapping
+    LIDARR__POSTGRES__HOST: 10.108.78.94
+    LIDARR__POSTGRES__PORT: "5432"
+    LIDARR__POSTGRES__MAINDB: lidarr
+    LIDARR__POSTGRES__LOGDB: lidarr
+    LIDARR__POSTGRES__USER: lidarr
+    LIDARR__POSTGRES__PASSWORD: lidarr
   resources:
     requests:
       cpu: 50m

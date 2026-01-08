@@ -1,9 +1,9 @@
 # Project GEMINI: Kubernetes Homelab Migration
 
 > [!IMPORTANT]
-> **Current Status**: **STABILIZATION COMPLETE** (Ready for DB Migration)
-> Servarr Stack is fully operational and Tunneled.
-> **Active Goal**: Deploy PostgreSQL (CloudNativePG) and migrate data.
+> **Current Status**: **DATABASE MIGRATION COMPLETE**
+> Servarr Stack migrated to PostgreSQL (Radarr, Lidarr, Prowlarr).
+> **Active Goal**: Maintenance & Monitoring.
 
 ## 1. Quick Reference
 
@@ -35,6 +35,7 @@
 - **Talos CP 01**: `10.10.20.141`
 - **Talos CP 02**: `10.10.20.142`
 - **Talos CP 03**: `10.10.20.143`
+- **Postgres DB**: `10.10.20.57` (MetalLB External)
 - **TrueNAS**: `10.10.10.50` (Storage), `10.10.20.50` (Client)
 
 ---
@@ -77,7 +78,7 @@
 - **Cert-Manager**: `cert-manager/` (Cloudflare DNS Challenge).
 - **OAuth2 Proxy**: `oauth2-proxy/` (Google Auth for all services).
 
-## 4. Workloads (Migration Pending)
+## 4. Workloads (Postgres Migrated)
 
 ### Media Stack (Servarr)
 - **Namespace**: `arr`
@@ -85,6 +86,8 @@
 - **Deploy Command**: `helm upgrade --install servarr /Users/olindo/prj/helm/charts/servarr -n arr -f servarr/arr-values.yaml`
 - **Config**: `servarr/`
 - **Services**: Jellyfin, *arr apps, qBittorrent.
+- **Database**: PostgreSQL (CloudNativePG) exposed on `10.10.20.57`.
+- **Status**: Radarr/Lidarr/Prowlarr Migrated. Readarr Cancelled (Unstable).
 - **Privacy**: Transparent Xray Tunnel (Sidecar) for qBittorrent & Prowlarr.
 
 ### Storage Integration
