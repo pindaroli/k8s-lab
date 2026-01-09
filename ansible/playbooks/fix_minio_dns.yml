@@ -1,0 +1,66 @@
+---
+- name: Fix MinIO DNS Record (Remove Stale)
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    api_key: "{{ opnsense_api_key | default('') }}"
+    api_secret: "{{ opnsense_api_secret | default('') }}"
+    opnsense_url: "https://192.168.2.254"
+
+  vars_files:
+    - "../vars/secrets.yml"
+
+  tasks:
+    - name: Fail if credentials are missing
+      fail:
+        msg: "Please provide api_key and api_secret via extra vars or inventory."
+      when: api_key == '' or api_secret == ''
+
+    - name: Search all Host Overrides
+      uri:
+        url: "{{ opnsense_url }}/api/unbound/settings/searchHostOverride"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          current: 1
+          rowCount: 1000
+          searchPhrase: "minio"
+      register: search_result
+
+    - name: Find ANY MinIO Record
+      set_fact:
+        all_minio_records: "{{ search_result.json.rows | selectattr('hostname', 'equalto', 'minio') | list }}"
+
+    - name: Debug All MinIO Records
+      debug:
+        var: all_minio_records
+
+    - name: Delete Stale Record if found
+      uri:
+        url: "{{ opnsense_url }}/api/unbound/settings/delHostOverride/{{ stale_record.uuid }}"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        status_code: 200
+        return_content: yes
+      when: stale_record.uuid is defined
+
+    - name: Apply Unbound Configuration
+      uri:
+        url: "{{ opnsense_url }}/api/unbound/service/reconfigure"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        status_code: 200
+      when: stale_record.uuid is defined

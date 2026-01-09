@@ -7,6 +7,13 @@
 
 ## 1. Quick Reference
 
+### Security Policies
+> [!CRITICAL]
+> **EXTERNAL ACCESS & OAUTH**
+> ALL services exposed via Cloudflare (External) MUST have **OAuth2 Authentication** enabled (Google Login).
+> **NO EXCEPTIONS**. Even services with native login (like MinIO/TrueNAS) must sit behind the OAuth shield.
+> *Implementation:* Traefik Middleware `oauth2-auth`.
+
 ### Network Summary
 | VLAN | ID | Subnet | Gateway | DHCP | Usage |
 |---|---|---|---|---|---|
@@ -73,6 +80,8 @@
 - **DNS Strategy**: Split-DNS.
   - **Internal**: OPNsense Unbound (Authoritative for `.pindaroli.org` internal).
   - **External**: Cloudflare.
+    - **Tunnel**: Use Cloudflare Tunnel (Wildcard `*`) for ALL external access.
+    - **Policy**: ALL Tunneled services must use `oauth2-auth`.
 
 ### Certs & Auth
 - **Cert-Manager**: `cert-manager/` (Cloudflare DNS Challenge).

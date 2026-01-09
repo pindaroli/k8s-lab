@@ -1,0 +1,36 @@
+---
+- name: Remove Explicit Records (Switch to Tunnel)
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    cloudflare_email: "{{ cloudflare_email | default('') }}"
+    cloudflare_api_key: "{{ cloudflare_api_key | default('') }}"
+    zone: "pindaroli.org"
+
+  vars_files:
+    - "../vars/secrets.yml"
+
+  tasks:
+    - name: Fail if credentials missing
+      fail:
+        msg: "cloudflare_email and cloudflare_api_key are required."
+      when: cloudflare_email == '' or cloudflare_api_key == ''
+
+    - name: Delete Explicit NAS Record (Use Wildcard Tunnel)
+      community.general.cloudflare_dns:
+        zone: "{{ zone }}"
+        record: "nas"
+        type: CNAME
+        account_email: "{{ cloudflare_email }}"
+        account_api_token: "{{ cloudflare_api_key }}"
+        state: absent
+
+    - name: Delete Explicit MinIO Record (Use Wildcard Tunnel)
+      community.general.cloudflare_dns:
+        zone: "{{ zone }}"
+        record: "minio"
+        type: CNAME
+        account_email: "{{ cloudflare_email }}"
+        account_api_token: "{{ cloudflare_api_key }}"
+        state: absent

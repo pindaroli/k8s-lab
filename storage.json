@@ -57,29 +57,25 @@
       },
       "backup_proxmox": {
         "path": "/mnt/oliraid/backup-proxmox",
-        "description": "Proxmox VZDump Backups",
+        "description": "Legacy Proxmox VZDump Backups (Archive)",
+        "protocol": "nfs",
+        "networks": [
+          "10.10.10.0/24"
+        ]
+      },
+      "pbs_store": {
+        "path": "/mnt/oliraid/pbs-store",
+        "description": "Proxmox Backup Server Datastore (Chunk-based)",
         "protocol": "nfs",
         "networks": [
           "10.10.10.0/24"
         ]
       },
       "backup_k8s_arr": {
-        "path": "/mnt/oliraid/backup-stripe/k8s-arr",
-        "description": "Backup of k8s-arr data",
-        "protocol": "nfs",
-        "networks": [
-          "10.10.10.0/24",
-          "10.10.20.0/24"
-        ]
-      },
-      "k8s_fast_gen": {
-        "path": "/mnt/stripe/k8s-fast-gen",
-        "description": "Fast Storage for General workloads",
-        "protocol": "nfs",
-        "networks": [
-          "10.10.10.0/24",
-          "10.10.20.0/24"
-        ]
+        "path": "/mnt/oliraid/backup-stripe",
+        "description": "Replica Target for Stripe (ZFS Snapshots)",
+        "protocol": "zfs-replication",
+        "networks": []
       }
     }
   }

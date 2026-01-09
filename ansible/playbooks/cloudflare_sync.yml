@@ -35,7 +35,7 @@
         state: present
         proxied: no
       loop: "{{ traefik_node.aliases }}"
-      when: not item.endswith('-internal')
+      when: not item.endswith('-internal') and item != 'nas' and item != 'minio'
 
     - name: Ensure Internal DNS Records are BLACKHOLED on Cloudflare
       community.general.cloudflare_dns:
