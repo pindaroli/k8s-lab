@@ -1,0 +1,43 @@
+configuration:
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: velero
+      config:
+        region: minio
+        s3ForcePathStyle: true
+        s3Url: http://10.10.10.50:9000
+        publicUrl: https://minio.pindaroli.org
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+        region: minio
+
+credentials:
+  useSecret: true
+  secretContents:
+    cloud: |
+      [default]
+      aws_access_key_id = minio
+      aws_secret_access_key = Compli61!
+
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.10.0
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+# Disable Restic/Kopia by default for now (focus on YAMLs first)
+deployNodeAgent: false
+
+schedules:
+  daily-backup:
+    disabled: false
+    schedule: "0 3 * * *"
+    template:
+      ttl: "720h" # 30 days
+
+# Disable CRD upgrade job since we applied CRDs manually
+upgradeCRDs: false

@@ -22,7 +22,7 @@ data:
       # Route all *.pindaroli.org traffic to Traefik cluster IP
       # Uses cluster internal routing for reliability
       - hostname: "*.pindaroli.org"
-        service: https://traefik.traefik.svc.cluster.local:443
+        service: https://10.110.159.107:443
         originRequest:
           noTLSVerify: true
       # Catch-all rule (required as last rule)
