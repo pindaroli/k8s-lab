@@ -28,6 +28,9 @@
 > [!IMPORTANT]
 > **ALWAYS update `talos-config/controlplane.yaml` (or worker.yaml) first.**
 > Do not rely on `talosctl patch` for permanent changes. Update the source of truth, then apply via `talosctl apply-config`.
+>
+> **BEFORE MAJOR CHANGES (Upgrades, Refactors)**
+> **ALWAYS run a manual backup:** `velero backup create backup-pre-change-$(date +%F) --wait`
 > **After a command, ALWAYS check the response/logs and report the status.**
 
 **Talos Cluster Management**
