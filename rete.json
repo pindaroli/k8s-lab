@@ -27,7 +27,7 @@
             "hostname": "truenas",
             "domain": "pindaroli.org",
             "aliases": [
-                "nas"
+                "s3"
             ],
             "management_ip_vlan10": "10.10.10.50",
             "client_ip_vlan20": "10.10.20.50",
@@ -560,7 +560,12 @@
                 "qbittorrent",
                 "jellyfin",
                 "home",
-                "home-internal"
+                "jellyfin",
+                "home",
+                "home-internal",
+                "minio",
+                "minio-internal",
+                "nas"
             ],
             "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
         },
@@ -576,6 +581,21 @@
                 "db"
             ],
             "notes": "MetalLB Layer 2 VIP. External access for DBeaver/LAN."
+        },
+        {
+            "id": "pbs",
+            "label": "Proxmox Backup Server",
+            "type": "LXC",
+            "vm_id": "1400",
+            "host_node": "pve",
+            "ip": "10.10.10.100",
+            "role": "Backup Server",
+            "os": "Debian 13 (Trixie)",
+            "network": "VLAN 10 (vmbr0)",
+            "storage": "NFS (/mnt/pbs-store)",
+            "aliases": [
+                "backup"
+            ]
         }
     ]
 }

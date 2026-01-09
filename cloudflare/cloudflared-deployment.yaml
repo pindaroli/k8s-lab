@@ -83,6 +83,8 @@ spec:
             - debug
             - --metrics
             - 0.0.0.0:2000
+            - --protocol
+            - http2
             - --config
             - /etc/cloudflared/config/config.yaml
             - run

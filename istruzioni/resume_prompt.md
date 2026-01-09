@@ -5,29 +5,29 @@ Copia e incolla il seguente testo in una nuova chat per riprendere il lavoro esa
 ---
 
 ```text
-Sistema, siamo nella fase di migrazione del cluster Kubernetes a Talos Linux 
+Sistema, siamo nel progetto GEMINI (Kubernetes Homelab Migration).
 
-STATO ATTUALE (Sessione Precedente):
-- [x] Fase 01: Setup Talos (Bootstrap completato).
-- [x] Fase 02: Storage NVMe Setup (Completata).
-- [x] Fase 03: Data Recovery (Completata).
-      - Dati migrati su disco NVMe.
-- [x] **Fase 03b: Cluster DISASTER RECOVERY (Completata con Successo).**
-      - Nodi 141, 142, 143 ONLINE e Healthy.
-      - VIP 10.10.20.55 ONLINE e raggiungibile.
-      - *Pivot Storage*: NVMe locale abbandonato per qBittorrent in favore di NFS (RWX).
+STATO ATTUALE (Sessione Precedente - 08/01/2026):
+1. [x] **DATABASE MIGRATION (DONE)**:
+   - Radarr, Lidarr, Prowlarr migrati con successo a PostgreSQL (Cluster CloudNativePG).
+   - Readarr annullato/rimosso.
+   - Vecchi file SQLite (`.db`) rimossi dalla share NFS e dal NAS.
+   - Postgres esposto su LoadBalancer MetalLB (`10.10.20.57`) per gestione via DBeaver.
 
+2. [x] **CLEANUP STORAGE (DONE)**:
+   - Identificata e pulita la share NFS `/mnt/stripe/k8s-arr`.
+   - Rimossi dataset orfani (`k8s-fast-gen`, `proxmox-hot`) su TrueNAS.
+   - Verificato che i dati vitali (Config/Media) sono al sicuro.
 
 PROSSIMO OBIETTIVO (Immediato):
-- [ ] **Fase 04: Kubernetes Manifests (Deploy).**
-      - **RIPRENDERE DA QUI**: Deploy MetalLB (Namespace creato, Helm da installare).
-      - Deploy Secrets (Xray, Google).
-      - Deploy Ingress (Traefik).
-      - Deploy Storage Class (Local Path Provisioner modificato).
-      - Deploy Applicazioni (Servarr stack).
+- [ ] **Fase 05: Implementazione Strategia di Backup (Smart Hybrid).**
+      - Seguire il piano definito in `istruzioni/04_backup_strategy.md`.
+      - **Step 1**: Configurare TrueNAS Replication (NVMe -> HDD).
+      - **Step 2**: Deploy PBS (Proxmox Backup Server) come LXC.
+      - **Step 3**: Configurare Backup CNPG (Postgres) su NFS.
 
 Per favore:
-1. Leggi il piano aggiornato in `implementation_plan.md` e la task list in `task.md`.
-2. Verifica subito la salute del cluster (`kubectl get nodes`).
-3. Procedi con l'installazione di MetalLB come da piano.
+1. Leggi il piano di backup in `istruzioni/04_backup_strategy.md`.
+2. Leggi lo stato della rete in `rete.json`.
+3. Guidami nell'implementazione dello Step 1 (TrueNAS Replication).
 ```
