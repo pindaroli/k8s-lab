@@ -1,125 +1,53 @@
-# n8n Helm Chart Values
-# Chart source: https://8gears.container-registry.com/chartrepo/library
+# Community Chart Values for n8n in 'n8n' namespace
+# Refactored for community-charts/n8n schema
 
-# Deployment configuration
-main:
-  replicaCount: 1
+image:
+  repository: n8nio/n8n
+  tag: latest
+  pullPolicy: Always
 
-  image:
-    repository: n8nio/n8n
-    tag: "1.117.1"
-    pullPolicy: IfNotPresent
+# Database Configuration
+db:
+  type: postgresdb
 
-  # Persistence configuration
-  persistence:
-    enabled: true
-    type: existing
-    existingClaim: "n8n-data"  # Reference the PVC created via n8n-pvc.yaml
-    accessModes:
-      - ReadWriteOnce
-    size: 5Gi
+# Security context (Root level in community chart)
+podSecurityContext:
+  fsGroup: 1000
 
-# n8n configuration
-config:
-  # Database - use internal SQLite for simplicity
-  database:
-    type: sqlite
-    sqlite:
-      database: /home/node/.n8n/database.sqlite
-
-  # Execution mode
-  executions:
-    mode: regular
-    timeout: 3600
-    maxTimeout: 3600
-
-  # Timezone
-  timezone: Europe/Rome
-
-  # External access
-  host: n8n.pindaroli.org
-  protocol: https
-  port: 443
-
-# Environment variables
-extraEnv:
-  - name: N8N_EDITOR_BASE_URL
-    value: https://n8n.pindaroli.org
-  - name: N8N_WEBHOOK_URL
-    value: https://n8n.pindaroli.org
-  - name: WEBHOOK_URL
-    value: https://n8n.pindaroli.org
-  - name: GENERIC_TIMEZONE
-    value: Europe/Rome
-  - name: TZ
-    value: Europe/Rome
-
-# Service configuration
-service:
-  type: ClusterIP
-  port: 5678
-  annotations: {}
-
-# Ingress configuration (for Traefik)
-ingress:
-  enabled: false  # We'll use IngressRoute instead
-
-# Resources
-resources:
-  requests:
-    memory: "512Mi"
-    cpu: "250m"
-  limits:
-    memory: "2Gi"
-    cpu: "1000m"
-
-# Security context
 securityContext:
   runAsUser: 1000
   runAsGroup: 1000
-  fsGroup: 1000
-  runAsNonRoot: true
 
-# Pod security context
-podSecurityContext:
-  fsGroup: 1000
-  runAsUser: 1000
-  runAsGroup: 1000
+# Main Pod Configuration
+main:
+  persistence:
+    enabled: true
+    existingClaim: n8n-config-pvc
+    accessMode: ReadWriteMany
+    size: 10Gi
+  
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
 
-# Liveness and readiness probes
-livenessProbe:
-  enabled: true
-  httpGet:
-    path: /healthz
-    port: 5678
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 3
+  # extraEnvVars must be a MAP for this chart
+  extraEnvVars:
+    DB_TYPE: postgresdb
+    DB_POSTGRESDB_HOST: postgres-n8n-rw
+    DB_POSTGRESDB_PORT: "5432"
+    DB_POSTGRESDB_DATABASE: n8n
+    DB_POSTGRESDB_USER: n8n
+    N8N_EDITOR_BASE_URL: https://n8n.pindaroli.org
+    N8N_WEBHOOK_URL: https://n8n.pindaroli.org
+    WEBHOOK_URL: https://n8n.pindaroli.org
+    GENERIC_TIMEZONE: Europe/Rome
+    TZ: Europe/Rome
 
-readinessProbe:
-  enabled: true
-  httpGet:
-    path: /healthz
-    port: 5678
-  initialDelaySeconds: 15
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 3
-
-# Node affinity (optional - assign to k8s-runner-1 if preferred)
-affinity: {}
-  # nodeAffinity:
-  #   requiredDuringSchedulingIgnoredDuringExecution:
-  #     nodeSelectorTerms:
-  #     - matchExpressions:
-  #       - key: kubernetes.io/hostname
-  #         operator: In
-  #         values:
-  #         - k8s-runner-1
-
-# Tolerations
-tolerations: []
-
-# Node selector
-nodeSelector: {}
+# Service
+service:
+  type: ClusterIP
+  port: 5678
