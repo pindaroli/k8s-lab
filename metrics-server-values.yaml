@@ -1,0 +1,4 @@
+
+args:
+  # Required for Talos/Homelab if kubelet certs are not signed by a CA trusted by metrics-server
+  - --kubelet-insecure-tls

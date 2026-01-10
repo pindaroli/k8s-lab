@@ -48,9 +48,7 @@ ingressRoute:
     matchRule: Host(`traefik-dash.pindaroli.org`)
     entryPoints:
       - websecure
-    middlewares:
-      - name: dashboard-auth
-        namespace: traefik
+
 
 # Creates a BasicAuth Middleware and Secret for the Dashboard Security
 # and all other middlewares used across the cluster
