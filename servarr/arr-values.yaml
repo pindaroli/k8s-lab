@@ -81,8 +81,8 @@ qbittorrent:
           subPath: config.json
           readOnly: true
       resources:
-        requests: {cpu: 50m, memory: 128Mi}
-        limits: {memory: 512Mi}
+        requests: {cpu: 50m, memory: 256Mi}
+        limits: {memory: 1Gi}
 
     # 2. Tun2Socks: Creates tun0 and handles routing
     - name: tun2socks-gateway

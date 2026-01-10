@@ -146,7 +146,7 @@ data:
             description: TrueNAS server (Internal)
             icon: https://www.svgrepo.com/show/331613/truenas.svg
         - OPNsense:
-            href: https://10.10.20.1
+            href: https://opnsense.pindaroli.org
             description: OPNsense firewall (Direct IP)
             icon: opnsense.png
         - Proxmox:
