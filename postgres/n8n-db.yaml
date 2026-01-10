@@ -1,0 +1,41 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-n8n
+  namespace: n8n
+spec:
+  instances: 3
+  
+  # Image Management
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.1
+
+  # Storage Configuration (Local NVMe)
+  storage:
+    size: 10Gi
+    storageClass: local-postgres
+
+  # Bootstrap Strategy (Fresh Database)
+  bootstrap:
+    initdb:
+      database: n8n
+      owner: n8n
+
+  # Backup & Archiving (MinIO)
+  backup:
+    retentionPolicy: "30d"
+    barmanObjectStore:
+      destinationPath: s3://postgres-wal/
+      endpointURL: http://10.10.10.50:9000
+      s3Credentials:
+        accessKeyId:
+          name: minio-creds
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: minio-creds
+          key: SECRET_ACCESS_KEY
+      wal:
+        compression: gzip
+
+  # Monitoring
+  monitoring:
+    enablePodMonitor: true

@@ -1,19 +1,33 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: n8n-ingress
-  namespace: default
+  name: n8n-external
+  namespace: n8n
 spec:
   entryPoints:
     - websecure
   routes:
     - match: Host(`n8n.pindaroli.org`)
       kind: Rule
-      middlewares:
-        - name: oauth2-auth
-          namespace: traefik
       services:
         - name: n8n
-          port: 80
-  tls:
-    secretName: pindaroli-wildcard-tls
+          port: 5678
+      middlewares:
+        - name: oauth2-auth
+          namespace: n8n
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: n8n-internal
+  namespace: n8n
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`n8n-internal.pindaroli.org`) || Host(`n8n`)
+      kind: Rule
+      services:
+        - name: n8n
+          port: 5678
