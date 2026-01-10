@@ -1,0 +1,170 @@
+---
+- name: 🛑 SHUTDOWN HOMELAB PROTOCOL 🛑
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../vars/secrets.yml
+    
+  vars:
+    # Safe delays to ensure shutdowns complete before moving to next tier
+    vm_shutdown_wait: 10
+    storage_shutdown_wait: 30
+
+  tasks:
+    - name: "🔔 Notify: Starting Shutdown"
+      uri:
+        url: "https://api.telegram.org/bot{{ telegram_bot_token }}/sendMessage"
+        method: POST
+        body_format: json
+        body:
+          chat_id: "{{ telegram_chat_id }}"
+          text: "🔻 **SHUTDOWN PROTOCOL INITIATED** 🔻\n\nStarting safe shutdown sequence for Homelab..."
+          parse_mode: "Markdown"
+
+    # -------------------------------------------------------------
+    # PHASE 1: WORKLOADS (Talos Kubernetes Cluster)
+    # -------------------------------------------------------------
+    - name: "Phase 1: Shutdown Talos Cluster Nodes"
+      block:
+        # CP 01
+        - name: Check Talos CP 01 (10.10.20.141)
+          wait_for:
+            host: 10.10.20.141
+            port: 50000
+            timeout: 2
+            state: started
+          register: cp01_alive
+          ignore_errors: true
+
+        - name: Shutdown Talos CP 01
+          command: talosctl -n 10.10.20.141 shutdown
+          when: cp01_alive is succeeded
+          ignore_errors: true
+
+        # CP 02
+        - name: Check Talos CP 02 (10.10.20.142)
+          wait_for:
+            host: 10.10.20.142
+            port: 50000
+            timeout: 2
+            state: started
+          register: cp02_alive
+          ignore_errors: true
+
+        - name: Shutdown Talos CP 02
+          command: talosctl -n 10.10.20.142 shutdown
+          when: cp02_alive is succeeded
+          ignore_errors: true
+
+        # CP 03
+        - name: Check Talos CP 03 (10.10.20.143)
+          wait_for:
+            host: 10.10.20.143
+            port: 50000
+            timeout: 2
+            state: started
+          register: cp03_alive
+          ignore_errors: true
+          
+        - name: Shutdown Talos CP 03
+          command: talosctl -n 10.10.20.143 shutdown
+          when: cp03_alive is succeeded
+          ignore_errors: true
+
+      rescue:
+        - debug:
+            msg: "⚠️ Phase 1 encountered errors but continued."
+    
+    - name: "🔔 Notify: Phase 1 Complete"
+      uri:
+        url: "https://api.telegram.org/bot{{ telegram_bot_token }}/sendMessage"
+        method: POST
+        body_format: json
+        body:
+          chat_id: "{{ telegram_chat_id }}"
+          text: "✅ **Phase 1 Complete**: Talos Cluster shutdown signal sent."
+          parse_mode: "Markdown"
+      ignore_errors: true
+
+    - name: Wait for Talos to settle
+      pause:
+        seconds: "{{ vm_shutdown_wait }}"
+
+    # -------------------------------------------------------------
+    # PHASE 2: DEPENDENT SERVICES (Jellyfin, PBS)
+    # -------------------------------------------------------------
+    - name: "Phase 2: Shutdown Dependent VMs (Jellyfin, PBS)"
+      shell: |
+        ssh -o ConnectTimeout=3 root@10.10.10.21 "pct shutdown 2200 --forceStop 0" || true
+        ssh -o ConnectTimeout=3 root@10.10.10.11 "pct shutdown 1400 --forceStop 0" || true
+      ignore_errors: true
+
+    - name: "🔔 Notify: Phase 2 Complete"
+      uri:
+        url: "https://api.telegram.org/bot{{ telegram_bot_token }}/sendMessage"
+        method: POST
+        body_format: json
+        body:
+          chat_id: "{{ telegram_chat_id }}"
+          text: "✅ **Phase 2 Complete**: Dependent Services (Jellyfin, PBS) stopped."
+          parse_mode: "Markdown"
+      ignore_errors: true
+
+    - name: Wait for Services to settle
+      pause:
+        seconds: "{{ vm_shutdown_wait }}"
+
+    # -------------------------------------------------------------
+    # PHASE 3: STORAGE (TrueNAS)
+    # -------------------------------------------------------------
+    - name: "Phase 3: Shutdown TrueNAS Storage"
+      shell: |
+        ssh -o ConnectTimeout=5 root@10.10.10.11 "qm shutdown 1100 --forceStop 0" || true
+      ignore_errors: true
+      register: truenas_status
+
+    - name: "🔔 Notify: Phase 3 Complete"
+      uri:
+        url: "https://api.telegram.org/bot{{ telegram_bot_token }}/sendMessage"
+        method: POST
+        body_format: json
+        body:
+          chat_id: "{{ telegram_chat_id }}"
+          text: "✅ **Phase 3 Complete**: TrueNAS Storage shutdown signal sent."
+          parse_mode: "Markdown"
+      ignore_errors: true
+
+    - name: Wait for Storage to flushed to disk
+      pause:
+        seconds: "{{ storage_shutdown_wait }}"
+
+    # -------------------------------------------------------------
+    # PHASE 4: HYPERVISORS (Proxmox Nodes)
+    # -------------------------------------------------------------
+    - name: "Phase 4: Shutdown Proxmox Nodes (Satellites First)"
+      shell: |
+        ssh -o ConnectTimeout=3 root@10.10.10.31 "shutdown -h now" || true  # PVE3
+        ssh -o ConnectTimeout=3 root@10.10.10.21 "shutdown -h now" || true  # PVE2
+      ignore_errors: true
+
+    - name: "🔔 Notify: Final Phase"
+      uri:
+        url: "https://api.telegram.org/bot{{ telegram_bot_token }}/sendMessage"
+        method: POST
+        body_format: json
+        body:
+          chat_id: "{{ telegram_chat_id }}"
+          text: "⚫ **Final Phase**: Powering off Hypervisors. Lab is going dark. Goodbye! 🌙"
+          parse_mode: "Markdown"
+      ignore_errors: true
+
+    - name: "Phase 4: Shutdown Proxmox Master (PVE1)"
+      shell: |
+        ssh -o ConnectTimeout=3 root@10.10.10.11 "shutdown -h now" || true  # PVE1
+      ignore_errors: true
+      async: 1
+      poll: 0
+
+    - name: ✅ PROTOCOL COMPLETE
+      debug:
+        msg: "Shutdown signal sent to all nodes."

@@ -478,6 +478,7 @@
             "label": "Talos Control Plane 01",
             "type": "VM",
             "host_node": "pve",
+            "vm_id": "1300",
             "ip": "10.10.20.141",
             "mac": "bc:24:11:81:6a:19",
             "aliases": [
@@ -493,6 +494,7 @@
             "label": "Talos Control Plane 02",
             "type": "VM",
             "host_node": "pve2",
+            "vm_id": "2300",
             "ip": "10.10.20.142",
             "mac": "bc:24:11:77:40:fc",
             "aliases": [
@@ -508,6 +510,7 @@
             "label": "Talos Control Plane 03",
             "type": "VM",
             "host_node": "pve3",
+            "vm_id": "3200",
             "ip": "10.10.20.143",
             "mac": "bc:24:11:0b:e0:61",
             "aliases": [
@@ -533,16 +536,16 @@
             "notes": "VM REMOVED. IP 10.10.10.190 IS AVAILABLE. Previously managed by maintenance-mode.sh."
         },
         {
-            "id": "jellyfin-lxc",
+            "id": "jellyfin-srv",
             "label": "Jellyfin Media Server",
-            "type": "LXC",
-            "vm_id": "100",
-            "host_node": "pve",
+            "type": "VM",
+            "vm_id": "2200",
+            "host_node": "pve2",
             "ip": "10.10.20.12",
             "role": "Media Server",
-            "os": "Debian / Ubuntu",
+            "os": "Debian",
             "network": "VLAN 20 (vmbr20)",
-            "notes": "External Service not in K8s. Consumes media from TrueNAS via NFS."
+            "notes": "Consumes media from TrueNAS via NFS. Protected by wait-for-truenas hook."
         },
         {
             "id": "traefik-lb",

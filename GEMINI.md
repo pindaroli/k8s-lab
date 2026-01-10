@@ -43,10 +43,36 @@
 **Key IPs**
 - **Talos VIP**: `10.10.20.55`
 - **Talos CP 01**: `10.10.20.141`
-- **Talos CP 02**: `10.10.20.142`
-- **Talos CP 03**: `10.10.20.143`
+- **Talos CP 02**: `10.10.20.142` (VM ID: 2300)
+- **Talos CP 03**: `10.10.20.143` (VM ID: 3200)
 - **Postgres DB**: `10.10.20.57` (MetalLB External)
 - **TrueNAS**: `10.10.10.50` (Storage), `10.10.20.50` (Client)
+- **Talos CP 03**: `10.10.20.143` (VM ID: 3200)
+- **Postgres DB**: `10.10.20.57` (MetalLB External)
+- **TrueNAS**: `10.10.10.50` (Storage), `10.10.20.50` (Client)
+
+### Safe Shutdown Procedure (Rack Power Off)
+> [!WARNING]
+> **NEVER** just pull the plug or use Proxmox "Shutdown All".
+> Use the Ansible Playbook to ensure data consistency (Talos -> Database -> Storage -> Hypervisors).
+
+1.  **Run Playbook**:
+    ```bash
+    ansible-playbook ansible/playbooks/shutdown_lab.yml --vault-password-file ~/.vault_pass.txt
+    ```
+2.  **Monitor Telegram**: Wait for confirmation messages ("Phase 1", "Phase 2", "TrueNAS Complete").
+3.  **Physical Power**: Wait for lights out, then switch off PDU/UPS.
+
+### Safe Startup Procedure (Rack Power On)
+**Boot Order Logic is AUTOMATED via Proxmox Hooks.**
+1.  **Power On**: Switch on PDU/UPS. Proxmox nodes will boot.
+2.  **PVE1 (TrueNAS)**: Starts TrueNAS VM (ID 1100) first.
+3.  **PVE2/3 (Compute)**: VMs (Talos, Jellyfin) will attempt start using `wait-for-truenas.sh` hook.
+4.  **Monitor Telegram**:
+    - You will see: `⏳ VM [ID] is starting... Checking TrueNAS...`
+    - It will wait indefinitely until TrueNAS is pingable.
+    - Once UP: `✅ TrueNAS is UP. Starting VM [ID].`
+5.  **Cluster Quorum**: Wait ~5 minutes for Talos to form quorum. Verify with `k9s`.
 
 ---
 
@@ -74,7 +100,8 @@
 
 ### Hardware & OS
 - **Hypervisors**: 3x Proxmox VE (Debian 13/Trixie)
-- **NAS**: TrueNAS SCALE (Debian-based)
+- **NAS**: TrueNAS SCALE (Debian-based) (VM ID: 1100)
+- **Backup**: Proxmox Backup Server (PBS) (LXC ID: 1400, IP: 10.10.10.100)
 - **Firewall**: OPNsense (FreeBSD)
 
 ### Load Balancing & Ingress
@@ -98,6 +125,7 @@
 - **Deploy Command**: `helm upgrade --install servarr /Users/olindo/prj/helm/charts/servarr -n arr -f servarr/arr-values.yaml`
 - **Config**: `servarr/`
 - **Services**: Jellyfin, *arr apps, qBittorrent.
+- **External Jellyfin**: LXC ID 2200 on PVE2 (Independent).
 - **Database**: PostgreSQL (CloudNativePG) exposed on `10.10.20.57`.
 - **Status**: Radarr/Lidarr/Prowlarr Migrated. Readarr Cancelled (Unstable).
 - **Privacy**: Transparent Xray Tunnel (Sidecar) for qBittorrent & Prowlarr.
@@ -125,3 +153,22 @@
 *   **Method**: Split-DNS (OPNsense/Unbound) -> Traefik VIP (`10.10.20.56`).
 *   **Security**: **Trusted Network** (No Auth / Optional Basic Auth).
 *   **Use Case**: Zero-friction access from home WiFi or WireGuard VPN.
+
+## 7. Pending Maintenance
+
+### PVE3 Recovery (When Hardware is Online)
+**Problem**: PVE3 is currently offline (Hardware Failure).
+**Action**: When node is back online (`10.10.10.31`), run these commands to align it with the cluster:
+
+1.  **Deploy Hook Script**:
+    ```bash
+    scp proxmox/hooks/wait-for-truenas.sh root@10.10.10.31:/var/lib/vz/snippets/
+    ```
+2.  **Configure VM 3200 (Talos CP 03)**:
+    ```bash
+    # Remove CD-ROM (Fix Storage Dependency)
+    ssh root@10.10.10.31 "qm set 3200 --ide2 none,media=cdrom"
+    
+    # Attach Hook Script & Boot Store Order
+    ssh root@10.10.10.31 "qm set 3200 --onboot 1 --startup order=1 --hookscript local:snippets/wait-for-truenas.sh"
+    ```
