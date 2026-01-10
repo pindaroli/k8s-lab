@@ -355,15 +355,22 @@ spec:
   - port: 443
     targetPort: 443
 ---
-apiVersion: v1
-kind: Endpoints
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
-  name: truenas-external
-subsets:
-- addresses:
-  - ip: "10.10.20.50"
-  ports:
+  name: truenas-external-1
+  labels:
+    kubernetes.io/service-name: truenas-external
+addressType: IPv4
+ports:
   - port: 443
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "10.10.20.50"
+    conditions:
+      ready: true
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -394,9 +401,6 @@ spec:
       port: 443
       scheme: https
       serversTransport: skip-verify
-    middlewares:
-    - name: basic-auth
-      namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -410,15 +414,22 @@ spec:
   - port: 443
     targetPort: 443
 ---
-apiVersion: v1
-kind: Endpoints
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
-  name: opnsense-external
-subsets:
-- addresses:
-  - ip: "10.10.20.1"
-  ports:
+  name: opnsense-external-1
+  labels:
+    kubernetes.io/service-name: opnsense-external
+addressType: IPv4
+ports:
   - port: 443
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "10.10.20.1"
+    conditions:
+      ready: true
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -452,15 +463,22 @@ spec:
   - port: 8006
     targetPort: 8006
 ---
-apiVersion: v1
-kind: Endpoints
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
-  name: proxmox-external
-subsets:
-- addresses:
-  - ip: "10.10.10.11"
-  ports:
+  name: proxmox-external-1
+  labels:
+    kubernetes.io/service-name: proxmox-external
+addressType: IPv4
+ports:
   - port: 8006
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "10.10.10.11"
+    conditions:
+      ready: true
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -495,16 +513,23 @@ spec:
   - port: 9002
     targetPort: 9002
 ---
-apiVersion: v1
-kind: Endpoints
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
-  name: minio-truenas-backend
-  namespace: default
-subsets:
-- addresses:
-  - ip: "10.10.20.50"
-  ports:
+  name: minio-truenas-backend-1
+  labels:
+    kubernetes.io/service-name: minio-truenas-backend
+    namespace: default
+addressType: IPv4
+ports:
   - port: 9002
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "10.10.20.50"
+    conditions:
+      ready: true
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
