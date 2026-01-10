@@ -111,3 +111,17 @@
 ## 5. Reference Files
 - **Network Source of Truth**: [rete.json](file:///Users/olindo/prj/k8s-lab/rete.json)
 - **Ansible Inventory**: `ansible/inventory.ini`
+
+## 6. Access Strategy
+
+### External Access (Internet)
+*   **URL**: `https://*.pindaroli.org`
+*   **Method**: Cloudflare Tunnel -> Traefik VIP.
+*   **Security**: **Strictly OAuth2 Protected** (Google Login).
+*   **Use Case**: Remote access from outside the LAN (4G, Work, Travel).
+
+### Internal Access (LAN/VPN)
+*   **URL**: `https://*-internal.pindaroli.org` OR Short Hostnames (e.g., `https://home`, `https://nas`).
+*   **Method**: Split-DNS (OPNsense/Unbound) -> Traefik VIP (`10.10.20.56`).
+*   **Security**: **Trusted Network** (No Auth / Optional Basic Auth).
+*   **Use Case**: Zero-friction access from home WiFi or WireGuard VPN.

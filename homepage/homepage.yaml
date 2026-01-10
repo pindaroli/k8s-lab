@@ -156,10 +156,7 @@ data:
             href: https://lidarr.pindaroli.org
             description: Music management
             icon: lidarr.png
-        - Readarr:
-            href: https://readarr.pindaroli.org
-            description: Book management
-            icon: readarr.png
+
         - Prowlarr:
             href: https://prowlarr.pindaroli.org
             description: Indexer management
@@ -263,7 +260,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "home.pindaroli.org,home-internal.pindaroli.org"
+              value: "home.pindaroli.org"
           ports:
             - name: http
               containerPort: 3000
@@ -346,27 +343,7 @@ spec:
           namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
----
-# Internal Access (Basic Auth)
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: homepage-ingress-internal
-  namespace: default
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`home`) || Host(`home-internal.pindaroli.org`)
-      kind: Rule
-      services:
-        - name: homepage
-          port: 3000
-      middlewares:
-        - name: homepage-cache-control
-          namespace: default
-  tls:
-    secretName: pindaroli-wildcard-tls
+
 ---
 # TrueNAS su 10.10.20.50:443
 apiVersion: v1
@@ -525,7 +502,7 @@ metadata:
   namespace: default
 subsets:
 - addresses:
-  - ip: "10.10.10.50"
+  - ip: "10.10.20.50"
   ports:
   - port: 9002
 ---
