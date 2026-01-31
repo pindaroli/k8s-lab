@@ -62,12 +62,15 @@ def check_duplicates(file_path, mode='validate'):
         for r in records:
             output_list.append({
                 'hostname': r['hostname'],
-                'domain': 'pindaroli.org', # Hardcoded or pass as arg? Keeping simple for now as per rete.json context
+                'domain': 'pindaroli.org',
                 'ip': r['ip'],
                 'desc': r['source']
             })
         print(json.dumps(output_list, indent=2))
-        return
+        return output_list
+    
+    if mode == 'return':
+        return records
 
     # Debug / Validation Mode
     seen_exact = {} # (host, ip) -> count
@@ -103,11 +106,18 @@ def check_duplicates(file_path, mode='validate'):
 
     if not issues_found:
         print("✅ No duplicates or conflicts found in rete.json.")
+    
+    return []
 
 if __name__ == "__main__":
     import argparse
+    import os
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.abspath(os.path.join(script_dir, '../../../'))
+    default_rete = os.path.join(project_root, 'rete.json')
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--file', default='../../rete.json', help='Path to rete.json')
+    parser.add_argument('--file', default=default_rete, help='Path to rete.json')
     parser.add_argument('--json', action='store_true', help='Output results as JSON for Ansible')
     args = parser.parse_args()
     

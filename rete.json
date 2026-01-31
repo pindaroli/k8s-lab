@@ -59,7 +59,7 @@
                 },
                 {
                     "id": "8",
-                    "role": "Downlink to switch25gMLetto Port 6",
+                    "role": "Downlink to switch25gMLetto Port 5",
                     "mode": "Hybrid",
                     "note": "Set to Hybrid to allow Untagged VLAN 1 (Workaround for Trunk bug)",
                     "speed": "10Gbs",
@@ -97,6 +97,9 @@
             "model": "GT-ST024M",
             "vendor": "GoodTop",
             "location": "stanza da letto",
+            "aliases": [
+                "goodtop"
+            ],
             "management IP": "192.168.2.2",
             "ports": [
                 {
@@ -321,7 +324,7 @@
                     "ip": "10.10.20.100",
                     "gateway": "10.10.20.1",
                     "dns": "10.10.20.254",
-                    "connected_to": "switch25gMLetto Port 5"
+                    "connected_to": "switch25gMLetto Port 6"
                 }
             ]
         },
@@ -414,6 +417,11 @@
             "model": "AP11000",
             "type": "Network Device",
             "role": "Access Point",
+            "aliases": [
+                "cudy",
+                "wifi",
+                "ap"
+            ],
             "management_ip": "10.10.20.103",
             "gateway": "10.10.20.1",
             "dns": "10.10.20.254",
@@ -422,7 +430,7 @@
                     "id": "1",
                     "role": "Uplink to switch25gMLetto Port 4",
                     "mode": "Trunk",
-                    "speed": "10Gbs",
+                    "speed": "2.5Gbs",
                     "native_vlan": "20",
                     "allowed_vlans": [
                         "20",
