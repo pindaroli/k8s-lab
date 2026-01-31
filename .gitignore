@@ -1,6 +1,7 @@
 # Python Caches
 __pycache__/
 *.py[cod]
+*pippo*
 
 # SSL Certificate files (sensitive)
 pindaroli-wildcard.key
