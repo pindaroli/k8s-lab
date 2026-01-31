@@ -1,3 +1,6 @@
+# Python Caches
+__pycache__/
+*.py[cod]
 
 # SSL Certificate files (sensitive)
 pindaroli-wildcard.key
@@ -25,3 +28,4 @@ talos-config/
 # Global Secrets
 secrets/
 cert-manager/cloudflare-token-secret.yaml
+__pycache__/
