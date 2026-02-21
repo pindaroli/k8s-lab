@@ -74,4 +74,28 @@
         validate_certs: no
         status_code: 200
 
+    # ---------------------------------------------------------
+    # STEP 6: EXTRACT DHCP RESERVATIONS
+    # ---------------------------------------------------------
+    - name: Extract DHCP Reservations from rete.json
+      command:
+        cmd: "python3 scripts/extract_dhcp_from_rete_json.py --file ../../rete.json"
+      register: dhcp_gen_result
+      changed_when: false
 
+    - name: Parse Generated DHCP JSON
+      set_fact:
+        dhcp_list: "{{ dhcp_gen_result.stdout | from_json }}"
+
+    - name: Display DHCP Records (Debug)
+      debug:
+        msg: "Loaded {{ dhcp_list | length }} DHCP reservations from Python generator."
+
+    # ---------------------------------------------------------
+    # STEP 7: PUSH DHCP RESERVATIONS TO OPNSENSE
+    # ---------------------------------------------------------
+    - name: Ensure DHCP Static Mappings exist in Kea
+      command:
+        cmd: "python3 scripts/push_kea_dhcp_to_opnsense.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
+      args:
+        stdin: "{{ dhcp_gen_result.stdout }}"

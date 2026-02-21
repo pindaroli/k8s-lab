@@ -325,6 +325,16 @@
                     "gateway": "10.10.20.1",
                     "dns": "10.10.20.254",
                     "connected_to": "switch25gMLetto Port 6"
+                },
+                {
+                    "interface": "wifi",
+                    "description": "mac min wifi addresss",
+                    "mac": "d0:11:e5:14:09:3c",
+                    "network": "Client (VLAN 20)",
+                    "ip": "10.10.20.101",
+                    "gateway": "10.10.20.1",
+                    "dns": "10.10.20.254",
+                    "connected_to": "ap11000"
                 }
             ]
         },
@@ -372,6 +382,7 @@
             "ports": [
                 {
                     "id": "1",
+                    "os_name": "enp1s0f0np0",
                     "speed": "2.5Gbs",
                     "connected_to": "switch25gMServer",
                     "vlan": "10",
@@ -379,10 +390,18 @@
                 },
                 {
                     "id": "2",
+                    "os_name": "enp1s0f1np1",
                     "speed": "2.5Gbs",
                     "connected_to": "switch25gMServer",
                     "vlan": "20",
                     "note": "LAN Client Bridge (vmbr20)"
+                },
+                {
+                    "id": "nic0",
+                    "os_name": "nic0",
+                    "connected_to": "Direct Access",
+                    "ip": "192.168.100.200",
+                    "note": "Service Port (No Gateway)"
                 }
             ]
         },
@@ -393,9 +412,12 @@
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
             "management_ip": "10.10.10.31",
+            "gateway": "10.10.10.254",
+            "dns": "10.10.10.254",
             "ports": [
                 {
                     "id": "1",
+                    "os_name": "nic0",
                     "speed": "2.5Gbs",
                     "connected_to": "switch25gMServer",
                     "vlan": "10",
@@ -403,6 +425,7 @@
                 },
                 {
                     "id": "2",
+                    "os_name": "nic1",
                     "speed": "2.5Gbs",
                     "connected_to": "switch25gMServer",
                     "vlan": "20",

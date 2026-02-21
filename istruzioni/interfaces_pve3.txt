@@ -2,24 +2,31 @@ auto lo
 iface lo inet loopback
 
 # -----------------------------------------------------------
-# NODO: PVE3 (Node 3) - IP: 10.10.10.13
+# NODO: PVE (Node 1) - IP: 10.10.10.11
 # PATH: /etc/network/interfaces
 # -----------------------------------------------------------
 
-iface eno1 inet manual
+iface nic0 inet manual
 # Porta 1 (VLAN 10 - Server)
 
-iface eno2 inet manual
+iface nic1 inet manual
 # Porta 2 (VLAN 20 - Client)
+
+# -----------------------------------------------------------
+# PORTA DI SERVIZIO (DIRECT ACCESS - VLAN 1 Admin Subnet)
+# -----------------------------------------------------------
+#auto nic0
+#iface eno3 inet static
+#    address 192.168.100.11/24
+    # NESSUN GATEWAY. Collega PC con IP 192.168.100.x
 
 # -----------------------------------------------------------
 # BRIDGE MANAGEMENT & SERVER (VLAN 10)
 # -----------------------------------------------------------
 auto vmbr10
 iface vmbr10 inet static
-    address 10.10.10.13/24
-    gateway 10.10.10.1
-    bridge-ports eno1
+    address 10.10.10.31/24
+    bridge-ports nic0
     bridge-stp off
     bridge-fd 0
 
@@ -27,7 +34,9 @@ iface vmbr10 inet static
 # BRIDGE CLIENT (VLAN 20)
 # -----------------------------------------------------------
 auto vmbr20
-iface vmbr20 inet manual
-    bridge-ports eno2
+iface vmbr20 inet static
+    address 10.10.20.31/24
+    gateway 10.10.20.1
+    bridge-ports nic1
     bridge-stp off
     bridge-fd 0
