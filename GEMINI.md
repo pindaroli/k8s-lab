@@ -13,6 +13,10 @@
 > ALL services exposed via Cloudflare (External) MUST have **OAuth2 Authentication** enabled (Google Login).
 > **NO EXCEPTIONS**. Even services with native login (like MinIO/TrueNAS) must sit behind the OAuth shield.
 > *Implementation:* Traefik Middleware `oauth2-auth`.
+>
+> **DOCUMENTATION MAINTENANCE**
+> The file `homelab_notebooklm.md` is a comprehensive compilation of the project for AI context (NotebookLM).
+> **RULE**: Whenever you make SUBSTANTIAL changes to the infrastructure (topology, new nodes, major migrations), you **MUST** update `homelab_notebooklm.md` to reflect the new state.
 
 ### Network Summary
 | VLAN | ID | Subnet | Gateway | DHCP | Usage |

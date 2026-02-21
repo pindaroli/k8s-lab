@@ -35,11 +35,11 @@ nano /etc/network/interfaces
 
 Ho preparato 3 file separati per ogni nodo. Copia il contenuto del file appropriato dentro `/etc/network/interfaces` sul rispettivo server.
 
-*   **PVE (Node 1)**: [istruzioni/interfaces_pve](interfaces_pve)
+*   **PVE (Node 1)**: [istruzioni/interfaces_pve.txt](interfaces_pve.txt)
     *   *Nota*: Include la porta di servizio su `192.168.99.2`.
-*   **PVE2 (Node 2)**: [istruzioni/interfaces_pve2](interfaces_pve2)
+*   **PVE2 (Node 2)**: [istruzioni/interfaces_pve2.txt](interfaces_pve2.txt)
     *   *Nota*: Configurazione standard 2 cavi.
-*   **PVE3 (Node 3)**: [istruzioni/interfaces_pve3](interfaces_pve3)
+*   **PVE3 (Node 3)**: [istruzioni/interfaces_pve3.txt](interfaces_pve3.txt)
     *   *Nota*: Configurazione standard 2 cavi.
 
 **IMPORTANTE**: Ricordati sempre di verificare i nomi delle interfacce (`eno1`, `eno2`, ecc.) con `ip -c link` prima di salvare!

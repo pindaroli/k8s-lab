@@ -15,7 +15,6 @@ iface enp1s0f1 inet manual
 # -----------------------------------------------------------
 # PORTA DI SERVIZIO (DIRECT ACCESS - VLAN 1 Admin Subnet)
 # -----------------------------------------------------------
-auto nic0
 iface eno3 inet static
     address 192.168.100.11/24
     # NESSUN GATEWAY. Collega PC con IP 192.168.100.x
@@ -26,7 +25,6 @@ iface eno3 inet static
 auto vmbr0
 iface vmbr0 inet static
     address 10.10.10.11/24
-    gateway 10.10.10.1
     bridge-ports enp1s0f0
     bridge-stp off
     bridge-fd 0
@@ -36,6 +34,8 @@ iface vmbr0 inet static
 # -----------------------------------------------------------
 auto vmbr20
 iface vmbr20 inet manual
+    address 10.10.20.11/24
+    gateway 10.10.20.1
     bridge-ports enp1s0f1
     bridge-stp off
     bridge-fd 0
