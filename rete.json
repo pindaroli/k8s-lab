@@ -412,7 +412,7 @@
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
             "management_ip": "10.10.10.31",
-            "gateway": "10.10.10.254",
+            "gateway": "10.10.10.1",
             "dns": "10.10.10.254",
             "ports": [
                 {
