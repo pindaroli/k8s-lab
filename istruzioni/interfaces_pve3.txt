@@ -26,6 +26,7 @@ iface nic1 inet manual
 auto vmbr10
 iface vmbr10 inet static
     address 10.10.10.31/24
+    gateway 10.10.10.1
     bridge-ports nic0
     bridge-stp off
     bridge-fd 0
@@ -34,9 +35,7 @@ iface vmbr10 inet static
 # BRIDGE CLIENT (VLAN 20)
 # -----------------------------------------------------------
 auto vmbr20
-iface vmbr20 inet static
-    address 10.10.20.31/24
-    gateway 10.10.20.1
+iface vmbr20 inet manual
     bridge-ports nic1
     bridge-stp off
     bridge-fd 0
