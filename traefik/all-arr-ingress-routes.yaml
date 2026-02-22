@@ -7,21 +7,21 @@ spec:
   entryPoints:
     - websecure
   routes:
-  # External / Public: OAuth Protected
-  - match: Host(`jellyfin.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: jellyfin-external-k8s-service
-      port: 8096
-    middlewares:
-    - name: oauth2-auth
-      namespace: traefik
-  # Internal / Short: Basic Auth
-  - match: Host(`jellyfin`) || Host(`jellyfin-internal.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: jellyfin-external-k8s-service
-      port: 8096
+    # External / Public: OAuth Protected
+    - match: Host(`jellyfin.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: jellyfin-external-k8s-service
+          port: 8096
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Basic Auth
+    - match: Host(`jellyfin`) || Host(`jellyfin-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: jellyfin-external-k8s-service
+          port: 8096
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -34,7 +34,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`lidarr.pindaroli.org`) 
+    - match: Host(`lidarr.pindaroli.org`)
       kind: Rule
       services:
         - name: servarr-lidarr
@@ -61,7 +61,7 @@ spec:
     - websecure
   routes:
     # External / Public: OAuth Protected
-    - match: Host(`prowlarr.pindaroli.org`) 
+    - match: Host(`prowlarr.pindaroli.org`)
       kind: Rule
       services:
         - name: servarr-prowlarr
@@ -87,21 +87,21 @@ spec:
   entryPoints:
     - websecure
   routes:
-  # External / Public: OAuth Protected
-  - match: Host(`qbittorrent.pindaroli.org`) 
-    kind: Rule
-    services:
-    - name: servarr-qbittorrent-web
-      port: 8080
-    middlewares:
-    - name: oauth2-auth
-      namespace: traefik
-  # Internal / Short: Basic Auth
-  - match: Host(`qbittorrent`) || Host(`qbittorrent-internal.pindaroli.org`)
-    kind: Rule
-    services:
-    - name: servarr-qbittorrent-web
-      port: 8080
+    # External / Public: OAuth Protected
+    - match: Host(`qbittorrent.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-qbittorrent-web
+          port: 8080
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Basic Auth
+    - match: Host(`qbittorrent`) || Host(`qbittorrent-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-qbittorrent-web
+          port: 8080
   tls:
     secretName: pindaroli-wildcard-tls
 ---
@@ -115,7 +115,7 @@ spec:
     - websecure
   routes:
     # External / Public: OAuth Protected
-    - match: Host(`radarr.pindaroli.org`) 
+    - match: Host(`radarr.pindaroli.org`)
       kind: Rule
       services:
         - name: servarr-radarr
@@ -163,7 +163,7 @@ spec:
   basicAuth:
     secret: basic-auth-secret
     removeHeader: true
-
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -171,8 +171,8 @@ metadata:
   namespace: arr # Same namespace as IngressRoute
 spec:
   ports:
-  - port: 8096
-    targetPort: 8096
+    - port: 8096
+      targetPort: 8096
 ---
 apiVersion: v1
 kind: Endpoints
@@ -180,7 +180,7 @@ metadata:
   name: jellyfin-external-k8s-service
   namespace: arr # Same namespace as IngressRoute
 subsets:
-- addresses:
-  - ip: "10.10.20.12"
-  ports:
-  - port: 8096
+  - addresses:
+      - ip: "10.10.20.32"
+    ports:
+      - port: 8096
