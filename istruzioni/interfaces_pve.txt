@@ -22,8 +22,8 @@ iface eno3 inet static
 # -----------------------------------------------------------
 # BRIDGE MANAGEMENT & SERVER (VLAN 10)
 # -----------------------------------------------------------
-auto vmbr0
-iface vmbr0 inet static
+auto vmbr10
+iface vmbr10 inet static
     address 10.10.10.11/24
     gateway 10.10.10.1
     bridge-ports enp1s0f0

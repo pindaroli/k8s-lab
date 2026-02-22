@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > **Strategia**: Offline / Maintenance Mode
 > **Priorità**: Semplicità e Sicurezza dei Dati (vs Uptime)
-> **Obiettivo**: Sostituzione PVE3 (Upgrade Ryzen 9) e Downgrade PVE2 (RAM).
+> **Obiettivo**: Sostituzione PVE3 (Upgrade Ryzen 9) e manutenzione PVE2.
 
 Questo piano prevede lo spegnimento controllato del cluster per effettuare gli interventi hardware in parallelo, evitando rischi di Split-Brain o corruzione del Quorum.
 
@@ -49,13 +49,13 @@ Questo piano prevede lo spegnimento controllato del cluster per effettuare gli i
 
 1.  **Su PVE2**:
     *   Apri chassis.
-    *   Rimuovi i 32GB di RAM in eccesso.
+    *   Verifica stato hardware e pulizia interna. (Nota: Il nodo dispone di 64GB RAM e 2TB NVMe).
     *   Richiudi.
     *   *Nota*: Il disco di sistema non viene toccato, quindi l'OS è intatto.
 
 2.  **Su PVE3**:
     *   Assembla il nuovo Ryzen 9 9555HX, 64GB RAM.
-    *   Installa i 2x512GB NVMe.
+    *   Verifica l'unità NVMe da 1TB funzionante. (Il 2TB è su PVE2).
     *   Collega i cavi di rete (preferibilmente sulle stesse porte logiche per facilitare il bridging).
 
 ---
@@ -72,7 +72,7 @@ Questo piano prevede lo spegnimento controllato del cluster per effettuare gli i
     *   Installa Proxmox VE (Debian 13/Trixie) da ISO.
     *   **Hostname**: `pve3`
     *   **IP**: `10.10.10.31` (Stesso di prima).
-    *   **Storage**: Crea un ZFS Pool chiamato `stripe` sui 2 NVMe in RAID0.
+    *   **Storage**: Assicurati che il disco singolo NVMe da 1TB sia configurato come pool VM per far atterrare le macchine (tipo ZFS single o LVM).
     *   **Network**: Configura il bridge `vmbr0` sulla subnet `10.10.10.0/24`.
     *   Aggiorna sistema: `apt update && apt dist-upgrade`.
 

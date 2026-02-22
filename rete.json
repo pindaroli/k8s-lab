@@ -378,6 +378,7 @@
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
+            "hardware": "64GB RAM, 2TB NVMe",
             "management_ip": "10.10.10.21",
             "ports": [
                 {
@@ -411,6 +412,7 @@
             "type": "Hypervisor",
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
+            "hardware": "64GB RAM, 1TB NVMe",
             "management_ip": "10.10.10.31",
             "gateway": "10.10.10.1",
             "dns": "10.10.10.254",
