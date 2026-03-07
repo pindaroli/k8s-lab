@@ -9,18 +9,13 @@ import os
 import sys
 import subprocess
 
-class Colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
+# Aggiungi scripts/ al path per poter importare utils.common
+_base = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, _base)
+from utils.common import Colors
 
 # Determina la cartella degli script basandosi sulla posizione di questo file
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+SCRIPT_DIR = _base
 
 def get_script_description(filepath):
     """Estrae una breve descrizione dallo script guardando i primi commenti/docstring."""
