@@ -1,8 +1,29 @@
 #!/bin/bash
 set -e
 
+# Configurazione percorsi relativi alla posizione dello script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Assicurati che i path dei binari comuni siano inclusi (Homebrew, etc)
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+# Imposta KUBECONFIG esplicitamente
+export KUBECONFIG="$PROJECT_ROOT/talos-config/kubeconfig"
+
+# Verifica se il file esiste
+if [ ! -f "$KUBECONFIG" ]; then
+    echo "Errore: KUBECONFIG non trovato in $KUBECONFIG"
+    exit 1
+fi
+
 # Find Primary Pod
-POD=$(kubectl get pods -n cnpg-system -l cnpg.io/cluster=postgres-main,cnpg.io/instanceRole=primary -o jsonpath='{.items[0].metadata.name}')
+POD=$(kubectl get pods -n cnpg-system -l cnpg.io/cluster=postgres-main,cnpg.io/instanceRole=primary -o jsonpath='{.items[0].metadata.name}' || true)
+
+if [ -z "$POD" ]; then
+    echo "Errore: Impossibile trovare il pod Primario di Postgres."
+    exit 1
+fi
 
 echo "Found Primary Pod: $POD"
 
