@@ -99,6 +99,9 @@
   - **Decryption**: `ansible-vault view ansible/vars/secrets.yml --vault-password-file ~/.vault_pass.txt`
   - **Vault Password**: Located at `~/.vault_pass.txt` (User Home Directory).
 - **`kube-system/`**: Core Kubernetes system configurations (e.g., `metrics-server`).
+- **`proxmox/`**: Scripts and hooks intended for local execution on Proxmox hypervisors.
+  - `hooks/`: VM automated startup hooks.
+  - `scripts/`: Manual maintenance scripts (e.g., disk swapping).
 - **`storage/local-path/`**: CSI Local Path Provisioner configurations for node-local storage.
 - **`_OLD_ARCHIVE/`**: Legacy/Stale files.
   - `ansible-venv`, old scripts, previous attempts, and deprecated `.yaml`/temp files.
