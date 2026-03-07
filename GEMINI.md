@@ -87,6 +87,9 @@
   - `playbooks/opnsense_sync_dns.yml`: Sync `rete.json` hosts to Unbound.
 - **`talos-config/`**: **Source of Truth** for Cluster Access.
   - Contains `talosconfig`, `controlplane.yaml`, `worker.yaml`.
+- **`scripts/`**: Automation & Diagnostic Scripts.
+  - Managed via **Interactive Launcher**: Use `./go` from the project root to run scripts.
+  - **`utils/`**: Internal helper scripts (hidden from the launcher).
 - **`xray/`**: OCI Proxy Configuration.
   - Contains `xray_secrets.yml`.
 - **`secrets/`**: Global Environment Secrets.
@@ -95,8 +98,10 @@
 - **`ansible/vars/secrets.yml`**: Encrypted Ansible Secrets (Cloudflare keys, SSH keys).
   - **Decryption**: `ansible-vault view ansible/vars/secrets.yml --vault-password-file ~/.vault_pass.txt`
   - **Vault Password**: Located at `~/.vault_pass.txt` (User Home Directory).
+- **`kube-system/`**: Core Kubernetes system configurations (e.g., `metrics-server`).
+- **`storage/local-path/`**: CSI Local Path Provisioner configurations for node-local storage.
 - **`_OLD_ARCHIVE/`**: Legacy/Stale files.
-  - `ansible-venv`, old scripts, previous attempts.
+  - `ansible-venv`, old scripts, previous attempts, and deprecated `.yaml`/temp files.
 
 ---
 
