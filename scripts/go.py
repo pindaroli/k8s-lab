@@ -119,10 +119,24 @@ def main():
         print(f"\n{Colors.BOLD}Eseguo: {selected['name']}...{Colors.ENDC}")
         print("-" * 50)
         
-        # Esegui script sostituendo il processo corrente (oppure come subprocess)
+        # Prepara l'ambiente con PATH robusto (specialmente per Mac Homebrew)
+        # E pulisce eventuali proxy che disturbano la rete locale
+        env = os.environ.copy()
+        common_paths = ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin"]
+        current_path = env.get("PATH", "")
+        for p in common_paths:
+            if p not in current_path:
+                current_path = f"{p}:{current_path}"
+        env["PATH"] = current_path
+        
+        for var in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"]:
+            if var in env:
+                del env[var]
+
+        # Esegui script
         try:
-            # Usiamo subprocess.call in modo che l'I/O sia collegato direttamente al terminale dell'utente
-            subprocess.call([selected['path']])
+            # Usiamo subprocess.call passando l'env robusto
+            subprocess.call([selected['path']], env=env)
         except KeyboardInterrupt:
             print(f"\n{Colors.WARNING}Esecuzione di {selected['name']} interrotta dall'utente.{Colors.ENDC}")
         except Exception as e:

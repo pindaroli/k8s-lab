@@ -1,33 +1,34 @@
 #!/usr/bin/env python3
 import json
-import subprocess
 import sys
 import re
 import os
 
-STORAGE_JSON_PATH = "../storage.json"
+# Aggiungi scripts/ al path per poter importare utils.common
+_base = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, os.path.join(_base, "scripts"))
+from utils.common import PROJECT_ROOT, run_cmd
+
+STORAGE_JSON_PATH = os.path.join(PROJECT_ROOT, "storage.json")
+
 TRUENAS_IP = "10.10.10.50"
 TRUENAS_USER = "olindo"
 TRUENAS_PASS = "Compli61!"  # Prone to change, ideally env var
 
 def fetch_exports():
     """Fetches /etc/exports from TrueNAS using the helper script."""
-    script_path = os.path.join(os.path.dirname(__file__), "utils", "fetch_exports.sh")
+    script_path = os.path.join(PROJECT_ROOT, "scripts", "utils", "fetch_exports.sh")
     
     # Ensure script is executable
-    subprocess.run(["chmod", "+x", script_path], check=True)
+    if os.path.exists(script_path):
+        os.chmod(script_path, 0o755)
     
-    result = subprocess.run(
-        [script_path, TRUENAS_IP, TRUENAS_USER, TRUENAS_PASS],
-        capture_output=True,
-        text=True
-    )
-    
-    if result.returncode != 0:
-        print(f"Error fetching exports: {result.stderr}")
+    stdout = run_cmd([script_path, TRUENAS_IP, TRUENAS_USER, TRUENAS_PASS])
+    if stdout is None:
+        print(f"Error fetching exports from TrueNAS ({TRUENAS_IP})")
         sys.exit(1)
         
-    return result.stdout
+    return stdout
 
 def parse_exports(raw_exports):
     """
@@ -71,7 +72,7 @@ def sync_storage_json(parsed_exports):
         with open(STORAGE_JSON_PATH, 'r') as f:
             data = json.load(f)
     except FileNotFoundError:
-        print("storage.json not found, creating new structure.")
+        print(f"{STORAGE_JSON_PATH} not found, creating new structure.")
         data = {"nas": {"hostname": "truenas", "ips": {}, "exports": {}}}
 
     current_exports = data.get("nas", {}).get("exports", {})
@@ -108,14 +109,24 @@ def sync_storage_json(parsed_exports):
     with open(STORAGE_JSON_PATH, 'w') as f:
         json.dump(data, f, indent=2)
     
-    print("storage.json updated successfully.")
+    print(f"storage.json ({STORAGE_JSON_PATH}) updated successfully.")
+
+def main():
+    # Salva il CWD originale
+    original_cwd = os.getcwd()
+    try:
+        # Spostati nella root del progetto
+        os.chdir(PROJECT_ROOT)
+        print("Fetching exports from TrueNAS...")
+        raw = fetch_exports()
+        
+        parsed = parse_exports(raw)
+        print(f"Found {len(parsed)} exports.")
+        
+        sync_storage_json(parsed)
+    finally:
+        # Ripristina CWD
+        os.chdir(original_cwd)
 
 if __name__ == "__main__":
-    print("Fetching exports from TrueNAS...")
-    raw = fetch_exports()
-    # print("DEBUG RAW:\n", raw)
-    
-    parsed = parse_exports(raw)
-    print(f"Found {len(parsed)} exports.")
-    
-    sync_storage_json(parsed)
+    main()

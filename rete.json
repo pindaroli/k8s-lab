@@ -521,7 +521,8 @@
             "vip": "10.10.20.55",
             "role": "Kubernetes Control Plane",
             "os": "Talos Linux 1.12.0",
-            "network": "VLAN 20 (vmbr20)"
+            "network": "VLAN 20 (vmbr20)",
+            "host_node_sticky": true
         },
         {
             "id": "talos-cp-02",
@@ -537,7 +538,8 @@
             "vip": "10.10.20.55",
             "role": "Kubernetes Control Plane",
             "os": "Talos Linux 1.12.0",
-            "network": "VLAN 20 (vmbr20)"
+            "network": "VLAN 20 (vmbr20)",
+            "host_node_sticky": true
         },
         {
             "id": "talos-cp-03",
@@ -553,7 +555,8 @@
             "vip": "10.10.20.55",
             "role": "Kubernetes Control Plane",
             "os": "Talos Linux 1.12.0",
-            "network": "VLAN 20 (vmbr20)"
+            "network": "VLAN 20 (vmbr20)",
+            "host_node_sticky": true
         },
         {
             "id": "k8s-recovery",
