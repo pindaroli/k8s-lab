@@ -1,4 +1,5 @@
 #!/bin/bash
+# Monitoraggio continuo del ping verso il Gateway con log solo dei fallimenti.
 
 TARGET="10.10.20.1"
 

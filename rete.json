@@ -440,6 +440,7 @@
             "label": "Access Point (Cudy)",
             "brand": "Cudy",
             "model": "AP11000",
+            "mac": "80:af:ca:c0:2e:5a",
             "type": "Network Device",
             "role": "Access Point",
             "aliases": [

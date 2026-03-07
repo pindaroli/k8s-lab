@@ -12,7 +12,7 @@ TRUENAS_PASS = "Compli61!"  # Prone to change, ideally env var
 
 def fetch_exports():
     """Fetches /etc/exports from TrueNAS using the helper script."""
-    script_path = os.path.join(os.path.dirname(__file__), "fetch_exports.sh")
+    script_path = os.path.join(os.path.dirname(__file__), "utils", "fetch_exports.sh")
     
     # Ensure script is executable
     subprocess.run(["chmod", "+x", script_path], check=True)
