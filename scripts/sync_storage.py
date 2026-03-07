@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+Sincronizza e monta gli share NFS da TrueNAS via script.
+"""
 import json
 import sys
 import re
