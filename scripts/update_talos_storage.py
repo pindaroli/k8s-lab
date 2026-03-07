@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+Inietta la configurazione del disco per Postgres in talos-config/controlplane.yaml.
+"""
 import sys
 import os
 

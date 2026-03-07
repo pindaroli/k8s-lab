@@ -1,0 +1,1 @@
+/Users/olindo/prj/k8s-lab/scripts/go.py
