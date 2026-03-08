@@ -370,6 +370,30 @@
                     "ip": "192.168.100.11",
                     "note": "Service Port (VLAN 1 Admin Subnet - No Gateway)"
                 }
+            ],
+            "disks": [
+                {
+                    "name": "nvme0n1",
+                    "size": "931.5G",
+                    "model": "CT1000P3PSSD8",
+                    "serial": "2422491F3C19",
+                    "type": "disk"
+                },
+                {
+                    "pci_id": "0000:03:00",
+                    "note": "Passthrough to VM 1100 (TrueNAS)",
+                    "type": "pci_passthrough"
+                },
+                {
+                    "pci_id": "0000:04:00",
+                    "note": "Passthrough to VM 1100 (TrueNAS)",
+                    "type": "pci_passthrough"
+                },
+                {
+                    "pci_id": "0000:05:00.0",
+                    "note": "Passthrough to VM 1100 (TrueNAS) - Likely 2x 4TB HDDs",
+                    "type": "pci_passthrough"
+                }
             ]
         },
         {
@@ -404,6 +428,22 @@
                     "ip": "192.168.100.200",
                     "note": "Service Port (No Gateway)"
                 }
+            ],
+            "disks": [
+                {
+                    "name": "nvme0n1",
+                    "size": "476.9G",
+                    "model": "SSDPEMKF512G8 NVMe INTEL 512GB",
+                    "serial": "BTHP95240V0D512C",
+                    "type": "disk"
+                },
+                {
+                    "name": "nvme1n1",
+                    "size": "1.8T",
+                    "model": "Acer SSD N7000 2TB",
+                    "serial": "ASBK53470103815",
+                    "type": "disk"
+                }
             ]
         },
         {
@@ -432,6 +472,15 @@
                     "connected_to": "switch25gMServer",
                     "vlan": "20",
                     "note": "LAN Client Bridge (vmbr20)"
+                }
+            ],
+            "disks": [
+                {
+                    "name": "nvme0n1",
+                    "size": "931.5G",
+                    "model": "CT1000P3PSSD8",
+                    "serial": "25074E23D6AE",
+                    "type": "disk"
                 }
             ]
         },
