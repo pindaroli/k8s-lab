@@ -2,7 +2,9 @@ import json
 import re
 
 def get_ip(node):
-    # Replicating Ansible IP precedence logic
+    # Prioritize VLAN 20 for multihomed nodes (TrueNAS) to avoid asymmetric routing
+    if 'client_ip_vlan20' in node: return node['client_ip_vlan20']
+    
     if 'ip' in node: return node['ip']
     if 'management IP' in node: return node['management IP']
     if 'management_ip' in node: return node['management_ip']

@@ -121,19 +121,15 @@ def main():
     
     desired_map = {} # (hostname, domain) -> ip
     for r in desired_records:
-        key = (r['hostname'], 'pindaroli.org') # domain hardcoded in validate_rete_dns?
-        # validate_rete_dns doesn't explicitly verify domain in 'return' mode, checks structure.
-        # But 'rete.json' implies pindaroli.org.
-        # Let's standardize on assuming domain is passed or default.
+        key = (r['hostname'], 'pindaroli.org') 
         desired_map[key] = r['ip']
 
     orphans = []
     conflicts = []
+    exact_duplicates = []
+    seen_in_opnsense = set()
     
     for row in current_overrides:
-        # row structure from OPNsense: {uuid, hostname, domain, server, description, ...}
-        # Note: 'server' is the IP
-        
         hostname = row.get('hostname')
         domain = row.get('domain')
         ip = row.get('server')
@@ -142,7 +138,15 @@ def main():
         key = (hostname, domain)
         
         if key in desired_map:
-            # It's a known host. Check IP.
+            # It's a known host.
+            if key in seen_in_opnsense:
+                print(f"♻️  DUPLICATE: {hostname}.{domain} -> {ip} (Already exists, extra entry found)")
+                exact_duplicates.append(row)
+                continue
+            
+            seen_in_opnsense.add(key)
+            
+            # Check IP.
             expected_ip = desired_map[key]
             if ip != expected_ip:
                 print(f"❌ CONFLICT: {hostname}.{domain}")
@@ -150,7 +154,7 @@ def main():
                 print(f"   Desired (rete.json): {expected_ip}")
                 conflicts.append(row)
             else:
-                # Matches!
+                # Matches perfectly.
                 pass
         else:
             # Unknown host. 
@@ -158,11 +162,11 @@ def main():
             orphans.append(row)
 
     # 4. Execute Pruning
-    if not conflicts and not orphans:
+    if not conflicts and not orphans and not exact_duplicates:
         print("\n✅ System matches Desired State. No pruning needed.")
         return
 
-    to_delete = conflicts # + orphans? Let's just do conflicts for now to be safe, user complained about pve3 conflict.
+    to_delete = conflicts + exact_duplicates
     
     if os.environ.get('PRUNE_ORPHANS') == 'true':
          to_delete += orphans

@@ -1,0 +1,26 @@
+Every 2.0s: kubectl get jobs -n arr migrate-prowlarr                   olindos-Mac-mini.local: 10:09:30
+                                                                                          in 0.063s (0)
+NAME               STATUS   COMPLETIONS   DURATION   AGE                                               
+migrate-prowlarr   Failed   0/1           13m        13m                                               
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       
+                                                                                                       

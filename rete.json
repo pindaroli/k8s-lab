@@ -1,5 +1,5 @@
 {
-    "description": "configuratione home lab networks",
+    "description": "Configurazione home lab networks",
     "VLAN": [
         {
             "id": "10",
@@ -46,7 +46,7 @@
             "ports": [
                 {
                     "id": "1",
-                    "role": "Uplink to switch25gMServer Port 6",
+                    "role": "Uplink to switch-25g-server Port 6",
                     "mode": "Trunk",
                     "speed": "10Gbs",
                     "native_vlan": "1",
@@ -59,7 +59,7 @@
                 },
                 {
                     "id": "8",
-                    "role": "Downlink to switch25gMLetto Port 5",
+                    "role": "Downlink to switch-25g-letto Port 5",
                     "mode": "Hybrid",
                     "note": "Set to Hybrid to allow Untagged VLAN 1 (Workaround for Trunk bug)",
                     "speed": "10Gbs",
@@ -92,15 +92,14 @@
             ]
         },
         {
-            "id": "switch25gMLetto",
-            "description": "Switch managed with 4 porte 2.5G e 2 1OG fsp+ ports",
+            "id": "switch-25g-letto",
+            "description": "Switch managed with 4 porte 2.5G e 2 10G SFP+ ports",
             "model": "GT-ST024M",
             "vendor": "GoodTop",
             "location": "stanza da letto",
             "aliases": [
                 "goodtop"
             ],
-            "management IP": "192.168.2.2",
             "ports": [
                 {
                     "id": "2",
@@ -118,7 +117,7 @@
                 },
                 {
                     "id": "4",
-                    "role": "Trunk to AP1100",
+                    "role": "Trunk to ap11000",
                     "mode": "Trunk (Currently in Access 20 workaround)",
                     "speed": "2.5Gbs",
                     "native_vlan": "20",
@@ -148,16 +147,16 @@
                     "speed": "10Gbs",
                     "pvid": 20
                 }
-            ]
+            ],
+            "management_ip": "192.168.2.2"
         },
         {
-            "id": "switch25gMServer",
-            "description": "Switch managed with 5 porte 2.5G e 1 1OG fsp+ ports",
+            "id": "switch-25g-server",
+            "description": "Switch managed with 5 porte 2.5G e 1 10G SFP+ ports",
             "model": "LG-SG5T1",
             "vendor": "LIAGUO",
             "support": "www.sodola-network.com",
             "location": "Sala Server",
-            "management IP": "192.168.2.3",
             "ports": [
                 {
                     "id": "1",
@@ -214,10 +213,11 @@
                         "30"
                     ]
                 }
-            ]
+            ],
+            "management_ip": "192.168.2.3"
         },
         {
-            "id": "opnSense",
+            "id": "opnsense",
             "label": "OPNsense Firewall",
             "type": "Firewall/Router",
             "model": "Mini PC (4x 2.5GbE)",
@@ -324,7 +324,7 @@
                     "ip": "10.10.20.100",
                     "gateway": "10.10.20.1",
                     "dns": "10.10.20.254",
-                    "connected_to": "switch25gMLetto Port 6"
+                    "connected_to": "switch-25g-letto Port 6"
                 },
                 {
                     "interface": "wifi",
@@ -409,7 +409,7 @@
                     "id": "1",
                     "os_name": "enp1s0f0np0",
                     "speed": "2.5Gbs",
-                    "connected_to": "switch25gMServer",
+                    "connected_to": "switch-25g-server",
                     "vlan": "10",
                     "note": "LAN Server Bridge (vmbr10)"
                 },
@@ -417,7 +417,7 @@
                     "id": "2",
                     "os_name": "enp1s0f1np1",
                     "speed": "2.5Gbs",
-                    "connected_to": "switch25gMServer",
+                    "connected_to": "switch-25g-server",
                     "vlan": "20",
                     "note": "LAN Client Bridge (vmbr20)"
                 },
@@ -461,7 +461,7 @@
                     "id": "1",
                     "os_name": "nic0",
                     "speed": "2.5Gbs",
-                    "connected_to": "switch25gMServer",
+                    "connected_to": "switch-25g-server",
                     "vlan": "10",
                     "note": "LAN Server Bridge (vmbr10)"
                 },
@@ -469,7 +469,7 @@
                     "id": "2",
                     "os_name": "nic1",
                     "speed": "2.5Gbs",
-                    "connected_to": "switch25gMServer",
+                    "connected_to": "switch-25g-server",
                     "vlan": "20",
                     "note": "LAN Client Bridge (vmbr20)"
                 }
@@ -503,7 +503,7 @@
             "ports": [
                 {
                     "id": "1",
-                    "role": "Uplink to switch25gMLetto Port 4",
+                    "role": "Uplink to switch-25g-letto Port 4",
                     "mode": "Trunk",
                     "speed": "2.5Gbs",
                     "native_vlan": "20",
@@ -608,23 +608,9 @@
             "host_node_sticky": true
         },
         {
-            "id": "k8s-recovery",
-            "label": "Kubernetes Recovery VM (REMOVED)",
-            "type": "VM",
-            "vm_id": "1900",
-            "host_node": "pve",
-            "ip": "10.10.10.190",
-            "mac": "02:26:44:51:B2:11",
-            "role": "DECOMMISSIONED",
-            "status": "Removed",
-            "os": "Debian 13 (Trixie)",
-            "network": "VLAN 10 (Server) - vmbr0",
-            "notes": "VM REMOVED. IP 10.10.10.190 IS AVAILABLE. Previously managed by maintenance-mode.sh."
-        },
-        {
             "id": "jellyfin-srv",
             "label": "Jellyfin Media Server",
-            "type": "VM",
+            "type": "LXC",
             "vm_id": "2200",
             "host_node": "pve3",
             "ip": "10.10.20.32",
@@ -647,8 +633,6 @@
                 "lidarr",
                 "prowlarr",
                 "qbittorrent",
-                "jellyfin",
-                "home",
                 "jellyfin",
                 "home",
                 "home-internal",
