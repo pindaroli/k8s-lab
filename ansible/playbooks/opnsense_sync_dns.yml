@@ -2,7 +2,7 @@
 - name: Configure OPNsense Unbound DNS Overrides
   hosts: localhost
   connection: local
-  gather_facts: no
+  gather_facts: false
   vars:
     # Credentials (passed via extra-vars is safer, e.g. -e "api_key=... api_secret=...")
     api_key: "{{ opnsense_api_key | default('') }}"
@@ -39,6 +39,13 @@
       debug:
         msg: "Loaded {{ dns_h | length }} records from Python generator."
 
+    - name: Prune Duplicate and Conflicting DNS records
+      command:
+        cmd: "python3 scripts/prune_opnsense_dns.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
+      environment:
+        PRUNE_ORPHANS: "true"
+      register: prune_result
+      changed_when: "'Deleted' in prune_result.stdout"
 
     # ---------------------------------------------------------
     # STEP 5: PUSH TO OPNSENSE API
@@ -63,7 +70,7 @@
         return_content: yes
       loop: "{{ dns_h }}"
       register: api_result
-      
+
     - name: Apply Unbound Configuration
       uri:
         url: "{{ opnsense_url }}/api/unbound/service/reconfigure"

@@ -19,13 +19,11 @@ spec:
             - "data only"
             - --with
             - "truncate"
-            - --with
-            - "quote identifiers"
-            - /mnt/data/prowlarr.db
-            - postgresql://prowlarr:prowlarr@10.244.0.114:5432/prowlarr
+            - /config/prowlarr.db
+            - postgresql://prowlarr:prowlarr@10.108.78.94:5432/prowlarr
           volumeMounts:
             - name: data
-              mountPath: /mnt/data
+              mountPath: /config
       volumes:
         - name: data
           persistentVolumeClaim:
