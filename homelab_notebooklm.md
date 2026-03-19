@@ -15,7 +15,7 @@ The network is segmented into VLANs to separate management traffic from client/i
 |---|---|---|---|---|
 | **Server** | `10` | `10.10.10.0/24` | Management, Storage (TrueNAS), Hypervisors | Strictly Restricted. Admin access only. |
 | **Client** | `20` | `10.10.20.0/24` | Talos Nodes, Personal Computers, WiFi | Trusted Network. Access to Services. |
-| **IoT** | `30` | `10.10.30.0/24` | Smart Devices, Isolated Hardware | Internet Access Only. No LAN access. |
+| **IoT** | `30` | `10.10.30.0/24` | *DEPRECATED / UNUSED* | Currently inactive. |
 | **Transit**| `-` | `192.168.2.0/24`| Switch Interconnects | L3 Routing backbone. |
 
 ### Access Strategy (Split-DNS)
@@ -35,7 +35,7 @@ The foundation runs on **Proxmox VE 9.1** (Debian 13 Trixie).
 
 ### Storage (TrueNAS Scale)
 *   **Role**: Central NAS providing NFS shares to Kubernetes and VM backups.
-*   **IPs**: `10.10.10.50` (Storage traffic), `10.10.20.50` (Direct Client access).
+*   **IPs**: `10.10.10.50` (Storage & Routing via L3 Switch).
 *   **Startup Logic**: Critical dependency. All other VMs wait for TrueNAS to be pingable via a custom hook script (`wait-for-truenas.sh`) before booting.
 
 ### Backup Strategy
@@ -78,7 +78,7 @@ Major applications deployed via Helm and Flux (planned/in-progress).
 ## 6. Automation & Maintenance
 *   **Ansible**: `ansible/` contains playbooks for Day-2 operations:
     *   `shutdown_lab.yml`: Orchestrates safe shutdown (Kubernetes -> DB -> Storage -> Hypervisors).
-    *   `dhcp_reservations.yml`: Syncs inventory IPs to OPNsense DHCP.
+    *   `dhcp_reservations.yml`: Syncs inventory IPs to OPNsense via Kea DHCP API.
     *   `opnsense_sync_dns.yml`: Updates Unbound DNS config based on `rete.json`.
 *   **Source of Truth**: The `rete.json` file is the master record for all IP addresses, MAC addresses, and VLAN assignments.
 

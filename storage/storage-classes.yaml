@@ -21,7 +21,7 @@ metadata:
 provisioner: nfs.csi.k8s.io
 parameters:
   # NFS server configuration
-  server: 10.10.20.50
+  server: 10.10.10.50
   share: /mnt/stripe/k8s-arr
   
   # Dynamic subdirectory naming: service-name-namespace
@@ -56,7 +56,7 @@ metadata:
 provisioner: nfs.csi.k8s.io
 parameters:
   # NFS server configuration
-  server: 10.10.20.50
+  server: 10.10.10.50
   share: /mnt/stripe/k8s-fast-gen
   
   # Dynamic subdirectory naming: service-name-namespace

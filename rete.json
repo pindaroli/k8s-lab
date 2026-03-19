@@ -13,7 +13,7 @@
         },
         {
             "id": "30",
-            "description": "VLAN IoT (Isolation, Internet Only)",
+            "description": "VLAN IoT (Isolation, Internet Only) - DEPRECATED / UNUSED",
             "subnet": "10.10.30.0/24"
         }
     ],
@@ -29,11 +29,10 @@
             "aliases": [
                 "s3"
             ],
-            "management_ip_vlan10": "10.10.10.50",
-            "client_ip_vlan20": "10.10.20.50",
-            "default_gateway": "10.10.10.1 (VLAN 10 only)",
-            "dns": "1.1.1.1, 8.8.8.8",
-            "notes": "Multihomed: NIC1 on vmbr0 (Gateway), NIC2 on vmbr20 (No Gateway) for high-performance direct Client access."
+            "management_ip": "10.10.10.50",
+            "default_gateway": "10.10.10.1",
+            "dns": "192.168.2.254, 1.1.1.1",
+            "notes": "Single homing on VLAN 10. L3 Switch handles routing from VLAN 20 symmetrically."
         },
         {
             "id": "switch10g",
@@ -226,6 +225,7 @@
                 "pippo"
             ],
             "configuration_notes": [
+                "Kea DHCP is the active DHCP server. Ansible playbooks manage static DHCP reservations via the Kea API.",
                 "Enable 'Static route filtering' (Bypass firewall rules for traffic on the same interface) in Firewall > Settings > Advanced to support asymmetric routing with L3 Switch.",
                 "Create an 'ALLOW ALL' (Any to Any) Firewall Rule on the TRANSIT interface. Traffic from the L3 Switch is blocked by default without it.",
                 "Ensure Unbound DNS is listening on TRANSIT interface (192.168.2.254) to allow infrastructure DNS resolution.",

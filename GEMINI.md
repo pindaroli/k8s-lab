@@ -23,7 +23,7 @@
 |---|---|---|---|---|---|
 | **Server** | 10 | `10.10.10.0/24` | `10.10.10.254` | Static | TrueNAS, Proxmox Mgmt |
 | **Client** | 20 | `10.10.20.0/24` | `10.10.20.1` | OPNsense | Talos Nodes, Personal Devices |
-| **IoT** | 30 | `10.10.30.0/24` | `10.10.30.1` | OPNsense | Isolated Devices |
+| **IoT** | 30 | `10.10.30.0/24` | `10.10.30.1` | - | *DEPRECATED / UNUSED* |
 | **Tunnel** | - | `10.255.0.1/32` | - | Static | **Dummy IP** for Xray Tunnel Binding |
 | **Transit** | - | `192.168.2.0/24` | `192.168.2.1` | - | Switch Interconnects |
 
@@ -50,10 +50,10 @@
 - **Talos CP 02**: `10.10.20.142` (VM ID: 2300)
 - **Talos CP 03**: `10.10.20.143` (VM ID: 3200)
 - **Postgres DB**: `10.10.20.57` (MetalLB External)
-- **TrueNAS**: `10.10.10.50` (Storage), `10.10.20.50` (Client)
+- **TrueNAS**: `10.10.10.50` (Storage/Management)
 - **Talos CP 03**: `10.10.20.143` (VM ID: 3200)
 - **Postgres DB**: `10.10.20.57` (MetalLB External)
-- **TrueNAS**: `10.10.10.50` (Storage), `10.10.20.50` (Client)
+- **TrueNAS**: `10.10.10.50` (Storage/Management)
 
 ### Safe Shutdown Procedure (Rack Power Off)
 > [!WARNING]

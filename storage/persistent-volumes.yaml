@@ -14,5 +14,5 @@ spec:
     driver: nfs.csi.k8s.io
     volumeHandle: pv-servarr-jellyfin-media
     volumeAttributes:
-      server: 10.10.20.50
+      server: 10.10.10.50
       share: /mnt/oliraid/arrdata/media
