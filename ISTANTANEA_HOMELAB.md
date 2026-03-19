@@ -23,7 +23,7 @@ La rete è gestita da **OPNsense** e switch gestiti L3/L2.
 
 *   **VLAN 10 (Server)**: `10.10.10.0/24`. Management Proxmox, TrueNAS, IPMI.
 *   **VLAN 20 (Client)**: `10.10.20.0/24`. Talos Cluster Services, Client personali (PC/Mac), WiFi "Eternal".
-*   **VLAN 30 (IoT)**: `10.10.30.0/24`. Dispositivi isolati, WiFi "Iot".
+*   **VLAN 30 (IoT)**: `10.10.30.0/24`. *DEPRECATA / NON IN USO* (Ex-dispositivi isolati).
 *   **Transit**: `192.168.2.0/24`. Interconnessione Switch <-> Firewall.
 
 ### Strategia DNS (Split-DNS)
@@ -115,7 +115,7 @@ La gestione dell'infrastruttura adotta l'approccio *Infrastructure as Code* (IaC
     *   Flusso: Talos Nodes -> Database -> Storage -> Hypervisors.
     *   Salvaguardia l'integrità dei dati (ZFS/Postgres) prevenendo spegnimenti bruschi.
 2.  **Network Sync**:
-    *   `dhcp_reservations.yml`: Applica le prenotazioni DHCP su OPNsense leggendo da `rete.json`.
+    *   `dhcp_reservations.yml`: Applica le prenotazioni DHCP su OPNsense (utilizzando l'API di Kea DHCP) leggendo da `rete.json`.
     *   `opnsense_sync_dns.yml`: Configura gli override DNS su Unbound (OPNsense) per la risoluzione interna locali.
 
 ### Gestione Segreti
