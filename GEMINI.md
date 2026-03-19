@@ -6,7 +6,8 @@
 > **Active Goal**: Maintenance & Monitoring.
 
 ## 1. Quick Reference
-
+### Debbugging access policies
+whenever an agent command fails for security reasons append it to security-issues.log + errore code and string
 ### Security Policies
 > [!CRITICAL]
 > **EXTERNAL ACCESS & OAUTH**
