@@ -84,8 +84,8 @@ whenever an agent command fails for security reasons append it to security-issue
 ## 2. Directory Organization
 
 - **`ansible/`**: Active Automation.
-  - `playbooks/dhcp_reservations.yml`: Sync Talos IPs to OPNsense.
-  - `playbooks/opnsense_sync_dns.yml`: Sync `rete.json` hosts to Unbound.
+  - `playbooks/opnsense_sync_dns.yml`: **Master Sync**. Syncs `rete.json` to both Unbound DNS and Kea DHCP.
+
 - **`talos-config/`**: **Source of Truth** for Cluster Access.
   - Contains `talosconfig`, `controlplane.yaml`, `worker.yaml`.
 - **`scripts/`**: Automation & Diagnostic Scripts.
