@@ -220,11 +220,12 @@
             "label": "OPNsense Firewall",
             "type": "Firewall/Router",
             "model": "Mini PC (4x 2.5GbE)",
+            "management_ip": "10.10.20.254",
             "aliases": [
-                "opnsense",
-                "pippo"
+                "opnsense"
             ],
             "configuration_notes": [
+
                 "Kea DHCP is the active DHCP server. Ansible playbooks manage static DHCP reservations via the Kea API.",
                 "Enable 'Static route filtering' (Bypass firewall rules for traffic on the same interface) in Firewall > Settings > Advanced to support asymmetric routing with L3 Switch.",
                 "Create an 'ALLOW ALL' (Any to Any) Firewall Rule on the TRANSIT interface. Traffic from the L3 Switch is blocked by default without it.",
@@ -250,37 +251,41 @@
                     ],
                     "logical_interfaces": [
                         {
-                            "name": "igc1_vlan20",
+                            "name": "gw-vlan20",
                             "interface": "opt2",
                             "vlan_tag": "20",
-                            "subnet": "10.10.20.254/24",
+                            "ip": "10.10.20.254",
+                            "subnet": "10.10.20.0/24",
                             "dhcp": "enabled",
                             "dns": "10.10.20.254",
                             "firewall_policy": "Allow All"
                         },
                         {
-                            "name": "igc1_vlan30",
+                            "name": "gw-vlan30",
                             "interface": "opt3",
                             "vlan_tag": "30",
-                            "subnet": "10.10.30.1/24",
+                            "ip": "10.10.30.1",
+                            "subnet": "10.10.30.0/24",
                             "dhcp": "enabled",
                             "dns": "1.1.1.1, 8.8.8.8",
                             "firewall_policy": "Allow Internet (Careful with RFC1918 blocks on Transit!)"
                         },
                         {
-                            "name": "igc1_vlan10",
+                            "name": "gw-vlan10",
                             "interface": "opt1",
                             "vlan_tag": "10",
-                            "subnet": "10.10.10.254/24",
+                            "ip": "10.10.10.254",
+                            "subnet": "10.10.10.0/24",
                             "dhcp": "static_only",
                             "dns": "10.10.10.254",
                             "firewall_policy": "Allow Internet, Allow from LAN_CLIENT"
                         },
                         {
-                            "name": "igc1_transit",
+                            "name": "gw-transit",
                             "interface": "opt4",
                             "vlan_tag": "Native (Untagged)",
-                            "subnet": "192.168.2.254/24",
+                            "ip": "192.168.2.254",
+                            "subnet": "192.168.2.0/24",
                             "gateway": "192.168.2.1 (Switch L3)",
                             "dhcp": "disabled",
                             "firewall_policy": "Allow All / Transit"
@@ -299,9 +304,10 @@
                     "description": "Emergency/Admin Port (Not connected to Switch)",
                     "logical_interfaces": [
                         {
-                            "name": "lan",
+                            "name": "gw-admin",
                             "interface": "lan",
-                            "subnet": "192.168.100.1/24",
+                            "ip": "192.168.100.1",
+                            "subnet": "192.168.100.0/24",
                             "dhcp": "enabled",
                             "firewall_policy": "Allow All"
                         }
