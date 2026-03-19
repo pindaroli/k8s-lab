@@ -1,0 +1,27 @@
+{
+    "window.zoomLevel": 1.5,
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.fontFamily": "'JetBrains Mono', 'Fira Code', 'Intel One Mono', 'Menlo', 'Monaco', 'Courier New', monospace",
+    "editor.fontSize": 14,
+    "editor.fontFamily": "'JetBrains Mono', 'Fira Code', 'Intel One Mono', 'Menlo', 'Monaco', 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.lineHeight": 1.6,
+    "editor.letterSpacing": 0.5,
+    "editor.fontWeight": "normal",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.smoothScrolling": true,
+    "workbench.colorTheme": "Default Dark Modern",
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "comment",
+                "settings": {
+                    "fontStyle": "italic"
+                }
+            }
+        ]
+    }
+}

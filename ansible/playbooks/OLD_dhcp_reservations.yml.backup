@@ -12,7 +12,7 @@
     opnsense_api_secret: "{{ api_secret }}"
     # Interface UUID for VLAN 20 (You verify this via API or GUI)
     # Usually 'optX' or the UUID. If unsure, use the GUI first.
-    interface_name: "opt2" # From rete.json: igc1_vlan20 is opt2
+    interface_name: "opt2" # From rete.json: gw-vlan20 is opt2
     
     reservations:
       - hostname: "talos-cp-01"
