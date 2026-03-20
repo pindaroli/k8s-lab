@@ -1,3 +1,6 @@
+# macOS System Files
+.DS_Store
+
 # Python Caches
 __pycache__/
 *.py[cod]
@@ -8,6 +11,7 @@ pindaroli-wildcard.key
 pindaroli-wildcard.crt
 
 # Ansible Secrets
+.ansible/
 ansible/vars/secrets.yml
 ansible/vars/proxmox_secrets.yml
 ansible/group_vars/all/secrets.yml

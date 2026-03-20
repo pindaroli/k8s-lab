@@ -1,8 +1,8 @@
 # Project GEMINI: Kubernetes Homelab Migration
 
 > [!IMPORTANT]
-> **Current Status**: **DATABASE MIGRATION COMPLETE**
-> Servarr Stack migrated to PostgreSQL (Radarr, Lidarr, Prowlarr).
+> **Current Status**: **NETWORK & DNS MODERNIZATION COMPLETE**
+> IP Inventory (`rete.json`) cleaned; iPad added; DNS/DHCP Master Sync verified.
 > **Active Goal**: Maintenance & Monitoring.
 
 ## 1. Quick Reference
