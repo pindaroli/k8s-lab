@@ -108,8 +108,15 @@
                     "pvid": 10
                 },
                 {
+                    "id": "1",
+                    "role": "Free / Unused",
+                    "mode": "ACCESS",
+                    "speed": "2.5Gbs",
+                    "pvid": 1
+                },
+                {
                     "id": "3",
-                    "role": "Mac Mini Mgmt (en0)",
+                    "role": "Free / Unused",
                     "mode": "ACCESS",
                     "speed": "2.5Gbs",
                     "pvid": 1
@@ -141,7 +148,7 @@
                 },
                 {
                     "id": "6",
-                    "role": "Mac Mini Client (en10)",
+                    "role": "Mac Studio Client (en0)",
                     "mode": "ACCESS",
                     "speed": "10Gbs",
                     "pvid": 20
@@ -316,16 +323,12 @@
             ]
         },
         {
-            "id": "mac mini",
-            "label": "Mac Mini M4 Pro",
+            "id": "mac studio",
+            "label": "Mac Studio M1 Max",
             "interfaces": [
                 {
-                    "interface": "en0 (1Gb Ethernet - Built-in)",
-                    "network": "Management (VLAN 1)",
-                    "ip": "192.168.100.100"
-                },
-                {
-                    "interface": "en10 (10Gb Thunderbolt)",
+                    "interface": "en0 (Ethernet - Built-in 10Gb)",
+                    "mac": "9c:76:0e:3a:7d:d5",
                     "network": "Client (VLAN 20)",
                     "ip": "10.10.20.100",
                     "gateway": "10.10.20.1",
@@ -333,9 +336,8 @@
                     "connected_to": "switch-25g-letto Port 6"
                 },
                 {
-                    "interface": "wifi",
-                    "description": "mac min wifi addresss",
-                    "mac": "d0:11:e5:14:09:3c",
+                    "interface": "wifi (en1)",
+                    "mac": "9c:76:0e:47:d9:81",
                     "network": "Client (VLAN 20)",
                     "ip": "10.10.20.101",
                     "gateway": "10.10.20.1",
@@ -554,7 +556,7 @@
             "type": "Tablet",
             "brand": "Apple",
             "model": "ipad pro 12.9 m2",
-            "mac": "4E:55:65:8B:8D:E6",
+            "mac": "4e:55:65:8b:8d:e6",
             "ip": "10.10.20.205",
             "network": "Client (VLAN 20)",
             "notes": "Static DHCP reservation."
