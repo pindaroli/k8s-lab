@@ -42,6 +42,7 @@ allowVolumeExpansion: true
 # NFS mount options
 mountOptions:
   - nfsvers=4.1
+  - resvport      # Usa porta privilegiata (<1024) richiesta da TrueNAS (export secure)
   - soft          # Sblocca il processo se il server non risponde
   - timeo=50      # Timeout di 5 secondi (in decisecondi)
   - retrans=3     # Riprova 3 volte
@@ -77,6 +78,7 @@ allowVolumeExpansion: true
 # NFS mount options
 mountOptions:
   - nfsvers=4.1
+  - resvport      # Usa porta privilegiata (<1024) richiesta da TrueNAS (export secure)
   - soft          # Sblocca il processo se il server non risponde
   - timeo=50      # Timeout di 5 secondi (in decisecondi)
   - retrans=3     # Riprova 3 volte
