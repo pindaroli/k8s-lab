@@ -1,12 +1,18 @@
 # Project GEMINI: Kubernetes Homelab Migration
 
 > [!IMPORTANT]
-> **Current Status**: **NETWORK & DNS MODERNIZATION COMPLETE**
-> IP Inventory (`rete.json`) cleaned; iPad added; DNS/DHCP Master Sync verified.
-> **Active Goal**: Maintenance & Monitoring.
+> **Current Status**: **VICTORIAMETRICS MONITORING OPERATIONAL**
+> Core stack deployed; Telegram alerting active; All app scrapers (Traefik, CNPG, Servarr) functional.
+> **Active Goal**: Ingress & External Access (Phase 5).
 
 ## 1. Quick Reference
-### Debbugging access policies
+### Monitoring (VictoriaMetrics)
+- **Namespace**: `monitoring` (Etichettato come `privileged` per node-exporter).
+- **Dashboard**: `victoria-monitoring-grafana` (Porta 3000).
+- **AlertManager**: Integrato con Telegram (Bot Lab).
+- **Scrapes**: Traefik (9100), CNPG (9187), Velero (8085), Servarr (Namespace `arr`).
+
+### Debugging access policies
 whenever an agent command fails for security reasons append it to security-issues.log + errore code and string
 ### Security Policies
 > [!CRITICAL]

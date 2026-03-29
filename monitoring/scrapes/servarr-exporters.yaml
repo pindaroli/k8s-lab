@@ -1,0 +1,222 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr-exporter
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: radarr-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: radarr-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: radarr-exporter
+    spec:
+      containers:
+        - name: exportarr
+          image: ghcr.io/prometheus-community/exportarr:v2.0.1
+          args: [ "radarr" ]
+          env:
+            - name: URL
+              value: "http://servarr-radarr.arr.svc.cluster.local:7878"
+            - name: APIKEY
+              value: "0fb8a980d549466585c98632b5275b47"
+            - name: PORT
+              value: "9150"
+          ports:
+            - name: metrics
+              containerPort: 9150
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { cpu: 100m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr-exporter
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: radarr-exporter
+    monitoring: "true"
+spec:
+  selector:
+    app.kubernetes.io/name: radarr-exporter
+  ports:
+    - name: metrics
+      port: 9150
+      targetPort: 9150
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lidarr-exporter
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: lidarr-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lidarr-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lidarr-exporter
+    spec:
+      containers:
+        - name: exportarr
+          image: ghcr.io/prometheus-community/exportarr:v2.0.1
+          args: [ "lidarr" ]
+          env:
+            - name: URL
+              value: "http://servarr-lidarr.arr.svc.cluster.local:8686"
+            - name: APIKEY
+              value: "ee6625f51dea47369a65a7ef53637ae1"
+            - name: PORT
+              value: "9150"
+          ports:
+            - name: metrics
+              containerPort: 9150
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { cpu: 100m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lidarr-exporter
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: lidarr-exporter
+    monitoring: "true"
+spec:
+  selector:
+    app.kubernetes.io/name: lidarr-exporter
+  ports:
+    - name: metrics
+      port: 9150
+      targetPort: 9150
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr-exporter
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: prowlarr-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prowlarr-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: prowlarr-exporter
+    spec:
+      containers:
+        - name: exportarr
+          image: ghcr.io/prometheus-community/exportarr:v2.0.1
+          args: [ "prowlarr" ]
+          env:
+            - name: URL
+              value: "http://servarr-prowlarr.arr.svc.cluster.local:9696"
+            - name: APIKEY
+              value: "fad287a6fe814e1b885f1ba0a8f95179"
+            - name: PORT
+              value: "9150"
+          ports:
+            - name: metrics
+              containerPort: 9150
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { cpu: 100m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prowlarr-exporter
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: prowlarr-exporter
+    monitoring: "true"
+spec:
+  selector:
+    app.kubernetes.io/name: prowlarr-exporter
+  ports:
+    - name: metrics
+      port: 9150
+      targetPort: 9150
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent-exporter
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: qbittorrent-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: qbittorrent-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: qbittorrent-exporter
+    spec:
+      containers:
+        - name: qbit-exporter
+          image: esity/qbit-exporter:latest
+          env:
+            - name: QBIT_URL
+              value: "http://servarr-qbittorrent-web.arr.svc.cluster.local:8080"
+            - name: QBIT_USERNAME
+              value: "admin"
+            - name: QBIT_PASSWORD
+              value: "admin"
+          ports:
+            - name: metrics
+              containerPort: 1234
+          resources:
+            requests: { cpu: 10m, memory: 32Mi }
+            limits: { cpu: 100m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-exporter
+  namespace: arr
+  labels:
+    app.kubernetes.io/name: qbittorrent-exporter
+    monitoring: "true"
+spec:
+  selector:
+    app.kubernetes.io/name: qbittorrent-exporter
+  ports:
+    - name: metrics
+      port: 1234
+      targetPort: 1234
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: servarr
+  namespace: monitoring
+  labels:
+    release: victoria-monitoring
+spec:
+  jobLabel: servarr
+  namespaceSelector:
+    matchNames:
+      - arr
+  selector:
+    matchLabels:
+      monitoring: "true"
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 1m
