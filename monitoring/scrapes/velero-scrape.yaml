@@ -1,0 +1,19 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: velero
+  namespace: monitoring
+  labels:
+    release: victoria-monitoring
+spec:
+  jobLabel: velero
+  namespaceSelector:
+    matchNames:
+      - velero
+  selector:
+    matchLabels:
+      component: velero
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 1m

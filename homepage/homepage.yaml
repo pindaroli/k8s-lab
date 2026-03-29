@@ -183,6 +183,10 @@ data:
             href: https://minio.pindaroli.org
             description: S3 Object Storage
             icon: minio.png
+        - Grafana:
+            href: https://grafana.pindaroli.org
+            description: Monitoring Dashboard
+            icon: grafana.png
 
     - "Remote Access":
         - Kasmweb:

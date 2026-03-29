@@ -157,6 +157,10 @@ data:
             href: https://minio-internal.pindaroli.org
             description: S3 Object Storage (Internal)
             icon: minio.png
+        - Grafana:
+            href: https://grafana-internal.pindaroli.org
+            description: Monitoring Dashboard (Internal)
+            icon: grafana.png
 
     - "Remote Access":
         - Kasmweb:

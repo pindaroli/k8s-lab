@@ -1,0 +1,444 @@
+# ============================================================
+# Victoria Metrics K8s Stack — Helm Values
+# Homelab: pindaroli / Talos Linux v1.12.0
+# Chart: vm/victoria-metrics-k8s-stack v0.72.5 (VM v1.138.0)
+# Namespace: monitoring
+# Storage: local-postgres (rancher.io/local-path) on talos-cp-03
+# Retention: 30 days
+# ============================================================
+
+global:
+  clusterLabel: pindaroli_homelab
+  cluster:
+    dnsDomain: cluster.local.
+
+fullnameOverride: "vm"
+
+# ============================================================
+# VM OPERATOR — gestisce tutte le CRD (VMSingle, VMAgent, etc.)
+# ============================================================
+victoria-metrics-operator:
+  enabled: true
+  crds:
+    plain: true
+    cleanup:
+      enabled: true
+      image:
+        repository: rancher/kubectl
+        pullPolicy: IfNotPresent
+  serviceMonitor:
+    enabled: true
+  operator:
+    disable_prometheus_converter: false
+
+# ============================================================
+# DEFAULT DASHBOARDS — dashboard prebuilt in Grafana
+# ============================================================
+defaultDashboards:
+  enabled: true
+  defaultTimezone: Europe/Rome
+  dashboards:
+    victoriametrics-vmalert:
+      enabled: true
+    victoriametrics-operator:
+      enabled: true
+    node-exporter-full:
+      enabled: true
+
+# ============================================================
+# DEFAULT RULES — alert rules prebuilt per K8s
+# ============================================================
+defaultRules:
+  create: true
+  groups:
+    etcd:
+      create: true
+    general:
+      create: true
+    kubeApiserver:
+      create: true
+    kubeApiserverAvailability:
+      create: true
+    kubeApiserverBurnrate:
+      create: true
+    kubeApiserverSlos:
+      create: true
+    kubelet:
+      create: true
+    kubePrometheusGeneral:
+      create: true
+    kubePrometheusNodeRecording:
+      create: true
+    kubernetesApps:
+      create: true
+    kubernetesResources:
+      create: true
+    kubernetesStorage:
+      create: true
+    kubernetesSystem:
+      create: true
+    kubeStateMetrics:
+      create: true
+    node:
+      create: true
+    vmagent:
+      create: true
+    vmsingle:
+      create: true
+    vmHealth:
+      create: true
+    alertmanager:
+      create: true
+
+# ============================================================
+# VMSINGLE — storage delle metriche (single-node mode)
+# Pinned su talos-cp-03 tramite nodeSelector
+# Upgrade path: VMSingle -> VMCluster quando PVE3 torna online
+# ============================================================
+vmsingle:
+  enabled: true
+  spec:
+    port: "8428"
+    retentionPeriod: "30d"
+    replicaCount: 1
+    # Pin su talos-cp-03 (IP: 10.10.20.143)
+    # Dati fisicamente su disco locale di questo nodo
+    nodeSelector:
+      kubernetes.io/hostname: talos-cp-03
+    # Toleration per permettere scheduling su control-plane nodes
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+    storage:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: local-postgres
+      resources:
+        requests:
+          storage: 20Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+# VMCluster DISABILITATO — abilitare in futuro con PVE3 online
+vmcluster:
+  enabled: false
+
+vmdistributed:
+  enabled: false
+
+# ============================================================
+# VMAGENT — scraping agent (raccoglie da tutti i nodi)
+# Invia metriche a VMSingle via remoteWrite
+# ============================================================
+vmagent:
+  enabled: true
+  spec:
+    port: "8429"
+    selectAllByDefault: true
+    scrapeInterval: 30s
+    externalLabels:
+      cluster: pindaroli_homelab
+    extraArgs:
+      promscrape.streamParse: "true"
+      promscrape.dropOriginalLabels: "true"
+    # Buffer locale per gestire downtime temporaneo di VMSingle
+    # (es. se talos-cp-03 viene riavviato)
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+
+# ============================================================
+# VMALERT — motore di valutazione delle regole di alerting
+# ============================================================
+vmalert:
+  enabled: true
+  spec:
+    port: "8080"
+    selectAllByDefault: true
+    evaluationInterval: 30s
+    extraArgs:
+      http.pathPrefix: "/"
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+
+# ============================================================
+# ALERTMANAGER — routing degli alert verso Telegram
+# Config Telegram verrà completata in Fase 4
+# Il token Telegram è in ansible/vars/secrets.yml (vault)
+# ============================================================
+alertmanager:
+  enabled: true
+  spec:
+    replicaCount: 1
+    port: "9093"
+    selectAllByDefault: true
+    image:
+      tag: v0.28.1
+    routePrefix: /
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+  useManagedConfig: false
+  # Configurazione Telegram (Fase 4): Notifiche attive
+  config:
+    route:
+      receiver: "telegram-homelab"
+      group_by: ["alertname", "namespace", "severity"]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+    receivers:
+      - name: "telegram-homelab"
+        telegram_configs:
+          - bot_token: "6548622283:AAHUfcvGWfj8LBdd_V4420uctNCKk3-D_Xs"
+            chat_id: 554585346
+            send_resolved: true
+            message: '{{ template "telegram.default.message" . }}'
+      #     - bot_token: <TOKEN_DA_VAULT>
+      #       chat_id: <CHAT_ID_DA_VAULT>
+      #       send_resolved: true
+      #       message: |
+      #         🚨 *{{ .CommonLabels.alertname }}*
+      #         Severity: {{ .CommonLabels.severity }}
+      #         Namespace: {{ .CommonLabels.namespace }}
+      #         {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}
+
+# ============================================================
+# GRAFANA — frontend dashboard
+# Admin password gestita tramite Secret K8s (non hardcoded)
+# Ingress verrà configurato in Fase 5
+# ============================================================
+grafana:
+  enabled: true
+  adminPassword: "" # Lasciare vuoto: la password viene dal secret 'grafana-admin-secret'
+  podSecurityContext:
+    fsGroup: 472
+    runAsGroup: 472
+    runAsUser: 472
+  admin:
+    existingSecret: "grafana-admin-secret"
+    userKey: admin-user
+    passwordKey: admin-password
+  sidecar:
+    datasources:
+      enabled: true
+      label: grafana_datasource
+      labelValue: "1"
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      folder: /var/lib/grafana/dashboards
+      defaultFolderName: default
+      multicluster: false
+  initChownData:
+    enabled: false
+  # Plugin VictoriaMetrics nativo (rimosso temporaneamente per problemi di rete)
+  plugins: []
+  # Persistenza Grafana (configurazioni dashboard, utenti, etc.)
+  persistence:
+    enabled: true
+    storageClassName: local-postgres
+    size: 5Gi
+  # nodeSelector per mettere Grafana sullo stesso nodo dei dati
+  nodeSelector:
+    kubernetes.io/hostname: talos-cp-03
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  # Ingress DISABILITATO — verrà configurato in Fase 5 con IngressRoute Traefik
+  ingress:
+    enabled: false
+  vmScrape:
+    enabled: true
+
+# ============================================================
+# NODE EXPORTER — metriche hardware nodi (CPU, RAM, Disk, Net)
+# ============================================================
+prometheus-node-exporter:
+  enabled: true
+  service:
+    labels:
+      jobLabel: node-exporter
+  extraArgs:
+    - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
+    - --collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|erofs|sysfs|tracefs)$
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  vmScrape:
+    enabled: true
+
+# ============================================================
+# KUBE STATE METRICS — stato risorse K8s (pod, deploy, PVC...)
+# ============================================================
+kube-state-metrics:
+  enabled: true
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  vmScrape:
+    enabled: true
+
+# ============================================================
+# KUBELET — metriche dei kubelet + cadvisor (container metrics)
+# ============================================================
+kubelet:
+  enabled: true
+  vmScrapes:
+    cadvisor:
+      enabled: true
+    probes:
+      enabled: true
+    resources:
+      enabled: true
+  vmScrape:
+    kind: VMNodeScrape
+    spec:
+      scheme: "https"
+      honorLabels: true
+      interval: "30s"
+      scrapeTimeout: "5s"
+      tlsConfig:
+        insecureSkipVerify: true
+        caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      metricRelabelConfigs:
+        - action: labeldrop
+          regex: (uid)
+        - action: labeldrop
+          regex: (id|name)
+        - action: drop
+          source_labels: [__name__]
+          regex: (rest_client_request_duration_seconds_bucket|rest_client_request_duration_seconds_sum|rest_client_request_duration_seconds_count)
+      relabelConfigs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - sourceLabels: [__metrics_path__]
+          targetLabel: metrics_path
+        - targetLabel: job
+          replacement: kubelet
+      honorTimestamps: false
+
+# ============================================================
+# KUBE API SERVER
+# ============================================================
+kubeApiServer:
+  enabled: true
+
+# ============================================================
+# KUBE CONTROLLER MANAGER
+# In Talos: ascolta su 10257 con TLS
+# ============================================================
+kubeControllerManager:
+  enabled: true
+  endpoints:
+    - 10.10.20.141  # talos-cp-01
+    - 10.10.20.143  # talos-cp-03
+  service:
+    enabled: true
+    port: 10257
+    targetPort: 10257
+  vmScrape:
+    spec:
+      jobLabel: jobLabel
+      namespaceSelector:
+        matchNames: []
+      endpoints:
+        - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          port: http-metrics
+          scheme: https
+          tlsConfig:
+            caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            insecureSkipVerify: true
+
+# ============================================================
+# KUBE SCHEDULER
+# In Talos: ascolta su 10259 con TLS
+# ============================================================
+kubeScheduler:
+  enabled: true
+  endpoints:
+    - 10.10.20.141  # talos-cp-01
+    - 10.10.20.143  # talos-cp-03
+  service:
+    enabled: true
+    port: 10259
+    targetPort: 10259
+  vmScrape:
+    spec:
+      jobLabel: jobLabel
+      namespaceSelector:
+        matchNames: []
+      endpoints:
+        - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+          port: http-metrics
+          scheme: https
+          tlsConfig:
+            caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            insecureSkipVerify: true
+
+# ============================================================
+# ETCD — in Talos è gestito internamente, metriche limitate
+# Disabilitato: Talos non espone etcd metrics esternamente
+# ============================================================
+kubeEtcd:
+  enabled: false
+
+# ============================================================
+# COREDNS — metriche DNS del cluster
+# ============================================================
+coreDns:
+  enabled: true
+  service:
+    enabled: true
+    port: 9153
+    targetPort: 9153
+    selector:
+      k8s-app: kube-dns
+
+# ============================================================
+# KUBE DNS — disabilitato, si usa coreDns
+# ============================================================
+kubeDns:
+  enabled: false
+
+# ============================================================
+# KUBE PROXY — disabilitato in Talos (usa kube-proxy integrato)
+# ============================================================
+kubeProxy:
+  enabled: false
