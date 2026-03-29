@@ -149,6 +149,13 @@ whenever an agent command fails for security reasons append it to security-issue
 - **Status**: Radarr/Lidarr/Prowlarr Migrated. Readarr Cancelled (Unstable).
 - **Privacy**: Transparent Xray Tunnel (Sidecar) for qBittorrent & Prowlarr.
 
+### Automation Stack (n8n)
+- **Namespace**: `n8n`
+- **Version**: `1.40.0`
+- **Database**: PostgreSQL (CloudNativePG) consolidated in `postgres-main` (cnpg-system).
+- **Status**: Migrated (Fresh Start).
+- **Access**: `https://n8n.pindaroli.org`.
+
 ### Storage Integration
 - **NFS CSI Driver**: `CSI-driver/`
 - **Shares**:

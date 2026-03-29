@@ -3,7 +3,7 @@
 
 image:
   repository: n8nio/n8n
-  tag: latest
+  tag: 1.40.0
   pullPolicy: Always
 
 # Database Configuration
@@ -37,10 +37,15 @@ main:
   # extraEnvVars must be a MAP for this chart
   extraEnvVars:
     DB_TYPE: postgresdb
-    DB_POSTGRESDB_HOST: postgres-n8n-rw
+    DB_POSTGRESDB_HOST: postgres-main-rw.cnpg-system.svc.cluster.local
     DB_POSTGRESDB_PORT: "5432"
     DB_POSTGRESDB_DATABASE: n8n
     DB_POSTGRESDB_USER: n8n
+    DB_POSTGRESDB_PASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: n8n-db-password
+          key: password
     N8N_EDITOR_BASE_URL: https://n8n.pindaroli.org
     N8N_WEBHOOK_URL: https://n8n.pindaroli.org
     WEBHOOK_URL: https://n8n.pindaroli.org
