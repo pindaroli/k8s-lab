@@ -33,7 +33,8 @@ La migrazione a VictoriaMetrics è stata completata con successo seguendo queste
 - Monitoraggio core (Kubelet, API, Scheduler) e hardware nodi attivo.
 
 ### Phase 3: Application Scrapes
-- **Scrapers**: Traefik, PostgreSQL, Velero, Blackbox.
+- **Scrapers**: Traefik, PostgreSQL (postgres-main), Velero, Blackbox.
+- **n8n**: Database metrics consolidated in `postgres-main` (cnpg-system).
 - **Servarr**: Exporters dedicati per Radarr, Lidarr, Prowlarr e qBittorrent nel namespace `arr`.
 
 ### Phase 4: Alerting (Telegram)

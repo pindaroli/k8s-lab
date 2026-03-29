@@ -232,7 +232,6 @@
                 "opnsense"
             ],
             "configuration_notes": [
-
                 "Kea DHCP is the active DHCP server. Ansible playbooks manage static DHCP reservations via the Kea API.",
                 "Enable 'Static route filtering' (Bypass firewall rules for traffic on the same interface) in Firewall > Settings > Advanced to support asymmetric routing with L3 Switch.",
                 "Create an 'ALLOW ALL' (Any to Any) Firewall Rule on the TRANSIT interface. Traffic from the L3 Switch is blocked by default without it.",
@@ -692,6 +691,21 @@
             "aliases": [
                 "backup"
             ]
+        }
+    ],
+    "applicazioni": [
+        {
+            "id": "n8n",
+            "label": "n8n Workflow Automation",
+            "version": "1.40.0",
+            "deployment": "Kubernetes (n8n namespace)",
+            "database": {
+                "cluster": "postgres-main",
+                "namespace": "cnpg-system",
+                "user": "n8n",
+                "host": "postgres-main-rw.cnpg-system.svc.cluster.local"
+            },
+            "status": "Migrated to postgres-main (Fresh Start)"
         }
     ]
 }

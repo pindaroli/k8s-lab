@@ -26,7 +26,14 @@ spec:
     initdb:
       database: app
       owner: app
-      
+
+  # Managed Users/Roles
+  managed:
+    roles:
+      - name: n8n
+        passwordSecret:
+          name: n8n-db-password
+
   # Monitoring
   monitoring:
     enablePodMonitor: true
