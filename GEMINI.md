@@ -143,10 +143,10 @@ whenever an agent command fails for security reasons append it to security-issue
 - **Helm Chart Path**: `/Users/olindo/prj/helm/charts/servarr` (External)
 - **Deploy Command**: `helm upgrade --install servarr /Users/olindo/prj/helm/charts/servarr -n arr -f servarr/arr-values.yaml`
 - **Config**: `servarr/`
-- **Services**: Jellyfin, *arr apps, qBittorrent.
-- **External Jellyfin**: LXC ID 2200 on PVE2 (Independent).
+- **Services**: Jellyfin (LXC), Radarr (Nightly), Lidarr (Nightly), Prowlarr (Stable), qBittorrent (5.1.4).
+- **External Jellyfin**: LXC ID 2200 on PVE3 (Migration Complete - v10.11.6).
 - **Database**: PostgreSQL (CloudNativePG) exposed on `10.10.20.57`.
-- **Status**: Radarr/Lidarr/Prowlarr Migrated. Readarr Cancelled (Unstable).
+- **Status**: Radarr/Lidarr/Prowlarr Migrated. qBittorrent v5.1.4 Secured.
 - **Privacy**: Transparent Xray Tunnel (Sidecar) for qBittorrent & Prowlarr.
 
 ### Automation Stack (n8n)
