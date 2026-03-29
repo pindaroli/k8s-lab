@@ -51,7 +51,7 @@ sonarr:
   
 qbittorrent:
   image:
-    tag: "5.1.2"  # was: 4.6.7
+    tag: "5.1.4"  # was: 5.1.2
   env:
     PUID: "1000"
     PGID: "1000"
@@ -223,7 +223,7 @@ flaresolverr:
 prowlarr:
   image:
     repository: ghcr.io/hotio/prowlarr
-    tag: "release"
+    tag: "latest" # changed from release to ensure stable hotio mapping
   env:
     PUID: "1000"
     PGID: "1000"
