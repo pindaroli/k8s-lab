@@ -197,6 +197,8 @@ qbittorrent:
 
 flaresolverr:
   enabled: true
+  image:
+    tag: v3.4.6
   env:
     # Force Chrome to disable IPv6 to avoid Cloudflare/Socket issues
     - name: FLARESOLVERR_RECAPTCHA_SOLVER
