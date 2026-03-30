@@ -37,6 +37,9 @@ whenever an agent command fails for security reasons append it to security-issue
 ### Operational Cheatsheet
 **Canonical Configuration Philosophy**
 > [!IMPORTANT]
+> **AI MUST EXPLAIN BEFORE EXECUTING**
+> Before executing ANY command, the AI MUST explicitly explain what the command does and why it is being executed.
+>
 > **ALWAYS update `talos-config/controlplane.yaml` (or worker.yaml) first.**
 > Do not rely on `talosctl patch` for permanent changes. Update the source of truth, then apply via `talosctl apply-config`.
 >
