@@ -323,11 +323,11 @@
         },
         {
             "id": "mac studio",
-            "label": "Mac Studio M1 Max",
+            "label": "Mac Studio M2 Ultra",
             "interfaces": [
                 {
                     "interface": "en0 (Ethernet - Built-in 10Gb)",
-                    "mac": "9c:76:0e:3a:7d:d5",
+                    "mac": "a4:fc:14:10:5b:80",
                     "network": "Client (VLAN 20)",
                     "ip": "10.10.20.100",
                     "gateway": "10.10.20.1",
@@ -336,12 +336,22 @@
                 },
                 {
                     "interface": "wifi (en1)",
-                    "mac": "9c:76:0e:47:d9:81",
+                    "mac": "a4:fc:14:14:a0:e7",
                     "network": "Client (VLAN 20)",
                     "ip": "10.10.20.101",
                     "gateway": "10.10.20.1",
                     "dns": "10.10.20.254",
                     "connected_to": "ap11000"
+                },
+                {
+                    "interface": "ethernet-2-letto (Emergency/Admin)",
+                    "mac": "TBD",
+                    "network": "Server (VLAN 10)",
+                    "ip": "10.10.10.99",
+                    "gateway": "none (Split-Routing)",
+                    "dns": "none",
+                    "connected_to": "switch-25g-letto Port 2",
+                    "notes": "Emergency Out-Of-Band access per gestire i server (10.10.10.x/24) indipendentemente dal routing L3 o da Internet. Gestito via dongle o porta nativa alternata."
                 }
             ]
         },
@@ -676,6 +686,14 @@
                 "db"
             ],
             "notes": "MetalLB Layer 2 VIP. External access for DBeaver/LAN."
+        },
+        {
+            "id": "qbittorrent-lb",
+            "label": "qBittorrent P2P LoadBalancer VIP",
+            "type": "VIP",
+            "ip": "10.10.20.60",
+            "role": "P2P Traffic Gateway",
+            "notes": "MetalLB Layer 2 VIP. Dedicated IP for qBittorrent without Xray proxy. Zero Trust Port Forwarding on OPNsense."
         },
         {
             "id": "pbs",

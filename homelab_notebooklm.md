@@ -1,6 +1,6 @@
 # Project GEMINI: Homelab Infrastructure Documentation
 > **Document Status**: Active / Source of Truth for LLM Context
-> **Last Updated**: 2026-02-16
+> **Last Updated**: 2026-04-06
 
 ## 1. Executive Summary
 Project GEMINI represents the migration and modernization of a personal homelab environment. The core objective is to move from legacy standalone deployments to a fully declarative, high-availability Kubernetes cluster running on **Talos Linux**, hosted on a 3-node **Proxmox VE** cluster. Major components include **TrueNAS Scale** for storage, **OPNsense** for routing/firewalling, and a **Servarr** media stack backed by **PostgreSQL**.
@@ -66,7 +66,9 @@ Major applications deployed via Helm and Flux (planned/in-progress).
 *   **Apps**: Radarr, Lidarr, Prowlarr, qBittorrent.
 *   **Readarr**: Cancelled due to instability.
 *   **Database**: Migrated from SQLite to **CloudNativePG** (PostgreSQL) cluster (`10.10.20.57`).
-*   **Privacy**: qBittorrent and Prowlarr traffic is routed through a transparent **Xray Sidecar** container connected to an Oracle Cloud (OCI) proxy for anonymity.
+*   **Privacy**: 
+    *   **qBittorrent**: Migrated to a dedicated **MetalLB LoadBalancer IP (10.10.20.60)** for direct, high-performance P2P traffic. Zero Trust isolation handles security via OPNsense.
+    *   **Prowlarr**: Traffic is routed through a transparent **Xray Sidecar** container connected to an Oracle Cloud (OCI) proxy for anonymity during indexer scraping.
 
 ### Ingress & Connectivity
 *   **Traefik**: Main Ingress Controller (`10.10.20.56`). Handles SSL termination (LetsEncrypt via Cert-Manager) and Routing.

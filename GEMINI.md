@@ -40,6 +40,10 @@ whenever an agent command fails for security reasons append it to security-issue
 > **AI MUST EXPLAIN BEFORE EXECUTING**
 > Before executing ANY command, the AI MUST explicitly explain what the command does and why it is being executed.
 >
+> **PRESERVE SYMMETRICAL ROUTING**
+> Always prioritize solutions that maintain **Symmetrical Routing via switch10g** (ONT/Xikestor) for inter-VLAN internal traffic (e.g., VLAN 20 to VLAN 10).
+> *Warning:* Alternative solutions (e.g., forcing internal traffic through OPNsense) are possible but strongly discouraged as they deviate from the chosen architecture, risking asymmetric routing issues and performance bottlenecks.
+>
 > **ALWAYS update `talos-config/controlplane.yaml` (or worker.yaml) first.**
 > Do not rely on `talosctl patch` for permanent changes. Update the source of truth, then apply via `talosctl apply-config`.
 >
