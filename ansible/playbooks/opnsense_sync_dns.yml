@@ -106,3 +106,4 @@
         cmd: "python3 scripts/push_kea_dhcp_to_opnsense.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
       args:
         stdin: "{{ dhcp_gen_result.stdout }}"
+

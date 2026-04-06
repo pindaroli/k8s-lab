@@ -92,7 +92,7 @@ Create VLANs: `1`, `10`, `20`, `30`.
 | **3** | Access | 1 | - | `1` | Free / Unused |
 | **4** | Trunk | 20 | `30` | `20` | Uplink to **AP11000** (Native 20, Tagged 30) |
 | **5** | Trunk | 1 | `10, 20, 30` | `1` | Uplink to **switch10g** (Port 8) |
-| **6** | Access | 20 | - | `20` | Mac Studio Client (en0) |
+| **6** | Access | 20 | - | `20` | Mac Studio M2 Ultra Client (en0) |
 
 ---
 
