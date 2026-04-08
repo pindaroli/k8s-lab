@@ -30,8 +30,8 @@ The foundation runs on **Proxmox VE 9.1** (Debian 13 Trixie).
 
 ### Compute Nodes
 *   **PVE (10.10.10.11)**: Host for TrueNAS (Storage) and PBS (Backup).
-*   **PVE2 (10.10.10.21)**: Compute Node. Runs Media Server (LXC) and Talos CP.
-*   **PVE3 (10.10.10.31)**: Compute Node. Runs Talos CP.
+*   **PVE2 (10.10.10.21)**: Compute Node. Runs Talos CP.
+*   **PVE3 (10.10.10.31)**: Compute Node. Runs Media Server (LXC) and Talos CP.
 
 ### Storage (TrueNAS Scale)
 *   **Role**: Central NAS providing NFS shares to Kubernetes and VM backups.
@@ -68,7 +68,7 @@ Major applications deployed via Helm and Flux (planned/in-progress).
 *   **Database**: Migrated from SQLite to **CloudNativePG** (PostgreSQL) cluster (`10.10.20.57`).
 *   **Privacy**: 
     *   **qBittorrent**: Migrated to a dedicated **MetalLB LoadBalancer IP (10.10.20.60)** for direct, high-performance P2P traffic. Zero Trust isolation handles security via OPNsense.
-    *   **Prowlarr**: Traffic is routed through a transparent **Xray Sidecar** container connected to an Oracle Cloud (OCI) proxy for anonymity during indexer scraping.
+    *   **Prowlarr**: Now uses direct networking for improved scraping reliability and reduced latency. No Xray sidecar is currently deployed for this service.
 
 ### Ingress & Connectivity
 *   **Traefik**: Main Ingress Controller (`10.10.20.56`). Handles SSL termination (LetsEncrypt via Cert-Manager) and Routing.
