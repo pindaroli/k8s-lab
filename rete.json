@@ -233,8 +233,7 @@
             ],
             "configuration_notes": [
                 "Kea DHCP is the active DHCP server. Ansible playbooks manage static DHCP reservations via the Kea API.",
-                "Enable 'Static route filtering' (Bypass firewall rules for traffic on the same interface) in Firewall > Settings > Advanced to support asymmetric routing with L3 Switch.",
-                "Create an 'ALLOW ALL' (Any to Any) Firewall Rule on the TRANSIT interface. Traffic from the L3 Switch is blocked by default without it.",
+                "Ensure 'Static route filtering' is DISABLED (Firewall > Settings > Advanced) to maintain stateful symmetry with the L3 Switch.",
                 "Ensure Unbound DNS is listening on TRANSIT interface (192.168.2.254) to allow infrastructure DNS resolution.",
                 "Ensure Unbound DNS is NOT listening on WAN interface to prevent external DNS amplification attacks."
             ],

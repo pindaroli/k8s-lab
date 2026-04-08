@@ -154,7 +154,7 @@ whenever an agent command fails for security reasons append it to security-issue
 - **External Jellyfin**: LXC ID 2200 on PVE3 (Migration Complete - v10.11.6).
 - **Database**: PostgreSQL (CloudNativePG) exposed on `10.10.20.57`.
 - **Status**: Radarr/Lidarr/Prowlarr Migrated. qBittorrent v5.1.4 Secured.
-- **Privacy**: Transparent Xray Tunnel (Sidecar) for qBittorrent & Prowlarr.
+- **Privacy**: Xray sidecars have been DEPRECATED/REMOVED for both qBittorrent and Prowlarr to ensure maximum performance and indexer connectivity. Traffic flows direct. qBittorrent is isolated via a dedicated LoadBalancer IP (10.10.20.60).
 
 ### Automation Stack (n8n)
 - **Namespace**: `n8n`
