@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: force-cleanup-n8n
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      nodeName: talos-cp-01
+      tolerations:
+      - operator: "Exists"
+      containers:
+      - name: cleanup
+        image: alpine
+        command:
+        - sh
+        - -c
+        - "echo 'Cleaning n8n remnants...' && rm -rf /data/pvc*n8n* && echo 'Done!'"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        hostPath:
+          path: /var/mnt/postgres
+      restartPolicy: Never
