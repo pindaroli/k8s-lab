@@ -362,7 +362,16 @@
                     "data_path": "~/.ollama/models",
                     "config_file": "/Users/olindo/Library/LaunchAgents/homebrew.mxcl.ollama.plist",
                     "notes": "Servizio installato localmente per inferenza AI distribuita."
+                },
+                {
+                    "id": "ollama-exporter",
+                    "label": "Ollama Metrics Exporter",
+                    "role": "Prometheus Metrics Bridge",
+                    "port": 11435,
+                    "config_file": "/Users/olindo/Library/LaunchAgents/org.norskhelsenett.ollama-metrics.plist",
+                    "notes": "Proxy trasparente (Go) per catturare metriche di inferenza, Metal GPU e VRAM su M2 Ultra."
                 }
+
             ]
         },
         {
