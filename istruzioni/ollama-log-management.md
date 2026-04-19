@@ -14,7 +14,7 @@ Abbiamo scelto di seguire le **Best Practice di macOS** (Apple Developer Guideli
     *Razionale*: In caso di malfunzionamento, è possibile distinguere immediatamente se il problema è nell'IA o nel monitoraggio.
 
 ## Rotazione Automatica (`newsyslog`)
-Per evitare che i log consumino tutto lo spazio disco (importante su un server AI con 128GB di RAM ma disco finito), abbiamo configurato il tool di sistema `newsyslog`.
+Per evitare che i log consumino tutto lo spazio disco (importante su un server AI con 64GB di RAM ma disco finito), abbiamo configurato il tool di sistema `newsyslog`.
 
 **Configurazione (`/etc/newsyslog.d/ollama.conf`):**
 - **Soglia di Rotazione**: 10 MegaByte (`10240 KB`).
