@@ -78,7 +78,7 @@ Major applications deployed via Helm and Flux (planned/in-progress).
 ### Local & Complementary Services (Off-Cluster)
 While the core workloads run on Kubernetes, specialized services are hosted on dedicated nodes for performance:
 *   **Jellyfin Media Server**: Runs as a privileged LXC on **PVE3** for hardware transcoding.
-*   **Ollama AI**: Hosted locally on **Mac Studio M2 Ultra** to leverage the 128GB Unified Memory for high-performance LLM inference.
+*   **Ollama AI**: Hosted locally on **Mac Studio M2 Ultra** to leverage the 64GB Unified Memory for high-performance LLM inference.
     -   **Endpoints**: Engine on `11434`, Metrics Exporter (Proxy) on `11435`.
     -   **Monitoring**: Gold Standard implementation using `ollama-metrics` (Go) and `VMStaticScrape` in VictoriaMetrics. Captures Token/Sec, Metal GPU saturation, and VRAM pressure.
     - **Persistence**: Managed via LaunchAgents (`homebrew.mxcl.ollama.plist` and `org.norskhelsenett.ollama-metrics.plist`). Optimized for Apple Silicon (`OLLAMA_NUM_GPU=1`) and persistent model loading (`OLLAMA_KEEP_ALIVE=-1`).
