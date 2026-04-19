@@ -352,6 +352,17 @@
                     "connected_to": "switch-25g-letto Port 2",
                     "notes": "Emergency Out-Of-Band access per gestire i server (10.10.10.x/24) indipendentemente dal routing L3 o da Internet. Gestito via dongle o porta nativa alternata."
                 }
+            ],
+            "services": [
+                {
+                    "id": "ollama",
+                    "label": "Ollama AI",
+                    "role": "Local LLM Inference",
+                    "port": 11434,
+                    "data_path": "~/.ollama/models",
+                    "config_file": "/Users/olindo/Library/LaunchAgents/homebrew.mxcl.ollama.plist",
+                    "notes": "Servizio installato localmente per inferenza AI distribuita."
+                }
             ]
         },
         {

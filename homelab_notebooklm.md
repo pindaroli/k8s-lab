@@ -1,6 +1,6 @@
 # Project GEMINI: Homelab Infrastructure Documentation
 > **Document Status**: Active / Source of Truth for LLM Context
-> **Last Updated**: 2026-04-06
+> **Last Updated**: 2026-04-19
 
 ## 1. Executive Summary
 Project GEMINI represents the migration and modernization of a personal homelab environment. The core objective is to move from legacy standalone deployments to a fully declarative, high-availability Kubernetes cluster running on **Talos Linux**, hosted on a 3-node **Proxmox VE** cluster. Major components include **TrueNAS Scale** for storage, **OPNsense** for routing/firewalling, and a **Servarr** media stack backed by **PostgreSQL**.
@@ -74,6 +74,12 @@ Major applications deployed via Helm and Flux (planned/in-progress).
 *   **Traefik**: Main Ingress Controller (`10.10.20.56`). Handles SSL termination (LetsEncrypt via Cert-Manager) and Routing.
 *   **MetalLB**: Provides Layer 2 LoadBalancer IPs for Traefik (`.56`) and Postgres (`.57`).
 *   **Cert-Manager**: Automates wildcard certificate (`*.pindaroli.org`) renewal via Cloudflare DNS challenge.
+
+### Local & Complementary Services (Off-Cluster)
+While the core workloads run on Kubernetes, specialized services are hosted on dedicated nodes for performance:
+*   **Jellyfin Media Server**: Runs as a privileged LXC on **PVE3** for hardware transcoding.
+*   **Ollama AI**: Hosted locally on **Mac Studio M2 Ultra** to leverage the 128GB Unified Memory for high-performance LLM inference (Port 11434). Data stored in `~/.ollama`, configuration managed via LaunchAgent plist in `/Users/olindo/Library/LaunchAgents/`.
+
 
 ---
 
