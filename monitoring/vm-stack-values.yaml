@@ -257,7 +257,7 @@ grafana:
       multicluster: false
   initChownData:
     enabled: false
-  # Plugin VictoriaMetrics nativo (rimosso temporaneamente per problemi di rete)
+  # Plugin VictoriaMetrics nativo
   plugins: []
   # Persistenza Grafana (configurazioni dashboard, utenti, etc.)
   persistence:

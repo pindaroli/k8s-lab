@@ -26,3 +26,11 @@ The disk `/var/mnt/postgres` was recently at 100%. Ensure the usage stays below 
 ### [ ] Clean Up Emergency Scripts
 - [ ] Delete `force-cleanup.yaml`
 - [ ] Delete `force-cleanup-n8n` job (if not already deleted)
+
+## Log Management (Future Phase)
+
+### [ ] Centrale Log (VictoriaLogs)
+Implementare un sistema di aggregazione log centralizzato nel cluster per:
+- **Ollama**: Tailing di `/opt/homebrew/var/log/ollama.log` via Promtail.
+- **Suite ARR**: Raccolta log dai pod Radarr, Lidarr, Prowlarr e qBittorrent.
+- **Configurazione**: Aggiunta log source in Grafana.
