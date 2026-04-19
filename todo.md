@@ -13,9 +13,14 @@ When PVE2 is back online and the Talos node `talos-cp-02` is `Ready`, perform th
 
 
 ### [ ] Consolidate n8n Database
-Migrate `n8n` from local SQLite storage to a dedicated database within the `postgres-main` cluster to follow the project's consolidation strategy.
-- Current Status: `n8n` is using SQLite in `n8n-config-pvc`.
-- Goal: Create user/db in `postgres-main` and update n8n deployment.
+## PVE2 Recovery (Pending Hardware)
+- [ ] Applicare configurazione Talos `bind-address=0.0.0.0` a `talos-cp-02` (10.10.20.142).
+  - Comando: `talosctl apply-config -n 10.10.20.142 -f talos-config/controlplane.yaml`
+
+### [ ] Consolidate n8n Database
+Migrate `n8n` from local SQLite storage to a dedicated database within the `postgres-main` cluster.
+- **Current Status**: `n8n` is using SQLite in `n8n-config-pvc`.
+- **Goal**: Create user/db in `postgres-main` and update n8n deployment.
 
 ## Maintenance & Monitoring
 

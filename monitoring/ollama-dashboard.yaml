@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ollama-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  ollama-dash.json: |
+    {
+      "title": "Ollama AI - Mac Studio M2 Ultra",
+      "uid": "ollama-inference-v1",
+      "tags": ["ollama", "premium"],
+      "timezone": "browser",
+      "refresh": "5s",
+      "schemaVersion": 38,
+      "panels": [
+        {
+          "id": 1,
+          "title": "Stato Servizio",
+          "type": "stat",
+          "targets": [{ "expr": "up{job=\"ollama\"}" }],
+          "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                { "type": "value", "options": { "1": { "text": "ATTIVO", "color": "green" }, "0": { "text": "OFFLINE", "color": "red" } } }
+              ]
+            }
+          }
+        },
+        {
+          "id": 2,
+          "title": "Modello in Uso",
+          "type": "stat",
+          "targets": [{ "expr": "count by (model) (ollama_model_loaded == 1)" }],
+          "gridPos": { "h": 4, "w": 6, "x": 4, "y": 0 },
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "fixed", "fixedColor": "cyan"},
+              "mappings": [{ "type": "special", "options": { "match": "null", "result": { "text": "NESSUNO", "color": "gray" } } }]
+            }
+          }
+        },
+        {
+          "id": 3,
+          "title": "Occupazione VRAM (Metal)",
+          "type": "gauge",
+          "targets": [{ "expr": "max(ollama_model_ram_mb{job=\"ollama\"})" }],
+          "gridPos": { "h": 8, "w": 14, "x": 10, "y": 0 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "megabytes",
+              "min": 0,
+              "max": 65536,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                    {"color": "green", "value": null},
+                    {"color": "yellow", "value": 45000},
+                    {"color": "red", "value": 58000}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 4,
+          "title": "Velocità di Risposta (Tokens/s)",
+          "type": "timeseries",
+          "targets": [
+            { "expr": "ollama_tokens_per_second{job=\"ollama\"}", "legendFormat": "Generazione" },
+            { "expr": "ollama_prompt_tokens_per_second{job=\"ollama\"}", "legendFormat": "Analisi Prompt" }
+          ],
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+          "options": {
+            "legend": { "displayMode": "table", "placement": "right" },
+            "tooltip": { "mode": "multi" }
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 20, "gradientMode": "opacity" },
+              "unit": "ops"
+            }
+          }
+        },
+        {
+          "id": 5,
+          "title": "Carico Memoria Storico",
+          "type": "timeseries",
+          "targets": [{ "expr": "ollama_model_ram_mb{job=\"ollama\"}", "legendFormat": "{{model}}" }],
+          "gridPos": { "h": 4, "w": 10, "x": 0, "y": 4 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "megabytes",
+              "custom": { "drawStyle": "bars", "fillOpacity": 50 }
+            }
+          }
+        }
+      ]
+    }
