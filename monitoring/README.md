@@ -9,6 +9,7 @@ monitoring/
 ├── README.md                        # Questo file
 ├── vm-stack-values.yaml             # Helm values (source of truth del deploy)
 ├── ingress.yaml                     # Traefik IngressRoute per Grafana
+├── ollama-static-scrape.yaml        # Monitoraggio Ollama (Mac Studio)
 ├── grafana-admin-secret.yaml.example # Template secret Grafana
 ├── scrapes/                         # VMServiceScrape per le app
 │   ├── traefik-scrape.yaml          # Traefik Metrics
@@ -34,6 +35,7 @@ La migrazione a VictoriaMetrics è stata completata con successo seguendo queste
 
 ### Phase 3: Application Scrapes
 - **Scrapers**: Traefik, PostgreSQL (postgres-main), Velero, Blackbox.
+- **Ollama**: Monitoraggio "Gold Standard" su Mac Studio M2 Ultra (via `VMStaticScrape`).
 - **n8n**: Database metrics consolidated in `postgres-main` (cnpg-system).
 - **Servarr**: Exporters dedicati per Radarr, Lidarr, Prowlarr e qBittorrent nel namespace `arr`.
 

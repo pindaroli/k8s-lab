@@ -1,0 +1,15 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: ollama-mac-studio
+  namespace: monitoring
+  labels:
+    release: victoria-monitoring
+spec:
+  jobName: ollama
+  targetEndpoints:
+    - targets: ["10.10.20.100:11435"]
+      labels:
+        instance: "mac-studio-m2"
+        hardware: "apple-silicon"
+        location: "on-prem"

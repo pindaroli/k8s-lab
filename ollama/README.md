@@ -1,45 +1,57 @@
-# Monitoraggio Ollama tramite Kubernetes / VictoriaMetrics
+# Monitoraggio Ollama "Gold Standard" (Mac Studio M2 Ultra)
 
-Questo modulo permette al server VictoriaMetrics installato nel tuo cluster Kubernetes di "uscire" dalla rete del cluster e andare a leggere le metriche del server Ollama installato fisicamente sul Mac Studio.
+Questo modulo gestisce l'integrazione di Ollama (in esecuzione sul Mac Studio) con lo stack di monitoraggio VictoriaMetrics nel cluster Kubernetes.
 
-## ⚠️ Prerequisito Fondamentale: Esposizione di Ollama sul Mac
-Per impostazione predefinita, Ollama sul Mac risponde **solo a localhost (127.0.0.1)** per motivi di sicurezza, quindi Kubernetes non riuscirebbe a raggiungerlo.
+## Architettura
+Per ottenere un'osservabilità professionale su Apple Silicon, non interroghiamo direttamente Ollama (che non espone `/metrics` nativamente), ma utilizziamo un **Exporter Proxy** scritto in Go.
 
-Devi modificare il file `.plist` che abbiamo censito poco fa:
-`/Users/olindo/Library/LaunchAgents/homebrew.mxcl.ollama.plist`
+1. **Ollama**: Gira sul Mac (porta 11434) ottimizzato per la GPU Metal.
+2. **Ollama-Metrics Exporter**: Agisce come proxy sulla porta **11435**. Intercetta le richieste di inferenza per calcolare Token al Secondo e monitora l'utilizzo reale della VRAM sul chip M2 Ultra.
+3. **VictoriaMetrics**: Utilizza un `VMStaticScrape` per leggere i dati direttamente dal Mac Studio.
 
-Nella sezione `EnvironmentVariables` (o aggiungendola se non c'è), devi assicurarti che Ollama ascolti su tutte le interfacce impostando `OLLAMA_HOST`:
+---
 
-```xml
-<key>EnvironmentVariables</key>
-<dict>
-    <key>OLLAMA_HOST</key>
-    <string>0.0.0.0:11434</string>
-</dict>
-```
+## Configurazione sul Mac Studio
 
-Dopo aver salvato la modifica sul Mac Studio, riavvia il servizio:
+### 1. LaunchAgents (Persistenza)
+Il ciclo di vita dei servizi è gestito da `launchd` tramite i seguenti file in `~/Library/LaunchAgents/`:
+
+- `homebrew.mxcl.ollama.plist`: Gestisce Ollama.
+    - **Variabili chiave**: `OLLAMA_HOST=0.0.0.0`, `OLLAMA_NUM_GPU=1` (Metal), `OLLAMA_NUM_PARALLEL=4`, `OLLAMA_KEEP_ALIVE=-1` (modelli sempre in memoria).
+- `org.norskhelsenett.ollama-metrics.plist`: Gestisce l'exporter.
+    - **Variabili chiave**: `PORT=11435`, `OLLAMA_HOST=http://localhost:11434`.
+
+### 2. Build dell'Exporter
+L'exporter è compilato nativamente sul Mac per garantire le massime prestazioni:
 ```bash
-brew services restart ollama
-# Verifica che sia raggiungibile da browser o rete LAN:
-# http://10.10.20.100:11434/metrics
+cd /Users/olindo/prj/ollama-metrics
+go build -o ollama-metrics main.go
 ```
 
 ---
 
-## Architettura dei manifest Kubernetes (`ollama-metrics.yaml`)
+## Integrazione Kubernetes
 
-Dato che Ollama non gira come Pod ma come server esterno hardware, in Kubernetes usiamo un trucco nativo:
-1. **Endpoints**: Hardcodiamo l'indirizzo esatto del Mac Studio (`10.10.20.100`) su porta `11434`.
-2. **Service Headless**: Creiamo un servizio standard che non ha selector (selettori per pod), ma si "aggancia" manualmente agli Endpoints fisici del punto 1.
-3. **ServiceMonitor**: È lo standard operativo supportato nativamente dal tuo VictoriaMetrics / vmagent. Questo dice allo scraper di scansionare il Servizio ogni 15 secondi all'inidirizzo `/metrics`.
+Abbiamo rimosso i vecchi Service/Endpoints manuali in favore di un approccio più moderno e pulito fornito dal VictoriaMetrics Operator.
 
-### Come applicare la configurazione nel cluster
-Torna nella directory principale del tuo progetto laboratorio (`/Users/olindo/prj/k8s-lab`) e lancia:
-
-```bash
-export KUBECONFIG=talos-config/kubeconfig
-kubectl apply -f ollama/ollama-metrics.yaml
+### VMStaticScrape
+Il file `monitoring/ollama-static-scrape.yaml` definisce il target esterno:
+```yaml
+spec:
+  targetEndpoints:
+    - targets: ["10.10.20.100:11435"]
+      labels:
+        instance: "mac-studio-m2"
+        hardware: "apple-silicon"
 ```
 
-Entro 1-2 minuti, aprendo Grafana, potrai aggiungere connessioni o cercare dashboard della community (es. dashboard ID `22036` o simili per Ollama) e vedrai le performance della GPU M2 Ultra!
+---
+
+## Visualizzazione (Grafana)
+
+Per visualizzare i dati, importa la dashboard della community o quella inclusa nell'exporter:
+- **Dashboard ID**: `25086` (Ollama LLM Inference)
+- **Metriche Chiave**:
+    - `ollama_tokens_per_second`: Velocità di generazione.
+    - `ollama_model_ram_mb`: Occupazione memoria unificata GPU.
+    - `ollama_prompt_tokens_total`: Volume di input.
