@@ -369,7 +369,7 @@
                     "role": "Prometheus Metrics Bridge",
                     "port": 11435,
                     "config_file": "/Users/olindo/Library/LaunchAgents/org.norskhelsenett.ollama-metrics.plist",
-                    "notes": "Proxy trasparente (Go) per catturare metriche di inferenza, Metal GPU e VRAM su M2 Ultra."
+                    "notes": "Proxy trasparente (Go) per catturare metriche di inferenza (VRAM/Metal). Log: ~/Library/Logs/ollama-monitoring/"
                 }
 
             ]

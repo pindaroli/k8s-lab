@@ -47,6 +47,12 @@ whenever an agent command fails for security reasons append it to security-issue
 > **ALWAYS update `talos-config/controlplane.yaml` (or worker.yaml) first.**
 > Do not rely on `talosctl patch` for permanent changes. Update the source of truth, then apply via `talosctl apply-config`.
 >
+> **MACOS LOGGING STRATEGY**
+> For services running on macOS (Mac Studio), prioritize the "newsyslog" strategy:
+> 1. Use `~/Library/Logs/<app-name>/` for persistent logs (macOS Standard).
+> 2. Separate component logs (e.g., `engine.log` vs `exporter.log`).
+> 3. MANDATORY: Configure `/etc/newsyslog.d/<app>.conf` for auto-rotation (10MB, gzip, 5 copies) to prevent disk saturation.
+>
 > **BEFORE MAJOR CHANGES (Upgrades, Refactors)**
 > **ALWAYS run a manual backup:** `velero backup create backup-pre-change-$(date +%F) --wait`
 > **After a command, ALWAYS check the response/logs and report the status.**
