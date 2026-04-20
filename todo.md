@@ -12,7 +12,6 @@ When PVE2 is back online and the Talos node `talos-cp-02` is `Ready`, perform th
    Lo slot `_cnpg_postgres_main_2` è stato rimosso manualmente per sbloccare lo spazio disco sul nodo 3. Verificare che venga ricreato automaticamente dall'operatore dopo aver tolto il fencing. In caso contrario, riavviare il Primary `postgres-main-3`.
 
 
-### [ ] Consolidate n8n Database
 ## PVE2 Recovery (Pending Hardware)
 - [ ] Applicare configurazione Talos `bind-address=0.0.0.0` a `talos-cp-02` (10.10.20.142).
   - Comando: `talosctl apply-config -n 10.10.20.142 -f talos-config/controlplane.yaml`
@@ -32,6 +31,11 @@ The disk `/var/mnt/postgres` was recently at 100%. Ensure the usage stays below 
 - [ ] Delete `force-cleanup.yaml`
 - [ ] Delete `force-cleanup-n8n` job (if not already deleted)
 
+### [ ] Grafana Session Duration
+Estendere la durata della sessione di login per evitare disconnessioni frequenti.
+- Configurazione in `monitoring/vm-stack-values.yaml` (sezione `grafana.ini`).
+- Parametri: `login_maximum_inactive_lifetime_duration` e `login_maximum_lifetime_duration`.
+
 ## Log Management (Future Phase)
 
 ### [ ] Centrale Log (VictoriaLogs)
@@ -39,3 +43,11 @@ Implementare un sistema di aggregazione log centralizzato nel cluster per:
 - **Ollama**: Tailing di `/opt/homebrew/var/log/ollama.log` via Promtail.
 - **Suite ARR**: Raccolta log dai pod Radarr, Lidarr, Prowlarr e qBittorrent.
 - **Configurazione**: Aggiunta log source in Grafana.
+
+## Ollama & Client Integration
+
+### [ ] Installazione AIChat su Nodi Lab
+Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttamente dai terminali dei nodi senza `curl`.
+- [ ] Installazione binario su `pve1`, `pve2`, `pve3`.
+- [ ] Installazione binario su `truenas` (SCALE).
+- [ ] Configurazione endpoint: `http://10.10.20.100:11434`.
