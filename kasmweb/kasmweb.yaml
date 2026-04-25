@@ -78,7 +78,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: kasmweb-ingress-route
+  name: kasmweb-ingress-external
   namespace: kasmweb
 spec:
   entryPoints:
@@ -94,5 +94,24 @@ spec:
       middlewares:
         - name: oauth2-auth
           namespace: traefik
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kasmweb-ingress-internal
+  namespace: kasmweb
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`kasmweb-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: kasmweb
+          port: 6901
+          scheme: https
+          serversTransport: skip-verify
   tls:
     secretName: pindaroli-wildcard-tls

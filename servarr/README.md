@@ -34,14 +34,14 @@ This deployment uses a **Hybrid Storage Strategy** to balance Performance and Ca
 
 Install servarr stack from local Helm chart:
 ```bash
-helm install servarr /Users/olindo/prj/helm/charts/servarr -n arr --create-namespace -f arr-values.yaml
+helm install servarr pindaroli/servarr -n arr --create-namespace -f arr-values.yaml
 ```
 
 ## Management
 
 - **List releases**: `helm list -n arr`
 - **Get values**: `helm get values servarr -n arr`
-- **Upgrade**: `helm upgrade servarr ../helm/charts/servarr -n arr -f servarr/arr-values.yaml`
+- **Upgrade**: `helm upgrade servarr pindaroli/servarr -n arr -f servarr/arr-values.yaml`
 - **Uninstall**: `helm uninstall servarr -n arr`
 
 ## Node Affinity Configuration
