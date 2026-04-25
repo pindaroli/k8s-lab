@@ -185,7 +185,7 @@ prowlarr:
               key: prowlarr-api-key
       ports:
         - name: metrics
-          containerPort: 9811
+          containerPort: 9707
       resources:
         requests:
           cpu: 10m
@@ -259,7 +259,7 @@ radarr:
               key: radarr-api-key
       ports:
         - name: metrics
-          containerPort: 9811
+          containerPort: 9707
       resources:
         requests:
           cpu: 10m
@@ -328,7 +328,7 @@ lidarr:
               key: lidarr-api-key
       ports:
         - name: metrics
-          containerPort: 9811
+          containerPort: 9707
       resources:
         requests:
           cpu: 10m
