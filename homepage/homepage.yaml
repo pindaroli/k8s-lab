@@ -113,6 +113,9 @@ data:
       "Infrastructure":
         style: row
         columns: 4
+      "Network Infrastructure":
+        style: row
+        columns: 4
       "Remote Access":
         style: row
         columns: 4
@@ -187,6 +190,24 @@ data:
             href: https://grafana.pindaroli.org
             description: Monitoring Dashboard
             icon: grafana.png
+
+    - "Network Infrastructure":
+        - Core Switch:
+            href: https://sw-core.pindaroli.org
+            description: Switch 10G (Main)
+            icon: mdi-switch
+        - Bed Room Switch:
+            href: https://sw-letto.pindaroli.org
+            description: Switch 2.5G (Letto)
+            icon: mdi-switch
+        - Server Switch:
+            href: https://sw-server.pindaroli.org
+            description: Switch 2.5G (Server)
+            icon: mdi-switch
+        - Access Point:
+            href: https://ap.pindaroli.org
+            description: Cudy AP11000
+            icon: mdi-wifi
 
     - "Remote Access":
         - Kasmweb:
@@ -571,5 +592,259 @@ spec:
     - name: minio-truenas-backend
       port: 9002
       scheme: http
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+# Core Switch (10G) su 192.168.2.1
+apiVersion: v1
+kind: Service
+metadata:
+  name: sw-core-external
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: sw-core-external-1
+  labels:
+    kubernetes.io/service-name: sw-core-external
+addressType: IPv4
+ports:
+  - port: 80
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "192.168.2.1"
+    conditions:
+      ready: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sw-core-route
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`sw-core.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: sw-core-external
+      port: 80
+    middlewares:
+    - name: oauth2-auth
+      namespace: traefik
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+# Bed Room Switch su 192.168.2.2
+apiVersion: v1
+kind: Service
+metadata:
+  name: sw-letto-external
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: sw-letto-external-1
+  labels:
+    kubernetes.io/service-name: sw-letto-external
+addressType: IPv4
+ports:
+  - port: 80
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "192.168.2.2"
+    conditions:
+      ready: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sw-letto-route
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`sw-letto.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: sw-letto-external
+      port: 80
+    middlewares:
+    - name: oauth2-auth
+      namespace: traefik
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+# Server Switch su 192.168.2.3
+apiVersion: v1
+kind: Service
+metadata:
+  name: sw-server-external
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: sw-server-external-1
+  labels:
+    kubernetes.io/service-name: sw-server-external
+addressType: IPv4
+ports:
+  - port: 80
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "192.168.2.3"
+    conditions:
+      ready: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sw-server-route
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`sw-server.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: sw-server-external
+      port: 80
+    middlewares:
+    - name: oauth2-auth
+      namespace: traefik
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+# Access Point Cudy su 10.10.20.103
+apiVersion: v1
+kind: Service
+metadata:
+  name: ap-external
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: ap-external-1
+  labels:
+    kubernetes.io/service-name: ap-external
+addressType: IPv4
+ports:
+  - port: 80
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "10.10.20.103"
+    conditions:
+      ready: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ap-route
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`ap.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: ap-external
+      port: 80
+      passHostHeader: false
+    middlewares:
+    - name: oauth2-auth
+      namespace: traefik
+  tls:
+    secretName: pindaroli-wildcard-tls---
+# Internal Routes (No OAuth2)
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sw-core-route-internal
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`sw-core-internal.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: sw-core-external
+      port: 80
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sw-letto-route-internal
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`sw-letto-internal.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: sw-letto-external
+      port: 80
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sw-server-route-internal
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`sw-server-internal.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: sw-server-external
+      port: 80
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ap-route-internal
+  namespace: default
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`ap-internal.pindaroli.org`)
+    kind: Rule
+    services:
+    - name: ap-external
+      port: 80
+      passHostHeader: false
   tls:
     secretName: pindaroli-wildcard-tls
