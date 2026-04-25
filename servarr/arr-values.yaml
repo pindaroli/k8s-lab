@@ -65,7 +65,33 @@ qbittorrent:
       memory: 8Gi  # Current usage is 12GB, requesting 8GB baseline
     limits:
       memory: 12Gi  # Allow burst to 12GB (fits in 15GB node)
-  extraContainers: []
+  extraContainers:
+    - name: qbittorrent-exporter
+      image: ghcr.io/martabal/qbittorrent-exporter:latest
+      env:
+        - name: QBITTORRENT_BASE_URL
+          value: "http://localhost:8080"
+        - name: QBITTORRENT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: servarr-api-keys
+              key: qbittorrent-user
+        - name: QBITTORRENT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: servarr-api-keys
+              key: qbittorrent-pass
+      ports:
+        - name: metrics
+          containerPort: 8090
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
+  monitoring:
+    enabled: true
   extraVolumes: []
   service:
     web:
@@ -133,8 +159,6 @@ prowlarr:
       memory: 256Mi
     limits:
       memory: 512Mi
-  extraContainers: []
-  extraVolumes: []
   persistence:
     enabled: true
     storageClass: csi-nfs-stripe-arr-conf
@@ -144,6 +168,30 @@ prowlarr:
     media:
       enabled: true
       existingClaim: servarr-jellyfin-media
+  monitoring:
+    enabled: true
+  extraContainers:
+    - name: exportarr
+      image: ghcr.io/onedr0p/exportarr:v1.6.0
+      args:
+        - prowlarr
+      env:
+        - name: URL
+          value: "http://localhost:9696"
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: servarr-api-keys
+              key: prowlarr-api-key
+      ports:
+        - name: metrics
+          containerPort: 9811
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
 
 jellyseerr:
   enabled: false
@@ -194,6 +242,30 @@ radarr:
     media:
       enabled: true
       existingClaim: servarr-jellyfin-media
+  monitoring:
+    enabled: true
+  extraContainers:
+    - name: exportarr
+      image: ghcr.io/onedr0p/exportarr:v1.6.0
+      args:
+        - radarr
+      env:
+        - name: URL
+          value: "http://localhost:7878"
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: servarr-api-keys
+              key: radarr-api-key
+      ports:
+        - name: metrics
+          containerPort: 9811
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
 
 readarr:
   enabled: false
@@ -239,5 +311,29 @@ lidarr:
     media:
       enabled: true
       existingClaim: servarr-jellyfin-media
+  monitoring:
+    enabled: true
+  extraContainers:
+    - name: exportarr
+      image: ghcr.io/onedr0p/exportarr:v1.6.0
+      args:
+        - lidarr
+      env:
+        - name: URL
+          value: "http://localhost:8686"
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: servarr-api-keys
+              key: lidarr-api-key
+      ports:
+        - name: metrics
+          containerPort: 9811
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
 
 
