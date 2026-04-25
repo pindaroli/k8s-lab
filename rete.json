@@ -530,8 +530,7 @@
             "role": "Access Point",
             "aliases": [
                 "cudy",
-                "wifi",
-                "ap"
+                "wifi"
             ],
             "management_ip": "10.10.20.103",
             "gateway": "10.10.20.1",
@@ -689,7 +688,8 @@
                 "n8n",
                 "n8n-internal",
                 "grafana",
-                "grafana-internal"
+                "grafana-internal",
+                "ap"
             ],
             "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
         },

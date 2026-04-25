@@ -65,6 +65,9 @@ data:
       "Infrastructure":
         style: row
         columns: 4
+      "Network Infrastructure":
+        style: row
+        columns: 4
       "Remote Access":
         style: row
         columns: 4
@@ -142,11 +145,11 @@ data:
 
     - "Infrastructure":
         - Truenas:
-            href: https://nas-internal.pindaroli.org
+            href: https://10.10.10.50
             description: TrueNAS server (Internal)
             icon: https://www.svgrepo.com/show/331613/truenas.svg
         - OPNsense:
-            href: https://opnsense.pindaroli.org
+            href: https://10.10.20.254
             description: OPNsense firewall (Direct IP)
             icon: opnsense.png
         - Proxmox:
@@ -161,6 +164,24 @@ data:
             href: https://grafana-internal.pindaroli.org
             description: Monitoring Dashboard (Internal)
             icon: grafana.png
+
+    - "Network Infrastructure":
+        - Core Switch:
+            href: http://192.168.2.1
+            description: Switch 10G (LAN)
+            icon: mdi-switch
+        - Bed Room Switch:
+            href: http://192.168.2.2
+            description: Switch 2.5G (LAN)
+            icon: mdi-switch
+        - Server Switch:
+            href: http://192.168.2.3
+            description: Switch 2.5G (LAN)
+            icon: mdi-switch
+        - Access Point:
+            href: http://10.10.20.103
+            description: Cudy AP11000 (LAN)
+            icon: mdi-wifi
 
     - "Remote Access":
         - Kasmweb:
