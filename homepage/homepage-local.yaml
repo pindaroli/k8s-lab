@@ -56,7 +56,7 @@ data:
       "Kubernetes Services":
         style: row
         columns: 4
-      "Media Services":
+      "AI services":
         style: row
         columns: 4
       "Arr Services":
@@ -107,7 +107,13 @@ data:
             description: Traefik reverse proxy dashboard
             icon: traefik.png
 
-    - "Media Services":
+    - "AI services":
+        - n8n:
+            href: https://n8n.pindaroli.org
+            description: Workflow automation platform
+            icon: n8n.png
+
+    - "Arr Services":
         - Jellyfin:
             href: https://jellyfin-internal.pindaroli.org
             description: Media server (Internal)
@@ -116,12 +122,6 @@ data:
             href: https://qbittorrent-internal.pindaroli.org
             description: BitTorrent client (Internal)
             icon: qbittorrent.png
-        - n8n:
-            href: https://n8n.pindaroli.org
-            description: Workflow automation platform
-            icon: n8n.png
-
-    - "Arr Services":
         - Radarr:
             href: https://radarr-internal.pindaroli.org
             description: Movie management (Internal)
@@ -181,7 +181,7 @@ data:
 
     - "Remote Access":
         - Kasmweb:
-            href: https://kasmweb.pindaroli.org
+            href: https://kasmweb-internal.pindaroli.org
             description: Goto Jumphost
             icon:  mdi-monitor-dashboard      
 ---

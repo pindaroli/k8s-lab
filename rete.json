@@ -689,7 +689,9 @@
                 "n8n-internal",
                 "grafana",
                 "grafana-internal",
-                "ap"
+                "ap",
+                "kasmweb",
+                "kasmweb-internal"
             ],
             "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
         },

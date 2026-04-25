@@ -153,8 +153,8 @@ whenever an agent command fails for security reasons append it to security-issue
 
 ### Media Stack (Servarr)
 - **Namespace**: `arr`
-- **Helm Chart Path**: `/Users/olindo/prj/helm/charts/servarr` (External)
-- **Deploy Command**: `helm upgrade --install servarr /Users/olindo/prj/helm/charts/servarr -n arr -f servarr/arr-values.yaml`
+- **Helm Chart Path**: `pindaroli/servarr` (Official Repo)
+- **Deploy Command**: `helm upgrade --install servarr pindaroli/servarr -n arr -f servarr/arr-values.yaml`
 - **Config**: `servarr/`
 - **Services**: Jellyfin (LXC), Radarr (Nightly), Lidarr (Nightly), Prowlarr (Stable), qBittorrent (5.1.4).
 - **External Jellyfin**: LXC ID 2200 on PVE3 (Migration Complete - v10.11.6).
