@@ -127,10 +127,6 @@ data:
     # Empty bookmarks list
   services.yaml: |
     - "Kubernetes Services":
-        - Kubernetes Dashboard:
-            href: https://dashboard.pindaroli.org
-            description: Kubernetes cluster management dashboard
-            icon: kubernetes-dashboard.png
         - Traefik Dashboard:
             href: https://traefik-dash.pindaroli.org
             description: Traefik reverse proxy dashboard
