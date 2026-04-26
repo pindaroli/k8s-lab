@@ -35,3 +35,5 @@ secrets/
 cert-manager/cloudflare-token-secret.yaml
 __pycache__/
 downloads/plugins
+# Tdarr
+tdarr/node/

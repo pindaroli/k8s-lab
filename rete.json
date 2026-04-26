@@ -323,6 +323,12 @@
         {
             "id": "mac studio",
             "label": "Mac Studio M2 Ultra",
+            "hostname": "olindo-macstudio",
+            "aliases": [
+                "olindo-macstudio"
+            ],
+            "domain": "pindaroli.org",
+            "ip": "10.10.20.100",
             "interfaces": [
                 {
                     "interface": "en0 (Ethernet - Built-in 10Gb)",
@@ -693,7 +699,9 @@
                 "kasmweb",
                 "kasmweb-internal",
                 "prefect",
-                "prefect-internal"
+                "prefect-internal",
+                "tdarr",
+                "tdarr-internal"
             ],
             "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
         },

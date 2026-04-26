@@ -135,8 +135,12 @@ data:
             icon: lidarr.png
         - Prowlarr:
             href: https://prowlarr-internal.pindaroli.org
-            description: Indexer management (Internal)
+            description: Indexer management
             icon: prowlarr.png
+        - Tdarr:
+            href: https://tdarr-internal.pindaroli.org
+            description: Audio/Video Library Transcoder
+            icon: tdarr.png
         - Calibre-web:
             href: https://calibre-web.pindaroli.org
             description: Web-based ebook library management
