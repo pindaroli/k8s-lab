@@ -51,7 +51,7 @@ sonarr:
   
 qbittorrent:
   image:
-    tag: "5.1.4"  # was: 5.1.2
+    tag: "5.1.4-r3-ls451"
   env:
     PUID: "1000"
     PGID: "1000"
@@ -141,7 +141,7 @@ flaresolverr:
 prowlarr:
   image:
     repository: ghcr.io/hotio/prowlarr
-    tag: "latest" # changed from release to ensure stable hotio mapping
+    tag: "release-2.3.5.5327"
   env:
     PUID: "1000"
     PGID: "1000"
@@ -172,7 +172,7 @@ prowlarr:
     enabled: true
   extraContainers:
     - name: exportarr
-      image: ghcr.io/onedr0p/exportarr:v1.6.0
+      image: ghcr.io/onedr0p/exportarr:v2.3.0
       args:
         - prowlarr
       env:
@@ -214,7 +214,7 @@ bazarr:
 radarr:
   image:
     repository: ghcr.io/hotio/radarr
-    tag: nightly
+    tag: release-6.1.1.10360
     pullPolicy: IfNotPresent
   env:
     PUID: "1000"
@@ -246,7 +246,7 @@ radarr:
     enabled: true
   extraContainers:
     - name: exportarr
-      image: ghcr.io/onedr0p/exportarr:v1.6.0
+      image: ghcr.io/onedr0p/exportarr:v2.3.0
       args:
         - radarr
       env:
@@ -283,7 +283,7 @@ readarr:
 lidarr:
   image:
     repository: ghcr.io/hotio/lidarr
-    tag: nightly
+    tag: release-3.1.0.4875
     pullPolicy: IfNotPresent
   env:
     PUID: "1000"
@@ -315,7 +315,7 @@ lidarr:
     enabled: true
   extraContainers:
     - name: exportarr
-      image: ghcr.io/onedr0p/exportarr:v1.6.0
+      image: ghcr.io/onedr0p/exportarr:v2.3.0
       args:
         - lidarr
       env:
