@@ -233,6 +233,13 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: "home,home-internal.pindaroli.org"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           ports:
             - name: http
               containerPort: 3000
