@@ -1,0 +1,35 @@
+# Global configuration for images
+global:
+  prefect:
+    image:
+      prefectTag: 3.6.28-python3.11
+
+server:
+  # Base configuration for the API
+  apiBasePath: "/api"
+  
+  uiConfig:
+    # URL used by the UI to connect to the API. 
+    # Must be the external URL if accessed via Ingress.
+    prefectUiApiUrl: "https://prefect-internal.pindaroli.org/api"
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+# Disable the internal postgresql subchart as we use CloudNativePG
+postgresql:
+  enabled: false
+
+# External Database connection configuration
+secret:
+  create: true
+  username: "prefect"
+  password: "prefect_secure_password"
+  host: "10.10.20.57"
+  port: "5432"
+  database: "prefect_db"

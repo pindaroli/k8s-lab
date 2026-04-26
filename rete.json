@@ -691,7 +691,9 @@
                 "grafana-internal",
                 "ap",
                 "kasmweb",
-                "kasmweb-internal"
+                "kasmweb-internal",
+                "prefect",
+                "prefect-internal"
             ],
             "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
         },
@@ -745,6 +747,21 @@
                 "host": "postgres-main-rw.cnpg-system.svc.cluster.local"
             },
             "status": "Migrated to postgres-main (Fresh Start)"
+        },
+        {
+            "id": "prefect",
+            "label": "Prefect Orchestrator",
+            "version": "3.6.28",
+            "deployment": "Kubernetes (prefect namespace)",
+            "port": 4200,
+            "database": {
+                "cluster": "postgres-main",
+                "namespace": "cnpg-system",
+                "user": "prefect",
+                "host": "10.10.20.57",
+                "note": "Temporaneamente su LoadBalancer IP per bypassare problemi overlay (Nodo k2 offline)"
+            },
+            "status": "Active"
         }
     ]
 }
