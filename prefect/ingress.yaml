@@ -1,0 +1,36 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prefect-ingress-external
+  namespace: prefect
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`prefect.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: prefect-server
+          port: 4200
+      middlewares:
+        - name: oauth2-auth
+          namespace: default
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prefect-ingress-internal
+  namespace: prefect
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`prefect-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: prefect-server
+          port: 4200
+  tls:
+    secretName: pindaroli-wildcard-tls

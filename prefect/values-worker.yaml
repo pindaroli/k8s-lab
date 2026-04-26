@@ -1,0 +1,9 @@
+worker:
+  # Specifichiamo che usiamo un server locale (non Cloud)
+  apiConfig: selfHostedServer
+  config:
+    # Nome del pool a cui il worker deve iscriversi
+    workPool: "k8s-pool"
+  selfHostedServerApiConfig:
+    # URL stabile via Traefik per bypassare problemi di rete overlay
+    apiUrl: "https://prefect-internal.pindaroli.org/api"

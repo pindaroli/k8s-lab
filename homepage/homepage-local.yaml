@@ -71,6 +71,9 @@ data:
       "Remote Access":
         style: row
         columns: 4
+      "GitOps":
+        style: row
+        columns: 4
   widgets.yaml: |
     - kubernetes:
         cluster:
@@ -184,6 +187,12 @@ data:
             href: https://kasmweb-internal.pindaroli.org
             description: Goto Jumphost
             icon:  mdi-monitor-dashboard      
+
+    - "GitOps":
+        - Prefect Console:
+            href: https://prefect-internal.pindaroli.org
+            description: Workflow & Task Orchestrator
+            icon: mdi-api
 ---
 apiVersion: v1
 kind: Service

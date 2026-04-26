@@ -119,6 +119,9 @@ data:
       "Remote Access":
         style: row
         columns: 4
+      "GitOps":
+        style: row
+        columns: 4
   custom.css: |
     /* Custom CSS */
   custom.js: |
@@ -209,7 +212,13 @@ data:
         - Kasmweb:
             href: https://kasmweb.pindaroli.org
             description: Goto Jumphost
-            icon:  mdi-monitor-dashboard      
+            icon: mdi-monitor-dashboard
+
+    - "GitOps":
+        - Prefect Console:
+            href: https://prefect.pindaroli.org
+            description: Workflow & Task Orchestrator
+            icon: mdi-api
   widgets.yaml: |
     - kubernetes:
         cluster:
@@ -281,7 +290,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "home.pindaroli.org"
+              value: "home,home.pindaroli.org"
           ports:
             - name: http
               containerPort: 3000
