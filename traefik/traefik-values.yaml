@@ -37,6 +37,10 @@ ports:
     exposedPort: 443
     nodePort: 30001
 
+  tdarr-api:
+    port: 8266
+    exposedPort: 8266
+
 # Enables the dashboard in Secure Mode
 api:
   dashboard: true

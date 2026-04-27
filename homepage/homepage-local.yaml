@@ -138,9 +138,12 @@ data:
             description: Indexer management
             icon: prowlarr.png
         - Tdarr:
-            href: https://tdarr-internal.pindaroli.org
-            description: Audio/Video Library Transcoder
             icon: tdarr.png
+            href: http://10.10.20.61:8267
+            description: Audio/Video Library Transcoder
+            widget:
+              type: tdarr
+              url: http://10.10.20.61:8267
         - Calibre-web:
             href: https://calibre-web.pindaroli.org
             description: Web-based ebook library management

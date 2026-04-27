@@ -719,6 +719,21 @@
             "notes": "MetalLB Layer 2 VIP. External access for DBeaver/LAN."
         },
         {
+            "id": "tdarr-api",
+            "label": "Tdarr API Service",
+            "ip": "10.10.20.61",
+            "hostname": "tdarr-api",
+            "domain": "pindaroli.org",
+            "services": [
+                {
+                    "id": "tdarr-api",
+                    "port": 8266,
+                    "protocol": "HTTP"
+                }
+            ],
+            "notes": "Direct access to Tdarr API via MetalLB VIP (10.10.20.61:8266). Bypasses Traefik."
+        },
+        {
             "id": "qbittorrent-lb",
             "label": "qBittorrent P2P LoadBalancer VIP",
             "type": "VIP",
