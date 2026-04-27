@@ -1,0 +1,24 @@
+{
+  "nodeName": "MacStudio-Node",
+  "serverURL": "http://10.10.20.61:8266",
+  "serverIP": "10.10.20.61",
+  "serverPort": "8266",
+  "handbrakePath": "/opt/homebrew/bin/HandBrakeCLI",
+  "ffmpegPath": "",
+  "mkvpropeditPath": "/opt/homebrew/bin/mkvpropedit",
+  "pathTranslators": [
+    {
+      "server": "",
+      "node": ""
+    }
+  ],
+  "nodeType": "mapped",
+  "unmappedNodeCache": "/Users/olindo/prj/k8s-lab/tdarr/unmappedNodeCache",
+  "logLevel": "INFO",
+  "priority": -1,
+  "cronPluginUpdate": "",
+  "apiKey": "",
+  "maxLogSizeMB": 10,
+  "pollInterval": 2000,
+  "startPaused": false
+}
