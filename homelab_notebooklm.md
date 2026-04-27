@@ -1,6 +1,6 @@
 # Project GEMINI: Homelab Infrastructure Documentation
 > **Document Status**: Active / Source of Truth for LLM Context
-> **Last Updated**: 2026-04-19
+> **Last Updated**: 2026-04-27 (Post-Cluster Recovery)
 
 ## 1. Executive Summary
 Project GEMINI represents the migration and modernization of a personal homelab environment. The core objective is to move from legacy standalone deployments to a fully declarative, high-availability Kubernetes cluster running on **Talos Linux**, hosted on a 3-node **Proxmox VE** cluster. Major components include **TrueNAS Scale** for storage, **OPNsense** for routing/firewalling, and a **Servarr** media stack backed by **PostgreSQL**.
@@ -48,14 +48,27 @@ The foundation runs on **Proxmox VE 9.1** (Debian 13 Trixie).
 The application layer runs on a **Talos Linux** cluster (Version 1.12.0), treating the OS as immutable infrastructure.
 
 ### Cluster Nodes
-*   **Control Plane 01**: `10.10.20.141` (VM on PVE)
-*   **Control Plane 02**: `10.10.20.142` (VM on PVE2)
-*   **Control Plane 03**: `10.10.20.143` (VM on PVE3)
-*   **Virtual IP (VIP)**: `10.10.20.55` (High Availability Endpoint for API)
+*   **Control Plane 01** (`talos-cp-01`): `10.10.20.141` — VM 2100 on PVE1. ✅ Ready.
+*   **Control Plane 02** (`talos-cp-02`): `10.10.20.142` — VM 2300 on PVE2. ⚠️ **In manutenzione** (PVE2 offline). Da reinstallare via fresh ISO Talos quando PVE2 torna.
+*   **Control Plane 03** (`talos-cp-03`): `10.10.20.143` — VM 3200 on PVE3. ✅ Ready.
+*   **Virtual IP (VIP)**: `10.10.20.55` (HA Endpoint per API)
+
+> **Architettura**: Tutti i nodi sono **iper-convergenti** (Master + Worker). Non esistono nodi worker dedicati. Il file `worker.yaml` è un residuo da rimuovere.
 
 ### Management
-*   **Source of Truth**: `talos-config/` directory contains `controlplane.yaml` and `worker.yaml`.
-*   **Operations**: Managed via `talosctl`. No SSH access to nodes (API only).
+*   **Source of Truth**: `talos-config/` directory.
+    *   `controlplane.yaml` → CP01 (`.141`)
+    *   `controlplane-3200.yaml` → CP03 (`.143`)
+    *   `controlplane-cp02.yaml` → Da creare quando PVE2 torna online.
+*   **DNS**: Tutti i nodi CP usano `10.10.20.1` (OPNsense) come nameserver primario per risoluzione interna.
+*   **Operations**: Managed via `talosctl`. No SSH access (API only).
+
+### Procedura Rientro CP02 (quando PVE2 torna)
+1. Boot VM 2300 da ISO Talos v1.12.0.
+2. `sed 's/10.10.20.141/10.10.20.142/g' talos-config/controlplane.yaml > talos-config/controlplane-cp02.yaml`
+3. `talosctl apply-config -n <IP_DHCP> --file talos-config/controlplane-cp02.yaml --insecure`
+4. CNPG ricostruisce automaticamente `postgres-main-2` replica.
+5. Pulire i PV orfani: `kubectl delete pv pvc-052584c6-... pvc-ebe1187c-...`
 
 ---
 
@@ -71,9 +84,22 @@ Major applications deployed via Helm and Flux (planned/in-progress).
     *   **Prowlarr**: Now uses direct networking for improved scraping reliability and reduced latency. No Xray sidecar is currently deployed for this service.
 
 ### Ingress & Connectivity
-*   **Traefik**: Main Ingress Controller (`10.10.20.56`). Handles SSL termination (LetsEncrypt via Cert-Manager) and Routing.
-*   **MetalLB**: Provides Layer 2 LoadBalancer IPs for Traefik (`.56`) and Postgres (`.57`).
-*   **Cert-Manager**: Automates wildcard certificate (`*.pindaroli.org`) renewal via Cloudflare DNS challenge.
+*   **Traefik**: Main Ingress Controller (`10.10.20.56`). Gestisce SSL termination e routing. Usa solo **IngressRoute CRD** (no standard Ingress K8s).
+*   **MetalLB**: LoadBalancer IPs assegnati:
+    *   `10.10.20.56` → Traefik VIP
+    *   `10.10.20.57` → PostgreSQL CNPG (postgres-main)
+    *   `10.10.20.60` → qBittorrent (dedicato)
+    *   `10.10.20.61` → Tdarr Server API
+*   **Cert-Manager**: Rinnovo automatico wildcard `*.pindaroli.org` via Cloudflare DNS-01. **NOTA**: Il secret TLS va propagato manualmente in ogni namespace che ne ha bisogno (`arr`, `monitoring`, `oauth2-proxy`, `kasmweb`). Cert-manager crea il secret solo nei namespace dove esiste la risorsa `Certificate`.
+
+### Nuovi Servizi Deployati (2026-04-27)
+*   **Prefect** (namespace `prefect`): Orchestratore di workflow. Server + Kubernetes Worker deployati via Helm. Database su `postgres-main` (CNPG). Accessibile su `https://prefect-internal.pindaroli.org`.
+*   **Tdarr** (namespace `tdarr`): Media transcoding. Architettura ibrida:
+    *   **Server**: Da deployare in K8s (in sospeso).
+    *   **Node**: Gira su **Mac Studio** (`10.10.20.100`) per accelerazione hardware Apple VideoToolbox.
+    *   **LB IP**: `10.10.20.61` (MetalLB pool `tdarr-api-pool`).
+    *   **IngressRoute**: `tdarr-internal.pindaroli.org` → port 8267.
+*   **Kasmweb** (namespace `kasmweb`): Desktop remoto containerizzato. Immagine custom `olindo/almalinux-9-oli-desktop:latest`. Accessibile su `https://kasmweb.pindaroli.org` (OAuth2) e `https://kasmweb-internal.pindaroli.org`.
 
 ### Local & Complementary Services (Off-Cluster)
 While the core workloads run on Kubernetes, specialized services are hosted on dedicated nodes for performance:
@@ -94,8 +120,33 @@ While the core workloads run on Kubernetes, specialized services are hosted on d
 *   **Source of Truth**: The `rete.json` file is the master record for all IP addresses, MAC addresses, and VLAN assignments.
 
 ## 7. Known Issues & Pending Tasks
-*   **PVE3 Recovery**: Node was offline for hardware failure. Recovery procedure involves deploying the storage hook script and verifying cluster quorum.
-*   **Traffic Traversal**: ongoing monitoring of "Asymmetric Routing" issues between OPNsense and the L3 Switch.
+
+### Critici
+*   **CP02 / PVE2**: Nodo offline per manutenzione hardware. `postgres-main-2` (replica CNPG) in stato `Pending` in attesa del rientro del nodo. Il cluster funziona normalmente con 2/3 CP e 1 replica PostgreSQL.
+*   **Tdarr Server**: Il Deployment K8s del server non è stato ancora creato. Solo MetalLB pool e IngressRoute sono attivi. Il node sul Mac non può connettersi finché il server non è deployato.
+
+### Da Pulire
+*   `talos-config/worker.yaml`: File residuo, non applicabile (architettura iper-convergente, nessun nodo worker dedicato).
+*   PV orfani su PVE2 (quando torna): `pvc-052584c6-*` (postgres-main-2, 100Gi), `pvc-ebe1187c-*` (postgres-main-2-wal, 4Gi).
+
+### Monitoraggio
+*   **Certificati TLS**: Rinnovati il 2026-04-27. Prossima scadenza ~90 giorni. Monitorare che cert-manager rinnovi automaticamente nel namespace `arr` (l'ultimo rimasto `False`).
+*   **Traffic Traversal**: Monitoraggio continuo del routing asimmetrico tra OPNsense e L3 Switch.
+
+---
+
+## 8. Cronologia Incidenti Maggiori
+
+### 2026-04-27: Ripristino Cluster Post-Crash
+**Causa**: Crash/corruzione Etcd su tutti e 3 i nodi dopo problemi hardware su PVE2.
+**Risoluzione**:
+1. Forzato bootstrap Etcd su CP01 (`.141`).
+2. Risolto conflitto IP tra nodi tramite config statica via `talosctl apply-config`.
+3. Aggiunto DNS OPNsense (`10.10.20.1`) ai file `controlplane.yaml` e `controlplane-3200.yaml`.
+4. Rimosso nodo fantasma `talos-cp-02` con `kubectl delete node`.
+5. Forzato rinnovo certificati TLS scaduti (Cloudflare DNS challenge).
+6. Corrette IngressRoute n8n spostate erroneamente nel namespace `default`.
+**Stato Post-Incidente**: Cluster stabile, 2/3 nodi Ready, tutti i workload operativi.
 
 ---
 *Created for ingestion by NotebookLM to provide full context on the Project GEMINI architecture.*
