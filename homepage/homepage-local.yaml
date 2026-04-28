@@ -316,7 +316,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`home`) || Host(`home-internal.pindaroli.org`)
+    - match: Host(`home-internal.pindaroli.org`)
       kind: Rule
       services:
         - name: homepage-local
