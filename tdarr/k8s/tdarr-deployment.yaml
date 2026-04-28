@@ -1,0 +1,127 @@
+# Tdarr Server - PV/PVC + Deployment
+# Config: NFS /mnt/stripe/k8s-arr/tdarr-config (TrueNAS Stripe)
+# Media:  NFS /mnt/oliraid/arrdata/media       (TrueNAS RAID - ReadOnly)
+# Versione: 2.70.01 (pinned, compatibile con il nodo Mac Studio)
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-tdarr-config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-csi
+  volumeMode: Filesystem
+  csi:
+    driver: nfs.csi.k8s.io
+    volumeHandle: pv-tdarr-config
+    volumeAttributes:
+      server: 10.10.10.50
+      share: /mnt/stripe/k8s-arr/tdarr-config
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tdarr-config
+  namespace: tdarr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: pv-tdarr-config
+  storageClassName: nfs-csi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tdarr-server
+  namespace: tdarr
+  labels:
+    app: tdarr-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: tdarr-server
+  template:
+    metadata:
+      labels:
+        app: tdarr-server
+    spec:
+      containers:
+        - name: tdarr-server
+          image: ghcr.io/haveagitgat/tdarr:2.70.01
+          ports:
+            - containerPort: 8266
+              name: api
+            - containerPort: 8267
+              name: webui
+          env:
+            - name: TZ
+              value: "Europe/Rome"
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: serverIP
+              value: "0.0.0.0"
+            - name: serverPort
+              value: "8266"
+            - name: webUIPort
+              value: "8267"
+            - name: internalNode
+              value: "false"
+            - name: inContainer
+              value: "true"
+            - name: ffmpegVersion
+              value: "6"
+            - name: nodeName
+              value: "K8sInternalNode"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          volumeMounts:
+            - name: server-config
+              mountPath: /app/server
+            - name: server-config
+              mountPath: /app/configs
+              subPath: configs
+            - name: logs
+              mountPath: /app/logs
+            - name: media
+              mountPath: /media
+              readOnly: true
+          livenessProbe:
+            tcpSocket:
+              port: 8266
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket:
+              port: 8266
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: server-config
+          persistentVolumeClaim:
+            claimName: tdarr-config
+        - name: logs
+          emptyDir: {}
+        - name: media
+          nfs:
+            server: 10.10.10.50
+            path: /mnt/oliraid/arrdata/media
