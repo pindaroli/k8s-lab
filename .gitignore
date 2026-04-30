@@ -37,3 +37,4 @@ __pycache__/
 downloads/plugins
 # Tdarr
 tdarr/node/
+tdarr/logs/Tdarr_Node_Log.txt

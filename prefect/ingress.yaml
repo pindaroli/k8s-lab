@@ -14,7 +14,7 @@ spec:
           port: 4200
       middlewares:
         - name: oauth2-auth
-          namespace: default
+          namespace: traefik
   tls:
     secretName: pindaroli-wildcard-tls
 ---
