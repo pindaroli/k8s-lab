@@ -59,7 +59,7 @@ data:
       "AI services":
         style: row
         columns: 4
-      "Arr Services":
+      "ArrServices":
         style: row
         columns: 4
       "Infrastructure":
@@ -116,7 +116,7 @@ data:
             description: Workflow automation platform
             icon: n8n.png
 
-    - "Arr Services":
+    - "ArrServices":
         - Jellyfin:
             href: https://jellyfin-internal.pindaroli.org
             description: Media server (Internal)
@@ -139,11 +139,11 @@ data:
             icon: prowlarr.png
         - Tdarr:
             icon: tdarr.png
-            href: http://10.10.20.61:8267
-            description: Audio/Video Library Transcoder
+            href: https://tdarr-internal.pindaroli.org
+            description: Audio/Video Library Transcoder (Internal)
             widget:
               type: tdarr
-              url: http://10.10.20.61:8267
+              url: https://tdarr-internal.pindaroli.org
         - Calibre-web:
             href: https://calibre-web.pindaroli.org
             description: Web-based ebook library management

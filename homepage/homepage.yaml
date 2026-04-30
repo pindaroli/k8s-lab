@@ -107,7 +107,7 @@ data:
       "AI services":
         style: row
         columns: 4
-      "Arr Services":
+      "ArrServices":
         style: row
         columns: 4
       "Infrastructure":
@@ -141,7 +141,7 @@ data:
             description: Workflow automation platform
             icon: n8n.png
 
-    - "Arr Services":
+    - "ArrServices":
         - Jellyfin:
             href: https://jellyfin.pindaroli.org
             description: Media server for movies, TV shows and music
@@ -167,6 +167,9 @@ data:
             href: https://tdarr.pindaroli.org
             description: Audio/Video Library Transcoder
             icon: tdarr.png
+            widget:
+              type: tdarr
+              url: https://tdarr.pindaroli.org
         - Calibre-web:
             href: https://calibre-web.pindaroli.org
             description: Web-based ebook library management
@@ -396,7 +399,6 @@ spec:
   - port: 443
     targetPort: 443
 ---
----
 apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
 metadata:
@@ -454,7 +456,6 @@ spec:
   ports:
   - port: 443
     targetPort: 443
----
 ---
 apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
@@ -552,7 +553,6 @@ spec:
   ports:
   - port: 9002
     targetPort: 9002
----
 ---
 apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
