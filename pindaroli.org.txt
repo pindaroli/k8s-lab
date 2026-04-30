@@ -1,0 +1,83 @@
+;;
+;; Domain:     pindaroli.org.
+;; Exported:   2026-04-30 21:44:34
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+pindaroli.org	3600	IN	SOA	ganz.ns.cloudflare.com. dns.cloudflare.com. 2052925207 10000 2400 604800 3600
+
+;; NS Records
+pindaroli.org.	86400	IN	NS	ganz.ns.cloudflare.com.
+pindaroli.org.	86400	IN	NS	rayne.ns.cloudflare.com.
+
+;; A Records
+ap-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+auth-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+calibre-web-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+firewall-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+grafana-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+home-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+jellyfin-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+kasmweb-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+lidarr-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+minio-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+n8n-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+nas-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+pindaroli.org.	1	IN	A	151.59.33.2 ; cf_tags=cf-proxied:false
+prefect-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+prowlarr-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+pve-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+qbittorrent-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+radarr-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+tdarr-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+traefik-dash-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+
+;; CNAME Records
+ap.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+auth.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+calibre-web.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+firewall.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+grafana.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+home.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+jellyfin.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+kasmweb.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+lidarr.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+n8n.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+*.pindaroli.org.	1	IN	CNAME	eb4581bd-3011-4f40-8956-29f1ba634f39.cfargotunnel.com. ; cf_tags=cf-proxied:true
+prefect.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+prowlarr.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+pve.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+qbittorrent.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+radarr.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+tdarr.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+traefik-dash.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+
+;; TXT Records
+_acme-challenge.pindaroli.org.	120	IN	TXT	"MiWFUb5FNr5PzjaHF62rF6STu818FA9AYkVluke9qrU"
+_acme-challenge.pindaroli.org.	120	IN	TXT	"f85wBx9sFdlMZJROHBNmoBR9-DN-5stTAoQAZdFHneg"
+_acme-challenge.pindaroli.org.	120	IN	TXT	"QOLsHBU6wRTFXcKHsdgSU8x-53kEuMN2RHRQndL0hj4"
+_acme-challenge.pindaroli.org.	120	IN	TXT	"2EoGkkBzvjrKVhyxy8wkHrcIkO_xF4tmxMSWmaMwMdU"
+_acme-challenge.pindaroli.org.	120	IN	TXT	"AnBoFiJM04ztR9kqZ9C4LtSEUEk-SWdkzVjHaTNARwA"
+_acme-challenge.pindaroli.org.	120	IN	TXT	"GiVhjgjNl00PECSVZc-ikZjHqR5JgJsUee02aCPKm3c"
+_acme-challenge.pindaroli.org.	120	IN	TXT	"Kx4Z4hmkEVTzjuAVNcTAaJgJ4gLoTj_9pK22mhKlozk"
+_dmarc.pindaroli.org.	1	IN	TXT	"v=DMARC1; p=none; rua=mailto:7ae521eed5fc46e5bb72c895f8de9883@dmarc-reports.cloudflare.net"

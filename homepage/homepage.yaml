@@ -169,7 +169,7 @@ data:
             icon: tdarr.png
             widget:
               type: tdarr
-              url: https://tdarr.pindaroli.org
+              url: http://tdarr-server.tdarr.svc.cluster.local:8266
         - Calibre-web:
             href: https://calibre-web.pindaroli.org
             description: Web-based ebook library management
@@ -181,7 +181,7 @@ data:
             description: TrueNAS server
             icon: https://www.svgrepo.com/show/331613/truenas.svg
         - OPNsense:
-            href: https://opnsense.pindaroli.org
+            href: https://firewall.pindaroli.org
             description: OPNsense firewall
             icon: opnsense.png
         - Proxmox:
@@ -469,7 +469,7 @@ ports:
     protocol: TCP
 endpoints:
   - addresses:
-      - "10.10.20.1"
+      - "10.10.20.254"
     conditions:
       ready: true
 ---
@@ -482,7 +482,7 @@ spec:
   entryPoints:
   - websecure
   routes:
-  - match: Host(`opnsense.pindaroli.org`)
+  - match: Host(`firewall.pindaroli.org`)
     kind: Rule
     services:
     - name: opnsense-external
@@ -518,6 +518,8 @@ ports:
 endpoints:
   - addresses:
       - "10.10.10.11"
+      - "10.10.10.21"
+      - "10.10.10.31"
     conditions:
       ready: true
 ---

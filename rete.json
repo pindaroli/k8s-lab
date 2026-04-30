@@ -27,7 +27,8 @@
             "hostname": "truenas",
             "domain": "pindaroli.org",
             "aliases": [
-                "s3"
+                "s3",
+                "nas-direct"
             ],
             "management_ip": "10.10.10.50",
             "default_gateway": "10.10.10.1",
@@ -229,7 +230,8 @@
             "model": "Mini PC (4x 2.5GbE)",
             "management_ip": "10.10.20.254",
             "aliases": [
-                "opnsense"
+                "opnsense",
+                "firewall-direct"
             ],
             "configuration_notes": [
                 "Kea DHCP is the active DHCP server. Ansible playbooks manage static DHCP reservations via the Kea API.",
@@ -381,9 +383,13 @@
             ]
         },
         {
-            "id": "pve",
+            "id": "pve1",
             "label": "Proxmox Node 1",
             "type": "Hypervisor",
+            "aliases": [
+                "pve-direct",
+                "pve1-direct"
+            ],
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
             "management_ip": "10.10.10.11",
@@ -442,6 +448,9 @@
             "id": "pve2",
             "label": "Proxmox Node 2",
             "type": "Hypervisor",
+            "aliases": [
+                "pve2-direct"
+            ],
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
             "hardware": "64GB RAM, 2TB NVMe",
@@ -492,6 +501,9 @@
             "id": "pve3",
             "label": "Proxmox Node 3",
             "type": "Hypervisor",
+            "aliases": [
+                "pve3-direct"
+            ],
             "version": "Proxmox VE 9.1",
             "OS": "Debian 13 (Trixie)",
             "hardware": "64GB RAM, 1TB NVMe",
@@ -687,21 +699,17 @@
                 "qbittorrent",
                 "jellyfin",
                 "home",
-                "home-internal",
                 "minio",
-                "minio-internal",
                 "nas",
                 "n8n",
-                "n8n-internal",
                 "grafana",
-                "grafana-internal",
                 "ap",
                 "kasmweb",
-                "kasmweb-internal",
                 "prefect",
-                "prefect-internal",
                 "tdarr",
-                "tdarr-internal"
+                "calibre-web",
+                "firewall",
+                "pve"
             ],
             "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
         },

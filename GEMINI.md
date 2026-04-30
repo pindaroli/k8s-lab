@@ -1,8 +1,8 @@
 # Project GEMINI: Kubernetes Homelab Migration
 
 > [!IMPORTANT]
-> **Current Status**: **VICTORIAMETRICS MONITORING OPERATIONAL**
-> Core stack deployed; Telegram alerting active; All app scrapers (Traefik, CNPG, Servarr) functional.
+> **Current Status**: **DNS EXPLICIT MAPPING OPERATIONAL**
+> Wildcard removed; All services explicitly mapped; "Black Hole Routing" issue resolved.
 > **Active Goal**: Ingress & External Access (Phase 5).
 
 ## 1. Quick Reference
@@ -28,6 +28,15 @@ whenever an agent command fails for security reasons append it to security-issue
 > **DOCUMENTATION MAINTENANCE**
 > The file `homelab_notebooklm.md` is a comprehensive compilation of the project for AI context (NotebookLM).
 > **RULE**: Whenever you make SUBSTANTIAL changes to the infrastructure (topology, new nodes, major migrations), you **MUST** update `homelab_notebooklm.md` to reflect the new state.
+>
+> **UNIFIED NAMING CONVENTION (UNC)**
+> For every service, three mnemonic endpoints are provided:
+> 1. `<service>.pindaroli.org`: **Premium (External)**. Via Traefik + SSL + OAuth2.
+> 2. `<service>-internal.pindaroli.org`: **Premium (Internal)**. Via Traefik + SSL + Trusted LAN.
+> 3. `<service>-direct.pindaroli.org`: **Infrastructure (Direct)**. Bypasses Traefik, points directly to the Host IP.
+>
+> **INGRESS & DNS ALIGNMENT RULE**
+> Every host defined in a Traefik `IngressRoute` **MUST** have a corresponding alias in `rete.json` under the `traefik-lb` node. This ensures explicit DNS resolution and prevents "Black Hole Routing" issues after wildcard removal.
 
 ### Network Summary
 | VLAN | ID | Subnet | Gateway | DHCP | Usage |
