@@ -1,6 +1,6 @@
 # Traefik Version
 image:
-  tag: v3.6.15
+  tag: v3.6.14
 
 # High Availability Configuration
 deployment:
