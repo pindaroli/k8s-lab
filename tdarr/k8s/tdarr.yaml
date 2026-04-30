@@ -50,9 +50,6 @@ spec:
   routes:
     - match: Host(`tdarr-internal.pindaroli.org`)
       kind: Rule
-      middlewares:
-        - name: oauth2-auth
-          namespace: traefik
       services:
         - name: tdarr-service
           port: 8267
