@@ -11,6 +11,13 @@ When PVE2 is back online and the Talos node `talos-cp-02` is `Ready`, perform th
 2. **Verify Replication Slot**:
    Lo slot `_cnpg_postgres_main_2` è stato rimosso manualmente per sbloccare lo spazio disco sul nodo 3. Verificare che venga ricreato automaticamente dall'operatore dopo aver tolto il fencing. In caso contrario, riavviare il Primary `postgres-main-3`.
 
+## Network Architecture Optimization (Premium Approach)
+- [ ] **Punto A: Migrazione DNS Esterno (Cloudflare Dashboard)**
+  - Sostituire il CNAME wildcard `*` con record CNAME puntuali per ogni servizio.
+  - *Perché*: Impedisce l'enumerazione dei sottodomini e aumenta la sicurezza del tunnel.
+- [ ] **Punto B: Rafforzamento Configurazione Tunnel (Cloudflared ConfigMap)**
+  - Elencare esplicitamente gli hostname nell'Ingress del tunnel invece di usare `*.pindaroli.org`.
+  - *Perché*: Evita che il traffico DNS "sporco" venga dirottato a Traefik, risolvendo alla radice i problemi di Black Hole Routing.
 
 ## PVE2 Recovery (Pending Hardware)
 - [ ] Applicare configurazione Talos `bind-address=0.0.0.0` a `talos-cp-02` (10.10.20.142).

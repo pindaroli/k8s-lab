@@ -105,6 +105,8 @@ spec:
             - name: media
               mountPath: /media
               readOnly: true
+            - name: cache
+              mountPath: /temp
           livenessProbe:
             tcpSocket:
               port: 8266
@@ -125,3 +127,5 @@ spec:
           nfs:
             server: 10.10.10.50
             path: /mnt/oliraid/arrdata/media
+        - name: cache
+          emptyDir: {}

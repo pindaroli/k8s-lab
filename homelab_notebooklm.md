@@ -20,8 +20,8 @@ The network is segmented into VLANs to separate management traffic from client/i
 
 ### Access Strategy (Split-DNS)
 The lab uses a Split-DNS architecture to ensure optimal routing and security.
-*   **External Access**: Users accessing `*.pindaroli.org` from the internet are routed through **Cloudflare Tunnel**. All requests MUST pass through **Google OAuth2** authentication (Traefik Middleware).
-*   **Internal Access**: Users inside the LAN (VLAN 20) resolve `*.pindaroli.org` or short names (`home`, `nas`) directly to the internal Traefik VIP (`10.10.20.56`). Authentication is optional/bypassed for trusted devices.
+*   **External Access**: Users accessing services from the internet are routed through **Cloudflare Tunnel**. We are migrating from wildcard `*` to specific hostnames for security. All requests MUST pass through **Google OAuth2** (Traefik).
+*   **Internal Access**: Users inside the LAN (VLAN 20) resolve specific service names (e.g., `tdarr-internal`, `nas`) directly to the internal Traefik VIP (`10.10.20.56`). **Wildcards are prohibited in internal DNS** to avoid Kubernetes routing loops (ndots issue).
 
 ---
 

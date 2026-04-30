@@ -146,7 +146,7 @@ whenever an agent command fails for security reasons append it to security-issue
 - **DNS Strategy**: Split-DNS.
   - **Internal**: OPNsense Unbound (Authoritative for `.pindaroli.org` internal).
   - **External**: Cloudflare.
-    - **Tunnel**: Use Cloudflare Tunnel (Wildcard `*`) for ALL external access.
+    - **Tunnel**: Use Cloudflare Tunnel for external access. **DO NOT use wildcard records for internal DNS** to avoid search path hijacking.
     - **Policy**: ALL Tunneled services must use `oauth2-auth`.
 
 ### Certs & Auth
@@ -186,16 +186,16 @@ whenever an agent command fails for security reasons append it to security-issue
 ## 6. Access Strategy
 
 ### External Access (Internet)
-*   **URL**: `https://*.pindaroli.org`
+*   **URL**: `https://<service>.pindaroli.org`
 *   **Method**: Cloudflare Tunnel -> Traefik VIP.
 *   **Security**: **Strictly OAuth2 Protected** (Google Login).
-*   **Use Case**: Remote access from outside the LAN (4G, Work, Travel).
+*   **Note**: Transitioning from wildcard `*` to explicit host mapping for enhanced security.
 
 ### Internal Access (LAN/VPN)
-*   **URL**: `https://*-internal.pindaroli.org` OR Short Hostnames (e.g., `https://home`, `https://nas`).
+*   **URL**: `https://<service>-internal.pindaroli.org` OR Short Hostnames.
 *   **Method**: Split-DNS (OPNsense/Unbound) -> Traefik VIP (`10.10.20.56`).
 *   **Security**: **Trusted Network** (No Auth / Optional Basic Auth).
-*   **Use Case**: Zero-friction access from home WiFi or WireGuard VPN.
+*   **CRITICAL**: Internal DNS MUST use explicit mapping (no wildcards) to prevent routing loops during external DNS resolution (ndots issue).
 
 ## 7. Pending Maintenance
 
