@@ -1,7 +1,7 @@
 {
   "nodeName": "MacStudio-Node",
-  "serverURL": "http://10.10.20.61:8266",
-  "serverIP": "10.10.20.61",
+  "serverURL": "http://tdarr-api.pindaroli.org:8266",
+  "serverIP": "tdarr-api.pindaroli.org",
   "serverPort": "8266",
   "handbrakePath": "/opt/homebrew/bin/HandBrakeCLI",
   "ffmpegPath": "",
