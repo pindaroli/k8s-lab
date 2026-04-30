@@ -21,6 +21,10 @@ whenever an agent command fails for security reasons append it to security-issue
 > **NO EXCEPTIONS**. Even services with native login (like MinIO/TrueNAS) must sit behind the OAuth shield.
 > *Implementation:* Traefik Middleware `oauth2-auth`.
 >
+> **INTERNAL ACCESS (LAN/VPN)**
+> Services exposed via `-internal.pindaroli.org` **MUST NOT** use OAuth2 authentication. 
+> Access from LAN/VPN is considered trusted. Do not add `oauth2-auth` middleware to internal IngressRoutes.
+>
 > **DOCUMENTATION MAINTENANCE**
 > The file `homelab_notebooklm.md` is a comprehensive compilation of the project for AI context (NotebookLM).
 > **RULE**: Whenever you make SUBSTANTIAL changes to the infrastructure (topology, new nodes, major migrations), you **MUST** update `homelab_notebooklm.md` to reflect the new state.

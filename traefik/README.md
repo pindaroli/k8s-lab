@@ -58,7 +58,11 @@ kubectl apply -f all-arr-ingress-routes.yaml
 
 All external services are protected with Google OAuth2 authentication via oauth2-proxy middleware.
 
-### Authentication Flow
+### IMPORTANT: Internal Route Policy
+**Internal routes (`*-internal.pindaroli.org`) MUST NOT use the `oauth2-auth` middleware.** 
+These routes are only accessible from within the LAN or via VPN, and adding OAuth2 causes redirection issues and unnecessary friction.
+
+### Authentication Flow (External Only)
 1. **User accesses** `https://service.pindaroli.org`
 2. **Traefik applies** `oauth2-auth` middleware
 3. **OAuth2-Proxy checks** authentication status
