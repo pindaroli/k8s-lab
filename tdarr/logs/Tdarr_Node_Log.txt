@@ -120013,3 +120013,504 @@ CCExtractor is only used to detect closed captions in video files. If you are no
 [2026-04-30T01:12:23.772] [INFO] Tdarr_Node - Finished downloading plugins from server
 [2026-04-30T02:12:23.754] [INFO] Tdarr_Node - Downloading plugins from server
 [2026-04-30T02:12:23.767] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T03:12:23.805] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T03:12:23.816] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T04:03:01.867] [INFO] Tdarr_Node - Node disconnected & deregistered
+[2026-04-30T04:03:03.296] [INFO] Tdarr_Node - Checking Server version
+[2026-04-30T04:03:03.297] [ERROR] Tdarr_Node - Node connection error to: http://10.10.20.61:8266
+[2026-04-30T04:03:03.297] [ERROR] Tdarr_Node - Error: xhr poll error
+    at XHR.onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transport.js:48:37)
+    at Request.<anonymous> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:64:18)
+    at Emitter.emit (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/@socket.io/component-emitter/index.js:143:20)
+    at Request._onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:173:14)
+    at Timeout._onTimeout (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:146:30)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7){
+  "description": 0,
+  "context": {
+    "UNSENT": 0,
+    "OPENED": 1,
+    "HEADERS_RECEIVED": 2,
+    "LOADING": 3,
+    "DONE": 4,
+    "readyState": 4,
+    "responseText": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)",
+    "responseXML": "",
+    "response": {
+      "type": "Buffer",
+      "data": []
+    },
+    "status": 0,
+    "statusText": {
+      "errno": -61,
+      "code": "ECONNREFUSED",
+      "syscall": "connect",
+      "address": "10.10.20.61",
+      "port": 8266
+    }
+  },
+  "type": "TransportError"
+}
+[2026-04-30T04:03:03.330] [ERROR] Tdarr_Node - Error: connect ECONNREFUSED 10.10.20.61:8266
+    at AxiosError.from (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/core/AxiosError.js:86:14)
+    at RedirectableRequest.handleRequestError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/adapters/http.js:407:25)
+    at RedirectableRequest.emit (node:events:525:35)
+    at eventHandlers.<computed> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:513:28)
+    at Socket.socketErrorListener (node:_http_client:502:9)
+    at Socket.emit (node:events:513:28)
+    at emitErrorNT (node:internal/streams/destroy:151:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21){
+  "message": "connect ECONNREFUSED 10.10.20.61:8266",
+  "name": "Error",
+  "stack": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at AxiosError.from (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/core/AxiosError.js:86:14)\n    at RedirectableRequest.handleRequestError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/adapters/http.js:407:25)\n    at RedirectableRequest.emit (node:events:525:35)\n    at eventHandlers.<computed> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/follow-redirects/index.js:49:24)\n    at ClientRequest.emit (node:events:513:28)\n    at Socket.socketErrorListener (node:_http_client:502:9)\n    at Socket.emit (node:events:513:28)\n    at emitErrorNT (node:internal/streams/destroy:151:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:116:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)",
+  "config": {
+    "transitional": {
+      "silentJSONParsing": true,
+      "forcedJSONParsing": true,
+      "clarifyTimeoutError": false
+    },
+    "transformRequest": [
+      null
+    ],
+    "transformResponse": [
+      null
+    ],
+    "timeout": 30000,
+    "xsrfCookieName": "XSRF-TOKEN",
+    "xsrfHeaderName": "X-XSRF-TOKEN",
+    "maxContentLength": -1,
+    "maxBodyLength": -1,
+    "env": {},
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      "x-api-key": "",
+      "User-Agent": "axios/0.30.3",
+      "Content-Length": 139
+    },
+    "method": "post",
+    "url": "http://10.10.20.61:8266/api/v2/nodes/version-check",
+    "data": "{\"data\":{\"nodeVersion\":\"2.70.01\",\"nodeID\":\"qq9KeE0XY\",\"nodeName\":\"MacStudio-Node\",\"nodeType\":\"mapped\",\"inDocker\":false,\"processPid\":45560}}"
+  },
+  "code": "ECONNREFUSED",
+  "status": null
+}
+[2026-04-30T04:03:05.145] [INFO] Tdarr_Node - Auto updater version check already running
+[2026-04-30T04:03:05.145] [ERROR] Tdarr_Node - Node connection error to: http://10.10.20.61:8266
+[2026-04-30T04:03:05.145] [ERROR] Tdarr_Node - Error: xhr poll error
+    at XHR.onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transport.js:48:37)
+    at Request.<anonymous> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:64:18)
+    at Emitter.emit (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/@socket.io/component-emitter/index.js:143:20)
+    at Request._onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:173:14)
+    at Timeout._onTimeout (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:146:30)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7){
+  "description": 0,
+  "context": {
+    "UNSENT": 0,
+    "OPENED": 1,
+    "HEADERS_RECEIVED": 2,
+    "LOADING": 3,
+    "DONE": 4,
+    "readyState": 4,
+    "responseText": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)",
+    "responseXML": "",
+    "response": {
+      "type": "Buffer",
+      "data": []
+    },
+    "status": 0,
+    "statusText": {
+      "errno": -61,
+      "code": "ECONNREFUSED",
+      "syscall": "connect",
+      "address": "10.10.20.61",
+      "port": 8266
+    }
+  },
+  "type": "TransportError"
+}
+[2026-04-30T04:03:10.151] [INFO] Tdarr_Node - Auto updater version check already running
+[2026-04-30T04:03:10.151] [ERROR] Tdarr_Node - Node connection error to: http://10.10.20.61:8266
+[2026-04-30T04:03:10.151] [ERROR] Tdarr_Node - Error: xhr poll error
+    at XHR.onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transport.js:48:37)
+    at Request.<anonymous> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:64:18)
+    at Emitter.emit (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/@socket.io/component-emitter/index.js:143:20)
+    at Request._onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:173:14)
+    at Timeout._onTimeout (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:146:30)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7){
+  "description": 0,
+  "context": {
+    "UNSENT": 0,
+    "OPENED": 1,
+    "HEADERS_RECEIVED": 2,
+    "LOADING": 3,
+    "DONE": 4,
+    "readyState": 4,
+    "responseText": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)",
+    "responseXML": "",
+    "response": {
+      "type": "Buffer",
+      "data": []
+    },
+    "status": 0,
+    "statusText": {
+      "errno": -61,
+      "code": "ECONNREFUSED",
+      "syscall": "connect",
+      "address": "10.10.20.61",
+      "port": 8266
+    }
+  },
+  "type": "TransportError"
+}
+[2026-04-30T04:03:13.332] [INFO] Tdarr_Node - Checking Server version
+[2026-04-30T04:03:13.337] [ERROR] Tdarr_Node - Error: connect ECONNREFUSED 10.10.20.61:8266
+    at AxiosError.from (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/core/AxiosError.js:86:14)
+    at RedirectableRequest.handleRequestError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/adapters/http.js:407:25)
+    at RedirectableRequest.emit (node:events:525:35)
+    at eventHandlers.<computed> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:513:28)
+    at Socket.socketErrorListener (node:_http_client:502:9)
+    at Socket.emit (node:events:513:28)
+    at emitErrorNT (node:internal/streams/destroy:151:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21){
+  "message": "connect ECONNREFUSED 10.10.20.61:8266",
+  "name": "Error",
+  "stack": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at AxiosError.from (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/core/AxiosError.js:86:14)\n    at RedirectableRequest.handleRequestError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/adapters/http.js:407:25)\n    at RedirectableRequest.emit (node:events:525:35)\n    at eventHandlers.<computed> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/follow-redirects/index.js:49:24)\n    at ClientRequest.emit (node:events:513:28)\n    at Socket.socketErrorListener (node:_http_client:502:9)\n    at Socket.emit (node:events:513:28)\n    at emitErrorNT (node:internal/streams/destroy:151:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:116:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)",
+  "config": {
+    "transitional": {
+      "silentJSONParsing": true,
+      "forcedJSONParsing": true,
+      "clarifyTimeoutError": false
+    },
+    "transformRequest": [
+      null
+    ],
+    "transformResponse": [
+      null
+    ],
+    "timeout": 30000,
+    "xsrfCookieName": "XSRF-TOKEN",
+    "xsrfHeaderName": "X-XSRF-TOKEN",
+    "maxContentLength": -1,
+    "maxBodyLength": -1,
+    "env": {},
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      "x-api-key": "",
+      "User-Agent": "axios/0.30.3",
+      "Content-Length": 139
+    },
+    "method": "post",
+    "url": "http://10.10.20.61:8266/api/v2/nodes/version-check",
+    "data": "{\"data\":{\"nodeVersion\":\"2.70.01\",\"nodeID\":\"qq9KeE0XY\",\"nodeName\":\"MacStudio-Node\",\"nodeType\":\"mapped\",\"inDocker\":false,\"processPid\":45560}}"
+  },
+  "code": "ECONNREFUSED",
+  "status": null
+}
+[2026-04-30T04:03:15.159] [INFO] Tdarr_Node - Auto updater version check already running
+[2026-04-30T04:03:15.159] [ERROR] Tdarr_Node - Node connection error to: http://10.10.20.61:8266
+[2026-04-30T04:03:15.160] [ERROR] Tdarr_Node - Error: xhr poll error
+    at XHR.onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transport.js:48:37)
+    at Request.<anonymous> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:64:18)
+    at Emitter.emit (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/@socket.io/component-emitter/index.js:143:20)
+    at Request._onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:173:14)
+    at Timeout._onTimeout (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:146:30)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7){
+  "description": 0,
+  "context": {
+    "UNSENT": 0,
+    "OPENED": 1,
+    "HEADERS_RECEIVED": 2,
+    "LOADING": 3,
+    "DONE": 4,
+    "readyState": 4,
+    "responseText": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)",
+    "responseXML": "",
+    "response": {
+      "type": "Buffer",
+      "data": []
+    },
+    "status": 0,
+    "statusText": {
+      "errno": -61,
+      "code": "ECONNREFUSED",
+      "syscall": "connect",
+      "address": "10.10.20.61",
+      "port": 8266
+    }
+  },
+  "type": "TransportError"
+}
+[2026-04-30T04:03:20.170] [INFO] Tdarr_Node - Auto updater version check already running
+[2026-04-30T04:03:20.170] [ERROR] Tdarr_Node - Node connection error to: http://10.10.20.61:8266
+[2026-04-30T04:03:20.170] [ERROR] Tdarr_Node - Error: xhr poll error
+    at XHR.onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transport.js:48:37)
+    at Request.<anonymous> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:64:18)
+    at Emitter.emit (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/@socket.io/component-emitter/index.js:143:20)
+    at Request._onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:173:14)
+    at Timeout._onTimeout (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:146:30)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7){
+  "description": 0,
+  "context": {
+    "UNSENT": 0,
+    "OPENED": 1,
+    "HEADERS_RECEIVED": 2,
+    "LOADING": 3,
+    "DONE": 4,
+    "readyState": 4,
+    "responseText": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)",
+    "responseXML": "",
+    "response": {
+      "type": "Buffer",
+      "data": []
+    },
+    "status": 0,
+    "statusText": {
+      "errno": -61,
+      "code": "ECONNREFUSED",
+      "syscall": "connect",
+      "address": "10.10.20.61",
+      "port": 8266
+    }
+  },
+  "type": "TransportError"
+}
+[2026-04-30T04:03:23.337] [INFO] Tdarr_Node - Checking Server version
+[2026-04-30T04:03:23.342] [ERROR] Tdarr_Node - Error: connect ECONNREFUSED 10.10.20.61:8266
+    at AxiosError.from (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/core/AxiosError.js:86:14)
+    at RedirectableRequest.handleRequestError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/adapters/http.js:407:25)
+    at RedirectableRequest.emit (node:events:525:35)
+    at eventHandlers.<computed> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:513:28)
+    at Socket.socketErrorListener (node:_http_client:502:9)
+    at Socket.emit (node:events:513:28)
+    at emitErrorNT (node:internal/streams/destroy:151:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21){
+  "message": "connect ECONNREFUSED 10.10.20.61:8266",
+  "name": "Error",
+  "stack": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at AxiosError.from (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/core/AxiosError.js:86:14)\n    at RedirectableRequest.handleRequestError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/axios/lib/adapters/http.js:407:25)\n    at RedirectableRequest.emit (node:events:525:35)\n    at eventHandlers.<computed> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/follow-redirects/index.js:49:24)\n    at ClientRequest.emit (node:events:513:28)\n    at Socket.socketErrorListener (node:_http_client:502:9)\n    at Socket.emit (node:events:513:28)\n    at emitErrorNT (node:internal/streams/destroy:151:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:116:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)",
+  "config": {
+    "transitional": {
+      "silentJSONParsing": true,
+      "forcedJSONParsing": true,
+      "clarifyTimeoutError": false
+    },
+    "transformRequest": [
+      null
+    ],
+    "transformResponse": [
+      null
+    ],
+    "timeout": 30000,
+    "xsrfCookieName": "XSRF-TOKEN",
+    "xsrfHeaderName": "X-XSRF-TOKEN",
+    "maxContentLength": -1,
+    "maxBodyLength": -1,
+    "env": {},
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      "x-api-key": "",
+      "User-Agent": "axios/0.30.3",
+      "Content-Length": 139
+    },
+    "method": "post",
+    "url": "http://10.10.20.61:8266/api/v2/nodes/version-check",
+    "data": "{\"data\":{\"nodeVersion\":\"2.70.01\",\"nodeID\":\"qq9KeE0XY\",\"nodeName\":\"MacStudio-Node\",\"nodeType\":\"mapped\",\"inDocker\":false,\"processPid\":45560}}"
+  },
+  "code": "ECONNREFUSED",
+  "status": null
+}
+[2026-04-30T04:03:25.176] [INFO] Tdarr_Node - Auto updater version check already running
+[2026-04-30T04:03:25.176] [ERROR] Tdarr_Node - Node connection error to: http://10.10.20.61:8266
+[2026-04-30T04:03:25.176] [ERROR] Tdarr_Node - Error: xhr poll error
+    at XHR.onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transport.js:48:37)
+    at Request.<anonymous> (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:64:18)
+    at Emitter.emit (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/@socket.io/component-emitter/index.js:143:20)
+    at Request._onError (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:173:14)
+    at Timeout._onTimeout (/Users/olindo/prj/k8s-lab/tdarr/node/node_modules/engine.io-client/build/cjs/transports/polling-xhr.js:146:30)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7){
+  "description": 0,
+  "context": {
+    "UNSENT": 0,
+    "OPENED": 1,
+    "HEADERS_RECEIVED": 2,
+    "LOADING": 3,
+    "DONE": 4,
+    "readyState": 4,
+    "responseText": "Error: connect ECONNREFUSED 10.10.20.61:8266\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)",
+    "responseXML": "",
+    "response": {
+      "type": "Buffer",
+      "data": []
+    },
+    "status": 0,
+    "statusText": {
+      "errno": -61,
+      "code": "ECONNREFUSED",
+      "syscall": "connect",
+      "address": "10.10.20.61",
+      "port": 8266
+    }
+  },
+  "type": "TransportError"
+}
+[2026-04-30T04:03:30.206] [INFO] Tdarr_Node - Node connected & registered, count:2
+[2026-04-30T04:03:30.208] [INFO] Tdarr_Node - Auto updater version check already running
+[2026-04-30T04:03:30.311] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T04:03:30.324] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T04:03:33.342] [INFO] Tdarr_Node - Checking Server version
+[2026-04-30T04:03:33.349] [INFO] Tdarr_Node - Node version 2.70.01 matches Server version 2.70.01
+[2026-04-30T04:04:09.373] [INFO] Tdarr_Node - Logger started
+[2026-04-30T04:04:09.389] [INFO] Tdarr_Node - Config path: "/Users/olindo/prj/k8s-lab/tdarr/configs/Tdarr_Node_Config.json"
+[2026-04-30T04:04:09.389] [WARN] Tdarr_Node - As env serverIP is set, creating serverURL from serverIP and serverPort. It's recommended to set env serverURL
+[2026-04-30T04:04:09.398] [INFO] Tdarr_Node - {
+  "nodeName": "MacStudio-Node",
+  "serverURL": "http://10.10.20.61:8266",
+  "serverIP": "10.10.20.61",
+  "serverPort": "8266",
+  "handbrakePath": "/opt/homebrew/bin/HandBrakeCLI",
+  "ffmpegPath": "",
+  "mkvpropeditPath": "/opt/homebrew/bin/mkvpropedit",
+  "pathTranslators": [
+    {
+      "server": "",
+      "node": ""
+    }
+  ],
+  "nodeType": "mapped",
+  "unmappedNodeCache": "/Users/olindo/prj/k8s-lab/tdarr/unmappedNodeCache",
+  "logLevel": "INFO",
+  "priority": -1,
+  "platform_arch_isdocker": "darwin_arm64_docker_false",
+  "processPid": 97024,
+  "cronPluginUpdate": "",
+  "apiKey": "*****",
+  "maxLogSizeMB": 10,
+  "pollInterval": 2000,
+  "startPaused": false,
+  "nodeID": "2ArB2LF3a"
+}
+[2026-04-30T04:04:09.399] [INFO] Tdarr_Node - Config validation passed
+[2026-04-30T04:04:09.435] [INFO] Tdarr_Node - Checking Server version
+[2026-04-30T04:04:09.449] [INFO] Tdarr_Node - Node version 2.70.01 matches Server version 2.70.01
+[2026-04-30T04:04:09.492] [INFO] Tdarr_Node - version: 2.70.01, buildDate: 2026_04_20T05_39_52z
+[2026-04-30T04:04:09.492] [INFO] Tdarr_Node - platform_arch_isdocker: darwin_arm64_docker_false
+[2026-04-30T04:04:09.492] [INFO] Tdarr_Node - Starting Tdarr_Node
+[2026-04-30T04:04:09.492] [INFO] Tdarr_Node - Preparing environment
+[2026-04-30T04:04:09.493] [INFO] Tdarr_Node - forcePolling: false
+[2026-04-30T04:04:09.530] [INFO] Tdarr_Node - Node connected & registered, count:1
+[2026-04-30T04:04:09.532] [INFO] Tdarr_Node - Checking Server version
+[2026-04-30T04:04:09.534] [INFO] Tdarr_Node - Node version 2.70.01 matches Server version 2.70.01
+[2026-04-30T04:04:09.620] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T04:04:09.632] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T04:04:10.513] [INFO] Tdarr_Node - Running binary tests
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - ---------------Binary tests start----------------
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - handbrakePath:"/opt/homebrew/bin/HandBrakeCLI"
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - ffmpegPath:"/Users/olindo/prj/k8s-lab/tdarr/node/assets/app/ffmpeg/darwin_arm64/ffmpeg"
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - mkvpropedit:"/opt/homebrew/bin/mkvpropedit"
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - Binary test 1: handbrakePath working
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - Binary test 2: ffmpegPath working
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - Binary test 3: mkvpropeditPath working
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - ---------------Binary tests end-------------------
+[2026-04-30T04:04:12.906] [INFO] Tdarr_Node - Running scanner tests
+[2026-04-30T04:04:12.907] [INFO] Tdarr_Node - ---------------Scanner tests start----------------
+[2026-04-30T04:04:12.907] [INFO] Tdarr_Node - ffprobePath:"/Users/olindo/prj/k8s-lab/tdarr/node/assets/app/ffmpeg/darwin_arm64/ffprobe"
+[2026-04-30T04:04:12.907] [INFO] Tdarr_Node - ccextractorPath:"ccextractor"
+[2026-04-30T04:04:12.907] [INFO] Tdarr_Node - Scanner test: Scanning file start
+[2026-04-30T04:04:14.226] [INFO] Tdarr_Node - CCExtractor flag style detected as: "-"
+[2026-04-30T04:04:14.314] [INFO] Tdarr_Node - Scanner test: Scanning file end
+[2026-04-30T04:04:14.314] [INFO] Tdarr_Node - Scanner test 1: FFprobe working
+[2026-04-30T04:04:14.314] [INFO] Tdarr_Node - Scanner test 2: Exiftool working
+[2026-04-30T04:04:14.314] [INFO] Tdarr_Node - Scanner test 3: Mediainfo working
+[2026-04-30T04:04:14.314] [WARN] Tdarr_Node - Scanner test 4: CCExtractor not working:"Unable to run CCExtractor exit code 1" 
+CCExtractor is only used to detect closed captions in video files. If you are not needing to detect closed captions, you can ignore this message.
+[2026-04-30T04:04:14.314] [INFO] Tdarr_Node - ---------------Scanner tests end----------------
+[2026-04-30T04:04:30.658] [ERROR] Tdarr_Node - Error checking enabled FFmpeg encoders: Error: hardwareUtils.test.js not found in plugins directory
+[2026-04-30T04:12:26.277] [INFO] Tdarr_Node - Logger started
+[2026-04-30T04:12:26.290] [INFO] Tdarr_Node - Config path: "/Users/olindo/prj/k8s-lab/tdarr/configs/Tdarr_Node_Config.json"
+[2026-04-30T04:12:26.291] [WARN] Tdarr_Node - As env serverIP is set, creating serverURL from serverIP and serverPort. It's recommended to set env serverURL
+[2026-04-30T04:12:26.298] [INFO] Tdarr_Node - {
+  "nodeName": "MacStudio-Node",
+  "serverURL": "http://10.10.20.61:8266",
+  "serverIP": "10.10.20.61",
+  "serverPort": "8266",
+  "handbrakePath": "/opt/homebrew/bin/HandBrakeCLI",
+  "ffmpegPath": "",
+  "mkvpropeditPath": "/opt/homebrew/bin/mkvpropedit",
+  "pathTranslators": [
+    {
+      "server": "",
+      "node": ""
+    }
+  ],
+  "nodeType": "mapped",
+  "unmappedNodeCache": "/Users/olindo/prj/k8s-lab/tdarr/unmappedNodeCache",
+  "logLevel": "INFO",
+  "priority": -1,
+  "platform_arch_isdocker": "darwin_arm64_docker_false",
+  "processPid": 97448,
+  "cronPluginUpdate": "",
+  "apiKey": "*****",
+  "maxLogSizeMB": 10,
+  "pollInterval": 2000,
+  "startPaused": false,
+  "nodeID": "bkAtHthJy"
+}
+[2026-04-30T04:12:26.299] [INFO] Tdarr_Node - Config validation passed
+[2026-04-30T04:12:26.333] [INFO] Tdarr_Node - Checking Server version
+[2026-04-30T04:12:26.348] [INFO] Tdarr_Node - Node version 2.70.01 matches Server version 2.70.01
+[2026-04-30T04:12:26.380] [INFO] Tdarr_Node - version: 2.70.01, buildDate: 2026_04_20T05_39_52z
+[2026-04-30T04:12:26.380] [INFO] Tdarr_Node - platform_arch_isdocker: darwin_arm64_docker_false
+[2026-04-30T04:12:26.380] [INFO] Tdarr_Node - Starting Tdarr_Node
+[2026-04-30T04:12:26.380] [INFO] Tdarr_Node - Preparing environment
+[2026-04-30T04:12:26.380] [INFO] Tdarr_Node - forcePolling: false
+[2026-04-30T04:12:26.400] [INFO] Tdarr_Node - Node connected & registered, count:1
+[2026-04-30T04:12:26.402] [INFO] Tdarr_Node - Checking Server version
+[2026-04-30T04:12:26.404] [INFO] Tdarr_Node - Node version 2.70.01 matches Server version 2.70.01
+[2026-04-30T04:12:26.488] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T04:12:26.500] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T04:12:27.400] [INFO] Tdarr_Node - Running binary tests
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - ---------------Binary tests start----------------
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - handbrakePath:"/opt/homebrew/bin/HandBrakeCLI"
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - ffmpegPath:"/Users/olindo/prj/k8s-lab/tdarr/node/assets/app/ffmpeg/darwin_arm64/ffmpeg"
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - mkvpropedit:"/opt/homebrew/bin/mkvpropedit"
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - Binary test 1: handbrakePath working
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - Binary test 2: ffmpegPath working
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - Binary test 3: mkvpropeditPath working
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - ---------------Binary tests end-------------------
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - Running scanner tests
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - ---------------Scanner tests start----------------
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - ffprobePath:"/Users/olindo/prj/k8s-lab/tdarr/node/assets/app/ffmpeg/darwin_arm64/ffprobe"
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - ccextractorPath:"ccextractor"
+[2026-04-30T04:12:27.618] [INFO] Tdarr_Node - Scanner test: Scanning file start
+[2026-04-30T04:12:28.385] [INFO] Tdarr_Node - CCExtractor flag style detected as: "-"
+[2026-04-30T04:12:28.465] [INFO] Tdarr_Node - Scanner test: Scanning file end
+[2026-04-30T04:12:28.465] [INFO] Tdarr_Node - Scanner test 1: FFprobe working
+[2026-04-30T04:12:28.466] [INFO] Tdarr_Node - Scanner test 2: Exiftool working
+[2026-04-30T04:12:28.466] [INFO] Tdarr_Node - Scanner test 3: Mediainfo working
+[2026-04-30T04:12:28.466] [WARN] Tdarr_Node - Scanner test 4: CCExtractor not working:"Unable to run CCExtractor exit code 1" 
+CCExtractor is only used to detect closed captions in video files. If you are not needing to detect closed captions, you can ignore this message.
+[2026-04-30T04:12:28.466] [INFO] Tdarr_Node - ---------------Scanner tests end----------------
+[2026-04-30T04:12:47.532] [ERROR] Tdarr_Node - Error checking enabled FFmpeg encoders: Error: hardwareUtils.test.js not found in plugins directory
+[2026-04-30T04:53:33.512] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T04:53:33.531] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T05:03:23.257] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T05:03:23.269] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T06:03:23.333] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T06:03:23.345] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T07:03:23.194] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T07:03:23.206] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-04-30T08:03:23.326] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-04-30T08:03:23.338] [INFO] Tdarr_Node - Finished downloading plugins from server
