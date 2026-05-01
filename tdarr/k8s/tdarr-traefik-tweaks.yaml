@@ -1,0 +1,28 @@
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: tdarr-transport
+  namespace: tdarr
+spec:
+  forwardingTimeouts:
+    dialTimeout: 30s
+    responseHeaderTimeout: 30s
+    idleConnTimeout: 60s
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tdarr-ui-internal
+  namespace: tdarr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`tdarr-internal.pindaroli.org`)
+      services:
+        - name: tdarr-service
+          port: 8267
+          serversTransport: tdarr-transport
+  tls:
+    secretName: pindaroli-wildcard-tls

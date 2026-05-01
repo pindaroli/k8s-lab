@@ -50,8 +50,11 @@ whenever an agent command fails for security reasons append it to security-issue
 ### Operational Cheatsheet
 **Canonical Configuration Philosophy**
 > [!IMPORTANT]
-> **AI MUST EXPLAIN BEFORE EXECUTING**
-> Before executing ANY command, the AI MUST explicitly explain what the command does and why it is being executed.
+> **AI MUST EXPLAIN, VERIFY & WAIT**
+> 1. **Explain**: Prima di eseguire QUALSIASI comando, l'AI deve spiegare esplicitamente cosa fa il comando e perché.
+> 2. **Execute & Show**: Eseguire il comando e mostrare l'output completo.
+> 3. **Verify**: Analizzare il risultato per confermare il successo o identificare errori.
+> 4. **Wait**: ATTENDERE l'autorizzazione esplicita dell'utente prima di procedere al passo successivo della catena operativa.
 >
 > **PRESERVE SYMMETRICAL ROUTING**
 > Always prioritize solutions that maintain **Symmetrical Routing via switch10g** (ONT/Xikestor) for inter-VLAN internal traffic (e.g., VLAN 20 to VLAN 10).
@@ -173,6 +176,11 @@ whenever an agent command fails for security reasons append it to security-issue
 - **External Jellyfin**: LXC ID 2200 on PVE3 (Migration Complete - v10.11.6).
 - **Database**: PostgreSQL (CloudNativePG) exposed on `10.10.20.57`.
 - **Status**: Radarr/Lidarr/Prowlarr Migrated. qBittorrent v5.1.4 Secured.
+- **Transcoding (Tdarr)**: 
+  - **Node**: Mac Studio M2 Ultra (10.10.20.100).
+  - **Strategy**: **Tdarr Flows** (Standard 2024+). 
+  - **Logic**: Clean -> Backup (`movies_backup`) -> HEVC Transcode (Apple VideoToolbox) -> Replace.
+  - **Rationale**: I Flows garantiscono un'architettura più pulita e meno soggetta a errori rispetto ai Classic Plugins per operazioni multi-step.
 - **Privacy**: Xray sidecars have been DEPRECATED/REMOVED for both qBittorrent and Prowlarr to ensure maximum performance and indexer connectivity. Traffic flows direct. qBittorrent is isolated via a dedicated LoadBalancer IP (10.10.20.60).
 
 ### Automation Stack (n8n)
