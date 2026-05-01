@@ -110,12 +110,12 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8266
-            initialDelaySeconds: 30
+            initialDelaySeconds: 300
             periodSeconds: 30
           readinessProbe:
             tcpSocket:
               port: 8266
-            initialDelaySeconds: 15
+            initialDelaySeconds: 300
             periodSeconds: 10
       volumes:
         - name: server-config
@@ -128,4 +128,6 @@ spec:
             server: 10.10.10.50
             path: /mnt/oliraid/arrdata/media
         - name: cache
-          emptyDir: {}
+          nfs:
+            server: 10.10.10.50
+            path: /mnt/stripe/k8s-arr/tdarr-cache

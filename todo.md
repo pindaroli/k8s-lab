@@ -7,6 +7,9 @@
 - [x] Risolto `Permission denied` su TrueNAS (10.10.10.50).
 - [x] Nodo Mac Studio (10.10.20.100) connesso e operativo.
 - [x] Libreria `/Volumes/arrdata/media` montata correttamente.
+- [ ] Elimina il file di configurazione duplicato e inutilizzato: `/Users/olindo/prj/k8s-lab/tdarr/node/Tdarr_Node_Config.json` (il file attivo è in `/tdarr/configs/`)
+- [ ] Implementazione MakeMKV su Kubernetes per conversione automatizzata ISO/DVD in MKV.
+
 
 ## Network Architecture Optimization (Premium Approach)
 - [x] **Punto A: Migrazione DNS Esterno (Cloudflare Dashboard)**
