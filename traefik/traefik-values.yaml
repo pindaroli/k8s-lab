@@ -4,7 +4,7 @@ image:
 
 # High Availability Configuration
 deployment:
-  replicas: 2
+  kind: DaemonSet
 
 # Pod Anti-Affinity for Node Distribution
 affinity:
@@ -19,6 +19,10 @@ affinity:
             values:
             - traefik
         topologyKey: kubernetes.io/hostname
+
+service:
+  spec:
+    externalTrafficPolicy: Local
 
 # Configure Network Ports and EntryPoints
 # EntryPoints are the network listeners for incoming traffic.

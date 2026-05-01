@@ -122033,3 +122033,5 @@ CCExtractor is only used to detect closed captions in video files. If you are no
 [2026-05-01T15:30:08.894] [INFO] Tdarr_Node - Finished downloading plugins from server
 [2026-05-01T16:30:08.507] [INFO] Tdarr_Node - Downloading plugins from server
 [2026-05-01T16:30:08.598] [INFO] Tdarr_Node - Finished downloading plugins from server
+[2026-05-01T17:30:08.438] [INFO] Tdarr_Node - Downloading plugins from server
+[2026-05-01T17:30:08.532] [INFO] Tdarr_Node - Finished downloading plugins from server
