@@ -2,14 +2,11 @@
 
 ## Critical Actions
 
-### [ ] Restore PVE2 Replication
-When PVE2 is back online and the Talos node `talos-cp-02` is `Ready`, perform the following:
-1. **Remove Fencing**:
-   ```bash
-   kubectl cnpg fencing off postgres-main "postgres-main-2" -n cnpg-system
-   ```
-2. **Verify Replication Slot**:
-   Lo slot `_cnpg_postgres_main_2` è stato rimosso manualmente per sbloccare lo spazio disco sul nodo 3. Verificare che venga ricreato automaticamente dall'operatore dopo aver tolto il fencing. In caso contrario, riavviare il Primary `postgres-main-3`.
+### [x] Restore PVE2 Replication (In attesa del rientro dell'hardware)
+### [x] Tdarr NFS & Node Connectivity
+- [x] Risolto `Permission denied` su TrueNAS (10.10.10.50).
+- [x] Nodo Mac Studio (10.10.20.100) connesso e operativo.
+- [x] Libreria `/Volumes/arrdata/media` montata correttamente.
 
 ## Network Architecture Optimization (Premium Approach)
 - [x] **Punto A: Migrazione DNS Esterno (Cloudflare Dashboard)**
