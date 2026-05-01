@@ -8,8 +8,12 @@
   "mkvpropeditPath": "/opt/homebrew/bin/mkvpropedit",
   "pathTranslators": [
     {
-      "server": "",
-      "node": ""
+      "server": "/media",
+      "node": "/Volumes/arrdata/media"
+    },
+    {
+      "server": "/temp",
+      "node": "/Volumes/k8s-arr/tdarr-cache"
     }
   ],
   "nodeType": "mapped",
@@ -20,5 +24,7 @@
   "apiKey": "",
   "maxLogSizeMB": 10,
   "pollInterval": 2000,
-  "startPaused": false
+  "startPaused": false,
+  "nodeIP": "10.10.20.100",
+  "nodePort": "8267"
 }

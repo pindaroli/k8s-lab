@@ -15,4 +15,4 @@ Assicurarsi che:
 3. L'opzione `Insecure` (non-privileged ports) sia attiva.
 
 ## Obiettivo Finale
-Lancio del nodo, configurazione Library Movies con catena di plugin H265 e backup originale in `movies_backup`.
+Lancio del nodo, configurazione Library Movies con catena di plugin H265 e validazione manuale via "Require Review" (niente backup automatico).
