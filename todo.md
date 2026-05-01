@@ -21,11 +21,23 @@ When PVE2 is back online and the Talos node `talos-cp-02` is `Ready`, perform th
 - [x] **Documentazione Script Ansible (In Corso)**
   - Rinominato `README.md` in `ansible-scripts-doc.md`.
   - [ ] Completare la descrizione dettagliata di tutti gli script nella cartella `ansible/playbooks/`.
-- [ ] **Infrastructure Consistency**
-  - [ ] Trasformare il nome host fisico del nodo Proxmox principale da `pve` a `pve1` (incluso `/etc/hosts`, `/etc/hostname` e configurazione cluster PVE).
+- [x] **Infrastructure Consistency**
+  - [x] Trasformare il nome host fisico del nodo Proxmox principale da `pve` a `pve1` (Verificato).
+
+## Network & Control Plane Stabilization (COMPLETED 2026-05-01)
+- [x] **Risoluzione Asimmetria di Rete (ERR_CONNECTION_REFUSED)**
+  - Migrato Traefik da Deployment a DaemonSet per distribuzione simmetrica.
+  - Impostata `externalTrafficPolicy: Local` per eliminare inter-node SNAT.
+  - Validata stabilità socket TCP con suite di test dedicata.
+- [x] **Ripristino Service Discovery VictoriaMetrics**
+  - Rimosso formalmente `talos-cp-02` da etcd per sbloccare KubePrism.
+  - Verificato ripristino target in `vmagent` (32 target attivi).
+- [x] **Documentazione Incidente**
+  - Creato `traefik/INCIDENT_REPORT_20260501.md`.
 
 ## PVE2 Recovery (Pending Hardware)
 - [ ] Applicare configurazione Talos `bind-address=0.0.0.0` a `talos-cp-02` (10.10.20.142).
+  - *Nota*: Il nodo è stato rimosso da etcd il 01/05 per stabilizzare il cluster. Al rientro dovrà essere aggiunto come nuovo membro.
   - Comando: `talosctl apply-config -n 10.10.20.142 -f talos-config/controlplane.yaml`
 
 ### [ ] Consolidate n8n Database
