@@ -58,10 +58,6 @@ spec:
       labels:
         app: tdarr-server
     spec:
-      hostAliases:
-        - ip: "10.10.20.56"
-          hostnames:
-            - "tdarr-internal.pindaroli.org"
       containers:
         - name: tdarr-server
           image: ghcr.io/haveagitgat/tdarr:2.70.01
