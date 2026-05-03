@@ -179,6 +179,9 @@
   },
   "active": "a8dc9486228980cb",
   "lastOpenFiles": [
+    "wiki/incidents/2026-05-03-dnsbl-filtering-failure.md",
+    "ansible/playbooks/opnsense_adblock_automation.yml",
+    "ansible/playbooks/scripts/opnsense_dnsbl_config.py",
     "_OLD_ARCHIVE/legacy_markdown/homepage_README.md",
     "wiki/entities/Homepage.md",
     "_OLD_ARCHIVE/legacy_markdown/README.md",
@@ -205,7 +208,6 @@
     "wiki/entities/Tdarr.md",
     "wiki/workflows/Power_Sequence.md",
     "wiki/incidents/2026-05-03-dns-split-horizon-conflict.md",
-    "wiki/incidents/2026-01-10-dashboard-api-error.md",
-    "wiki/incidents/2026-01-08-servarr-vpn-crashes.md"
+    "wiki/incidents/2026-01-10-dashboard-api-error.md"
   ]
 }

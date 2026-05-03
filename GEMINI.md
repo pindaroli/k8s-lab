@@ -15,7 +15,8 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Workloads**: [[Servarr]], [[Tdarr]], [[Xray]].
 - **Data & Registry**: [[Network_Registry]], [[Storage_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]].
-- **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]] (Ultimo risolto).
+- **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]].
+
 - **Grafi**: [Core Wiki k8s-lab](obsidian://graph?vault=k8s-lab&filter=path:wiki)
 
 
