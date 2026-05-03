@@ -70,7 +70,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "horizontal",
@@ -176,7 +177,7 @@
       "bases:Create new base": false
     }
   },
-  "active": "233c8e44120b6566",
+  "active": "a8dc9486228980cb",
   "lastOpenFiles": [
     "_OLD_ARCHIVE/legacy_markdown/README.md",
     "_OLD_ARCHIVE/legacy_markdown/walkthrough.md",

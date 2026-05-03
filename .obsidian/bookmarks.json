@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "type": "graph",
+      "ctime": 1777826528287,
+      "title": "Core Wiki k8s-lab",
+      "options": {
+        "collapse-filter": false,
+        "search": "path:wiki ",
+        "showTags": false,
+        "showAttachments": false,
+        "hideUnresolved": false,
+        "showOrphans": true,
+        "collapse-color-groups": false,
+        "colorGroups": [
+          {
+            "query": "tag:#incident",
+            "color": {
+              "a": 1,
+              "rgb": 14701138
+            }
+          },
+          {
+            "query": "path:wiki/entities",
+            "color": {
+              "a": 1,
+              "rgb": 5408992
+            }
+          },
+          {
+            "query": "path:wiki/workflows  ",
+            "color": {
+              "a": 1,
+              "rgb": 11657298
+            }
+          },
+          {
+            "query": "tag:#core",
+            "color": {
+              "a": 1,
+              "rgb": 15785052
+            }
+          }
+        ],
+        "collapse-display": true,
+        "showArrow": false,
+        "textFadeMultiplier": 0,
+        "nodeSizeMultiplier": 1,
+        "lineSizeMultiplier": 1,
+        "collapse-forces": true,
+        "centerStrength": 0.518713248970312,
+        "repelStrength": 10,
+        "linkStrength": 1,
+        "linkDistance": 250,
+        "scale": 1.3763004293957637,
+        "close": false
+      }
+    }
+  ]
+}
