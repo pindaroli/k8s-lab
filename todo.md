@@ -6,6 +6,20 @@
 - [ ] Studiare/definire architettura per l'integrazione di file `.qmd` (Quarto Markdown) nel progetto.
 - [ ] Stabilire il workflow per rendering, pubblicazione o analisi dei dati.
 
+### [ ] OPNsense Multi-Layered Ad-Blocking (Da Link Esterno)
+- [ ] **Ottimizzazione DNS Filtering (Unbound DNSBL)**:
+  - Passare alle blocklist **HaGeZi Multi Pro** (o Pro++) per bilanciare protezione e usabilità.
+  - Configurare un **Cron Job** in OPNsense per aggiornare automaticamente le liste.
+- [ ] **Integrazione AdGuard Home (AGH)**:
+  - Installare plugin `os-adguardhome` dal repository `mimugmail`.
+  - Configurare AGH in ascolto sulla porta **53** per i client.
+  - Riconfigurare Unbound sulla porta **5353** come upstream per AGH.
+  - Abilitare filtri specifici in AGH come "Search ads and self-promotion".
+- [ ] **L7 Filtering con Zenarmor (DPI)**:
+  - Deploy di Zenarmor per Deep Packet Inspection (DPI).
+  - Bloccare la categoria **"Advertisements"** e creare regole esplicite per **"Google Ads"** e **"DoubleClick"**.
+- [ ] **Nota Tecnica**: Gli ad "first-party" (es. Youtube) continueranno a richiedere uBlock Origin a livello browser.
+
 
 ### [x] DNS Stabilization & Split-Horizon (COMPLETED 2026-05-03)
 - [x] Sincronizzato IP DNS Talos (`10.10.20.254`).

@@ -13,6 +13,8 @@
         "size": "100Gi",
         "fs": "XFS (Formatted by Talos)",
         "provisioner": "rancher.io/local-path",
+        "status": "DEGRADED (Missing Nodes)",
+        "notes": "CRITICAL: The local storage is physically bound to the nodes. postgres-main-2 data is stuck on talos-cp-02 (hosted on offline PVE2). The DB cluster cannot start until the node comes back.",
         "nodes": [
           "talos-cp-01",
           "talos-cp-02",

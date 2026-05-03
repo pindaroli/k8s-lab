@@ -177,11 +177,24 @@
       "bases:Create new base": false
     }
   },
-  "active": "a8dc9486228980cb",
+  "active": "233c8e44120b6566",
   "lastOpenFiles": [
+    "incidents/2026-05-03-db-stall-identity-loss.md",
+    "wiki/workflows/Node_Maintenance.md",
+    "talos-config/controlplane-cp-03.yaml",
+    "talos-config/controlplane-cp-02.yaml",
+    "talos-config/controlplane-cp-01.yaml",
+    "tdarr/node/assets/app/plugins/temp.zip",
+    "wiki/incidents/2026-05-03-cnpg-database-logical-deadlock.md",
+    "scratch/postgres-main-clean.yaml",
+    "scratch/postgres-main-backup.yaml",
+    "scratch/rescue-pod.yaml",
+    "scratch",
+    "wiki/incidents/2026-05-03-talos-hostname-storage-loss.md",
+    "talos-config/patch-talos-cp-02.yaml",
+    "talos-config/patch-talos-cp-03.yaml",
+    "wiki/entities/OPNsense.md",
     "wiki/incidents/2026-05-03-dnsbl-filtering-failure.md",
-    "ansible/playbooks/opnsense_adblock_automation.yml",
-    "ansible/playbooks/scripts/opnsense_dnsbl_config.py",
     "_OLD_ARCHIVE/legacy_markdown/homepage_README.md",
     "wiki/entities/Homepage.md",
     "_OLD_ARCHIVE/legacy_markdown/README.md",
@@ -201,13 +214,6 @@
     "_OLD_ARCHIVE/legacy_markdown/lesencript.md",
     "_OLD_ARCHIVE/legacy_markdown/dns_policy.md",
     "_OLD_ARCHIVE/legacy_markdown/homelab_notebooklm.md",
-    "_OLD_ARCHIVE/legacy_markdown",
-    "wiki/workflows/Certificate_Renewal.md",
-    "tdarr/node/assets/app/plugins/temp.zip",
-    "wiki/entities/OAuth2_Proxy.md",
-    "wiki/entities/Tdarr.md",
-    "wiki/workflows/Power_Sequence.md",
-    "wiki/incidents/2026-05-03-dns-split-horizon-conflict.md",
-    "wiki/incidents/2026-01-10-dashboard-api-error.md"
+    "wiki/workflows/Certificate_Renewal.md"
   ]
 }

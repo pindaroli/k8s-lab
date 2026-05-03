@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rescue-postgres-3
+  namespace: cnpg-system
+spec:
+  containers:
+  - name: rescue
+    image: busybox
+    command: ["/bin/sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - name: data
+      mountPath: /data
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: postgres-main-3
+  nodeSelector:
+    kubernetes.io/hostname: talos-cp-01

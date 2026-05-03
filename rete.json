@@ -455,6 +455,8 @@
             "OS": "Debian 13 (Trixie)",
             "hardware": "64GB RAM, 2TB NVMe",
             "management_ip": "10.10.10.21",
+            "status": "OFFLINE (Hardware Maintenance)",
+            "notes": "PVE2 is currently powered off and waiting for hardware maintenance. Hosts critical nodes like talos-cp-02.",
             "ports": [
                 {
                     "id": "1",
@@ -652,7 +654,9 @@
             "role": "Kubernetes Control Plane",
             "os": "Talos Linux 1.12.0",
             "network": "VLAN 20 (vmbr20)",
-            "host_node_sticky": true
+            "host_node_sticky": true,
+            "status": "OFFLINE (Hardware Maintenance)",
+            "notes": "CRITICAL: This node is hosted on PVE2 which is currently completely powered off for maintenance. This node provides Local Storage for the 'postgres-main' cluster (CloudNativePG). PostgreSQL cannot start until this node is restored because the DB disks are physically bound to it."
         },
         {
             "id": "talos-cp-03",
