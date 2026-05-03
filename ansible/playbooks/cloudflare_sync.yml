@@ -36,16 +36,3 @@
         proxied: no
       loop: "{{ traefik_node.aliases }}"
       when: not item.endswith('-internal')
-
-    - name: Ensure Internal DNS Records are BLACKHOLED on Cloudflare
-      community.general.cloudflare_dns:
-        zone: "{{ zone }}"
-        record: "{{ item }}-internal"
-        type: A
-        value: "0.0.0.0" # Blackhole to override Wildcard and prevent external resolution
-        account_email: "{{ cloudflare_email }}"
-        account_api_token: "{{ cloudflare_api_key }}"
-        state: present
-        proxied: no
-      loop: "{{ traefik_node.aliases }}"
-      when: not item.endswith('-internal')

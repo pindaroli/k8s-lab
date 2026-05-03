@@ -153,6 +153,15 @@ While the core workloads run on Kubernetes, specialized services are hosted on d
 
 ## 8. Cronologia Incidenti Maggiori
 
+### 2026-05-03: DNS Split-Horizon Resolution Failure
+**Causa**: Conflito tra record "Black Hole" (0.0.0.0) su Cloudflare, ACL mancanti su OPNsense e IP DNS errato in Talos.
+**Risoluzione**:
+1. Autorizzato subnet Pod (`10.244.0.0/16`) nelle Access List di Unbound.
+2. Corretto IP DNS in `controlplane.yaml` da `.1` a `.254`.
+3. Rimossi record `0.0.0.0` da Cloudflare e disabilitata automazione Ansible relativa.
+4. Ottimizzato Unbound (`transparent`) e DHCP Option 15 (`pindaroli.org`).
+**Dettagli**: Vedere [2026-05-03-dns-split-horizon-conflict.md](file:///Users/olindo/prj/k8s-lab/incidents/2026-05-03-dns-split-horizon-conflict.md).
+
 ### 2026-04-27: Ripristino Cluster Post-Crash
 **Causa**: Crash/corruzione Etcd su tutti e 3 i nodi dopo problemi hardware su PVE2.
 **Risoluzione**:
