@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tdarr-cleanup
+  namespace: tdarr
+spec:
+  template:
+    spec:
+      containers:
+      - name: cleanup
+        image: alpine
+        command: ["/bin/sh", "-c", "echo 'Avvio pulizia NFS...' && rm -f /mnt/configs/Tdarr_Server_Config.json* && rm -f /mnt/Tdarr_Server_Config.json* && echo 'Pulizia completata'"]
+        volumeMounts:
+        - name: nfs-config
+          mountPath: /mnt
+      restartPolicy: Never
+      volumes:
+      - name: nfs-config
+        nfs:
+          server: 10.10.10.50
+          path: /mnt/stripe/k8s-arr/tdarr-config

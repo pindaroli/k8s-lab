@@ -1,6 +1,6 @@
 # Project GEMINI: Homelab Infrastructure Documentation
 > **Document Status**: Active / Source of Truth for LLM Context
-> **Last Updated**: 2026-04-27 (Post-Cluster Recovery)
+> **Last Updated**: 2026-05-02 (Traefik & 10G Optimization)
 
 ## 1. Executive Summary
 Project GEMINI represents the migration and modernization of a personal homelab environment. The core objective is to move from legacy standalone deployments to a fully declarative, high-availability Kubernetes cluster running on **Talos Linux**, hosted on a 3-node **Proxmox VE** cluster. Major components include **TrueNAS Scale** for storage, **OPNsense** for routing/firewalling, and a **Servarr** media stack backed by **PostgreSQL**.
@@ -92,6 +92,16 @@ Major applications deployed via Helm and Flux (planned/in-progress).
     *   `10.10.20.61` → Tdarr Server API
 *   **Cert-Manager**: Rinnovo automatico wildcard `*.pindaroli.org` via Cloudflare DNS-01. **NOTA**: Il secret TLS va propagato manualmente in ogni namespace che ne ha bisogno (`arr`, `monitoring`, `oauth2-proxy`, `kasmweb`). Cert-manager crea il secret solo nei namespace dove esiste la risorsa `Certificate`.
 
+### Ottimizzazioni Connettività & Rete 10G (2026-05-02)
+Per risolvere problemi di `ERR_CONNECTION_REFUSED` su Chrome e stabilizzare il routing asimmetrico causato dallo switch L3 Xikestor, sono state applicate le seguenti configurazioni:
+*   **Traefik Timeout Alignment**: Impostato `idleTimeout: 3600s` e `readTimeout: 0s` nei `values.yaml` di Traefik. Questo impedisce al proxy di chiudere le connessioni prima del browser Chromium (che mantiene i socket aperti a lungo).
+*   **Talos TCP Stack Tuning**: Applicati `sysctls` avanzati a tutti i nodi Talos per massimizzare il throughput sui 10G:
+    *   `net.core.rmem_max/wmem_max`: Portati a 128MB.
+    *   `net.ipv4.tcp_rmem/wmem`: Finestre di ricezione/invio ottimizzate fino a 64MB.
+*   **OPNsense Asymmetric Routing Mitigation**: 
+    *   **Firewall Optimization**: Impostata su **Conservative** per allungare la vita degli stati TCP idle.
+    *   **Sloppy State Tracking**: Abilitato sulle regole VLAN 20 -> VLAN 10 per permettere il passaggio di pacchetti TCP di cui il firewall non vede l'intero handshake (causato dal bypass parziale del traffico via switch L3).
+
 ### Nuovi Servizi Deployati (2026-04-27)
 *   **Prefect** (namespace `prefect`): Orchestratore di workflow. Server + Kubernetes Worker deployati via Helm. Database su `postgres-main` (CNPG). Accessibile su `https://prefect-internal.pindaroli.org`.
 *   **Tdarr** (namespace `tdarr`): Media transcoding. Architettura ibrida:
@@ -128,6 +138,12 @@ While the core workloads run on Kubernetes, specialized services are hosted on d
 ### Da Pulire
 *   `talos-config/worker.yaml`: File residuo, non applicabile (architettura iper-convergente, nessun nodo worker dedicato).
 *   PV orfani su PVE2 (quando torna): `pvc-052584c6-*` (postgres-main-2, 100Gi), `pvc-ebe1187c-*` (postgres-main-2-wal, 4Gi).
+
+### Rete & DNS (OPNsense)
+*   **Kubernetes Split DNS**: I pod K8s (`10.244.0.0/16`) ricevono un "Connection Refused" quando interrogano il DNS di OPNsense (`10.10.20.1`), causando fallback su `1.1.1.1` e risoluzione di domini interni a `0.0.0.0`.
+    *   *Azione Richiesta*: In OPNsense, andare su `Services -> Unbound DNS -> Access Lists` e aggiungere una regola in "Allow" per la subnet `10.244.0.0/16`.
+*   **OPNsense WebGUI Rebind Check**: L'accesso via `firewall-direct.pindaroli.org` è bloccato dall'anti-DNS-rebind.
+    *   *Azione Richiesta*: Accedere via IP (`https://10.10.20.1`), andare in `System -> Settings -> Administration` e aggiungere `firewall-direct.pindaroli.org` nel campo "Alternate Hostnames".
 
 ### Monitoraggio
 *   **Certificati TLS**: Rinnovati il 2026-04-27. Prossima scadenza ~90 giorni. Monitorare che cert-manager rinnovi automaticamente nel namespace `arr` (l'ultimo rimasto `False`).

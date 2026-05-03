@@ -58,6 +58,10 @@ spec:
       labels:
         app: tdarr-server
     spec:
+      hostAliases:
+        - ip: "10.10.20.56"
+          hostnames:
+            - "tdarr-internal.pindaroli.org"
       containers:
         - name: tdarr-server
           image: ghcr.io/haveagitgat/tdarr:2.70.01
@@ -74,7 +78,7 @@ spec:
             - name: PGID
               value: "1000"
             - name: serverIP
-              value: "0.0.0.0"
+              value: "tdarr-internal.pindaroli.org"
             - name: serverPort
               value: "8266"
             - name: webUIPort
@@ -87,6 +91,8 @@ spec:
               value: "6"
             - name: nodeName
               value: "K8sInternalNode"
+            - name: enableDockerAutoUpdater
+              value: "false"
           resources:
             requests:
               cpu: 100m
@@ -110,12 +116,12 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8266
-            initialDelaySeconds: 300
+            initialDelaySeconds: 30
             periodSeconds: 30
           readinessProbe:
             tcpSocket:
               port: 8266
-            initialDelaySeconds: 300
+            initialDelaySeconds: 30
             periodSeconds: 10
       volumes:
         - name: server-config

@@ -45,6 +45,10 @@ ports:
     port: 9443
     exposedPort: 443
     nodePort: 30001
+    transport:
+      respondingTimeouts:
+        readTimeout: 0s
+        idleTimeout: 3600s
 
   tdarr-api:
     port: 8266

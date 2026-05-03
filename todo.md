@@ -7,15 +7,23 @@
 - [x] Risolto `Permission denied` su TrueNAS (10.10.10.50).
 - [x] Nodo Mac Studio (10.10.20.100) connesso e operativo.
 - [x] Libreria `/Volumes/arrdata/media` montata correttamente.
-- [ ] Elimina il file di configurazione duplicato e inutilizzato: `/Users/olindo/prj/k8s-lab/tdarr/node/Tdarr_Node_Config.json` (il file attivo è in `/tdarr/configs/`)
+- [x] Eliminato il file di configurazione duplicato e inutilizzato: `/Users/olindo/prj/k8s-lab/tdarr/node/Tdarr_Node_Config.json` (il file attivo è in `/tdarr/configs/`)
 - [ ] Implementazione MakeMKV su Kubernetes per conversione automatizzata ISO/DVD in MKV.
+- [x] **Ottimizzazione Tdarr Server**:
+    - [x] Disabilitare AutoUpdater (non supportato/consigliato in Docker).
+    - [x] Ridurre `initialDelaySeconds` della Readiness Probe da 300s a 30s (velocizzato ripristino post-riavvio).
+- [ ] **Ripristino PVE2 (CP2)** dopo manutenzione:
+    - [ ] Riaggiungere IP `10.10.20.142` nel file `talos-config/talosconfig` (sezioni `endpoints` e `nodes`).
+    - [ ] Verificare lo stato del nodo con `talosctl get members`.
+    - [ ] Verificare il quorum etcd e la salute del cluster Kubernetes.
+
 
 
 ## Network Architecture Optimization (Premium Approach)
 - [x] **Punto A: Migrazione DNS Esterno (Cloudflare Dashboard)**
   - Sostituire il CNAME wildcard `*` con record CNAME puntuali per ogni servizio.
   - *Perché*: Impedisce l'enumerazione dei sottodomini e aumenta la sicurezza del tunnel.
-- [ ] **Punto B: Rafforzamento Configurazione Tunnel (Cloudflared ConfigMap)**
+- [x] **Punto B: Rafforzamento Configurazione Tunnel (Cloudflared ConfigMap)**
   - Elencare esplicitamente gli hostname nell'Ingress del tunnel invece di usare `*.pindaroli.org`.
   - *Perché*: Evita che il traffico DNS "sporco" venga dirottato a Traefik, risolvendo alla radice i problemi di Black Hole Routing.
 - [x] **Documentazione Script Ansible (In Corso)**
