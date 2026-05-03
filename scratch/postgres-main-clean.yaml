@@ -4,7 +4,7 @@ metadata:
   name: postgres-main
   namespace: cnpg-system
 spec:
-  instances: 2
+  instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1-system-trixie
   storage:
     size: 100Gi

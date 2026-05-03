@@ -23,9 +23,9 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 ---
 
 ## 2. Status & Active Goals
-- **Current Status**: **DNS EXPLICIT MAPPING OPERATIONAL**
+- **Current Status**: **DATABASE INFRASTRUCTURE RESTORED** (Instance 3 online).
 - **Active Goal**: Ingress & External Access (Phase 5).
-- **PVE2 Status**: **OFFLINE** (Hardware Pending).
+- **PVE2 Status**: **OFFLINE** (Hardware Pending) - `postgres-main-2` is currently fenced.
 
 ---
 
