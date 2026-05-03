@@ -10,10 +10,14 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 
 ### 🗺️ Mappe Concettuali (Wiki)
 - **Governance**: [[purpose]] (Principi Core), [[SCHEMA]] (Regole del Wiki).
-- **Infrastruttura**: [[OPNsense]], [[Talos_Cluster]], [[TrueNAS]], [[Traefik]].
+- **Infrastruttura**: [[OPNsense]], [[Talos_Cluster]], [[TrueNAS]], [[Traefik]], [[OAuth2_Proxy]].
+- **Monitoraggio**: [[Monitoring]], [[Homepage]].
+- **Workloads**: [[Servarr]], [[Tdarr]], [[Xray]].
+- **Data & Registry**: [[Network_Registry]], [[Storage_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]].
 - **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]] (Ultimo risolto).
 - **Grafi**: [Core Wiki k8s-lab](obsidian://graph?vault=k8s-lab&filter=path:wiki)
+
 
 ---
 
