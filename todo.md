@@ -2,33 +2,35 @@
 
 ## Critical Actions
 
-### [x] Restore PVE2 Replication (In attesa del rientro dell'hardware)
-### [x] Tdarr NFS & Node Connectivity
+### [x] DNS Stabilization & Split-Horizon (COMPLETED 2026-05-03)
+- [x] Sincronizzato IP DNS Talos (`10.10.20.254`).
+- [x] Configurate Access List Unbound per Pod Subnet (`10.244.0.0/16`).
+- [x] Rimossi record 0.0.0.0 (Blackhole) da Cloudflare e Ansible.
+- [x] Validata risoluzione interna ed esterna via Chrome/Curl.
+
+### [x] Tdarr NFS & Node Connectivity (COMPLETED 2026-05-03)
 - [x] Risolto `Permission denied` su TrueNAS (10.10.10.50).
 - [x] Nodo Mac Studio (10.10.20.100) connesso e operativo.
 - [x] Libreria `/Volumes/arrdata/media` montata correttamente.
-- [x] Eliminato il file di configurazione duplicato e inutilizzato: `/Users/olindo/prj/k8s-lab/tdarr/node/Tdarr_Node_Config.json` (il file attivo è in `/tdarr/configs/`)
+- [x] **Automazione Mount**: Configurato `sudoers` su Mac Studio per mount passwordless.
+- [x] Eliminato il file di configurazione duplicato e inutilizzato.
 - [ ] Implementazione MakeMKV su Kubernetes per conversione automatizzata ISO/DVD in MKV.
 - [x] **Ottimizzazione Tdarr Server**:
-    - [x] Disabilitare AutoUpdater (non supportato/consigliato in Docker).
-    - [x] Ridurre `initialDelaySeconds` della Readiness Probe da 300s a 30s (velocizzato ripristino post-riavvio).
-- [ ] **Ripristino PVE2 (CP2)** dopo manutenzione:
-    - [ ] Riaggiungere IP `10.10.20.142` nel file `talos-config/talosconfig` (sezioni `endpoints` e `nodes`).
-    - [ ] Verificare lo stato del nodo con `talosctl get members`.
-    - [ ] Verificare il quorum etcd e la salute del cluster Kubernetes.
+    - [x] Disabilitare AutoUpdater.
+    - [x] Ridurre `initialDelaySeconds` della Readiness Probe.
 
-
+### [ ] Ripristino PVE2 (Hardware Pending)
+- [ ] Riaggiungere IP `10.10.20.142` nel file `talos-config/talosconfig`.
+- [ ] Applicare configurazione Talos `bind-address=0.0.0.0` a `talos-cp-02`.
+- [ ] Verificare lo stato del nodo con `talosctl get members`.
+- [ ] Verificare il quorum etcd e la salute del cluster Kubernetes.
 
 ## Network Architecture Optimization (Premium Approach)
 - [x] **Punto A: Migrazione DNS Esterno (Cloudflare Dashboard)**
-  - Sostituire il CNAME wildcard `*` con record CNAME puntuali per ogni servizio.
-  - *Perché*: Impedisce l'enumerazione dei sottodomini e aumenta la sicurezza del tunnel.
 - [x] **Punto B: Rafforzamento Configurazione Tunnel (Cloudflared ConfigMap)**
-  - Elencare esplicitamente gli hostname nell'Ingress del tunnel invece di usare `*.pindaroli.org`.
-  - *Perché*: Evita che il traffico DNS "sporco" venga dirottato a Traefik, risolvendo alla radice i problemi di Black Hole Routing.
-- [x] **Documentazione Script Ansible (In Corso)**
+- [x] **Documentazione Script Ansible (COMPLETED 2026-05-03)**
   - Rinominato `README.md` in `ansible-scripts-doc.md`.
-  - [ ] Completare la descrizione dettagliata di tutti gli script nella cartella `ansible/playbooks/`.
+  - [x] Descrizione completa degli script in `ansible/playbooks/`.
 - [x] **Infrastructure Consistency**
   - [x] Trasformare il nome host fisico del nodo Proxmox principale da `pve` a `pve1` (Verificato).
 

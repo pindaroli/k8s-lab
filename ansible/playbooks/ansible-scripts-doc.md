@@ -17,7 +17,7 @@ This directory contains the core automation playbooks for the Kubernetes Homelab
 ### `cloudflare_sync.yml` (External)
 This playbook implements a **"Split-Horizon/Blackhole"** strategy for external DNS:
 1. **Public Services**: For every alias in `rete.json` (e.g., `radarr`), it creates a CNAME pointing to the root domain (`pindaroli.org`). This allows Cloudflare Tunnel to route the traffic.
-2. **Internal Protection (Blackhole)**: For every `-internal` alias, it creates an **A record pointing to `0.0.0.0`** on Cloudflare. 
+2. **Internal Privacy**: Internal services (`-internal`) are **NOT** created on Cloudflare. They are managed exclusively by the internal OPNsense/Unbound DNS to prevent external leakage and browser caching issues.
    - *Why*: This explicitly overrides the wildcard `*` at the DNS provider level, ensuring that internal-only services are **never** resolvable from the public internet, even by accident.
 3. **Prerequisites**: Requires `cloudflare_email` and `cloudflare_api_key` (sourced from `ansible/vars/secrets.yml`).
 

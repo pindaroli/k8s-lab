@@ -2,7 +2,7 @@
 
 > [!IMPORTANT]
 > **Current Status**: **DNS EXPLICIT MAPPING OPERATIONAL**
-> Wildcard removed; All services explicitly mapped; "Black Hole Routing" issue resolved.
+> 0.0.0.0 "Black Hole" records removed from Cloudflare; All internal services exclusively managed via OPNsense.
 > **Active Goal**: Ingress & External Access (Phase 5).
 
 ## 1. Quick Reference
