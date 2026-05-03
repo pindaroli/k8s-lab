@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tdarr-server-config
+  namespace: tdarr
+data:
+  Tdarr_Server_Config.json: |
+    {
+      "serverPort": "8266",
+      "webUIPort": "8267",
+      "serverIP": "tdarr-internal.pindaroli.org",
+      "serverBindIP": false,
+      "serverDualStack": false,
+      "handbrakePath": "",
+      "ffmpegPath": "",
+      "logLevel": "INFO",
+      "mkvpropeditPath": "",
+      "ccextractorPath": "",
+      "openBrowser": true,
+      "cronPluginUpdate": "",
+      "auth": false,
+      "authSecretKey": "tsec_ba6ea5358df7c4f074d16e8a891bf24bc624d9b4c683b6e5b40c1a59ffdc7c89",
+      "maxLogSizeMB": 10,
+      "seededApiKey": "",
+      "jobReportsPath": ""
+    }

@@ -695,6 +695,7 @@
                 "traefik-dash",
                 "radarr",
                 "lidarr",
+                "tdarr-internal",
                 "prowlarr",
                 "qbittorrent",
                 "jellyfin",

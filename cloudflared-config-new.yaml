@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+  namespace: default
+data:
+  config.yaml: |
+    tunnel: eb4581bd-3011-4f40-8956-29f1ba634f39
+    credentials-file: /etc/cloudflared/creds/credentials.json
+
+    ingress:
+      - hostname: "home.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "jellyfin.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "lidarr.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "prowlarr.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "qbittorrent.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "radarr.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "ap.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "minio.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "firewall.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "pve.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "nas.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "sw-core.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "sw-letto.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "sw-server.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "kasmweb.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "grafana.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "n8n.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "auth.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "prefect.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "tdarr.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      - hostname: "traefik-dash.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
+      # Catch-all rule (required as last rule)
+      - service: http_status:404

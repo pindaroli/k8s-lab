@@ -48,6 +48,11 @@ spec:
   entryPoints:
     - websecure
   routes:
+    - match: Host(`tdarr-internal.pindaroli.org`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: tdarr-service
+          port: 8266
     - match: Host(`tdarr-internal.pindaroli.org`)
       kind: Rule
       services:
