@@ -31,7 +31,15 @@ Il servizio Unbound gestisce la risoluzione interna per evitare l'uso di DNS pub
 Kea DHCP assegna gli indirizzi dinamici ai client (inclusa la VLAN 20).
 - **Option 15 (Domain Name)**: Deve essere impostato su `pindaroli.org` per istruire i client a usare i nomi brevi e dare priorità al resolver locale.
 
-## 4. Protezione Anti-Rebind
+## 4. Filtraggio Pubblicitario (DNSBL / AdBlock)
+OPNsense usa il modulo nativo di Unbound per il blocco dei domini traccianti.
+- **Troubleshooting Base**: Le liste pubbliche spesso mancano i domini *root* (es. `doubleclick.net`). In caso di mancato blocco, verificare sempre le **Wildcard Domains**. (Vedi [[2026-05-03-dnsbl-filtering-failure]]).
+- **Automazione & SSoT**: La lista dei domini da bloccare in wildcard (telemetria, tracking aggressivo) è centralizzata in `rete.json` sotto la chiave `opnsense.outbound.blocked-domain`. 
+- **Applicazione Modifiche**: Le modifiche si applicano eseguendo lo script Ansible dedicato:
+  `ansible-playbook ansible/playbooks/opnsense_adblock_automation.yml`
+- **Importante**: Lo script aggiorna la configurazione, ma in alcune versioni di OPNsense è richiesto un click manuale su **"Download & Update"** nella UI per rigenerare fisicamente i file di blocco.
+
+## 5. Protezione Anti-Rebind
 Per accedere all'interfaccia web di OPNsense usando un dominio personalizzato (es. `firewall-direct.pindaroli.org`), tale dominio deve essere registrato in `System -> Settings -> Administration -> Alternate Hostnames`.
 
 ## Relazioni Architetturali

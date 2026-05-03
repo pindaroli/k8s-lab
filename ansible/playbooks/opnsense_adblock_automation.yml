@@ -1,0 +1,42 @@
+---
+- name: Automate OPNsense DNSBL (AdBlock) Configuration
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  vars:
+    # Defaults (override via extra-vars or secrets.yml)
+    api_key: "{{ opnsense_api_key | default('') }}"
+    api_secret: "{{ opnsense_api_secret | default('') }}"
+    opnsense_url: "https://10.10.20.254" # IP dalla Wiki
+
+
+
+  tasks:
+    - name: Verify Credentials
+      fail:
+        msg: "Missing OPNsense API credentials. Please ensure opnsense_api_key/secret are defined."
+      when: api_key == '' or api_secret == ''
+
+    - name: Run DNSBL Configuration Script
+      command:
+        cmd: "python3 scripts/opnsense_dnsbl_config.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}' --file ../../rete.json"
+      register: script_output
+      changed_when: "'saved successfully' in script_output.stdout"
+
+    - name: Show Output
+      debug:
+        var: script_output.stdout_lines
+
+    - name: Verification Test (Dig)
+      command:
+        cmd: "dig @10.10.20.254 google-analytics.com +short"
+      register: dig_test
+      failed_when: dig_test.stdout != "0.0.0.0"
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Report Status
+      debug:
+        msg: "DNSBL is working! Google-Analytics correctly resolved to 0.0.0.0"
+      when: dig_test.stdout == "0.0.0.0"

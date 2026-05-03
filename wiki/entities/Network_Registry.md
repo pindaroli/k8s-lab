@@ -32,6 +32,11 @@ Ogni volta che si crea un nuovo servizio (es. `nuovo-servizio.pindaroli.org`) ed
 2. Si esegue il playbook: `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml`.
 3. Ansible legge `rete.json` e istruisce **Unbound** su [[OPNsense]] a creare i record di tipo A per risolvere l'indirizzo localmente, evitando il routing su IP pubblici (Split-Horizon).
 
+## 3. Filtraggio DNS (AdBlock / DNSBL)
+Il Network Registry contiene anche la lista centralizzata dei domini di tracciamento e telemetria da bloccare in OPNsense tramite wildcard.
+- **Percorso**: `opnsense.outbound.blocked-domain`
+- **Gestione**: I domini vengono applicati tramite il playbook `ansible/playbooks/opnsense_adblock_automation.yml`.
+
 ## Relazioni
 - Governa: `rete.json`
 - Letto da: Automazioni Ansible.

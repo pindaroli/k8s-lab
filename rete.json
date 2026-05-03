@@ -795,5 +795,22 @@
             },
             "status": "Active"
         }
-    ]
+    ],
+    "opnsense": {
+        "outbound": {
+            "blocked-domain": [
+                "google-analytics.com",
+                "googletagmanager.com",
+                "googlesyndication.com",
+                "doubleclick.net",
+                "facebook.net",
+                "vortex.data.microsoft.com",
+                "settings-win.data.microsoft.com",
+                "telemetry.microsoft.com",
+                "scorecardresearch.com",
+                "quantserve.com",
+                "advertising.com"
+            ]
+        }
+    }
 }
