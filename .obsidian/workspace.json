@@ -179,6 +179,8 @@
   },
   "active": "a8dc9486228980cb",
   "lastOpenFiles": [
+    "_OLD_ARCHIVE/legacy_markdown/homepage_README.md",
+    "wiki/entities/Homepage.md",
     "_OLD_ARCHIVE/legacy_markdown/README.md",
     "_OLD_ARCHIVE/legacy_markdown/walkthrough.md",
     "wiki/entities/Xray.md",
@@ -204,8 +206,6 @@
     "wiki/workflows/Power_Sequence.md",
     "wiki/incidents/2026-05-03-dns-split-horizon-conflict.md",
     "wiki/incidents/2026-01-10-dashboard-api-error.md",
-    "wiki/incidents/2026-01-08-servarr-vpn-crashes.md",
-    "wiki/entities/TrueNAS.md",
-    "wiki/entities/Traefik.md"
+    "wiki/incidents/2026-01-08-servarr-vpn-crashes.md"
   ]
 }
