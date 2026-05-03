@@ -1,0 +1,210 @@
+{
+  "main": {
+    "id": "d65211bede4a6b6e",
+    "type": "split",
+    "children": [
+      {
+        "id": "d211aba975a3106a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "233c8e44120b6566",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "47676edebee0fd83",
+    "type": "split",
+    "children": [
+      {
+        "id": "a4f4a8906e4cb39e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7ef68ae88fa75450",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "e9eb6855279f06fd",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "a8dc9486228980cb",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "af21b083c4cc1535",
+    "type": "split",
+    "children": [
+      {
+        "id": "dbd2e0cab8098498",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "eb3867d2a0d12d18",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "312462bc3f09ad2f",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "98fb0d2f09c721f2",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "6cebd417f459c345",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "0c8e12d810a3ee95",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "233c8e44120b6566",
+  "lastOpenFiles": [
+    "_OLD_ARCHIVE/legacy_markdown/README.md",
+    "_OLD_ARCHIVE/legacy_markdown/walkthrough.md",
+    "wiki/entities/Xray.md",
+    "wiki/entities/Monitoring.md",
+    "_OLD_ARCHIVE/legacy_markdown/RESTART_PROMPT.md",
+    "_OLD_ARCHIVE/legacy_markdown/tdarr_SERVER.md",
+    "_OLD_ARCHIVE/legacy_markdown/traefik_README.md",
+    "_OLD_ARCHIVE/legacy_markdown/FUTURE_N8N_MIGRATION.md",
+    "_OLD_ARCHIVE/legacy_markdown/TODO_TDARR.md",
+    "_OLD_ARCHIVE/legacy_markdown/opnsense-port-forward-config.md",
+    "wiki/entities/Servarr.md",
+    "wiki/incidents/2026-05-01-network-asymmetry-incident.md",
+    "wiki/entities/Storage_Registry.md",
+    "wiki/entities/Network_Registry.md",
+    "_OLD_ARCHIVE/legacy_markdown/lesencript.md",
+    "_OLD_ARCHIVE/legacy_markdown/dns_policy.md",
+    "_OLD_ARCHIVE/legacy_markdown/homelab_notebooklm.md",
+    "_OLD_ARCHIVE/legacy_markdown",
+    "wiki/workflows/Certificate_Renewal.md",
+    "tdarr/node/assets/app/plugins/temp.zip",
+    "wiki/entities/OAuth2_Proxy.md",
+    "wiki/entities/Tdarr.md",
+    "wiki/workflows/Power_Sequence.md",
+    "wiki/incidents/2026-05-03-dns-split-horizon-conflict.md",
+    "wiki/incidents/2026-01-10-dashboard-api-error.md",
+    "wiki/incidents/2026-01-08-servarr-vpn-crashes.md",
+    "wiki/entities/TrueNAS.md",
+    "wiki/entities/Traefik.md"
+  ]
+}

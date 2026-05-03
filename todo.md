@@ -2,6 +2,11 @@
 
 ## Critical Actions
 
+### [ ] Implementazione e Introduzione QMD in k8slab
+- [ ] Studiare/definire architettura per l'integrazione di file `.qmd` (Quarto Markdown) nel progetto.
+- [ ] Stabilire il workflow per rendering, pubblicazione o analisi dei dati.
+
+
 ### [x] DNS Stabilization & Split-Horizon (COMPLETED 2026-05-03)
 - [x] Sincronizzato IP DNS Talos (`10.10.20.254`).
 - [x] Configurate Access List Unbound per Pod Subnet (`10.244.0.0/16`).
@@ -24,6 +29,20 @@
 - [ ] Applicare configurazione Talos `bind-address=0.0.0.0` a `talos-cp-02`.
 - [ ] Verificare lo stato del nodo con `talosctl get members`.
 - [ ] Verificare il quorum etcd e la salute del cluster Kubernetes.
+
+## Future Integrations (n8n & Prefect)
+### [ ] Migrazione Database n8n su postgres-main
+- [ ] Preparazione: Crea un nuovo database `n8n` e un utente dedicato nel cluster `postgres-main` (CloudNativePG).
+- [ ] Configurazione: Aggiorna il deployment di `n8n` per puntare a `postgres-main-rw.cnpg-system.svc.cluster.local`.
+- [ ] Verifica: Assicurati che n8n funzioni correttamente con i nuovi dati.
+- [ ] Cleanup: Elimina il vecchio cluster `n8n/postgres-n8n`.
+- [ ] Monitoring: Attiva lo scraping per n8n su `postgres-main`.
+
+### [ ] Integrazione Tdarr & Prefect (Fase 4)
+- [ ] **Storage**: Definire se usare storage locale veloce (Talos nodes) o share NFS per la Transcode Cache.
+- [ ] **Risorse**: Limiti CPU/Memory per i pod Tdarr-Node per evitare saturazione cluster.
+- [ ] **Prefect Workflow**: Integrazione per l'attivazione nodi "on-demand" e definizione degli eventi trigger.
+- [ ] **Sicurezza**: Abilitazione middleware `google-auth` per accesso esterno a Tdarr UI.
 
 ## Network Architecture Optimization (Premium Approach)
 - [x] **Punto A: Migrazione DNS Esterno (Cloudflare Dashboard)**

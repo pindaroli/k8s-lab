@@ -1,7 +1,17 @@
+---
+title: "Incidente: DNS Split-Horizon Resolution Failure"
+date: "2026-05-03"
+status: "RESOLVED"
+severity: "High"
+tags:
+  - "#incident"
+  - "#networking"
+entities:
+  - "[[OPNsense]]"
+  - "[[Talos_Cluster]]"
+---
+
 # Incident Report: DNS Split-Horizon Resolution Failure
-**Date**: 2026-05-03
-**Status**: RESOLVED
-**Severity**: High (Cluster-wide connectivity outage)
 
 ## 1. Symptoms
 - Internal services using the `-internal.pindaroli.org` suffix were intermittently unreachable or resolved to `0.0.0.0`.
