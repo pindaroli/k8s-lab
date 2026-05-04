@@ -40,3 +40,37 @@ Usare i seguenti tag per standardizzare la ricerca:
 - Livello: `#core`, `#app`, `#network`, `#storage`
 - Stato: `#active`, `#deprecated`, `#pending_hardware`
 - Piattaforma: `#opnsense`, `#talos`, `#truenas`, `#proxmox`
+## 6. Infrastructure as Code (IaC) - Implementation
+In attuazione alla regola in [[GEMINI]], ogni modifica segue questo protocollo tecnico:
+
+1.  **HELM First**: Ogni modifica alla configurazione delle applicazioni (IP, variabili d'ambiente, volumi) deve essere effettuata aggiornando il corrispondente file `values.yaml` e lanciando un `helm upgrade`.
+2.  **Talos Configs**: Utilizzare i file specifici `talos-config/controlplane-cp-XX.yaml` e `talosctl apply-config`.
+3.  **Sincronizzazione**: Il cluster deve essere lo specchio fedele del repository Git.
+
+## 7. Network & DNS Standards
+Per mantenere la coerenza tra l'inventario `rete.json` e la risoluzione dei nomi:
+
+1.  **DNS Sources**: Solo i campi `id`, `hostname`, `aliases` e `name` (interfacce logiche) sono fonti valide per record DNS.
+2.  **Sanitization**: Mai usare descrizioni testuali (es. "Client LAN") o nomi fisici delle interfacce (`en0`, `eth1`) come hostnames.
+3.  **Consistency**: Ogni record DNS deve essere riconducibile a un'entrata esplicita in `rete.json`.
+
+## 8. Storage & NFS Standards (TrueNAS)
+Ogni export NFS destinato al cluster Kubernetes o a nodi di calcolo (es. Tdarr) deve rispettare questi requisiti:
+
+1.  **Maproot**: Impostare `Maproot User: root`.
+2.  **Security**: Abilitare l'opzione `Insecure` per permettere connessioni da porte non privilegiate.
+3.  **Access Control**: Autorizzare gli IP specifici o la subnet.
+
+## 9. Manutenzione Helm: Soft Stop vs Uninstall
+Se è necessario fermare temporaneamente un'applicazione senza distruggere la release:
+
+1.  **Soft Stop**: `kubectl scale deployment -n <namespace> --all --replicas=0`.
+2.  **Ripristino**: `kubectl scale deployment -n <namespace> --all --replicas=1`.
+
+## 10. Strategia di Indirizzamento (Tecnica)
+Per garantire l'Alta Affidabilità (HA) definita in [[GEMINI]]:
+
+1.  **Ingress/External**: Puntare i record DNS esterni (Cloudflare) o interni (OPNsense) sempre al **VIP** (es. `10.10.10.100`) o al nome host logico (es. `k1`).
+2.  **Pod-to-Pod**: Usare sempre il Service Name `svc.cluster.local`. È vietato usare l'IP del VIP o l'IP fisico del nodo per la comunicazione interna tra container.
+3.  **Stateful Awareness**: L'indirizzamento logico non sposta lo storage locale. La resilienza dei dati deve essere gestita a livello applicativo (replicazione DB).
+

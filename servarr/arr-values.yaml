@@ -147,7 +147,7 @@ prowlarr:
     PGID: "1000"
     TZ: Europe/Rome
     # Hotio/NET Core uses double underscores for config mapping
-    PROWLARR__POSTGRES__HOST: 10.108.78.94 # Stable Service ClusterIP (Bypasses DNS/VPN issues)
+    PROWLARR__POSTGRES__HOST: postgres-main-rw.cnpg-system.svc.cluster.local # Stable Service ClusterIP (Bypasses DNS/VPN issues)
     PROWLARR__POSTGRES__PORT: "5432"
     PROWLARR__POSTGRES__MAINDB: prowlarr
     PROWLARR__POSTGRES__LOGDB: prowlarr  # Using same DB for logs (simplification)
@@ -221,7 +221,7 @@ radarr:
     PGID: "1000"
     TZ: Europe/Rome
     # Hotio/NET Core uses double underscores for config mapping
-    RADARR__POSTGRES__HOST: 10.108.78.94
+    RADARR__POSTGRES__HOST: postgres-main-rw.cnpg-system.svc.cluster.local
     RADARR__POSTGRES__PORT: "5432"
     RADARR__POSTGRES__MAINDB: radarr
     RADARR__POSTGRES__LOGDB: radarr
@@ -290,7 +290,7 @@ lidarr:
     PGID: "1000"
     TZ: Europe/Rome
     # Hotio/NET Core uses double underscores for config mapping
-    LIDARR__POSTGRES__HOST: 10.108.78.94
+    LIDARR__POSTGRES__HOST: postgres-main-rw.cnpg-system.svc.cluster.local
     LIDARR__POSTGRES__PORT: "5432"
     LIDARR__POSTGRES__MAINDB: lidarr
     LIDARR__POSTGRES__LOGDB: lidarr

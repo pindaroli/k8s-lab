@@ -1,6 +1,25 @@
 # PostgreSQL Post-Recovery Tasks
 
+## Hardening Resilienza Bare-Metal (DeepSearch Insights)
+
+### [ ] Tuning Timeout Talos (RTO < 30s)
+- [ ] Modificare `talos-config/controlplane*.yaml` per ridurre i timeout di Kubernetes:
+  - `node-monitor-grace-period: 16s`
+  - `pod-eviction-timeout: 30s`
+- [ ] Aumentare frequenza aggiornamento Kubelet (`node-status-update-frequency: 4s`).
+- [ ] Applicare con `talosctl apply-config`.
+
+### [ ] Networking L2 & Kube-VIP (Anti-Phantom VIP)
+- [ ] Controllare e disabilitare `macfilter=0` sulle interfacce di rete (net0) delle VM Talos su Proxmox (PVE1, PVE3).
+- [ ] Aggiungere env vars a kube-vip per persistenza ARP: `vip_preserve_on_leadership_loss=true`, `vip_arpRate=6000`.
+
+### [ ] Ottimizzazione CNPG & Ingress
+- [ ] Creare PodDisruptionBudget (PDB) per `postgres-main` con `maxUnavailable: 1`.
+- [ ] Valutare impostazione `failoverDelay: 0` nella spec del Cluster CNPG per failover immediato.
+- [ ] Implementare regole di "Retry" sull'Ingress Traefik per mascherare i drop TCP (5-10s) durante il failover L2 del VIP.
+
 ## Critical Actions
+
 
 ### [ ] Implementazione e Introduzione QMD in k8slab
 - [ ] Studiare/definire architettura per l'integrazione di file `.qmd` (Quarto Markdown) nel progetto.
