@@ -179,12 +179,13 @@
   },
   "active": "233c8e44120b6566",
   "lastOpenFiles": [
+    "scratch/antigravity_analysis_rule10.md",
+    "tdarr/node/assets/app/plugins/temp.zip",
     "incidents/2026-05-03-db-stall-identity-loss.md",
     "wiki/workflows/Node_Maintenance.md",
     "talos-config/controlplane-cp-03.yaml",
     "talos-config/controlplane-cp-02.yaml",
     "talos-config/controlplane-cp-01.yaml",
-    "tdarr/node/assets/app/plugins/temp.zip",
     "wiki/incidents/2026-05-03-cnpg-database-logical-deadlock.md",
     "scratch/postgres-main-clean.yaml",
     "scratch/postgres-main-backup.yaml",
@@ -213,7 +214,6 @@
     "wiki/entities/Network_Registry.md",
     "_OLD_ARCHIVE/legacy_markdown/lesencript.md",
     "_OLD_ARCHIVE/legacy_markdown/dns_policy.md",
-    "_OLD_ARCHIVE/legacy_markdown/homelab_notebooklm.md",
-    "wiki/workflows/Certificate_Renewal.md"
+    "_OLD_ARCHIVE/legacy_markdown/homelab_notebooklm.md"
   ]
 }
