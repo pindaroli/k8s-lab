@@ -41,3 +41,6 @@ tdarr/logs/Tdarr_Node_Log.txt
 
 # Security: Google OAuth2 Secrets
 client_secret_*.json
+
+# New Google OAuth2 Secret File
+oauth2-proxy/aouth2-secret-noncommitare.json
