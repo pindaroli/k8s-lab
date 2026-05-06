@@ -20,6 +20,9 @@
 
 ## Critical Actions
 
+### [ ] Security & Automation
+- [ ] **Automazione Ansible Vault**: Configurare il file di password (es. `.vault_pass`) e mappare il percorso in `ansible.cfg` per permettere all'agente di gestire i segreti in autonomia senza richieste manuali.
+- [ ] **Ottimizzazione Secret Registry**: Definire un workflow (es. script di auditing) per alimentare e mantenere aggiornato il `wiki/entities/Secret_Registry.md` partendo dai dati reali di K8s e Ansible.
 
 ### [ ] Implementazione e Introduzione QMD in k8slab
 - [ ] Studiare/definire architettura per l'integrazione di file `.qmd` (Quarto Markdown) nel progetto.
