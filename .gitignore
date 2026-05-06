@@ -44,3 +44,4 @@ client_secret_*.json
 
 # New Google OAuth2 Secret File
 oauth2-proxy/aouth2-secret-noncommitare.json
+oauth2-proxy/secrets.yaml
