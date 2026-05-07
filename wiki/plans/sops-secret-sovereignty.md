@@ -9,15 +9,52 @@
 
 ---
 
-## Analisi della Situazione Attuale (AS-IS)
+## Inventario Completo dei Segreti (Audit 2026-05-07)
 
-| Componente | Stato Attuale | Rischio |
+> [!NOTE]
+> Audit eseguito live sul cluster. Segreti di sistema (Helm releases, CA interne, TLS auto-generati) esclusi — non richiedono gestione manuale.
+
+### 🔴 Priorità Alta — Segreti Applicativi con Credenziali Esterne
+
+| Secret (K8s) | Namespace | Chiavi | Stato Attuale | Target SOPS File |
+| :--- | :--- | :--- | :--- | :--- |
+| `oauth2-proxy` | `oauth2-proxy` | `client-id`, `client-secret`, `cookie-secret` | 🔴 File locale in `.gitignore` (già leaked) | `secrets-sops/oauth2-proxy.enc.yaml` |
+| `cloudflare-api-token-secret` | `cert-manager` | `api-token` | 🟡 File locale in `.gitignore` | `secrets-sops/cloudflare-token.enc.yaml` |
+| `servarr-api-keys` | `arr` | `lidarr-api-key`, `prowlarr-api-key`, `radarr-api-key`, `qbittorrent-user`, `qbittorrent-pass` | 🔴 Nessun file sorgente in repo | `secrets-sops/servarr-api-keys.enc.yaml` |
+| `xray-secrets` | `xray` | `private-key`, `public-key`, `short-id`, `uuid` | 🔴 Nessun file sorgente in repo | `secrets-sops/xray-secrets.enc.yaml` |
+| `alertmanager-telegram-secret` | `monitoring` | `chat_id`, `token` | 🔴 Nessun file sorgente in repo | `secrets-sops/alertmanager-telegram.enc.yaml` |
+| `grafana-admin-secret` | `monitoring` | `admin-user`, `admin-password` | 🔴 Nessun file sorgente in repo | `secrets-sops/grafana-admin.enc.yaml` |
+| `tunnel-credentials` | `default` | `credentials.json` | 🟡 Nessun file sorgente in repo | `secrets-sops/cloudflare-tunnel.enc.yaml` |
+
+### 🟡 Priorità Media — Segreti Infrastrutturali
+
+| Secret (K8s) | Namespace | Chiavi | Stato Attuale | Target SOPS File |
+| :--- | :--- | :--- | :--- | :--- |
+| `minio-creds` | `cnpg-system` | `ACCESS_KEY_ID`, `SECRET_ACCESS_KEY` | 🔴 Nessun file sorgente in repo | `secrets-sops/minio-creds.enc.yaml` |
+| `velero` | `velero` | `cloud` (AWS-format per MinIO) | 🟡 Nessun file sorgente in repo | `secrets-sops/velero-creds.enc.yaml` |
+| `basic-auth-secret` | `traefik` | `users` (htpasswd) | 🟡 Nessun file sorgente in repo | `secrets-sops/traefik-basic-auth.enc.yaml` |
+| `dashboard-auth-secret` | `traefik` | `username`, `password` | 🟡 Nessun file sorgente in repo | `secrets-sops/traefik-dashboard-auth.enc.yaml` |
+| `kasmweb-secret` | `kasmweb` | `password` | 🟡 Nessun file sorgente in repo | `secrets-sops/kasmweb.enc.yaml` |
+| `xray-client-config` | `arr` | `config.json` (JSON config Xray client) | 🔴 Nessun file sorgente in repo | `secrets-sops/xray-client-config.enc.yaml` |
+| `n8n-encryption-key-secret-v2` | `n8n` | `N8N_ENCRYPTION_KEY` | 🔴 Nessun file sorgente in repo | `secrets-sops/n8n-encryption-key.enc.yaml` |
+| `n8n-db-secrets` | `n8n` | `DB_POSTGRESDB_PASSWORD` | 🔴 Nessun file sorgente in repo | `secrets-sops/n8n-db-secrets.enc.yaml` |
+
+### 🟢 Priorità Bassa — Segreti DB (Gestiti da CNPG o auto-derivati)
+
+| Secret (K8s) | Namespace | Note |
 | :--- | :--- | :--- |
-| `oauth2-proxy/secrets.yaml` | Base64 in chiaro, rimosso dopo leak | 🔴 Leak già avvenuto |
-| `ansible/vars/secrets.yml` | Ansible Vault AES256 ✅ | 🟡 Non integrato con K8s |
-| `cert-manager/cloudflare-token-secret.yaml` | In `.gitignore`, non committato | 🟡 Manuale, no automazione |
-| `helm-charts/` | Nessuna cifratura valori Helm | 🔴 Potenziale leak futuro |
-| Git History | Contiene trace dei vecchi segreti | 🟡 Chiavi revocate, ma cronologia sporca |
+| `postgres-main-app` | `cnpg-system` | Auto-generato da CloudNativePG. Non gestire manualmente. |
+| `n8n-db-password` | `cnpg-system` / `n8n` | Auto-generato da CNPG, sincronizzato. Non gestire manualmente. |
+| `n8n-postgresql` | `n8n` | Credenziali DB derivate. Non gestire manualmente. |
+| `prefect-server-postgresql-connection` | `prefect` | Connection string — valutare se gestire manualmente o lasciare a CNPG. |
+
+### ⚪ Esclusi (Nessuna Azione Necessaria)
+
+| Tipo | Motivo |
+| :--- | :--- |
+| `pindaroli-wildcard-tls` (tutti i NS) | Gestito da cert-manager + Cloudflare. Auto-rinnovato. |
+| `sh.helm.release.v1.*` | Metadati Helm interni. Non contengono segreti utente. |
+| `*-ca`, `*-webhook-cert`, `*-tls` interni | Certificati auto-generati dagli operatori. |
 
 ---
 
@@ -25,17 +62,26 @@
 
 ```
 Git Repository
-├── .sops.yaml                       ← Regole di cifratura globali
+├── .sops.yaml                              ← Regole di cifratura globali [✅ FATTO]
 ├── secrets-sops/
-│   ├── oauth2-proxy.enc.yaml        ← Cifrato con SOPS/Age ✅
-│   ├── cloudflare-token.enc.yaml    ← Cifrato con SOPS/Age ✅
-│   └── cert-manager.enc.yaml        ← Cifrato con SOPS/Age ✅
-└── helm-charts/
-    └── <chart>/secrets.enc.yaml     ← Valori Helm cifrati ✅
+│   ├── oauth2-proxy.enc.yaml              ← 🔴 Priorità 1
+│   ├── cloudflare-token.enc.yaml          ← 🔴 Priorità 2
+│   ├── servarr-api-keys.enc.yaml          ← 🔴 Priorità 3
+│   ├── xray-secrets.enc.yaml              ← 🔴 Priorità 4
+│   ├── alertmanager-telegram.enc.yaml     ← 🔴 Priorità 5
+│   ├── grafana-admin.enc.yaml             ← 🔴 Priorità 6
+│   ├── cloudflare-tunnel.enc.yaml         ← 🟡 Priorità 7
+│   ├── minio-creds.enc.yaml               ← 🟡 Priorità 8
+│   ├── velero-creds.enc.yaml              ← 🟡 Priorità 9
+│   ├── traefik-basic-auth.enc.yaml        ← 🟡 Priorità 10
+│   ├── traefik-dashboard-auth.enc.yaml    ← 🟡 Priorità 11
+│   └── kasmweb.enc.yaml                   ← 🟡 Priorità 12
+└── [Fase 4] flux/                         ← GitOps automatico (futuro)
+    └── clusters/gemini/kustomization.yaml
 
 Cluster K8s (Talos)
-└── flux-system/
-    └── sops-age (Secret)            ← Chiave privata age, solo nel cluster
+└── [Fase 4] flux-system/
+    └── sops-age (Secret)                  ← Chiave privata age, solo nel cluster
         └── Flux kustomize-controller
             └── Decripta automaticamente (Reconciliation loop)
 ```
@@ -106,51 +152,100 @@ secrets-sops/**/*.yaml
 ---
 
 ## Fase 3: Migrazione Segreti Esistenti
-**Obiettivo**: Cifrare con SOPS tutti i segreti attualmente gestiti manualmente.  
-**Tempo stimato**: ~2 ore
-
-### 3.1 OAuth2 Proxy (Priorità: Alta — già soggetto a leak)
-
+**Obiettivo**: Cifrare con SOPS TUTTI i segreti operativi del cluster.  
+**Tempo stimato**: ~3-4 ore  
+**Metodo Generale**:
 ```bash
-# 1. Creare il manifest in chiaro (solo in /tmp, MAI committare)
-cat > /tmp/oauth2-proxy-plain.yaml << EOF
-apiVersion: v1
-kind: Secret
-metadata:
-  name: oauth2-proxy
-  namespace: oauth2-proxy
-type: Opaque
-stringData:
-  client-id: "REDACTED_GOOGLE_CLIENT_ID"
-  client-secret: "REDACTED_GOOGLE_CLIENT_SECRET"
-  cookie-secret: "<VALORE_COOKIE_SECRET>"
-EOF
-
-# 2. Cifrare
-sops --encrypt /tmp/oauth2-proxy-plain.yaml > secrets-sops/oauth2-proxy.enc.yaml
-
-# 3. Eliminare il file in chiaro
-rm /tmp/oauth2-proxy-plain.yaml
-
-# 4. Ora è sicuro committare ✅
-git add secrets-sops/oauth2-proxy.enc.yaml
-git commit -m "feat(security): add sops-encrypted oauth2-proxy secret"
+# Template: Crea in /tmp → Cifra → Cancella /tmp → Committa
+sops --encrypt /tmp/<secret>-plain.yaml > secrets-sops/<secret>.enc.yaml && rm /tmp/<secret>-plain.yaml
+# Test decifratura
+sops --decrypt secrets-sops/<secret>.enc.yaml | kubectl apply -f -
 ```
 
-### 3.2 Cloudflare Token e cert-manager
+### 3.1 — OAuth2 Proxy 🔴
+**Secret K8s**: `oauth2-proxy/oauth2-proxy`  
+**Keys**: `client-id`, `client-secret`, `cookie-secret`
+```bash
+sops --encrypt /tmp/oauth2-proxy-plain.yaml > secrets-sops/oauth2-proxy.enc.yaml
+```
 
+### 3.2 — Cloudflare API Token 🔴
+**Secret K8s**: `cert-manager/cloudflare-api-token-secret`  
+**Keys**: `api-token`  
+**Nota**: Leggere il token attuale da `cert-manager/cloudflare-token-secret.yaml` locale.
 ```bash
 sops --encrypt /tmp/cloudflare-token-plain.yaml > secrets-sops/cloudflare-token.enc.yaml
 ```
 
-### 3.3 Test Decifratura Locale
-
+### 3.3 — Servarr API Keys 🔴
+**Secret K8s**: `arr/servarr-api-keys`  
+**Keys**: `lidarr-api-key`, `prowlarr-api-key`, `radarr-api-key`, `qbittorrent-user`, `qbittorrent-pass`  
+**Nota**: Valori leggibili dal cluster attuale tramite `kubectl get secret servarr-api-keys -n arr -o jsonpath=...`
 ```bash
-# Output su stdout — MAI redirigere su file
+sops --encrypt /tmp/servarr-api-keys-plain.yaml > secrets-sops/servarr-api-keys.enc.yaml
+```
+
+### 3.4 — Xray Secrets 🔴
+**Secret K8s**: `xray/xray-secrets`  
+**Keys**: `private-key`, `public-key`, `short-id`, `uuid`
+```bash
+sops --encrypt /tmp/xray-secrets-plain.yaml > secrets-sops/xray-secrets.enc.yaml
+```
+
+### 3.5 — Alertmanager Telegram 🔴
+**Secret K8s**: `monitoring/alertmanager-telegram-secret`  
+**Keys**: `chat_id`, `token`
+```bash
+sops --encrypt /tmp/alertmanager-telegram-plain.yaml > secrets-sops/alertmanager-telegram.enc.yaml
+```
+
+### 3.6 — Grafana Admin 🔴
+**Secret K8s**: `monitoring/grafana-admin-secret`  
+**Keys**: `admin-user`, `admin-password`
+```bash
+sops --encrypt /tmp/grafana-admin-plain.yaml > secrets-sops/grafana-admin.enc.yaml
+```
+
+### 3.7 — Cloudflare Tunnel 🟡
+**Secret K8s**: `default/tunnel-credentials`  
+**Keys**: `credentials.json` (JSON completo del tunnel Cloudflare)
+```bash
+sops --encrypt /tmp/cloudflare-tunnel-plain.yaml > secrets-sops/cloudflare-tunnel.enc.yaml
+```
+
+### 3.8 — MinIO Credentials 🟡
+**Secret K8s**: `cnpg-system/minio-creds`  
+**Keys**: `ACCESS_KEY_ID`, `SECRET_ACCESS_KEY`
+```bash
+sops --encrypt /tmp/minio-creds-plain.yaml > secrets-sops/minio-creds.enc.yaml
+```
+
+### 3.9 — Velero Credentials 🟡
+**Secret K8s**: `velero/velero`  
+**Keys**: `cloud` (AWS-format credentials per MinIO)
+```bash
+sops --encrypt /tmp/velero-creds-plain.yaml > secrets-sops/velero-creds.enc.yaml
+```
+
+### 3.10 — Traefik Basic Auth 🟡
+**Secret K8s**: `traefik/basic-auth-secret` e `traefik/dashboard-auth-secret`  
+**Keys**: `users` (htpasswd format)
+```bash
+sops --encrypt /tmp/traefik-basic-auth-plain.yaml > secrets-sops/traefik-basic-auth.enc.yaml
+sops --encrypt /tmp/traefik-dashboard-auth-plain.yaml > secrets-sops/traefik-dashboard-auth.enc.yaml
+```
+
+### 3.11 — Test Decifratura e Apply
+```bash
+# Test decifratura (output su stdout — MAI redirigere su file)
 sops --decrypt secrets-sops/oauth2-proxy.enc.yaml
 
-# Applicazione diretta al cluster senza file intermedi
-sops --decrypt secrets-sops/oauth2-proxy.enc.yaml | kubectl apply -f -
+# Apply diretto al cluster senza file intermedi
+sops --decrypt secrets-sops/<secret>.enc.yaml | kubectl apply -f -
+
+# Commit finale
+git add secrets-sops/
+git commit -m "feat(security): migrate all cluster secrets to SOPS encryption"
 ```
 
 ---
