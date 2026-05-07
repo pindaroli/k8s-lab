@@ -15,6 +15,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Workloads**: [[Servarr]], [[Tdarr]], [[Xray]].
 - **Data & Registry**: [[Network_Registry]], [[Storage_Registry]], [[Secret_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]].
+- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age per GitOps Secrets).
 - **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]], [[2026-05-06-google-oauth2-credential-leak]].
 
 - **Grafi**: [Core Wiki k8s-lab](obsidian://graph?vault=k8s-lab&filter=path:wiki)
