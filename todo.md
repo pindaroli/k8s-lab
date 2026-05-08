@@ -1,6 +1,15 @@
+# 🚨 ACTIVE INCIDENTS (High Priority)
+
+## [ ] Ripristino Connettività qBittorrent (Port Forwarding)
+> **Ref**: [[2026-05-08-qbittorrent-port-forward-outage]]
+- [ ] **Azione Manuale (OPNsense)**: Creare regola "Destination NAT" su `WAN` per porta `30661` (TCP/UDP) verso `10.10.20.60`.
+- [ ] **Verifica**: Controllare icona connettività (deve diventare verde) e velocità di download in qBittorrent WebUI.
+
+---
+
 # PostgreSQL Post-Recovery Tasks
 
-## Vaultwarden Deployment
+## Vaultwarden Deployment (PAUSED)
 
 > Piano completo: [[vaultwarden-deployment]]
 
