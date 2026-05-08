@@ -1,0 +1,10 @@
+creation_rules:
+  # Segreti Kubernetes (manifest completi)
+  - path_regex: secrets-sops/.*\.enc\.yaml$
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    age: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+
+  # Valori sensibili per Helm
+  - path_regex: helm-charts/.*/secrets\.enc\.yaml$
+    encrypted_regex: ^(password|secret|token|key|apiKey|client.*)$
+    age: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl

@@ -1,5 +1,23 @@
 # PostgreSQL Post-Recovery Tasks
 
+## Vaultwarden Deployment
+
+> Piano completo: [[vaultwarden-deployment]]
+
+### [ ] Deployment Vaultwarden nel Cluster K8s
+- [ ] **Prerequisito manuale (TrueNAS)**: Creare dataset ZFS `stripe/k8s-vaultwarden` + NFS export verso `10.10.10.0/24` e `10.10.20.0/24`.
+- [ ] Aggiungere ruolo `vaultwarden` in `postgres/cluster.yaml` (sezione `managed.roles`) e creare `vaultwarden/vaultwarden-db.yaml`.
+- [ ] Creare `vaultwarden/namespace.yaml` e `vaultwarden/vaultwarden-pvc.yaml` (StorageClass: `csi-nfs-stripe-arr-conf`, 10Gi).
+- [ ] Generare `ADMIN_TOKEN` (bcrypt) e `DATABASE_URL`, cifrare con SOPS → `secrets-sops/vaultwarden-secrets.enc.yaml`.
+- [ ] Creare `vaultwarden/vaultwarden-deployment.yaml` + `vaultwarden/vaultwarden-service.yaml`.
+- [ ] Creare `vaultwarden/vaultwarden-ingressroute.yaml` (TLS wildcard `pindaroli-wildcard-tls`, no OAuth2).
+- [ ] Aggiornare `rete.json`: aggiungere `vaultwarden` e `vaultwarden-internal` agli aliases di `traefik-lb` → sync DNS: `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml`.
+- [ ] Aggiornare `storage.json`: aggiungere entry `k8s_vaultwarden`.
+- [ ] Verifica: curl HTTPS, login browser, browser extension, admin panel `/admin`.
+- [ ] Aggiungere widget Vaultwarden in Homepage.
+
+---
+
 ## Hardening Resilienza Bare-Metal (DeepSearch Insights)
 
 ### [ ] Tuning Timeout Talos (RTO < 30s)

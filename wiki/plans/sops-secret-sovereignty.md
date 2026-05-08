@@ -56,6 +56,13 @@
 | `sh.helm.release.v1.*` | Metadati Helm interni. Non contengono segreti utente. |
 | `*-ca`, `*-webhook-cert`, `*-tls` interni | Certificati auto-generati dagli operatori. |
 
+### 💡 Logica di Esclusione (Master vs Managed)
+La "Sovranità dei Segreti" via SOPS si applica esclusivamente ai **Master Secrets** (credenziali statiche fornite dall'utente). I segreti **Managed** sono esclusi per i seguenti motivi:
+- **Automazione Cert-Manager**: I certificati TLS vengono rinnovati ogni 60-90 giorni. Salvarli in Git richiederebbe commit manuali continui, rompendo l'automazione.
+- **Integrità Helm**: Le release di Helm sono metadati di stato volatili; la loro persistenza è gestita dal database interno di Helm, non dalla configurazione dichiarativa dell'utente.
+- **Sicurezza Interna (mTLS)**: I certificati CA e Webhook sono effimeri e gestiti dagli operatori per la comunicazione sicura inter-pod. Non sono asset da migrare in caso di disaster recovery.
+
+
 ---
 
 ## Architettura Target (TO-BE)
