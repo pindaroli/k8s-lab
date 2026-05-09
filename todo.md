@@ -1,9 +1,9 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## [ ] Ripristino Connettività qBittorrent (Port Forwarding)
+## [x] Ripristino Connettività qBittorrent (Port Forwarding) (COMPLETED 2026-05-09)
 > **Ref**: [[2026-05-08-qbittorrent-port-forward-outage]]
-- [ ] **Azione Manuale (OPNsense)**: Creare regola "Destination NAT" su `WAN` per porta `30661` (TCP/UDP) verso `10.10.20.60`.
-- [ ] **Verifica**: Controllare icona connettività (deve diventare verde) e velocità di download in qBittorrent WebUI.
+- [x] **Azione Manuale (OPNsense)**: Creare regola "Destination NAT" su `WAN` per porta `30661` (TCP/UDP) verso `10.10.20.60`.
+- [x] **Verifica**: Controllare icona connettività (deve diventare verde) e velocità di download in qBittorrent WebUI.
 
 ---
 
@@ -50,6 +50,14 @@
 ### [ ] Security & Automation
 - [ ] **Automazione Ansible Vault**: Configurare il file di password (es. `.vault_pass`) e mappare il percorso in `ansible.cfg` per permettere all'agente di gestire i segreti in autonomia senza richieste manuali.
 - [ ] **Ottimizzazione Secret Registry**: Definire un workflow (es. script di auditing) per alimentare e mantenere aggiornato il `wiki/entities/Secret_Registry.md` partendo dai dati reali di K8s e Ansible.
+- [ ] **Automazione Anti-Spam (Recyclarr)**:
+    > **Ref**: [[recyclarr-anti-spam-automation]]
+    - [ ] Configurare `servarr/recyclarr.yaml` con filtri euristici (Bad Groups, Fake, Size Limits).
+
+
+    - [ ] Deploy di Recyclarr come `CronJob` nel namespace `servarr`.
+    - [ ] Sincronizzare Custom Formats in Radarr/Sonarr.
+
 
 ### [ ] Implementazione e Introduzione QMD in k8slab
 - [ ] Studiare/definire architettura per l'integrazione di file `.qmd` (Quarto Markdown) nel progetto.

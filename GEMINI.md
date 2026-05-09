@@ -15,7 +15,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Workloads**: [[Servarr]], [[Tdarr]], [[Xray]].
 - **Data & Registry**: [[Network_Registry]], [[Storage_Registry]], [[Secret_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]].
-- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age per GitOps Secrets).
+- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age per GitOps Secrets), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam e Qualità).
 - **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]], [[2026-05-06-google-oauth2-credential-leak]], [[2026-05-08-qbittorrent-port-forward-outage]].
 
 - **Grafi**: [Core Wiki k8s-lab](obsidian://graph?vault=k8s-lab&filter=path:wiki)
@@ -54,6 +54,15 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Task List**: [todo.md](file:///Users/olindo/prj/k8s-lab/todo.md)
 
 ---
+## 6. AI Agent Protocol (Wiki-First Architecture)
+Per garantire la coerenza della conoscenza e la tracciabilità delle azioni:
+1.  **Planning**: Ogni nuovo obiettivo complesso deve essere prima documentato in un piano dedicato in `wiki/plans/[[nome-piano]]`.
+2.  **Todo Sync**: I task in `todo.md` devono essere sincronizzati con il Wiki, utilizzando i wikilink `[[nome-piano]]` per ogni riferimento.
+3.  **Materialization**: L'agente deve "materializzare" i piani e i manifesti nel repository prima di procedere all'esecuzione.
+4.  **Knowledge Persistence**: I risultati delle operazioni devono essere consolidati nelle entità del Wiki (`wiki/entities/`) per mantenere il contesto tra sessioni diverse.
+
+---
 > [!NOTE]
 > Per una visione completa dell'infrastruttura, aprire questa cartella in **Obsidian** e attivare la **Graph View** filtrando per `path:wiki`.
+
    ```
