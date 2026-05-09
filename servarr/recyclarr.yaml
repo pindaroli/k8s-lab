@@ -1,0 +1,43 @@
+# Recyclarr configuration for Project GEMINI
+# Targets: Radarr & Sonarr
+# Blocks: Fake, Honeypots, Spam Groups
+
+radarr:
+  - name: Radarr
+    base_url: http://radarr.servarr.svc.cluster.local:7878
+    api_key: "${RADARR_API_KEY}"
+    
+    custom_formats:
+      - names:
+          # Specific patterns for fakes and bad releases
+          - "Bad Groups"
+          - "Uploader"
+          - "Fake"
+          - "Honeypot"
+          - "Unwanted"
+          # Prioritize good quality
+          - "Repack/Proper"
+          - "Scene"
+        quality_profiles:
+          - name: Any
+            score: -10000 # Negative score for all unwanted formats
+          - name: Any
+            score: 100 # Positive score for good formats
+
+    # Size-based heuristics (GB per Hour)
+    quality_definition:
+      type: movie
+
+sonarr:
+  - name: Sonarr
+    base_url: http://sonarr.servarr.svc.cluster.local:8989
+    api_key: "${SONARR_API_KEY}"
+    
+    custom_formats:
+      - names:
+          - "Bad Groups"
+          - "Fake"
+          - "Honeypot"
+        quality_profiles:
+          - name: Any
+            score: -10000

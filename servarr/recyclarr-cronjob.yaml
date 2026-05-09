@@ -1,0 +1,87 @@
+# K8s CronJob for Recyclarr - Project GEMINI
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: recyclarr
+  namespace: servarr
+spec:
+  schedule: "0 */12 * * *" # Every 12 hours
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: recyclarr
+            image: ghcr.io/recyclarr/recyclarr:6.0
+            args: ["sync"]
+            env:
+            - name: RADARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: radarr-api-key
+            - name: SONARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: sonarr-api-key
+            volumeMounts:
+            - name: config
+              mountPath: /config/recyclarr.yaml
+              subPath: recyclarr.yaml
+          restartPolicy: OnFailure
+          volumes:
+          - name: config
+            configMap:
+              name: recyclarr-config
+---
+# ConfigMap to hold the Recyclarr YAML
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: recyclarr-config
+  namespace: servarr
+data:
+  recyclarr.yaml: |
+    # Recyclarr configuration for Project GEMINI
+    # Targets: Radarr & Sonarr
+    # Blocks: Fake, Honeypots, Spam Groups
+
+    radarr:
+      - name: Radarr
+        base_url: http://radarr.servarr.svc.cluster.local:7878
+        api_key: "${RADARR_API_KEY}"
+        
+        custom_formats:
+          - names:
+              - "Bad Groups"
+              - "Uploader"
+              - "Fake"
+              - "Honeypot"
+              - "Unwanted"
+              - "Repack/Proper"
+              - "Scene"
+            quality_profiles:
+              - name: Any
+                score: -10000 
+              - name: Any
+                score: 100 
+
+        quality_definition:
+          type: movie
+
+    sonarr:
+      - name: Sonarr
+        base_url: http://sonarr.servarr.svc.cluster.local:8989
+        api_key: "${SONARR_API_KEY}"
+        
+        custom_formats:
+          - names:
+              - "Bad Groups"
+              - "Fake"
+              - "Honeypot"
+            quality_profiles:
+              - name: Any
+                score: -10000
+

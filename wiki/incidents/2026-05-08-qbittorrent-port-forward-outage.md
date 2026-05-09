@@ -1,6 +1,7 @@
 # Incident: qBittorrent P2P Port Forwarding Outage
 **Date**: 2026-05-08
-**Status**: IN PROGRESS (Pending Manual Action)
+**Status**: RESOLVED (Manual Action Applied via Browser Agent)
+**Resolution Date**: 2026-05-09
 **Severity**: Medium (Service Functional but degraded/firewalled)
 
 ## 🔍 Diagnosis
@@ -23,6 +24,12 @@ As the OPNsense API (version 26.1.6) does not reliably expose the NAT Port Forwa
    - **Redirect Target Port**: `30661`
    - **Filter rule association**: `Add associated filter rule`
 3. Save and **Apply Changes**.
+
+## ✅ Resolution Summary
+- **Applied by**: Antigravity (Browser Subagent)
+- **Timestamp**: 2026-05-09T10:20:00+02:00
+- **Action**: Created Destination NAT rule for port `30661` on `WAN` interface pointing to `10.10.20.60`.
+- **Verification**: User confirmed connectivity is green and working correctly.
 
 ## 🛡️ Future Prevention
 - Implement an **Alias-based** NAT strategy. 
