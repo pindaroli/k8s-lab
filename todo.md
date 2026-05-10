@@ -9,9 +9,17 @@
 
 # PostgreSQL Post-Recovery Tasks
 
-## Vaultwarden Deployment (PAUSED)
+## [ ] qBittorrent NVMe Migration (High Priority)
+> Ref: [[qbittorrent-nvme-migration]]
+- [x] **Ansible**: Creato playbook `truenas_nvme_setup.yml` per dataset `stripe/qb_temp` (16k, 1000:1000).
+- [x] **K8s Storage**: Creato manifest `storage/incomplete-dw-pvc.yaml` (PV/PVC).
+- [ ] **K8s Deploy**: Eseguire playbook Ansible su TrueNAS.
+- [ ] **K8s Deploy**: Applicare manifest storage: `kubectl apply -f storage/incomplete-dw-pvc.yaml`.
+- [ ] **Helm**: Aggiornare `oli-arr-values.yaml` con `additionalVolumes` e `additionalMounts`.
+- [ ] **Verifica**: Controllare mount `/data/incomplete` nel pod qBittorrent.
+- [ ] **Migrazione**: Procedere con lo spostamento fisico dei torrent (Set Location).
 
-> Piano completo: [[vaultwarden-deployment]]
+## Vaultwarden Deployment (PAUSED)
 
 ### [ ] Deployment Vaultwarden nel Cluster K8s
 - [ ] **Prerequisito manuale (TrueNAS)**: Creare dataset ZFS `stripe/k8s-vaultwarden` + NFS export verso `10.10.10.0/24` e `10.10.20.0/24`.
