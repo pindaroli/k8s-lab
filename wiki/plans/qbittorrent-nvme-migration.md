@@ -24,7 +24,15 @@ L'obiettivo è spostare i download incompleti dal pool meccanico `oliraid` allo 
 - [ ] Eseguire `helm upgrade oli-arr charts/servarr -f servarr/arr-values.yaml`.
 - [ ] Verificare il mount point nel pod.
 
-## 3. Esecuzione Migrazione Fisica (In WebUI)
+## 3. Configurazione del Pod Kubernetes (Target 20 MB/s)
+Ora che lo storage è pronto, il Pod deve essere dimensionato per non fare da "collo":
+
+| Risorsa | Valore | Motivazione |
+| :--- | :--- | :--- |
+| **CPU (Req/Limit)** | 2.0 / 4.0 Core | La 7945HX gestisce l'hashing a 20 MB/s senza latenza. |
+| **Memoria** | 8 GiB | Spazio per buffer di rete e cache interna di qBittorrent. |
+
+## 4. Esecuzione Migrazione Fisica (In WebUI)
 - [ ] Mettere in **Pausa** i torrent interessati.
 - [ ] Eseguire `Set Location` verso `/data/incomplete` (gruppi di 10-20 torrent max).
 - [ ] Verificare il cambio di stato da `Moving` a `Paused`.
