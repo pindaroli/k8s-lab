@@ -61,10 +61,11 @@ qbittorrent:
     WEBUI_AUTH_SUBNET_WHITELIST: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
   resources:
     requests:
-      cpu: 100m
-      memory: 8Gi  # Current usage is 12GB, requesting 8GB baseline
+      cpu: 2000m
+      memory: 8Gi
     limits:
-      memory: 12Gi  # Allow burst to 12GB (fits in 15GB node)
+      cpu: 4000m
+      memory: 12Gi
   extraContainers:
     - name: qbittorrent-exporter
       image: ghcr.io/martabal/qbittorrent-exporter:latest
