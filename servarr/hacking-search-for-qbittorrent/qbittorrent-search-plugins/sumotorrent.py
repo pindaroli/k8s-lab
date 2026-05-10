@@ -85,7 +85,7 @@ class sumotorrent(object):
       self.td_counter = None
       self.current_item = None
       self.results = results
-      
+
     def start_a(self, attr):
       params = dict(attr)
       #print params
@@ -96,7 +96,7 @@ class sumotorrent(object):
       elif params.has_key('href') and params['href'].startswith("http://torrents.sumotorrent.com/download/"):
         parts = params['href'].strip().split('/')
         self.current_item['link'] = 'http://torrents.sumotorrent.com/torrent_download/'+parts[-3]+'/'+parts[-2]+'/'+urllib.quote(parts[-1]).replace('%20', '+')
-    
+
     def handle_data(self, data):
       if self.td_counter == 0:
         if not self.current_item.has_key('name'):
@@ -114,7 +114,7 @@ class sumotorrent(object):
         if not self.current_item.has_key('leech'):
           self.current_item['leech'] = ''
         self.current_item['leech']+= data.strip()
-      
+
     def start_td(self,attr):
         if isinstance(self.td_counter,int):
           self.td_counter += 1
@@ -142,4 +142,3 @@ class sumotorrent(object):
       if len(results) <= 0:
         break
       i += 1
-      

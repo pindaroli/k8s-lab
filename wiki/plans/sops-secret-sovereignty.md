@@ -1,10 +1,10 @@
 # Piano: Sovranità dei Segreti con SOPS + Age
 
-**Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-05-07  
+**Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-05-07
 **Autore**: Antigravity AI Engineering
 
 > [!IMPORTANT]
-> Questo piano sostituisce il workflow manuale basato su `gitignore + secrets.yaml locale`.  
+> Questo piano sostituisce il workflow manuale basato su `gitignore + secrets.yaml locale`.
 > Al termine, **NESSUN segreto** viaggerà mai più in chiaro nel repository, né come Base64.
 
 ---
@@ -96,7 +96,7 @@ Cluster K8s (Talos)
 ---
 
 ## Fase 1: Setup Strumenti Locali
-**Obiettivo**: Installare e configurare gli strumenti sul Mac Studio.  
+**Obiettivo**: Installare e configurare gli strumenti sul Mac Studio.
 **Tempo stimato**: ~30 minuti
 
 ### 1.1 Installazione
@@ -114,8 +114,8 @@ age-keygen -o ~/.config/sops/age/keys.txt
 ```
 
 > [!CAUTION]
-> **`~/.config/sops/age/keys.txt` è la master key.**  
-> Fare un backup offline (es. file cifrato su TrueNAS o su carta fisica).  
+> **`~/.config/sops/age/keys.txt` è la master key.**
+> Fare un backup offline (es. file cifrato su TrueNAS o su carta fisica).
 > Perderla = perdere accesso a TUTTI i segreti cifrati.
 
 ### 1.3 Configurazione Variabile d'Ambiente
@@ -128,7 +128,7 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 ---
 
 ## Fase 2: Configurazione Repository
-**Obiettivo**: Definire le regole di cifratura e strutturare le cartelle.  
+**Obiettivo**: Definire le regole di cifratura e strutturare le cartelle.
 **Tempo stimato**: ~1 ora
 
 ### 2.1 File `.sops.yaml` nella Root del Progetto
@@ -146,7 +146,7 @@ creation_rules:
 ```
 
 > [!NOTE]
-> `encrypted_regex` cifra solo i **valori** sensibili, lasciando leggibili le chiavi YAML.  
+> `encrypted_regex` cifra solo i **valori** sensibili, lasciando leggibili le chiavi YAML.
 > I `git diff` rimangono significativi e i conflitti di merge gestibili.
 
 ### 2.2 Aggiornamento `.gitignore`
@@ -159,8 +159,8 @@ secrets-sops/**/*.yaml
 ---
 
 ## Fase 3: Migrazione Segreti Esistenti
-**Obiettivo**: Cifrare con SOPS TUTTI i segreti operativi del cluster.  
-**Tempo stimato**: ~3-4 ore  
+**Obiettivo**: Cifrare con SOPS TUTTI i segreti operativi del cluster.
+**Tempo stimato**: ~3-4 ore
 **Metodo Generale**:
 ```bash
 # Template: Crea in /tmp → Cifra → Cancella /tmp → Committa
@@ -170,72 +170,72 @@ sops --decrypt secrets-sops/<secret>.enc.yaml | kubectl apply -f -
 ```
 
 ### 3.1 — OAuth2 Proxy 🔴
-**Secret K8s**: `oauth2-proxy/oauth2-proxy`  
+**Secret K8s**: `oauth2-proxy/oauth2-proxy`
 **Keys**: `client-id`, `client-secret`, `cookie-secret`
 ```bash
 sops --encrypt /tmp/oauth2-proxy-plain.yaml > secrets-sops/oauth2-proxy.enc.yaml
 ```
 
 ### 3.2 — Cloudflare API Token 🔴
-**Secret K8s**: `cert-manager/cloudflare-api-token-secret`  
-**Keys**: `api-token`  
+**Secret K8s**: `cert-manager/cloudflare-api-token-secret`
+**Keys**: `api-token`
 **Nota**: Leggere il token attuale da `cert-manager/cloudflare-token-secret.yaml` locale.
 ```bash
 sops --encrypt /tmp/cloudflare-token-plain.yaml > secrets-sops/cloudflare-token.enc.yaml
 ```
 
 ### 3.3 — Servarr API Keys 🔴
-**Secret K8s**: `arr/servarr-api-keys`  
-**Keys**: `lidarr-api-key`, `prowlarr-api-key`, `radarr-api-key`, `qbittorrent-user`, `qbittorrent-pass`  
+**Secret K8s**: `arr/servarr-api-keys`
+**Keys**: `lidarr-api-key`, `prowlarr-api-key`, `radarr-api-key`, `qbittorrent-user`, `qbittorrent-pass`
 **Nota**: Valori leggibili dal cluster attuale tramite `kubectl get secret servarr-api-keys -n arr -o jsonpath=...`
 ```bash
 sops --encrypt /tmp/servarr-api-keys-plain.yaml > secrets-sops/servarr-api-keys.enc.yaml
 ```
 
 ### 3.4 — Xray Secrets 🔴
-**Secret K8s**: `xray/xray-secrets`  
+**Secret K8s**: `xray/xray-secrets`
 **Keys**: `private-key`, `public-key`, `short-id`, `uuid`
 ```bash
 sops --encrypt /tmp/xray-secrets-plain.yaml > secrets-sops/xray-secrets.enc.yaml
 ```
 
 ### 3.5 — Alertmanager Telegram 🔴
-**Secret K8s**: `monitoring/alertmanager-telegram-secret`  
+**Secret K8s**: `monitoring/alertmanager-telegram-secret`
 **Keys**: `chat_id`, `token`
 ```bash
 sops --encrypt /tmp/alertmanager-telegram-plain.yaml > secrets-sops/alertmanager-telegram.enc.yaml
 ```
 
 ### 3.6 — Grafana Admin 🔴
-**Secret K8s**: `monitoring/grafana-admin-secret`  
+**Secret K8s**: `monitoring/grafana-admin-secret`
 **Keys**: `admin-user`, `admin-password`
 ```bash
 sops --encrypt /tmp/grafana-admin-plain.yaml > secrets-sops/grafana-admin.enc.yaml
 ```
 
 ### 3.7 — Cloudflare Tunnel 🟡
-**Secret K8s**: `default/tunnel-credentials`  
+**Secret K8s**: `default/tunnel-credentials`
 **Keys**: `credentials.json` (JSON completo del tunnel Cloudflare)
 ```bash
 sops --encrypt /tmp/cloudflare-tunnel-plain.yaml > secrets-sops/cloudflare-tunnel.enc.yaml
 ```
 
 ### 3.8 — MinIO Credentials 🟡
-**Secret K8s**: `cnpg-system/minio-creds`  
+**Secret K8s**: `cnpg-system/minio-creds`
 **Keys**: `ACCESS_KEY_ID`, `SECRET_ACCESS_KEY`
 ```bash
 sops --encrypt /tmp/minio-creds-plain.yaml > secrets-sops/minio-creds.enc.yaml
 ```
 
 ### 3.9 — Velero Credentials 🟡
-**Secret K8s**: `velero/velero`  
+**Secret K8s**: `velero/velero`
 **Keys**: `cloud` (AWS-format credentials per MinIO)
 ```bash
 sops --encrypt /tmp/velero-creds-plain.yaml > secrets-sops/velero-creds.enc.yaml
 ```
 
 ### 3.10 — Traefik Basic Auth 🟡
-**Secret K8s**: `traefik/basic-auth-secret` e `traefik/dashboard-auth-secret`  
+**Secret K8s**: `traefik/basic-auth-secret` e `traefik/dashboard-auth-secret`
 **Keys**: `users` (htpasswd format)
 ```bash
 sops --encrypt /tmp/traefik-basic-auth-plain.yaml > secrets-sops/traefik-basic-auth.enc.yaml
@@ -258,11 +258,11 @@ git commit -m "feat(security): migrate all cluster secrets to SOPS encryption"
 ---
 
 ## Fase 4: Automazione GitOps con Flux CD
-**Obiettivo**: Eliminare completamente l'apply manuale.  
+**Obiettivo**: Eliminare completamente l'apply manuale.
 **Tempo stimato**: ~3-4 ore
 
 > [!WARNING]
-> **Flux CD è un cambiamento architetturale significativo.**  
+> **Flux CD è un cambiamento architetturale significativo.**
 > Eseguire `velero backup create backup-pre-flux --wait` prima di procedere.
 
 ### 4.1 Installazione Flux CD
@@ -311,7 +311,7 @@ spec:
 ```
 
 > [!NOTE]
-> Da questo momento ogni `git push` di un `.enc.yaml` viene automaticamente  
+> Da questo momento ogni `git push` di un `.enc.yaml` viene automaticamente
 > decrittografato e applicato da Flux. **Zero `kubectl apply` manuali.**
 
 ### 4.4 Integrazione helm-secrets
@@ -327,7 +327,7 @@ helm secrets upgrade --install oauth2-proxy \
 ---
 
 ## Fase 5: Guardrail Anti-Leak (Pre-Commit Hooks)
-**Obiettivo**: Impedire fisicamente il commit di segreti in chiaro.  
+**Obiettivo**: Impedire fisicamente il commit di segreti in chiaro.
 **Tempo stimato**: ~30 minuti
 
 ```yaml

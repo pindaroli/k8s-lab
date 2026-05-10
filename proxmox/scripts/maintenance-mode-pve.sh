@@ -14,12 +14,12 @@ case "$1" in
     qm stop $TALOS_ID
     # Stacca da Talos
     qm set $TALOS_ID --delete $DISK_SLOT
-    
+
     # Attacca a Recovery
     # (Ignora errore se slot già libero)
     qm set $RECOVERY_ID --delete $DISK_SLOT 2>/dev/null
     qm set $RECOVERY_ID --$DISK_SLOT $DISK_PATH,ssd=1
-    
+
     # Avvia Recovery
     qm start $RECOVERY_ID
     echo "DONE. Recovery VM ($RECOVERY_ID) started."
@@ -30,10 +30,10 @@ case "$1" in
     qm stop $RECOVERY_ID
     # Stacca da Recovery
     qm set $RECOVERY_ID --delete $DISK_SLOT
-    
+
     # Attacca a Talos
     qm set $TALOS_ID --$DISK_SLOT $DISK_PATH,ssd=1
-    
+
     # Avvia Talos
     qm start $TALOS_ID
     echo "DONE. Talos VM ($TALOS_ID) started."

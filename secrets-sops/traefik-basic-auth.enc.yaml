@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: basic-auth-secret
+    namespace: traefik
+type: Opaque
+stringData:
+    users: ENC[AES256_GCM,data:OOqTnVZtlOf+u+smQg0iJrKYzf6TKOtqx6aUj/4uZARUJH1OEi1zjGZcSw==,iv:O6Gvts3ZUncmNGSy0cYYXCM8G+FlJDuQV4/w+MyiwCQ=,tag:EngQXHnEZ56a27xreYeneg==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBaZXVDcUdVY21FNnc4eENB
+            Zjg5VGNESmJJZGNMRExYLzFMdlgyMTF6ZVhJCmhabWFSdlNyd2gza3ZlUXNIdXJv
+            SnN1UDNtOG9tSzMyT0lFa3FrREdsNzgKLS0tIFRGUWU1UUx4T3lKakhzdkk5NDJM
+            a21sc2xaa2VwdkQybHdKWXkvc3d6N1kKYisESEust9FPG2IV61zfz2n1bCZsTuJH
+            5fVWYp/v5Gxyd1pIc0iQhYpH8iR3HHtpmUXTmOtS2uGRdOKfwqOWUA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-05-10T11:21:49Z"
+    mac: ENC[AES256_GCM,data:fnLSAuDxLEWjsjKRF266vXQrKDe3CmgX9okfUU9M1aL62fWj73EV9UstFOiOM/TheRTtS1bcf/qu45HUl3v/PeihIz7nabiVvxR3SduD8dMJidYGzd9oQSlXxiIRObw23sdnZ40cwSTpfXb+98/fpYVtDCPF4s3AN4GWZWSH3Nk=,iv:jgta+30CjQx7tY6cXv9su1BN9YdGE8c37imsFX8Txws=,tag:O+59SIy1zyjJb7jdVYyDAA==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

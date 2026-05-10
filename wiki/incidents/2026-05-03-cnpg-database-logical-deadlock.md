@@ -17,13 +17,13 @@ Following a physical maintenance and reinstallation of Talos OS on `talos-cp-01`
 The recovery required a multi-layer intervention:
 
 1.  **Identity Restoration**: Applied Talos patches to restore `talos-cp-01` and `talos-cp-03` hostnames, satisfying K8s volume affinity.
-2.  **Lock File Removal**: 
+2.  **Lock File Removal**:
     - Created a `rescue-pod` to mount the `postgres-main-3` PVC.
     - Manually deleted `/data/pgdata/postmaster.pid`.
-3.  **Orphan Re-adoption (The Pivot)**: 
+3.  **Orphan Re-adoption (The Pivot)**:
     - Deleted the `Cluster` object using `--cascade=orphan` to preserve data volumes.
     - Re-applied a cleaned `Cluster` manifest to force the operator to re-scan and adopt existing PVCs.
-4.  **Strategic Fencing**: 
+4.  **Strategic Fencing**:
     - Fenced `postgres-main-2` (which resides on the still-offline PVE2 node) to force the operator to promote and start `postgres-main-3`.
 5.  **Zombie Pod Cleanup**: Force-deleted a 15-day-old `Pending` pod that was confusing the new operator.
 

@@ -1223,4 +1223,3 @@ minio:
       # set versioning for
       # bucket [true|false]
       versioning: false
-

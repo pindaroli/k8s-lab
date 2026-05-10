@@ -54,13 +54,13 @@
         headers:
           Content-Type: "application/json"
         body_format: json
-        body: 
+        body:
             current: 1
             rowCount: 1000
             searchPhrase: ""
       register: search_results
       ignore_errors: yes
-    
+
     - name: Parse and Delete Stale Overrides
       uri:
         url: "{{ opnsense_url }}/api/unbound/settings/delHostOverride/{{ item.uuid }}"
@@ -72,7 +72,7 @@
         status_code: [200, 204]
       # Logic: Iterate ALL rows, check if hostname is in our stale list
       loop: "{{ search_results.json.rows | default([]) }}"
-      when: 
+      when:
         - search_results.json is defined
         - item.hostname in stale_services
       loop_control:

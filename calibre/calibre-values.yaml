@@ -23,7 +23,7 @@ env:
   LC_ALL: it_IT.UTF-8
   QTWEBENGINE_DISABLE_SANDBOX: 1
   QTWEBENGINE_CHROMIUM_FLAGS: "--no-sandbox --disable-dev-shm-usage"
-  
+
 
 service:
   main:

@@ -26,7 +26,7 @@ def get_pve_hostpci(host, vmid):
     output = run_cmd(cmd)
     if not output:
         return []
-    
+
     devices = []
     for line in output.splitlines():
         if "hostpci" in line and ":" in line:
@@ -41,7 +41,7 @@ def get_pve_hostpci(host, vmid):
 
 def update_disks():
     print_section("Aggiornamento Dischi in rete.json")
-    
+
     if not os.path.exists(RETE_PATH):
         log_err(f"File non trovato: {RETE_PATH}")
         return
@@ -53,18 +53,18 @@ def update_disks():
     for nodo in rete.get("nodi", []):
         nodetype = nodo.get("type", "")
         mg_ip = nodo.get("management_ip", nodo.get("ip", ""))
-        
+
         if nodetype == "Hypervisor" and mg_ip:
             log_ok(f"Analisi nodo: {nodo['id']} ({mg_ip})")
-            
+
             disks_info = []
             block_devices = get_remote_disks(mg_ip)
-            
+
             for dev in block_devices:
                 # Escludiamo i volumi ZFS (zd) per pulizia
                 if dev['name'].startswith("zd"):
                     continue
-                
+
                 disk_data = {
                     "name": dev["name"],
                     "size": dev["size"],

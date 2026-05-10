@@ -16,7 +16,7 @@ _base = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(_base, "scripts"))
 import utils.common as common
 from utils.common import (
-    Colors, PROJECT_ROOT, log_ok, log_warn, log_err, 
+    Colors, PROJECT_ROOT, log_ok, log_warn, log_err,
     log_info, log_info_end, print_section, run_cmd, check_ping
 )
 
@@ -26,7 +26,7 @@ SSH_USER = "root"
 PVE_NODES = {"pve1/pve": "10.10.10.11", "pve2": "10.10.10.21", "pve3": "10.10.10.31"}
 TALOS_IPS = {"CP 01": "10.10.20.141", "CP 02": "10.10.20.142", "CP 03": "10.10.20.143"}
 GATEWAYS = {
-    "OPNsense VLAN 10 (Server)": "10.10.10.254", 
+    "OPNsense VLAN 10 (Server)": "10.10.10.254",
     "OPNsense VLAN 20 (Client)": "10.10.20.254",
     "Switch Transit (192.168.2.1)": "192.168.2.1",
     "MetalLB Traefik VIP": "10.10.20.56",
@@ -58,7 +58,7 @@ def main():
     print(f"{Colors.HEADER}======================================================================{Colors.ENDC}")
     print(f"{Colors.HEADER}{Colors.BOLD}                 HOMELAB DIAGNOSTICS - DATA CENTER                    {Colors.ENDC}")
     print(f"{Colors.HEADER}======================================================================{Colors.ENDC}")
-    
+
     start_time = time.time()
 
     try:
@@ -68,7 +68,7 @@ def main():
             if check_ping(ip):
                 api_node = ip
                 break
-                
+
         if not api_node:
             log_err("NESSUN NODO PROXMOX RAGGIUNGIBILE VIA PING. Cluster irraggiungibile.")
             sys.exit(1)
@@ -77,19 +77,19 @@ def main():
         print_section("CLUSTER PROXMOX & NODI PVE")
         cluster_status = run_ssh_json(api_node, "pvesh get /cluster/status --output-format json")
         resources = run_ssh_json(api_node, "pvesh get /cluster/resources --output-format json")
-        
+
         if not cluster_status:
             log_err("Impossibile contattare le API del cluster Proxmox.")
         else:
             nodes = sorted([item for item in cluster_status if item.get('type') == 'node'], key=lambda x: x.get('name', ''))
             cluster = next((item for item in cluster_status if item.get('type') == 'cluster'), None)
-            
+
             # Check Quorum
             if cluster and cluster.get('quorate') == 1:
                 log_ok("Cluster Quorum: FORMATO (OK)")
             else:
                 log_err("Cluster Quorum: PERSO / BROKEN")
-            
+
             # Check Nodes resources
             for i, node in enumerate(nodes):
                 name = node.get('name')
@@ -97,7 +97,7 @@ def main():
                 ip = node.get('ip')
                 if not ip:
                     ip = next((v for k, v in PVE_NODES.items() if name in k), 'N/A')
-                
+
                 ping_ok = check_ping(ip)
                 api_online = node.get('online') == 1
 
@@ -122,7 +122,7 @@ def main():
         if resources:
             truenas = next((r for r in resources if r.get('vmid') == 1100), None)
             pbs = next((r for r in resources if r.get('vmid') == 1400), None)
-            
+
             if truenas and truenas.get('status') == 'running':
                 if check_ping("10.10.10.50"):
                     log_ok("TrueNAS (VM 1100)  : RUNNING e ONLINE (Ping OK a 10.10.10.50)")
@@ -165,7 +165,7 @@ def main():
         status_str = f"{Colors.FAIL}Rilevati {common.errors_count} ERRORI (Critici){Colors.ENDC}"
     elif common.warnings_count > 0:
         status_str = f"{Colors.WARNING}Rilevati {common.warnings_count} AVVISI (Da investigare){Colors.ENDC}"
-        
+
     print(f" Diagnostica completata in {elapsed}s | Stato Globale: {status_str}")
     print(f"{Colors.HEADER}======================================================================{Colors.ENDC}\n")
 

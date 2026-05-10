@@ -12,12 +12,12 @@ try:
 except ImportError:
     #python2
     from HTMLParser import HTMLParser
-    
+
 class mejor(object):
     url = 'https://www.mejortorrentes.com/'
     name = 'MejorTorrent'
     supported_categories = {'all': '0'}
-    
+
     class MyHTMLParser(HTMLParser):
 
         def __init__(self):
@@ -34,7 +34,7 @@ class mejor(object):
 
         def getSingleData(self):
             return {'name':'-1','seeds':'-1','leech':'-1','size':'-1','link':'-1','desc_link':'-1','engine_url': self.url}
-    
+
         def handle_starttag(self, tag, attrs):
             if tag == 'table':
                 self.tableCount += 1

@@ -24,7 +24,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 ---
 
 ## 2. Status & Active Goals
-- **Current Status**: **DATABASE INFRASTRUCTURE RESTORED** (Instance 3 online).
+- **Current Status**: **RECYCLARR AUTOMATION OPERATIONAL** (Anti-spam synced).
 - **Active Goal**: Ingress & External Access (Phase 5).
 - **PVE2 Status**: **OFFLINE** (Hardware Pending) - `postgres-main-2` is currently fenced.
 
@@ -35,8 +35,18 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 > **EXTERNAL ACCESS**: TUTTI i servizi esposti via Cloudflare **DEVONO** avere OAuth2 abilitato.
 > **INTERNAL ACCESS**: I servizi `-internal.pindaroli.org` sono considerati fidati (No OAuth2).
 > **INFRASTRUCTURE**: Ogni modifica deve essere **DICHIARATIVA** (Helm/Talos). Vietati i `kubectl patch` manuali.
+> **SECRETS SYNC**: Quando si modifica un segreto in `k8s-lab/secrets-sops/`, è obbligatorio verificare la compatibilità con le chart in `pindaroli-arr-helm` e aggiornare la documentazione DevOps in `wiki/procedures/`.
+> **HELM DEPLOYMENT**: È tassativamente proibito installare chart da cartelle locali. Ogni deploy deve passare dal repository ufficiale (Helm Repo) per garantire la coerenza GitOps e la tracciabilità delle versioni, a meno di casi eccezionali esplicitamente approvati.
 > **ADDRESSING**: Usare sempre **VIP (Identità Logica)** per Ingress/Accesso Esterno; usare sempre **K8s DNS** per traffico interno. Mai usare IP fisici o hardcoded.
 > **EXECUTION PROTOCOL**: Durante l'esecuzione di un piano, per ogni singolo comando/azione: 1. Spiegare COSA sto facendo e PERCHÉ. 2. Aspettare approvazione esplicita. 3. Eseguire e testare il risultato. 4. Aspettare autorizzazione esplicita per il passo successivo. Senza eccezioni.
+> **PLANNING**: È tassativamente proibito pianificare o eseguire azioni basate su assunzioni non verificate. Ogni azione deve essere preceduta da una fase di raccolta dati e analisi che ne confermi la necessità.
+
+## Future Integrations (n8n & Prefect)
+### [ ] Transizione a Metodo B (Helm Secrets)
+- [ ] Valutare il passaggio dal Metodo A (Apply manuale) al Metodo B (Integrazione atomica Helm + SOPS) per migliorare la coerenza GitOps.
+- [ ] Richiede installazione plugin `helm-secrets` in tutti gli ambienti CI/CD.
+
+### [ ] Migrazione Database n8n su postgres-main
 
 ---
 

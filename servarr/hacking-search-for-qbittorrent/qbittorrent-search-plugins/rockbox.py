@@ -10,7 +10,7 @@ from novaprinter import prettyPrinter
 class rockbox(object):
     url = 'https://rawkbawx.rocks/'
     name = 'RockBox'
-    """ 
+    """
         TLDR; It is safer to force an 'all' research
         RockBox's categories are very specific for music-type
         qBittorrent does not provide enough categories to implement a good filtering.

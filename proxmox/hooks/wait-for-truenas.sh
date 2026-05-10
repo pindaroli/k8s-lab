@@ -34,12 +34,12 @@ if [ "$phase" == "pre-start" ]; then
             send_telegram "✅ **Proxmox Hook**: TrueNAS is UP. Starting VM $vmid."
             exit 0
         fi
-        
+
         # Optional: Check wait progress logging
         current_time=$(date +%s)
         elapsed=$((current_time - start_time))
         # echo "[$vmid] Waiting for TrueNAS... ($elapsed / $TIMEOUT_SECONDS)"
-        
+
         sleep $CHECK_INTERVAL
     done
 

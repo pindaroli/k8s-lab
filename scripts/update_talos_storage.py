@@ -22,7 +22,7 @@ def main():
     try:
         # Spostati nella root del progetto
         os.chdir(PROJECT_ROOT)
-        
+
         if not os.path.exists(config_file):
             print(f"Error: {config_file} not found")
             sys.exit(1)

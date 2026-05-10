@@ -22,4 +22,3 @@ roleRef:
   name: {{ include "velero.fullname" . }}-upgrade-crds
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
-

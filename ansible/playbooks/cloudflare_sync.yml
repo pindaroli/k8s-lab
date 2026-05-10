@@ -8,8 +8,8 @@
     cloudflare_email: "{{ cloudflare_email | default('') }}"
     cloudflare_api_key: "{{ cloudflare_api_key | default('') }}"
     zone: "pindaroli.org"
-    target_ip: "10.10.20.56" 
-    
+    target_ip: "10.10.20.56"
+
   vars_files:
     - "../vars/secrets.yml"
     - "../../rete.json"

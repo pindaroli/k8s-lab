@@ -9,7 +9,7 @@ This directory contains cert-manager configuration for automated SSL certificate
 cert-manager provides automatic SSL certificate provisioning and renewal for Kubernetes ingress controllers. This setup uses:
 
 - **Let's Encrypt**: Free SSL certificate authority with ACME protocol
-- **Cloudflare DNS-01 challenge**: Domain validation via DNS records  
+- **Cloudflare DNS-01 challenge**: Domain validation via DNS records
 - **Wildcard certificates**: Single certificate for all `*.pindaroli.org` subdomains
 - **Multi-namespace deployment**: TLS secrets distributed across required namespaces
 

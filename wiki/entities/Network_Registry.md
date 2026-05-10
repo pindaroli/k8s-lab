@@ -12,7 +12,7 @@ provenance:
 
 # Network Registry
 
-Questo nodo del Wiki definisce le **regole** e la **governance** dell'architettura di rete. 
+Questo nodo del Wiki definisce le **regole** e la **governance** dell'architettura di rete.
 
 > [!WARNING]
 > **SOURCE OF TRUTH**: I dati effettivi risiedono in `rete.json` (nella root del progetto). L'agente IA e l'utente devono modificare `rete.json` per applicare cambiamenti reali. Questo documento serve per capire *come* e *perché* quei dati sono strutturati in quel modo.

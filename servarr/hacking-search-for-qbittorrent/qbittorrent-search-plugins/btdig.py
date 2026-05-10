@@ -36,7 +36,7 @@ class btdig(object):
     url = 'https://www.btdig.com'
     name = 'btdig'
     supported_categories = {'all': '0'}
-    def search(self, what, cat='all'): 
+    def search(self, what, cat='all'):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8',
@@ -85,17 +85,17 @@ class btdig(object):
 
     def parse_page(self, html_content):
         result_blocks = re.finditer(r'<div class="one_result".*?(?=<div class="one_result"|$)', html_content, re.DOTALL)
-        
+
         for block in result_blocks:
             result = {}
             block_content = block.group(0)
-            
+
             magnet_match = re.search(r'<a href="(magnet:\?xt=urn:btih:[^"]+)"', block_content)
             name_match = re.search(r'<div class="torrent_name".*?><a.*?>(.*?)</a>', block_content, re.DOTALL)
             size_match = re.search(r'<span class="torrent_size"[^>]*>(.*?)</span>', block_content)
-            
+
             desc_link_match = re.search(r'<div class="torrent_name".*?><a href="([^"]+)"', block_content, re.DOTALL) # could implement retrieving further info on torrent later
-            
+
             if magnet_match and name_match and size_match and desc_link_match:
                 result['link'] = magnet_match.group(1)
                 result['name'] = re.sub(r'<.*?>', '', name_match.group(1)).strip()
@@ -105,4 +105,3 @@ class btdig(object):
                 result['seeds'] = '-1'
                 result['leech'] = '-1'
                 prettyPrinter(result)
-

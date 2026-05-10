@@ -39,7 +39,7 @@ spec:
       scheme: "https"
 {{- if .Values.prometheus.serviceMonitor.speaker.tlsConfig }}
       tlsConfig:
-{{ toYaml .Values.prometheus.serviceMonitor.speaker.tlsConfig | indent 8 }}      
+{{ toYaml .Values.prometheus.serviceMonitor.speaker.tlsConfig | indent 8 }}
 {{- end }}
 {{ end }}
 {{- if .Values.speaker.frr.enabled }}
@@ -53,7 +53,7 @@ spec:
       scheme: "https"
 {{- if .Values.prometheus.serviceMonitor.speaker.tlsConfig }}
       tlsConfig:
-{{ toYaml .Values.prometheus.serviceMonitor.speaker.tlsConfig | indent 8 }}      
+{{ toYaml .Values.prometheus.serviceMonitor.speaker.tlsConfig | indent 8 }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -130,7 +130,7 @@ spec:
       scheme: "https"
 {{- if .Values.prometheus.serviceMonitor.controller.tlsConfig }}
       tlsConfig:
-{{ toYaml .Values.prometheus.serviceMonitor.controller.tlsConfig | indent 8 }}      
+{{ toYaml .Values.prometheus.serviceMonitor.controller.tlsConfig | indent 8 }}
 {{- end }}
 {{- end }}
   jobLabel: {{ .Values.prometheus.serviceMonitor.jobLabel | quote }}

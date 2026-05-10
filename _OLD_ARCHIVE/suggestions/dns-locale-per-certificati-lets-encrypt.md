@@ -17,7 +17,7 @@ Come far funzionare domini `*.pindaroli.org` con certificati Let's Encrypt valid
 Nel router (proxmox.local), configurare:
 ```
 jellyfin.pindaroli.org → 192.168.1.3
-lidarr.pindaroli.org → 192.168.1.3  
+lidarr.pindaroli.org → 192.168.1.3
 prowlarr.pindaroli.org → 192.168.1.3
 qbittorrent.pindaroli.org → 192.168.1.3
 readarr.pindaroli.org → 192.168.1.3
@@ -45,7 +45,7 @@ Su Mac/Linux aggiungere a `/etc/hosts`:
 ### Perché non interferisce con Cloudflare
 
 #### Risoluzione DNS:
-1. **Client interno** → DNS Router locale → `192.168.1.3` 
+1. **Client interno** → DNS Router locale → `192.168.1.3`
 2. **Client esterno** → DNS Cloudflare → IP pubblico (se configurato)
 
 #### Cloudflare mantiene:
@@ -54,11 +54,11 @@ Su Mac/Linux aggiungere a `/etc/hosts`:
 
 ### Vantaggi della soluzione
 
-✅ **Certificati validi**: Browser riconosce certificati Let's Encrypt  
-✅ **Traffico locale**: Non esce dalla rete, velocità massima  
-✅ **Zero conflitti**: DNS locale ha priorità per client interni  
-✅ **Sicurezza**: Servizi non esposti automaticamente su internet  
-✅ **Flessibilità**: Possibile aggiungere accesso esterno in seguito  
+✅ **Certificati validi**: Browser riconosce certificati Let's Encrypt
+✅ **Traffico locale**: Non esce dalla rete, velocità massima
+✅ **Zero conflitti**: DNS locale ha priorità per client interni
+✅ **Sicurezza**: Servizi non esposti automaticamente su internet
+✅ **Flessibilità**: Possibile aggiungere accesso esterno in seguito
 
 ### Configurazione cluster
 
@@ -110,6 +110,6 @@ Per accesso da internet:
 
 - **Questo è lo standard** per home lab con certificati validi
 - **DNS locale ha sempre priorità** sui client interni
-- **cert-manager rinnova automaticamente** i certificati ogni 60 giorni  
+- **cert-manager rinnova automaticamente** i certificati ogni 60 giorni
 - **Wildcard certificate** copre tutti i sottodomini `*.pindaroli.org`
 - **Validazione DNS01** non richiede esposizione dei servizi su internet

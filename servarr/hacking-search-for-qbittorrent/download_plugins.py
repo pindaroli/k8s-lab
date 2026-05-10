@@ -86,17 +86,17 @@ def download_file(url, folder="qbittorrent-search-plugins"):
     try:
         response = requests.get(url, timeout=30)
         response.raise_for_status()
-        
+
         # Extract filename from URL
         filename = os.path.basename(urlparse(url).path)
         if not filename.endswith('.py'):
             filename += '.py'
-        
+
         filepath = os.path.join(folder, filename)
-        
+
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(response.text)
-        
+
         print(f"Downloaded: {filename}")
         return True
     except Exception as e:
@@ -105,16 +105,16 @@ def download_file(url, folder="qbittorrent-search-plugins"):
 
 def main():
     os.makedirs("qbittorrent-search-plugins", exist_ok=True)
-    
+
     successful = 0
     failed = 0
-    
+
     for url in urls:
         if download_file(url):
             successful += 1
         else:
             failed += 1
-    
+
     print(f"\nDownload complete!")
     print(f"Successful: {successful}")
     print(f"Failed: {failed}")

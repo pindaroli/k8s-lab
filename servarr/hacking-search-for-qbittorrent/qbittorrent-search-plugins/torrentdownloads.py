@@ -40,17 +40,17 @@ class torrentdownloads(object):
         'software':'7',
         'tv': '8'
         }
-    
+
     next_page_regex = r'<a.*?>>><\/a>'
     has_next_page = True
 
     class MyHtmlParser(HTMLParser):
-    
+
         def error(self, message):
             pass
-    
+
         DIV, P, A, SPAN, B = ('div', 'p', 'a', 'span', 'b')
-    
+
         def __init__(self, url):
             HTMLParser.__init__(self)
             self.magnet_regex = r'href=["\']magnet:.+?["\']'
@@ -114,7 +114,7 @@ class torrentdownloads(object):
                     self.row['link'] = magnet_urls[0].split('"')[1]
                 else:
                     self.shouldSkipResult = True
-                    
+
             if self.insideNameCell and tag == self.B:
                 self.shouldSkipResult = True
 
@@ -128,11 +128,11 @@ class torrentdownloads(object):
                 self.row['size'] = size
                 self.shouldGetSize = False
 
-            if self.shouldGetSeeds:    
+            if self.shouldGetSeeds:
                 self.row['seeds']  = data
                 self.shouldGetSeeds = False
 
-            if self.shouldGetLeechs:    
+            if self.shouldGetLeechs:
                 self.row['leech']  = data
                 self.shouldGetLeechs = False
 
@@ -168,7 +168,7 @@ class torrentdownloads(object):
         if len(next_page) == 0:
             self.has_next_page = False
         parser.feed(retrievedHtml)
-        parser.close()            
+        parser.close()
 
     def search(self, what, cat = 'all'):
         page = 1
@@ -182,7 +182,7 @@ class torrentdownloads(object):
             t.start()
             time.sleep(0.5)
             threads.append(t)
-    
+
             page += 1
 
         for t in threads:

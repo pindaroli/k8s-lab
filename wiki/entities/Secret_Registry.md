@@ -17,7 +17,7 @@ provenance:
 Questo documento definisce la gestione, la distribuzione e la rotazione dei segreti nell'ecosistema GEMINI.
 
 > [!CRITICAL]
-> **SOURCE OF TRUTH**: Tutti i segreti persistenti risiedono in **Ansible Vault** (`ansible/vars/secrets.yml`). 
+> **SOURCE OF TRUTH**: Tutti i segreti persistenti risiedono in **Ansible Vault** (`ansible/vars/secrets.yml`).
 > I file manifest di Kubernetes (`secrets.yaml`) sono considerati "volatili" e NON devono mai essere committati in chiaro su Git.
 
 ## 1. Governance dei Segreti

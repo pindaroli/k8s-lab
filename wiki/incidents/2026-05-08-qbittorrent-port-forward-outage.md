@@ -32,7 +32,7 @@ As the OPNsense API (version 26.1.6) does not reliably expose the NAT Port Forwa
 - **Verification**: User confirmed connectivity is green and working correctly.
 
 ## 🛡️ Future Prevention
-- Implement an **Alias-based** NAT strategy. 
+- Implement an **Alias-based** NAT strategy.
 - Create a static NAT rule in OPNsense once, pointing to an Alias `AL_QBITTORRENT_IP`.
 - Automate the update of this Alias via Ansible when the service moves or VIP changes.
 

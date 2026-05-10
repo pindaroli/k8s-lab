@@ -16,7 +16,7 @@ _base = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(_base, "scripts"))
 import utils.common as common
 from utils.common import (
-    Colors, PROJECT_ROOT, log_ok, log_warn, log_err, 
+    Colors, PROJECT_ROOT, log_ok, log_warn, log_err,
     log_info, log_info_end, print_section, run_cmd, run_cmd_json, check_ping
 )
 
@@ -67,7 +67,7 @@ def get_node_disks(node_ip):
     disks = run_cmd_json(cmd)
     if not disks:
         return "N/D"
-    
+
     items = disks if isinstance(disks, list) else [disks]
     phy_disks = []
     for d in items:
@@ -77,12 +77,12 @@ def get_node_disks(node_ip):
         dev = spec.get('dev_path', '').split('/')[-1]
         size = spec.get('pretty_size', 'N/D')
         phy_disks.append(f"{dev}:{size}")
-    
+
     return ", ".join(phy_disks) if phy_disks else "No physical disks"
 
 def check_talos():
     print_section("TALOS CLUSTER MEMBERSHIP")
-    
+
     # Check connettività base prima di talosctl
     target_ip = "10.10.20.142"
     if not check_ping(target_ip):
@@ -97,12 +97,12 @@ def check_talos():
     context = "talos-k8s-lab"
     cmd_base = ["talosctl", "--talosconfig", TALOSCONFIG, "--context", context, "-n", target_ip, "get", "members", "-o", "json"]
     members = run_cmd_json(cmd_base)
-    
+
     if not members:
         # Tenta altro endpoint (cambia l'indice dell'IP, non del context!)
         cmd_base[6] = "10.10.20.141"
         members = run_cmd_json(cmd_base)
-    
+
     if not members:
         log_err("Impossibile contattare il Control Plane Talos.")
         return
@@ -119,10 +119,10 @@ def check_talos():
         addresses = spec.get('addresses', [])
         node_ip = addresses[-1] if addresses else "unknown"
         phase = metadata.get('phase', 'running')
-        
+
         # Disk stats from Talos
         disk_sum = get_node_disks(node_ip)
-        
+
         if phase == "running":
             log_ok(f"Talos Node: {hostname:<25} | Phase: {phase:<10} | {', '.join(addresses)}")
             log_info_end(f"Physical Disks: {disk_sum}")
@@ -134,7 +134,7 @@ def check_nodes():
     # Aggiungi --kubeconfig ovunque per sicurezza
     nodes = run_cmd_json(["kubectl", "--kubeconfig", KUBECONFIG, "get", "nodes", "-o", "json"])
     top_stats = get_top_stats()
-    
+
     if not nodes or not isinstance(nodes, dict):
         log_err("Impossibile recuperare i nodi Kubernetes.")
         return
@@ -146,15 +146,15 @@ def check_nodes():
             if cond['type'] == 'Ready':
                 status = "Ready" if cond['status'] == 'True' else f"NotReady ({cond['reason']})"
                 break
-        
+
         version = node['status']['nodeInfo']['kubeletVersion']
         labels = node['metadata'].get('labels', {})
         roles = [k.split('/')[-1] for k in labels if k.startswith('node-role.kubernetes.io/')]
         role_str = ", ".join(roles) if roles else "worker"
-        
+
         # Resource capacity
         mem_total_str = node['status']['capacity'].get('memory', 'N/D')
-        
+
         # Resource used
         stats = top_stats.get(name, {})
         cpu_usage = stats.get('cpu_pct', 'N/D')
@@ -182,12 +182,12 @@ def check_pods():
         name = pod['metadata']['name']
         status_info = pod['status']
         phase = status_info.get('phase')
-        
+
         if ns not in namespace_stats:
             namespace_stats[ns] = {'total': 0, 'ready': 0}
-        
+
         namespace_stats[ns]['total'] += 1
-        
+
         # Check if all containers are ready
         container_statuses = status_info.get('containerStatuses', [])
         is_ready = False
@@ -211,7 +211,7 @@ def check_pods():
                         break
                     elif 'terminated' in state and state['terminated'].get('exitCode') != 0:
                         reason = f"Terminated (Exit {state['terminated'].get('exitCode')})"
-            
+
             bad_pods.append(f"[{ns}] {name} -> {reason}")
 
     # Report by critical namespaces
@@ -259,13 +259,13 @@ def check_events():
 
     # kubectl events output structure
     items = events.get('items', [])
-    
+
     warnings = []
     for event in items:
         if event.get('type') == 'Warning':
             msg = f"[{event['metadata']['namespace']}] {event['involvedObject']['kind']}/{event['involvedObject']['name']}: {event['message']}"
             warnings.append(msg)
-            
+
     if warnings:
         for w in warnings[-5:]: # Ultime 5 segnalazioni
             log_warn(w)
@@ -275,14 +275,14 @@ def check_events():
 def main():
     # Salva il CWD originale
     original_cwd = os.getcwd()
-    
+
     # Cambia CWD nella root del progetto per coerenza (i file config sono lì)
     os.chdir(PROJECT_ROOT)
-    
+
     print(f"{Colors.HEADER}======================================================================{Colors.ENDC}")
     print(f"{Colors.HEADER}{Colors.BOLD}                 KUBERNETES COMPREHENSIVE DIAGNOSTICS                 {Colors.ENDC}")
     print(f"{Colors.HEADER}======================================================================{Colors.ENDC}")
-    
+
     if not verify_configs():
         sys.exit(1)
 
@@ -307,7 +307,7 @@ def main():
         status_str = f"{Colors.FAIL}STATO CRITICO ({common.errors_count} errori){Colors.ENDC}"
     elif common.warnings_count > 0:
         status_str = f"{Colors.WARNING}STATO DEGRADATO ({common.warnings_count} avvisi){Colors.ENDC}"
-        
+
     print(f" Diagnostica completata in {elapsed}s | Stato Globale: {status_str}")
     print(f"{Colors.HEADER}======================================================================{Colors.ENDC}\n")
 

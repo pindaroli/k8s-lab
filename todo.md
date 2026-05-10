@@ -48,8 +48,14 @@
 ## Critical Actions
 
 ### [ ] Security & Automation
-- [ ] **Automazione Ansible Vault**: Configurare il file di password (es. `.vault_pass`) e mappare il percorso in `ansible.cfg` per permettere all'agente di gestire i segreti in autonomia senza richieste manuali.
-- [ ] **Ottimizzazione Secret Registry**: Definire un workflow (es. script di auditing) per alimentare e mantenere aggiornato il `wiki/entities/Secret_Registry.md` partendo dai dati reali di K8s e Ansible.
+- [ ] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
+    - [x] Sviluppo Helm-Native in `pindaroli-arr-helm` (**v1.2.3**).
+    - [x] Pubblicazione Chart su GitHub Registry.
+    - [x] Post-Rebranding: Creare record CNAME su Cloudflare: `charts` -> `pindaroli.github.io`
+    - [x] Post-Rebranding: Assicurarsi che l'icona sia raggiungibile su `pindaroli.org/images/pindaroli.svg` (o caricarla nel repo)
+    - [x] Deployment release `servarr` con `helm upgrade --version 1.2.3`.
+- [x] **Automazione Ansible Vault**: Configurato il file di password (es. `.vault_pass`) e mappare il percorso in `ansible.cfg` per permettere all'agente di gestire i segreti in autonomia senza richieste manuali.
+- [x] **Ottimizzazione Secret Registry**: Definire un workflow (es. script di auditing) per alimentare e mantenere aggiornato il `wiki/entities/Secret_Registry.md` partendo dai dati reali di K8s e Ansible.
 - [ ] **Automazione Anti-Spam (Recyclarr)**:
     > **Ref**: [[recyclarr-anti-spam-automation]]
     - [ ] Configurare `servarr/recyclarr.yaml` con filtri euristici (Bad Groups, Fake, Size Limits).
@@ -102,6 +108,10 @@
 - [ ] Verificare il quorum etcd e la salute del cluster Kubernetes.
 
 ## Future Integrations (n8n & Prefect)
+### [ ] Transizione a Metodo B (Helm Secrets)
+- [ ] Valutare il passaggio dal Metodo A (Apply manuale) al Metodo B (Integrazione atomica Helm + SOPS) per migliorare la coerenza GitOps.
+- [ ] Richiede installazione plugin `helm-secrets` in tutti gli ambienti CI/CD.
+
 ### [ ] Migrazione Database n8n su postgres-main
 - [ ] Preparazione: Crea un nuovo database `n8n` e un utente dedicato nel cluster `postgres-main` (CloudNativePG).
 - [ ] Configurazione: Aggiorna il deployment di `n8n` per puntare a `postgres-main-rw.cnpg-system.svc.cluster.local`.

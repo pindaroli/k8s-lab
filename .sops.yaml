@@ -1,6 +1,6 @@
 creation_rules:
   # Segreti Kubernetes (manifest completi)
-  - path_regex: secrets-sops/.*\.enc\.yaml$
+  - path_regex: secrets-sops/.*\.yaml$
     encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
     age: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
 

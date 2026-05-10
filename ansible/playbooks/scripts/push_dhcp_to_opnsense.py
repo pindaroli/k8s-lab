@@ -20,11 +20,11 @@ def push_dhcp_reservations(url, api_key, api_secret, reservations):
 
     for item in reservations:
         print(f"Applying DHCP Reservation: {item['hostname']} ({item['ip']} / {item['mac']}) to {item['interface']}...")
-        
+
         # We need to hit the OPNsense API to add a static DHCP map
         # Endpoint: /api/dhcpv4/settings/addStaticMap/<interface>
         endpoint = f"{url}/api/dhcpv4/settings/addStaticMap/{item['interface']}"
-        
+
         payload = {
             "staticmap": {
                 "mac": item['mac'],
@@ -33,7 +33,7 @@ def push_dhcp_reservations(url, api_key, api_secret, reservations):
                 "descr": item['descr']
             }
         }
-        
+
         try:
             req = urllib.request.Request(endpoint, method='POST', data=json.dumps(payload).encode('utf-8'), headers={
                 'Content-Type': 'application/json',
@@ -69,21 +69,21 @@ def main():
     parser.add_argument('--api-secret', required=True)
     parser.add_argument('--url', default="https://192.168.2.254")
     parser.add_argument('--file', help='JSON file containing reservations (output of extract_dhcp)', default='-')
-    
+
     args = parser.parse_args()
-    
+
     if args.file == '-':
         data = sys.stdin.read()
     else:
         with open(args.file, 'r') as f:
             data = f.read()
-            
+
     try:
         reservations = json.loads(data)
     except Exception as e:
         print(f"Error parsing JSON reservations: {e}")
         sys.exit(1)
-        
+
     push_dhcp_reservations(args.url, args.api_key, args.api_secret, reservations)
 
 if __name__ == "__main__":

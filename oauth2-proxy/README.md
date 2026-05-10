@@ -55,7 +55,7 @@ The consolidated manifest contains all resources except secrets:
 
 ### 5. Middlewares (Multi-namespace)
 - **oauth2-proxy namespace**: Primary ForwardAuth middleware
-- **default namespace**: For homepage and core services  
+- **default namespace**: For homepage and core services
 - **arr namespace**: For Servarr stack with error handling
 
 ## Alternative Deployment (Individual Files)
@@ -64,7 +64,7 @@ For advanced customization, individual manifests are available:
 
 - `namespace.yaml` - Kubernetes namespace
 - `secrets.yaml` - OAuth2 credentials ⚠️ **Contains sensitive data**
-- `deployment.yaml` - OAuth2-Proxy deployment and service  
+- `deployment.yaml` - OAuth2-Proxy deployment and service
 - `middleware.yaml` - ForwardAuth middleware (oauth2-proxy namespace)
 - `middleware-default.yaml` - ForwardAuth middleware (other namespaces)
 - `ingressroute.yaml` - External access routes

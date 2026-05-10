@@ -24,4 +24,3 @@ Infrastructure as Code repository for the Talos Linux Kubernetes cluster.
 ## Documentation
 *   **[Master Documentation (GEMINI.md)](GEMINI.md)**: Network Map, IP Management, and Operational Cheatsheets.
 *   **[Backup Scheduling & Retention](istruzioni/backup_scheduling.md)**: Policies for Proxmox, Velero, and CloudNativePG.
-

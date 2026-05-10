@@ -7,9 +7,9 @@ global:
 server:
   # Base configuration for the API
   apiBasePath: "/api"
-  
+
   uiConfig:
-    # URL used by the UI to connect to the API. 
+    # URL used by the UI to connect to the API.
     # Must be the external URL if accessed via Ingress.
     prefectUiApiUrl: "https://prefect-internal.pindaroli.org/api"
 

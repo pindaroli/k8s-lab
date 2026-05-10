@@ -75,4 +75,3 @@ kubectl rollout status deployment prefect-worker -n prefect --timeout=120s || { 
 
 echo "✅ FASE 2 completata con successo!"
 echo "--- INSTALLAZIONE GLOBALE PREFECT TERMINATA ---"
-

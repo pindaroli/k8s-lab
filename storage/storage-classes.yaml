@@ -23,13 +23,13 @@ parameters:
   # NFS server configuration
   server: 10.10.10.50
   share: /mnt/stripe/k8s-arr
-  
+
   # Dynamic subdirectory naming: service-name-namespace
   subDir: ${pvc.metadata.name}
-  
+
   # Set folder permissions to 777
   mountPermissions: "0777"
-  
+
   # Volume deletion policy
   onDelete: retain
 
@@ -59,13 +59,13 @@ parameters:
   # NFS server configuration
   server: 10.10.10.50
   share: /mnt/stripe/k8s-fast-gen
-  
+
   # Dynamic subdirectory naming: service-name-namespace
   subDir: ${pvc.metadata.name}
-  
+
   # Set folder permissions to 777
   mountPermissions: "0777"
-  
+
   # Volume deletion policy
   onDelete: retain
 

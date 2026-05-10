@@ -71,4 +71,3 @@ The database is exposed to the LAN via MetalLB on a dedicated IP.
 2.  **Username**: `radarr`
 3.  **Password**: `radarr`
 4.  **SSL**: `Factory` or `Disable` (if connection fails)
-

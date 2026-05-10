@@ -28,7 +28,7 @@ def analyze_rete(file_path):
                 safe_a = safe_a.strip('-')
                 if safe_a:
                     clean_aliases.append(safe_a)
-        
+
         if ip not in ip_map:
             ip_map[ip] = set()
         ip_map[ip].update(clean_aliases)
@@ -37,7 +37,7 @@ def analyze_rete(file_path):
         node_id = node.get('id')
         hostname = node.get('hostname')
         node_aliases = node.get('aliases', [])
-        
+
         # Base aliases for this node
         base_aliases = [node_id, hostname] + node_aliases
         base_aliases = [a for a in base_aliases if a]
@@ -45,12 +45,12 @@ def analyze_rete(file_path):
         # Check various IP fields
         add_ip(node.get('management_ip'), base_aliases)
         add_ip(node.get('ip'), base_aliases)
-        
+
         # VIPs defined inside a host node are shared cluster IPs, not the host itself.
         # We don't attach the host's base_aliases (like 'k1') to the shared VIP.
         if node.get('vip'):
             add_ip(node.get('vip'), [f"{node_id}-shared-vip"])
-        
+
         # Check interfaces list
         for iface in node.get('interfaces', []):
             # We explicitly ignore the 'network' (description) field now.
@@ -64,7 +64,7 @@ def analyze_rete(file_path):
                 # DNS Policy: Only use the explicit functional 'name' (e.g., gw-vlan20), ignore 'interface' (opt2)
                 log_name = log_iface.get('name', '')
                 log_aliases = [f"{node_id}-{log_name}"] if log_name else [node_id]
-                
+
                 # Use only explicitly defined IP, avoid subnet strings.
                 if 'ip' in log_iface:
                     add_ip(log_iface['ip'], log_aliases)
@@ -86,13 +86,13 @@ def analyze_rete(file_path):
             if a not in alias_map:
                 alias_map[a] = []
             alias_map[a].append(ip)
-    
+
     found_duplicates = False
     for a, ips in alias_map.items():
         if len(ips) > 1:
             print(f"- **WARNING**: The name `{a}` points to multiple IPs: {', '.join(ips)}")
             found_duplicates = True
-            
+
     if not found_duplicates:
         print("- **OK**: No duplicated names found across different IPs.")
 

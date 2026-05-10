@@ -32,26 +32,26 @@ class therarbg(object):
     url = 'https://therarbg.com'
     name = 'The RarBg'
     supported_categories = {
-        'all':'All', 
-        'movies':'Movies', 
-        'tv': 'TV', 
-        'music':'Music', 
-        'games':'Games', 
-        'anime':'Anime', 
+        'all':'All',
+        'movies':'Movies',
+        'tv': 'TV',
+        'music':'Music',
+        'games':'Games',
+        'anime':'Anime',
         'software':'Apps'
         }
-    
+
     next_page_regex = r'<a.*?>»<\/a>'
     title_regex = r'<title>Search for.*<\/title>'
     has_next_page = True
 
     class MyHtmlParser(HTMLParser):
-    
+
         def error(self, message):
             pass
-    
+
         DIV, TABLE, TBODY, TR, TD, A, SPAN, I, B = ('div', 'table', 'tbody', 'tr', 'td', 'a', 'span', 'i', 'b')
-    
+
         def __init__(self, url):
             HTMLParser.__init__(self)
             self.magnet_regex = r'href=["\']magnet:.+?["\']'
@@ -106,7 +106,7 @@ class therarbg(object):
                     self.row['link'] = magnet_urls[0].split('"')[1]
 
                 if self.column == 3 and tag == self.A:
-                    self.shouldGetCategory = True                 
+                    self.shouldGetCategory = True
 
                 if self.column == 6:
                     self.shouldGetSize = True
@@ -115,7 +115,7 @@ class therarbg(object):
                     self.shouldGetSeeds = True
 
                 if self.column == 8:
-                    self.shouldGetLeechs = True                    
+                    self.shouldGetLeechs = True
 
         def handle_data(self, data):
             if self.shouldParseName:
@@ -131,11 +131,11 @@ class therarbg(object):
                 self.row['size'] = data.replace(',', '.').replace('\xa0', ' ')
                 self.shouldGetSize = False
 
-            if self.shouldGetSeeds:    
+            if self.shouldGetSeeds:
                 self.row['seeds']  = data
                 self.shouldGetSeeds = False
 
-            if self.shouldGetLeechs:    
+            if self.shouldGetLeechs:
                 self.row['leech']  = data
                 self.shouldGetLeechs = False
 
@@ -185,7 +185,7 @@ class therarbg(object):
             t.start()
             time.sleep(0.5)
             threads.append(t)
-    
+
             page += 1
 
         for t in threads:

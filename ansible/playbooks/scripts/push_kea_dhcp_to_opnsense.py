@@ -42,19 +42,19 @@ def push_kea_dhcp_reservations(url, api_key, api_secret, reservations):
         # The user has subnet "10.10.20.0/24" for opt2. We'll string match the first 3 octets
         ip_prefix = ".".join(item['ip'].split('.')[:3])
         target_subnet_uuid = None
-        
+
         for sub in subnets:
             if sub['subnet'].startswith(ip_prefix):
                  target_subnet_uuid = sub['uuid']
                  break
-        
+
         if not target_subnet_uuid:
              print(f"  -> ERROR: Could not find a Kea Subnet UUID matching IP {item['ip']} for hostname {item['hostname']}")
              continue
-             
+
         endpoint = f"{url}/api/kea/dhcpv4/addReservation"
         print(f"Applying: {item['hostname']} ({item['ip']} / {item['mac']}) -> Subnet UUID: {target_subnet_uuid}")
-        
+
         payload = {
             "reservation": {
                 "hw_address": item['mac'],
@@ -64,7 +64,7 @@ def push_kea_dhcp_reservations(url, api_key, api_secret, reservations):
                 "subnet": target_subnet_uuid
             }
         }
-        
+
         try:
             req = urllib.request.Request(endpoint, method='POST', data=json.dumps(payload).encode('utf-8'), headers={
                 'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ def push_kea_dhcp_reservations(url, api_key, api_secret, reservations):
                     print(f"  -> ✅ SUCCESS")
         except urllib.error.HTTPError as e:
             print(f"  -> Error applying {item['hostname']}: {e.code} - {e.reason}")
-            try: 
+            try:
                 print(e.read().decode())
             except:
                 pass
@@ -104,21 +104,21 @@ def main():
     parser.add_argument('--api-secret', required=True)
     parser.add_argument('--url', default="https://192.168.2.254")
     parser.add_argument('--file', help='JSON file containing reservations', default='-')
-    
+
     args = parser.parse_args()
-    
+
     if args.file == '-':
         data = sys.stdin.read()
     else:
         with open(args.file, 'r') as f:
             data = f.read()
-            
+
     try:
         reservations = json.loads(data)
     except Exception as e:
         print(f"Error parsing JSON reservations: {e}")
         sys.exit(1)
-        
+
     push_kea_dhcp_reservations(args.url, args.api_key, args.api_secret, reservations)
 
 if __name__ == "__main__":

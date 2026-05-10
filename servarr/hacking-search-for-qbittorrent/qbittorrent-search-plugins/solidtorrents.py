@@ -34,16 +34,16 @@ class solidtorrents(object):
     supported_categories = {
         'all': 'all'
     }
-    
+
     results_regex = r'<b>\d+<\/b>'
 
     class MyHtmlParser(HTMLParser):
-    
+
         def error(self, message):
             pass
-    
+
         LI, DIV, H5, A = ('li', 'div', 'h5', 'a')
-    
+
         def __init__(self, url):
             HTMLParser.__init__(self)
             self.magnet_regex = r'href=["\']magnet:.+?["\']'
@@ -60,7 +60,7 @@ class solidtorrents(object):
             self.insideStatsDiv = False
             self.insideStatsColumn = False
             self.insideLinksDiv = False
-    
+
         def handle_starttag(self, tag, attrs):
             params = dict(attrs)
             cssClasses = params.get('class', '')
@@ -102,7 +102,7 @@ class solidtorrents(object):
                 href = params.get('href')
                 self.row['link'] = href
                 self.insideLinksDiv = False
-                return                
+                return
 
         def handle_data(self, data):
             if self.shouldGetName:
@@ -111,12 +111,12 @@ class solidtorrents(object):
                 return
 
             if self.insideStatsDiv:
-                if not data.rstrip() == '':                  
+                if not data.rstrip() == '':
                     if self.column == 2:
                         self.row['size'] = data.replace(' ', '')
-                    if self.column == 3: 
+                    if self.column == 3:
                         self.row['seeds'] = data
-                    if self.column == 4: 
+                    if self.column == 4:
                         self.row['leech'] = data
                 return
 
@@ -155,7 +155,7 @@ class solidtorrents(object):
         retrievedHtml = retrieve_url(page_url)
         results_matches = re.finditer(self.results_regex, retrievedHtml, re.MULTILINE)
         results_array = [x.group() for x in results_matches]
- 
+
         if len(results_array) > 0:
             results = int(results_array[0].replace('<b>', '').replace('</b>', ''))
             pages = math.ceil(results / 20)

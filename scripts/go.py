@@ -23,7 +23,7 @@ def get_script_description(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             lines = [next(f) for _ in range(15)]
-            
+
             # Cerca docstring Python (""" o ''')
             in_docstring = False
             doc_lines = []
@@ -50,7 +50,7 @@ def get_script_description(filepath):
                         return text[:60] + ("..." if len(text) > 60 else "")
     except Exception:
         pass
-    
+
     return desc
 
 def main():
@@ -60,7 +60,7 @@ def main():
     # Trova tutti gli script .py e .sh validi (escludendo se stesso)
     scripts = []
     my_name = os.path.basename(__file__)
-    
+
     try:
         files = sorted(os.listdir(SCRIPT_DIR))
     except Exception as e:
@@ -86,7 +86,7 @@ def main():
     # Stampa Menu
     for idx, s in enumerate(scripts, start=1):
         print(f"{Colors.OKGREEN}[{idx:2d}]{Colors.ENDC} {Colors.OKCYAN}{s['name']:<25}{Colors.ENDC} - {s['desc']}")
-    
+
     print(f"{Colors.WARNING}[ 0]{Colors.ENDC} {Colors.BOLD}Esci{Colors.ENDC}")
 
     if not sys.stdin.isatty():
@@ -108,12 +108,12 @@ def main():
     if choice_idx == 0:
         print("Uscita.")
         sys.exit(0)
-    
+
     if 1 <= choice_idx <= len(scripts):
         selected = scripts[choice_idx - 1]
         print(f"\n{Colors.BOLD}Eseguo: {selected['name']}...{Colors.ENDC}")
         print("-" * 50)
-        
+
         # Prepara l'ambiente con PATH robusto (specialmente per Mac Homebrew)
         # E pulisce eventuali proxy che disturbano la rete locale
         env = os.environ.copy()
@@ -123,7 +123,7 @@ def main():
             if p not in current_path:
                 current_path = f"{p}:{current_path}"
         env["PATH"] = current_path
-        
+
         for var in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"]:
             if var in env:
                 del env[var]
@@ -136,7 +136,7 @@ def main():
             print(f"\n{Colors.WARNING}Esecuzione di {selected['name']} interrotta dall'utente.{Colors.ENDC}")
         except Exception as e:
             print(f"\n{Colors.WARNING}Errore nell'esecuzione: {e}{Colors.ENDC}")
-            
+
         print("-" * 50)
         print(f"{Colors.BOLD}Esecuzione terminata.{Colors.ENDC}")
     else:
