@@ -92,7 +92,10 @@ qbittorrent:
           memory: 64Mi
   monitoring:
     enabled: true
-  extraVolumes: []
+  extraVolumes:
+    - name: incomplete-dw
+      persistentVolumeClaim:
+        claimName: pvc-incomplete-dw
   service:
     web:
       type: ClusterIP
@@ -111,6 +114,9 @@ qbittorrent:
     media:
       enabled: true
       existingClaim: servarr-jellyfin-media
+    additionalMounts:
+      - name: incomplete-dw
+        mountPath: /data/incomplete
 
 
 flaresolverr:

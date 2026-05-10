@@ -21,7 +21,7 @@ L'obiettivo è spostare i download incompleti dal pool meccanico `oliraid` allo 
 ## 2. Esecuzione (DA ESEGUIRE)
 - [ ] Eseguire `ansible-playbook ansible/playbooks/truenas_nvme_setup.yml`.
 - [ ] Eseguire `kubectl apply -f storage/incomplete-dw-pvc.yaml`.
-- [ ] Eseguire `helm upgrade oli-arr charts/servarr -f oli-arr-values.yaml`.
+- [ ] Eseguire `helm upgrade oli-arr charts/servarr -f servarr/arr-values.yaml`.
 - [ ] Verificare il mount point nel pod.
 
 ## 3. Esecuzione Migrazione Fisica (In WebUI)
