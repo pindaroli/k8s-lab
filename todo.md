@@ -15,7 +15,7 @@
 - [x] **K8s Storage**: Creato manifest `storage/incomplete-dw-pvc.yaml` (PV/PVC).
 - [ ] **K8s Deploy**: Eseguire playbook Ansible su TrueNAS.
 - [ ] **K8s Deploy**: Applicare manifest storage: `kubectl apply -f storage/incomplete-dw-pvc.yaml`.
-- [ ] **Helm**: Aggiornare `oli-arr-values.yaml` con `additionalVolumes` e `additionalMounts`.
+- [x] **Helm**: Aggiornare `servarr/arr-values.yaml` con `additionalVolumes` e `additionalMounts`.
 - [ ] **Verifica**: Controllare mount `/data/incomplete` nel pod qBittorrent.
 - [ ] **Migrazione**: Procedere con lo spostamento fisico dei torrent (Set Location).
 
