@@ -40,7 +40,7 @@ class tomadivx(object):
     supported_categories = {
         'all': 'all'
     }
-    
+
     results_regex = r'<p.+?>Se han encontrado.+?<b>\d+</b>.+?resultados.+?</p>'
 
     class MyHtmlParser(HTMLParser):
@@ -49,9 +49,9 @@ class tomadivx(object):
 
         def error(self, message):
             pass
-    
+
         DIV, P, A, SPAN = ('div', 'p', 'a', 'span')
-    
+
         def __init__(self, url):
             HTMLParser.__init__(self)
 
@@ -215,4 +215,3 @@ class tomadivx(object):
 
         for t in threads:
             t.join()
-

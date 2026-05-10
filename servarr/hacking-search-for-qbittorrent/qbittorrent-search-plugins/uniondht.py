@@ -33,7 +33,7 @@ class unionDHTParser(threading.Thread):
         self.page_link = url
         threading.Thread.__init__(self)
         logging.info('Parser Initiation complete')
-    
+
     def get_page_data(self, url):
         req = urllib.request.Request(url)
         req.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux i686; rv:38.0) Gecko/20100101 Firefox/38.0')
@@ -41,7 +41,7 @@ class unionDHTParser(threading.Thread):
             html = response.read()
             new_html = codecs.decode(html, encoding='cp1251')
             return(new_html)
-        
+
 
     def run(self):
         logging.info('Starting unionDHTParser Thread')
@@ -147,5 +147,5 @@ if __name__ == '__main__':
     # a.search('ncis', 'music')
     # a.download_torrent('http://uniondht.org/topic/41952-ncis-official-soundtrack.html')
     a.download_torrent('http://uniondht.org/topic/1551078-ncis-morskaya-politsiya-spetsotdel.html')
-    
+
     pass

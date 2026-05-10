@@ -27,7 +27,7 @@ provenance: # Riferimenti ai file RAW o incidenti originali
 
 ## 4. Cosa NON includere nel Wiki
 > [!CAUTION]
-> **NO TRANSIENT DATA**: Non inserire nel Wiki dump temporanei, log grezzi o liste di record DNS (es. `pindaroli.org.txt`). 
+> **NO TRANSIENT DATA**: Non inserire nel Wiki dump temporanei, log grezzi o liste di record DNS (es. `pindaroli.org.txt`).
 > Il Wiki deve contenere solo **conoscenza curata, universale e strutturata**. I dati transienti devono restare nella root o in cartelle di log/audit dedicate, per non "sporcare" la base di conoscenza degli agenti.
 
 Se nuove informazioni contraddicono il contenuto esistente:
@@ -73,4 +73,3 @@ Per garantire l'Alta Affidabilità (HA) definita in [[GEMINI]]:
 1.  **Ingress/External**: Puntare i record DNS esterni (Cloudflare) o interni (OPNsense) sempre al **VIP** (es. `10.10.10.100`) o al nome host logico (es. `k1`).
 2.  **Pod-to-Pod**: Usare sempre il Service Name `svc.cluster.local`. È vietato usare l'IP del VIP o l'IP fisico del nodo per la comunicazione interna tra container.
 3.  **Stateful Awareness**: L'indirizzamento logico non sposta lo storage locale. La resilienza dei dati deve essere gestita a livello applicativo (replicazione DB).
-

@@ -245,7 +245,7 @@ Previous release can be found at [v0.5.0](https://github.com/siderolabs/terrafor
 
 ## [terraform-provider-talos 0.6.0-beta.0](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.6.0-beta.0) (2024-09-10)
 
-Welcome to the v0.6.0-beta.0 release of terraform-provider-talos!  
+Welcome to the v0.6.0-beta.0 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -351,7 +351,7 @@ Previous release can be found at [v0.5.0](https://github.com/siderolabs/terrafor
 
 ## [terraform-provider-talos 0.6.0-alpha.2](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.6.0-alpha.2) (2024-09-02)
 
-Welcome to the v0.6.0-alpha.2 release of terraform-provider-talos!  
+Welcome to the v0.6.0-alpha.2 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -459,7 +459,7 @@ Previous release can be found at [v0.5.0](https://github.com/siderolabs/terrafor
 
 ## [terraform-provider-talos 0.6.0-alpha.1](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.6.0-alpha.1) (2024-07-18)
 
-Welcome to the v0.6.0-alpha.1 release of terraform-provider-talos!  
+Welcome to the v0.6.0-alpha.1 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -551,7 +551,7 @@ Previous release can be found at [v0.5.0](https://github.com/siderolabs/terrafor
 
 ## [terraform-provider-talos 0.6.0-alpha.0](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.6.0-alpha.0) (2024-07-11)
 
-Welcome to the v0.6.0-alpha.0 release of terraform-provider-talos!  
+Welcome to the v0.6.0-alpha.0 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -633,7 +633,7 @@ Previous release can be found at [v0.5.0](https://github.com/siderolabs/terrafor
 
 ## [terraform-provider-talos 0.4.0-alpha.0](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.4.0-alpha.0) (2023-08-30)
 
-Welcome to the v0.4.0-alpha.0 release of terraform-provider-talos!  
+Welcome to the v0.4.0-alpha.0 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -687,7 +687,7 @@ Previous release can be found at [v0.3.2](https://github.com/siderolabs/terrafor
 
 ## [terraform-provider-talos 0.3.0-beta.0](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.3.0-beta.0) (2023-08-07)
 
-Welcome to the 0.3.0-beta.0 release of terraform-provider-talos!  
+Welcome to the 0.3.0-beta.0 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -726,7 +726,7 @@ Previous release can be found at [v0.2.1](https://github.com/siderolabs/terrafor
 
 ## [terraform-provider-talos 0.2.0-alpha.2](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.2.0-alpha.2) (2023-04-14)
 
-Welcome to the v0.2.0-alpha.2 release of terraform-provider-talos!  
+Welcome to the v0.2.0-alpha.2 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -867,7 +867,7 @@ Previous release can be found at [v0.2.0-alpha.1](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 0.2.0-alpha.1](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.2.0-alpha.1) (2023-04-12)
 
-Welcome to the v0.2.0-alpha.1 release of terraform-provider-talos!  
+Welcome to the v0.2.0-alpha.1 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -906,7 +906,7 @@ Previous release can be found at [v0.2.0-alpha.0](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 0.2.0-alpha.0](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.2.0-alpha.0) (2023-04-10)
 
-Welcome to the v0.2.0-alpha.0 release of terraform-provider-talos!  
+Welcome to the v0.2.0-alpha.0 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1005,7 +1005,7 @@ Previous release can be found at [v0.1.2](https://github.com/siderolabs/terrafor
 
 ## [terraform-provider-talos 0.1.0-alpha.12](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.12) (2022-12-16)
 
-Welcome to the v0.1.0-alpha.12 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.12 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1038,7 +1038,7 @@ Previous release can be found at [v0.1.0-alpha.11](https://github.com/siderolabs
 
 ## [terraform-provider-talos 0.1.0-alpha.11](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.11) (2022-12-09)
 
-Welcome to the v0.1.0-alpha.11 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.11 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1069,7 +1069,7 @@ Previous release can be found at [v0.1.0-alpha.10](https://github.com/siderolabs
 
 ## [terraform-provider-talos 0.1.0-alpha.10](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.10) (2022-11-02)
 
-Welcome to the v0.1.0-alpha.10 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.10 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1100,7 +1100,7 @@ Previous release can be found at [v0.1.0-alpha.9](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 0.1.0-alpha.9](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.9) (2022-10-18)
 
-Welcome to the v0.1.0-alpha.9 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.9 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1131,7 +1131,7 @@ Previous release can be found at [v0.1.0-alpha.8](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 1.2.4](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v1.2.4) (2022-10-18)
 
-Welcome to the v1.2.4 release of terraform-provider-talos!  
+Welcome to the v1.2.4 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1174,7 +1174,7 @@ Previous release can be found at [v0.1.0-alpha.7](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 0.1.0-alpha.7](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.7) (2022-09-20)
 
-Welcome to the v0.1.0-alpha.7 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.7 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1202,7 +1202,7 @@ Previous release can be found at [v0.1.0-alpha.6](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 0.1.0-alpha.6](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.6) (2022-09-15)
 
-Welcome to the v0.1.0-alpha.6 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.6 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1237,7 +1237,7 @@ Previous release can be found at [v0.1.0-alpha.5](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 0.1.0-alpha.5](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.5) (2022-09-15)
 
-Welcome to the v0.1.0-alpha.5 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.5 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1272,7 +1272,7 @@ Previous release can be found at [v0.1.0-alpha.4](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 0.1.0-alpha.4](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.4) (2022-09-15)
 
-Welcome to the v0.1.0-alpha.4 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.4 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1312,7 +1312,7 @@ Previous release can be found at [v0.1.0-alpha.3](https://github.com/siderolabs/
 
 ## [terraform-provider-talos 0.1.0-alpha.3](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.3) (2022-09-08)
 
-Welcome to the v0.1.0-alpha.3 release of terraform-provider-talos!  
+Welcome to the v0.1.0-alpha.3 release of terraform-provider-talos!
 *This is a pre-release of terraform-provider-talos*
 
 
@@ -1374,4 +1374,3 @@ Data sources will always create a diff and might be removed in a future release.
 * **google.golang.org/grpc**            v1.48.0 **_new_**
 
 Previous release can be found at [v0.1.0-alpha.2](https://github.com/siderolabs/terraform-provider-talos/releases/tag/v0.1.0-alpha.2)
-

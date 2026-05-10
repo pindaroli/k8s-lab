@@ -193,7 +193,7 @@ data:
         - Kasmweb:
             href: https://kasmweb-internal.pindaroli.org
             description: Goto Jumphost
-            icon:  mdi-monitor-dashboard      
+            icon:  mdi-monitor-dashboard
 
     - "GitOps":
         - Prefect Console:

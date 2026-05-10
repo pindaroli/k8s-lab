@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: velero
+    namespace: velero
+type: Opaque
+stringData:
+    cloud: ENC[AES256_GCM,data:k5arr1KSUXxaGGyHn2LrDwpxCmtW7Wiq4OdXnC4APAB0jGSTmIsHwyoQpGPC+6vweszoOFaouofWbvpK1/J8kStVLZpFTw==,iv:Qnpyq27oJJ8uf5GLHJtYNzNYv5s5gMqQxjgvAa8vfMk=,tag:BXe1yoOeN1ts/JnghBIOhg==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBUZGxacGxFME5id2tvK1Q1
+            R0NKTTJyOHJzTG5zTjRFengzMXpYMjlwaXdzCkdXdG1hcEJLOVdTNFBPZWE5S21v
+            TSsyTnU0djEzdVV4QTJrajVmcmtmQWsKLS0tIDFWS0dRNTBWSXFyYXRSNEwydVV6
+            anhXd3AxM2JVeC8xSjJ2ejlFVkxOWXMKlRH+WY8wTAZ0ftp/HVcjxDTXVHj3XYtv
+            cJSwR/3s0xlv7NsFAhCUwUspq/jLnfBJDmX5EvpB5GNirJZo8iuysQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-05-10T11:21:49Z"
+    mac: ENC[AES256_GCM,data:B1r0tVhNxNdeiiWuy07fs73ZTXLG8yhC9E6YvJ/vVE+LpS8hi5UfnII4UGvmt4a3NjZEHkyyCfY3+MgiJ18umiudGAHvdTyvpN1FLAobcRm7o4jeKiPjlOIfR24eHySirWujIlimdp696I/HtBAS077UjKwUnDpcGgklrZuGua8=,iv:AwxEbintHAj8LhGhMmLUhqG0CL1HPXVY494RQI6c/Sw=,tag:BDfSaMxbKMm4lpwwYjWHOA==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

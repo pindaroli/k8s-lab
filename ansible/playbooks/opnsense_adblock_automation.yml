@@ -3,7 +3,7 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  
+
   vars:
     # Defaults (override via extra-vars or secrets.yml)
     api_key: "{{ opnsense_api_key | default('') }}"

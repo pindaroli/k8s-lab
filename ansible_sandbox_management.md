@@ -3,7 +3,7 @@
 This document outlines the architectural approach for running Ansible within a restricted **macOS / AI Agent Sandbox** environment. It details why we use a localized `.ansible/` directory and how to securely manage secrets without triggering `[Errno 1] Operation not permitted` (EPERM).
 
 ## 1. The Core Problem: Sandbox Capability Denial
-When an AI agent (like Antigravity) executes shell commands on macOS, it is confined by a **Seatbelt Sandbox** profile. 
+When an AI agent (like Antigravity) executes shell commands on macOS, it is confined by a **Seatbelt Sandbox** profile.
 - **The Restriction**: Subprocesses are generally forbidden from performing `stat64` (metadata checks) or `read` operations on files outside the explicitly permitted project workspace (e.g., `~/.vault_pass.txt`).
 - **The Result**: Even with correct POSIX permissions (`chmod 600`), Ansible fails with `EPERM` because the kernel intercepts the system call before it can verify the file exists.
 

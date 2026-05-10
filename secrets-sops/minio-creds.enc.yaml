@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: minio-creds
+    namespace: cnpg-system
+type: Opaque
+stringData:
+    ACCESS_KEY_ID: ENC[AES256_GCM,data:FvNVvOw=,iv:Iqz00yM+OR+HtoVTsmkFL01YOubX47XnZeByrCtcgz4=,tag:i6pdkqbyEGv+u/ss++jVTA==,type:str]
+    SECRET_ACCESS_KEY: ENC[AES256_GCM,data:YzodBHeZE+U7,iv:byCSwuty/QAFuvq06dpxGLPypaAbdXv71PRktNr8x1c=,tag:SVN8nr5IgsYSZFuieEO/TA==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBkNTNOeHc1MnF2STczMGlO
+            ZXNQbXc4aEtyOVRsK2NzN1h5ZXpVWHBhZHo0CjkyVTRWQldqbTZCZXBTaERNdjBI
+            L1FKYlcrZTlFYXlaTFlIOGh2VmhLM00KLS0tIDRKSzhNVkpsRzVzUSttZXVpSXU5
+            eXh6VW04cko2Z1dhOUZpQmRvRkNKVmMKs5pX9gWsdeyPKU+NhbovWUWEe/By2wUg
+            h/0tCkVtphq0vZKiT/DuJegXKwwcr3TWxSIQHnfntn+nhit+svE8ZQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-05-10T11:21:49Z"
+    mac: ENC[AES256_GCM,data:FGKEQ6qsk1FBMTIzrLN/Bxinm9opC3n6GYiSOGMEckoywvWUOaYbfug+ZrTSpLiqheYvRpfCBDXLGJMhFx23VUNWinNRHH9CzoCZAGZeUcnfCpBAbjTGy9LXDj2c31yw2YqdePUsgDIdHyEOgvG68xRH8oUtuQg9xkbS5N1X2VE=,iv:WipnMTwQVF371mL36HR5iGYShhSjkiN8x1tn592VNDI=,tag:AlRDwAFYmtdM1o+IbskDzw==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

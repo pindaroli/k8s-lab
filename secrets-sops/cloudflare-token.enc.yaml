@@ -5,19 +5,19 @@ metadata:
     namespace: cert-manager
 type: Opaque
 stringData:
-    api-token: ENC[AES256_GCM,data:v40/fKByOo8JRezWDb7EjCHYEwSuvToLLqbhGNLv6pG0dFaTph0a,iv:AM+nAV4abvfOTP3mdOdz8gPVjUJSDRTZiZaxbsN8brM=,tag:Hp0LZiuFxCOqMpGRSdT/SA==,type:str]
+    api-token: ENC[AES256_GCM,data:KvR3hhrupNjFk4NZhuDfDH2f1EUJiQGqkOMZT00LwsKItc1FKS3e,iv:2Y6MzM7kHNIirfPKnjcNWsjuGKUNoSlI7rNuLe67/Uo=,tag:o1gy9vfDDX9YvUt/feiiNg==,type:str]
 sops:
     age:
         - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
           enc: |
             -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBSL2traFh2WHl3aUtIM2t4
-            bitUTzF5RUZZY090cm51akdnc0tLbTVESVNBCjkwS3pLUXRzcFlLUmdRWEtuOTNW
-            WU9IOHpjSkU4am9OcXl0N0RHZXFoNFEKLS0tIGUxMjVIbFlNK0pjcHBvbENsaWpZ
-            T2NWRVdiYWV4eFphdWJXMXM3VStSRUUKPD4bj8KBimGJvN+tlNnuanr3/G931lEV
-            OP9YmwxsaFfVdJQmqU49Fk5Tqp61DgtbwTuPE1+hpiMriSS0iBp/WA==
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBwK1pzTUVISUdxMlo3ZFRp
+            dDVtbThscXZEYWJyVEptSmtMbEdkRmNOK21jCnEwOVRrbHRmRjF1aDBWdDFjYWRU
+            UFhRRGpzOWQzdzd3S3p1N05PdVB0djAKLS0tIHBEQjZncDJoK0c5YzE3VUpocHpw
+            Q01lQ1l0RkltakN6VDJnRGp3dnhVdTgKJPwcLgLxGspvcAHlyvOFLmxYma5vnIQk
+            l4SUMTXYiu8L4pONaClY9hqYXwGewsM74C2+ybkFpIPvUbO/pwQ10g==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-05-10T10:23:19Z"
-    mac: ENC[AES256_GCM,data:3+yxYWwZpLIt+asXJacPGHB9m0lU3+DcoEiX2IeiXGMKLQvPhFvxlHLOVmLGhkQnzxogrQN88uHse6wVeRTK62h8pbr9LH6Nbe0c0zOGkp2AemTzHjIFfkY3WR4np5yBhTu02/KJIDt3+YIQzFsFqMjCFTjVPOkcwtNfqDod218=,iv:t0FwjRc8tb/CHJ0oQOfritTVRXVM6yB3NW2NeI5M1wg=,tag:hhBcTXa2IKuizcoCwKNQwA==,type:str]
+    lastmodified: "2026-05-10T11:21:49Z"
+    mac: ENC[AES256_GCM,data:nY0Ba1OJA/D7YhzOKfarvm+d74cma8Dx0Md0V8lyVkt1ZH4m/ud51fhCxIN16Rd3unAzDS/AHKqYAFzFJCHnJeC7Vo99c+Q/WjVjcXCvU2NWDj8sq/iOXTdA6cjxHmnXQ+nIjqBpeIecWi1z01H52aaIBNiKEzrD2PzWZYTtti8=,iv:PmqokMCVS3GAlyMiuvt8lCLgXkvQxBeN+oSKUwnvs9A=,tag:ySYqUU/ZHD6WcCwz18aVjg==,type:str]
     encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
     version: 3.12.2

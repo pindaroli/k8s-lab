@@ -1,10 +1,10 @@
 # Piano: Deployment di Vaultwarden
 
-**Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-05-08  
+**Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-05-08
 **Autore**: Antigravity AI Engineering
 
 > [!IMPORTANT]
-> Vaultwarden è un password manager critico. I dati NON devono mai andare persi.  
+> Vaultwarden è un password manager critico. I dati NON devono mai andare persi.
 > Architettura: **PostgreSQL** (`postgres-main`) per il database + **NFS TrueNAS** per i file binari (`/data`).
 
 ---

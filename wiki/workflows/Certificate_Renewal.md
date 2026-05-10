@@ -25,7 +25,7 @@ Cert-manager controlla la scadenza ogni ora. Se mancano meno di 30 giorni, avvia
 - **Troubleshooting**: Se un certificato è bloccato in `False`, controllare i log di cert-manager: `kubectl logs -n cert-manager -l app=cert-manager`.
 
 ## 3. DNS Challenge
-Perché funzioni, cert-manager deve poter creare record TXT temporanei su Cloudflare. 
+Perché funzioni, cert-manager deve poter creare record TXT temporanei su Cloudflare.
 - **Problema Storico**: In passato, la risoluzione DNS locale interferiva con la verifica della challenge.
 - **Soluzione**: Con il nuovo setup DNS (Vedi [[OPNsense]]), il cluster risolve correttamente i record esterni durante la fase di validazione.
 

@@ -5,7 +5,7 @@
   gather_facts: false
   vars_files:
     - "../vars/opnsense_secrets.yml"
-  
+
   vars:
     opnsense_url: "https://192.168.2.254" # Verify your OPNsense IP (Gateway of VLAN 20 is 10.10.20.1, Transit is 192.168.2.254)
     opnsense_api_key: "{{ api_key }}"
@@ -13,18 +13,18 @@
     # Interface UUID for VLAN 20 (You verify this via API or GUI)
     # Usually 'optX' or the UUID. If unsure, use the GUI first.
     interface_name: "opt2" # From rete.json: gw-vlan20 is opt2
-    
+
     reservations:
       - hostname: "talos-cp-01"
         ip: "10.10.20.141"
         mac: "bc:24:11:81:6a:19" # FROM SCREENSHOT
         descr: "Talos Control Plane 01"
-        
+
       - hostname: "talos-cp-02"
         ip: "10.10.20.142"
         mac: "bc:24:11:77:40:fc" # FROM SCREENSHOT
         descr: "Talos Control Plane 02"
-        
+
       - hostname: "talos-cp-03"
         ip: "10.10.20.143"
         mac: "bc:24:11:0b:e0:61" # FROM SCREENSHOT

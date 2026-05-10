@@ -54,7 +54,7 @@ def run_cmd(cmd, capture_output=True, debug=False):
             if p not in current_path:
                 current_path = f"{p}:{current_path}"
         env["PATH"] = current_path
-        
+
         # Unset proxy to avoid interference with local cluster IPs
         for var in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"]:
             if var in env:
@@ -77,7 +77,7 @@ def run_cmd_json(cmd, debug=False):
     stdout = run_cmd(cmd, debug=debug)
     if not stdout:
         return None
-    
+
     # Prova a caricare come singolo oggetto
     try:
         return json.loads(stdout)

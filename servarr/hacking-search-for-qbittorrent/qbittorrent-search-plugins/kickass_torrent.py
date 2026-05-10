@@ -13,12 +13,12 @@ try:
 except ImportError:
     #python2
     from HTMLParser import HTMLParser
-         
+
 class kickass_torrent(object):
     url = 'https://kickass2.biz'
     name = 'KickAss torrent'
     supported_categories = {'all': 'all'}
-    
+
     class MyHTMLParser(HTMLParser):
 
         def __init__(self):
@@ -32,10 +32,10 @@ class kickass_torrent(object):
             self.infoMap = {'name':0,'size':1,'seeds':3,'leech':4}
             self.fullResData = []
             self.singleResData = self.getSingleData()
-            
+
         def getSingleData(self):
             return {'name':'-1','seeds':'-1','leech':'-1','size':'-1','link':'-1','desc_link':'-1','engine_url':self.url}
-        
+
         def handle_starttag(self, tag, attrs):
             #print("Encountered a start tag:", tag)
             if tag == 'table':
@@ -64,7 +64,7 @@ class kickass_torrent(object):
                 if len(self.singleResData) > 0:
                     #ignore trash stuff
                     if self.singleResData['name'] != '-1' and self.isValidSize(self.singleResData['size']):
-                        prettyPrinter(self.singleResData) 
+                        prettyPrinter(self.singleResData)
                         self.fullResData.append(self.singleResData)
                     self.singleResData = self.getSingleData()
 
@@ -112,7 +112,7 @@ class kickass_torrent(object):
             currPage += 1
             if len(parser.fullResData) <= 0:
                 break
-        #print(parser.fullResData)   
+        #print(parser.fullResData)
         data = parser.fullResData
         print(len(data))
         parser.close()

@@ -34,7 +34,7 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/ping-all.yml:7:7
         ^ column 7
 
 
-2025-10-19 17:36:45,453 p=17339 u=olindo n=ansible INFO| fatal: [opnsense]: UNREACHABLE! => changed=false 
+2025-10-19 17:36:45,453 p=17339 u=olindo n=ansible INFO| fatal: [opnsense]: UNREACHABLE! => changed=false
   msg: |-
     Task failed: Data could not be sent to remote host "192.168.1.1". Make sure this host can be reached over ssh: Warning: Permanently added '192.168.1.1' (ED25519) to the list of known hosts.
     root@192.168.1.1: Permission denied (publickey,password,keyboard-interactive).
@@ -49,7 +49,7 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/ping-all.yml:7:7
         ^ column 7
 
 
-2025-10-19 17:36:45,505 p=17339 u=olindo n=ansible INFO| fatal: [truenas]: UNREACHABLE! => changed=false 
+2025-10-19 17:36:45,505 p=17339 u=olindo n=ansible INFO| fatal: [truenas]: UNREACHABLE! => changed=false
   msg: |-
     Task failed: Data could not be sent to remote host "192.168.1.250". Make sure this host can be reached over ssh: Warning: Permanently added '192.168.1.250' (ED25519) to the list of known hosts.
     root@192.168.1.250: Permission denied (publickey).
@@ -58,18 +58,18 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/ping-all.yml:7:7
 2025-10-19 17:36:46,060 p=17339 u=olindo n=ansible INFO| ok: [k8s-runner-1]
 2025-10-19 17:36:46,264 p=17339 u=olindo n=ansible INFO| ok: [k8s-control]
 2025-10-19 17:36:46,293 p=17339 u=olindo n=ansible INFO| TASK [Display ping result] *****************************************************
-2025-10-19 17:36:46,294 p=17339 u=olindo n=ansible INFO| ok: [k8s-control] => 
+2025-10-19 17:36:46,294 p=17339 u=olindo n=ansible INFO| ok: [k8s-control] =>
   msg: k8s-control is reachable
-2025-10-19 17:36:46,294 p=17339 u=olindo n=ansible INFO| ok: [k8s-runner-1] => 
+2025-10-19 17:36:46,294 p=17339 u=olindo n=ansible INFO| ok: [k8s-runner-1] =>
   msg: k8s-runner-1 is reachable
-2025-10-19 17:36:46,295 p=17339 u=olindo n=ansible INFO| ok: [proxmox] => 
+2025-10-19 17:36:46,295 p=17339 u=olindo n=ansible INFO| ok: [proxmox] =>
   msg: proxmox is reachable
 2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| k8s-control                : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| k8s-runner-1               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| opnsense                   : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| proxmox                    : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| truenas                    : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| k8s-control                : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| k8s-runner-1               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| opnsense                   : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| proxmox                    : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+2025-10-19 17:36:46,296 p=17339 u=olindo n=ansible INFO| truenas                    : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0
 2025-10-26 16:42:54,025 p=16791 u=olindo n=ansible INFO| PLAY [Deploy n8n Workflow Automation] ******************************************
 2025-10-26 16:42:54,036 p=16791 u=olindo n=ansible INFO| TASK [Display deployment banner] ***********************************************
 2025-10-26 16:42:54,036 p=16791 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -96,7 +96,7 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/deploy-n8n.yml:24:7
 2025-10-26 16:42:54,213 p=16791 u=olindo n=ansible INFO| failed: [localhost] (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-pvc.yaml) => {"ansible_loop_var": "item", "changed": false, "item": "/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-pvc.yaml", "msg": "Task failed: Premature end of stream waiting for become success.\n>>> Standard Error\nsudo: a password is required"}
 2025-10-26 16:42:54,266 p=16791 u=olindo n=ansible INFO| failed: [localhost] (item=/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-ingress-route.yaml) => {"ansible_loop_var": "item", "changed": false, "item": "/Users/olindo/prj/k8s-lab/ansible/playbooks/../../n8n/n8n-ingress-route.yaml", "msg": "Task failed: Premature end of stream waiting for become success.\n>>> Standard Error\nsudo: a password is required"}
 2025-10-26 16:42:54,267 p=16791 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-10-26 16:42:54,267 p=16791 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-10-26 16:42:54,267 p=16791 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
 2025-10-26 16:43:38,242 p=17040 u=olindo n=ansible INFO| PLAY [Deploy n8n Workflow Automation] ******************************************
 2025-10-26 16:43:38,251 p=17040 u=olindo n=ansible INFO| TASK [Display deployment banner] ***********************************************
 2025-10-26 16:43:38,251 p=17040 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -144,8 +144,8 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/deploy-n8n.yml:79:7
 
 2025-10-26 16:43:43,344 p=17040 u=olindo n=ansible INFO| fatal: [k8s-control]: FAILED! => {"changed": true, "cmd": ["microk8s", "helm", "repo", "add", "8gears", "https://8gears.container-registry.com/chartrepo/library"], "delta": "0:00:00.411500", "end": "2025-10-26 15:43:43.428763", "msg": "non-zero return code", "rc": 1, "start": "2025-10-26 15:43:43.017263", "stderr": "Error: looks like \"https://8gears.container-registry.com/chartrepo/library\" is not a valid chart repository or cannot be reached: error unmarshaling JSON: while decoding JSON: json: cannot unmarshal string into Go value of type repo.IndexFile", "stderr_lines": ["Error: looks like \"https://8gears.container-registry.com/chartrepo/library\" is not a valid chart repository or cannot be reached: error unmarshaling JSON: while decoding JSON: json: cannot unmarshal string into Go value of type repo.IndexFile"], "stdout": "", "stdout_lines": []}
 2025-10-26 16:43:43,345 p=17040 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-10-26 16:43:43,345 p=17040 u=olindo n=ansible INFO| k8s-control                : ok=3    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2025-10-26 16:43:43,345 p=17040 u=olindo n=ansible INFO| localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-26 16:43:43,345 p=17040 u=olindo n=ansible INFO| k8s-control                : ok=3    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
+2025-10-26 16:43:43,345 p=17040 u=olindo n=ansible INFO| localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 2025-10-26 16:46:22,055 p=17931 u=olindo n=ansible INFO| PLAY [Deploy n8n Workflow Automation] ******************************************
 2025-10-26 16:46:22,068 p=17931 u=olindo n=ansible INFO| TASK [Display deployment banner] ***********************************************
 2025-10-26 16:46:22,069 p=17931 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -235,8 +235,8 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/deploy-n8n.yml:79:7
     ]
 }
 2025-10-26 16:47:15,187 p=17931 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-10-26 16:47:15,187 p=17931 u=olindo n=ansible INFO| k8s-control                : ok=16   changed=4    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
-2025-10-26 16:47:15,187 p=17931 u=olindo n=ansible INFO| localhost                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-26 16:47:15,187 p=17931 u=olindo n=ansible INFO| k8s-control                : ok=16   changed=4    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0
+2025-10-26 16:47:15,187 p=17931 u=olindo n=ansible INFO| localhost                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 2025-11-02 23:38:49,891 p=16129 u=olindo n=ansible INFO| PLAY [Install Kubernetes Descheduler] ************************************************************************************************
 2025-11-02 23:38:49,903 p=16129 u=olindo n=ansible INFO| TASK [Display installation banner] ***************************************************************************************************
 2025-11-02 23:38:49,903 p=16129 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -343,8 +343,8 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-descheduler.yml:112:
 
 2025-11-02 23:39:54,402 p=16129 u=olindo n=ansible INFO| fatal: [k8s-control]: FAILED! => {"attempts": 10, "changed": false, "cmd": ["microk8s", "kubectl", "get", "cronjob", "descheduler", "-n", "kube-system"], "delta": "0:00:00.112147", "end": "2025-11-02 22:39:54.443537", "msg": "non-zero return code", "rc": 1, "start": "2025-11-02 22:39:54.331390", "stderr": "Error from server (NotFound): cronjobs.batch \"descheduler\" not found", "stderr_lines": ["Error from server (NotFound): cronjobs.batch \"descheduler\" not found"], "stdout": "", "stdout_lines": []}
 2025-11-02 23:39:54,402 p=16129 u=olindo n=ansible INFO| PLAY RECAP ***************************************************************************************************************************
-2025-11-02 23:39:54,403 p=16129 u=olindo n=ansible INFO| k8s-control                : ok=12   changed=4    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0   
-2025-11-02 23:39:54,403 p=16129 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-02 23:39:54,403 p=16129 u=olindo n=ansible INFO| k8s-control                : ok=12   changed=4    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0
+2025-11-02 23:39:54,403 p=16129 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 2025-11-02 23:40:31,641 p=16947 u=olindo n=ansible INFO| PLAY [Install Kubernetes Descheduler] ************************************************************************************************
 2025-11-02 23:40:31,651 p=16947 u=olindo n=ansible INFO| TASK [Display installation banner] ***************************************************************************************************
 2025-11-02 23:40:31,651 p=16947 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -451,8 +451,8 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-descheduler.yml:112:
 
 2025-11-02 23:41:28,010 p=16947 u=olindo n=ansible INFO| fatal: [k8s-control]: FAILED! => {"attempts": 10, "changed": false, "cmd": ["microk8s", "kubectl", "get", "cronjob", "descheduler", "-n", "kube-system"], "delta": "0:00:00.107921", "end": "2025-11-02 22:41:28.053512", "msg": "non-zero return code", "rc": 1, "start": "2025-11-02 22:41:27.945591", "stderr": "Error from server (NotFound): cronjobs.batch \"descheduler\" not found", "stderr_lines": ["Error from server (NotFound): cronjobs.batch \"descheduler\" not found"], "stdout": "", "stdout_lines": []}
 2025-11-02 23:41:28,011 p=16947 u=olindo n=ansible INFO| PLAY RECAP ***************************************************************************************************************************
-2025-11-02 23:41:28,011 p=16947 u=olindo n=ansible INFO| k8s-control                : ok=12   changed=3    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0   
-2025-11-02 23:41:28,011 p=16947 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-02 23:41:28,011 p=16947 u=olindo n=ansible INFO| k8s-control                : ok=12   changed=3    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0
+2025-11-02 23:41:28,011 p=16947 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 2025-11-02 23:44:26,201 p=19171 u=olindo n=ansible INFO| PLAY [Install Kubernetes Descheduler] ******************************************
 2025-11-02 23:44:26,212 p=19171 u=olindo n=ansible INFO| TASK [Display installation banner] *********************************************
 2025-11-02 23:44:26,212 p=19171 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -662,8 +662,8 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-descheduler.yml:112:
     ]
 }
 2025-11-02 23:44:38,066 p=19171 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-11-02 23:44:38,066 p=19171 u=olindo n=ansible INFO| k8s-control                : ok=29   changed=7    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
-2025-11-02 23:44:38,066 p=19171 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-02 23:44:38,066 p=19171 u=olindo n=ansible INFO| k8s-control                : ok=29   changed=7    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+2025-11-02 23:44:38,066 p=19171 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 2025-11-02 23:45:53,481 p=20063 u=olindo n=ansible INFO| PLAY [Install Kubernetes Descheduler] ******************************************
 2025-11-02 23:45:53,490 p=20063 u=olindo n=ansible INFO| TASK [Display installation banner] *********************************************
 2025-11-02 23:45:53,491 p=20063 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -873,8 +873,8 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-descheduler.yml:112:
     ]
 }
 2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| k8s-control                : ok=29   changed=8    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
-2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| k8s-control                : ok=29   changed=8    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+2025-11-02 23:46:05,077 p=20063 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 2025-11-16 16:15:24,385 p=79393 u=olindo n=ansible WARNING| [WARNING]: Error in vault password prompt (default): Passwords do not match
 
 2025-11-16 16:15:24,386 p=79393 u=olindo n=ansible ERROR| [ERROR]: Passwords do not match
@@ -923,7 +923,7 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/restart-nfs-truenas-api.yml:
 
 2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible INFO| fatal: [localhost]: FAILED! => {"changed": false, "msg": "Task failed: Error while evaluating conditional: 'vault_truenas_api_key' is undefined"}
 2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-11-16 16:16:23,889 p=79636 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
 2025-11-16 16:17:40,731 p=79912 u=olindo n=ansible INFO| PLAY [Restart NFS Service on TrueNAS via API] **********************************
 2025-11-16 16:17:40,740 p=79912 u=olindo n=ansible INFO| TASK [Display restart banner] **************************************************
 2025-11-16 16:17:40,740 p=79912 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -961,7 +961,7 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/restart-nfs-truenas-api.yml:
 
 2025-11-16 16:17:40,940 p=79912 u=olindo n=ansible INFO| fatal: [localhost]: FAILED! => {"changed": false, "msg": "Task failed: Premature end of stream waiting for become success.\n>>> Standard Error\nsudo: a password is required"}
 2025-11-16 16:17:40,940 p=79912 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-11-16 16:17:40,940 p=79912 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=1    skipped=2    rescued=0    ignored=1   
+2025-11-16 16:17:40,940 p=79912 u=olindo n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=1    skipped=2    rescued=0    ignored=1
 2025-11-16 16:19:12,687 p=80251 u=olindo n=ansible INFO| PLAY [Restart NFS Service on TrueNAS via API] **********************************
 2025-11-16 16:19:12,695 p=80251 u=olindo n=ansible INFO| TASK [Display restart banner] **************************************************
 2025-11-16 16:19:12,695 p=80251 u=olindo n=ansible INFO| ok: [localhost] => {
@@ -1005,7 +1005,7 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/restart-nfs-truenas-api.yml:
     ]
 }
 2025-11-16 16:19:20,732 p=80251 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-11-16 16:19:20,732 p=80251 u=olindo n=ansible INFO| localhost                  : ok=10   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2025-11-16 16:19:20,732 p=80251 u=olindo n=ansible INFO| localhost                  : ok=10   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
 2025-11-16 16:21:56,662 p=80858 u=olindo n=ansible INFO| PLAY [Install NFS Client and Configure Mounts on Media Servers] ****************
 2025-11-16 16:21:57,707 p=80858 u=olindo n=ansible INFO| TASK [Gathering Facts] *********************************************************
 2025-11-16 16:21:57,708 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr]
@@ -1060,7 +1060,7 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-nfs-client.yml:95:7
 2025-11-16 16:22:02,603 p=80858 u=olindo n=ansible INFO| failed: [jellyfin-svr] (item=Media Share) => {"ansible_loop_var": "item", "changed": false, "item": {"name": "Media Share", "opts": "nfsvers=4.1,hard,_netdev", "path": "/mnt/nfs/media", "src": "192.168.1.250:/mnt/oliraid/arrdata/media"}, "msg": "Error mounting /mnt/nfs/media: mount.nfs: mounting 192.168.1.250:/mnt/oliraid/arrdata/media failed, reason given by server: No such file or directory\n"}
 2025-11-16 16:22:02,758 p=80858 u=olindo n=ansible INFO| ok: [jellyfin-svr] => (item=Config Share)
 2025-11-16 16:22:02,761 p=80858 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-11-16 16:22:02,761 p=80858 u=olindo n=ansible INFO| jellyfin-svr               : ok=12   changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-11-16 16:22:02,761 p=80858 u=olindo n=ansible INFO| jellyfin-svr               : ok=12   changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
 2025-11-16 16:25:24,595 p=81517 u=olindo n=ansible INFO| PLAY [Install NFS Client and Configure Mounts on Media Servers] ****************
 2025-11-16 16:25:24,606 p=81517 u=olindo n=ansible INFO| TASK [Display installation banner] *********************************************
 2025-11-16 16:25:24,607 p=81517 u=olindo n=ansible INFO| ok: [jellyfin-svr] => {
@@ -1131,13 +1131,13 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/install-nfs-client.yml:95:7
     ]
 }
 2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| jellyfin-svr               : ok=14   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| jellyfin-svr               : ok=14   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+2025-11-16 16:25:28,113 p=81517 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 2025-11-24 08:14:43,444 p=28868 u=olindo n=ansible INFO| # /opt/homebrew/Cellar/ansible/12.1.0/libexec/lib/python3.13/site-packages/ansible_collections
 Collection        Version
 ----------------- -------
 
-2025-11-24 08:14:43,445 p=28868 u=olindo n=ansible INFO| community.general 11.4.0 
+2025-11-24 08:14:43,445 p=28868 u=olindo n=ansible INFO| community.general 11.4.0
 2025-11-24 08:17:04,655 p=29180 u=olindo n=ansible INFO| playbook: playbooks/create_vm.yml
 2025-11-24 08:20:22,656 p=29319 u=olindo n=ansible INFO| playbook: playbooks/create_vm.yml
 2025-11-24 08:23:31,293 p=29520 u=olindo n=ansible INFO| playbook: playbooks/create_control_plane.yml
@@ -1205,9 +1205,9 @@ Origin: /Users/olindo/prj/k8s-lab/ansible/playbooks/join_cluster.yml:6:7
     "join_result.stdout_lines": []
 }
 2025-11-30 16:12:07,037 p=26964 u=olindo n=ansible INFO| PLAY RECAP *********************************************************************
-2025-11-30 16:12:07,037 p=26964 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=1   
-2025-11-30 16:12:07,037 p=26964 u=olindo n=ansible INFO| pve                        : ok=5    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-2025-11-30 16:12:07,037 p=26964 u=olindo n=ansible INFO| pve3                       : ok=8    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-11-30 16:12:07,037 p=26964 u=olindo n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=1
+2025-11-30 16:12:07,037 p=26964 u=olindo n=ansible INFO| pve                        : ok=5    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+2025-11-30 16:12:07,037 p=26964 u=olindo n=ansible INFO| pve3                       : ok=8    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 2025-11-30 16:12:17,871 p=27105 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
 Cluster information
 -------------------
@@ -1230,8 +1230,8 @@ Votequorum information
 Expected votes:   2
 Highest expected: 2
 Total votes:      2
-Quorum:           2  
-Flags:            Quorate 
+Quorum:           2
+Flags:            Quorate
 
 Membership information
 ----------------------
@@ -1284,8 +1284,8 @@ Votequorum information
 Expected votes:   3
 Highest expected: 3
 Total votes:      3
-Quorum:           2  
-Flags:            Quorate 
+Quorum:           2
+Flags:            Quorate
 
 Membership information
 ----------------------
@@ -1408,7 +1408,7 @@ nfs: truenas-media
 	nodes pve,pve2
 
 2025-11-30 16:43:15,627 p=31404 u=olindo n=ansible INFO| pve2 | CHANGED | rc=0 >>
-HTTP/2 200 
+HTTP/2 200
 date: Sun, 30 Nov 2025 15:43:09 GMT
 content-type: text/html; charset=utf-8
 vary: X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, Accept-Language,Accept-Encoding, Accept, X-Requested-With
@@ -1431,7 +1431,7 @@ x-github-request-id: B17C:1F2FB3:19B15048:16408957:692C6613  % Total    % Receiv
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
 
 2025-11-30 16:43:15,905 p=31404 u=olindo n=ansible INFO| pve3 | CHANGED | rc=0 >>
-HTTP/2 200 
+HTTP/2 200
 date: Sun, 30 Nov 2025 15:43:09 GMT
 content-type: text/html; charset=utf-8
 vary: X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, Accept-Language,Accept-Encoding, Accept, X-Requested-With
@@ -1454,7 +1454,7 @@ x-github-request-id: 7095:F8457:19F21DEC:16762605:692C6613  % Total    % Receive
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
 
 2025-11-30 16:43:32,989 p=31527 u=olindo n=ansible INFO| pve2 | CHANGED | rc=0 >>
-HTTP/2 200 
+HTTP/2 200
 date: Sun, 30 Nov 2025 15:43:30 GMT
 content-type: text/html; charset=utf-8
 vary: X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, Accept-Language,Accept-Encoding, Accept, X-Requested-With
@@ -5606,11 +5606,11 @@ USAGE: pvesm <COMMAND> [ARGS] [OPTIONS]
 
        pvesm scan cifs <server> [OPTIONS]
        pvesm scan iscsi <portal>
-       pvesm scan lvm 
+       pvesm scan lvm
        pvesm scan lvmthin <vg>
        pvesm scan nfs <server>
        pvesm scan pbs <server> <username> --password <string> [OPTIONS] [FORMAT_OPTIONS]
-       pvesm scan zfs 
+       pvesm scan zfs
 
        pvesm add <type> <storage> [OPTIONS]
        pvesm remove <storage>
@@ -5622,7 +5622,7 @@ USAGE: pvesm <COMMAND> [ARGS] [OPTIONS]
 
        pvesm status  [OPTIONS]
 
-       pvesm apiinfo 
+       pvesm apiinfo
        pvesm export <volume> <format> <filename> [OPTIONS]
        pvesm extractconfig <volume>
        pvesm import <volume> <format> <filename> [OPTIONS]
@@ -5637,11 +5637,11 @@ USAGE: pvesm <COMMAND> [ARGS] [OPTIONS]
 
        pvesm scan cifs <server> [OPTIONS]
        pvesm scan iscsi <portal>
-       pvesm scan lvm 
+       pvesm scan lvm
        pvesm scan lvmthin <vg>
        pvesm scan nfs <server>
        pvesm scan pbs <server> <username> --password <string> [OPTIONS] [FORMAT_OPTIONS]
-       pvesm scan zfs 
+       pvesm scan zfs
 
        pvesm add <type> <storage> [OPTIONS]
        pvesm remove <storage>
@@ -5653,7 +5653,7 @@ USAGE: pvesm <COMMAND> [ARGS] [OPTIONS]
 
        pvesm status  [OPTIONS]
 
-       pvesm apiinfo 
+       pvesm apiinfo
        pvesm export <volume> <format> <filename> [OPTIONS]
        pvesm extractconfig <volume>
        pvesm import <volume> <format> <filename> [OPTIONS]
@@ -5668,11 +5668,11 @@ USAGE: pvesm <COMMAND> [ARGS] [OPTIONS]
 
        pvesm scan cifs <server> [OPTIONS]
        pvesm scan iscsi <portal>
-       pvesm scan lvm 
+       pvesm scan lvm
        pvesm scan lvmthin <vg>
        pvesm scan nfs <server>
        pvesm scan pbs <server> <username> --password <string> [OPTIONS] [FORMAT_OPTIONS]
-       pvesm scan zfs 
+       pvesm scan zfs
 
        pvesm add <type> <storage> [OPTIONS]
        pvesm remove <storage>
@@ -5684,7 +5684,7 @@ USAGE: pvesm <COMMAND> [ARGS] [OPTIONS]
 
        pvesm status  [OPTIONS]
 
-       pvesm apiinfo 
+       pvesm apiinfo
        pvesm export <volume> <format> <filename> [OPTIONS]
        pvesm extractconfig <volume>
        pvesm import <volume> <format> <filename> [OPTIONS]
@@ -5694,20 +5694,20 @@ USAGE: pvesm <COMMAND> [ARGS] [OPTIONS]
        pvesm help [<extra-args>] [OPTIONS]non-zero return code
 
 2025-11-30 16:54:15,493 p=33870 u=olindo n=ansible INFO| pve2 | CHANGED | rc=0 >>
-      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID       
-      2100 opnsense             running    8192             100.00 215719    
-      8002 talos-cp-2           running    4096              20.00 353533    
-      8102 talos-worker-2       running    10240             40.00 353592    
+      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID
+      2100 opnsense             running    8192             100.00 215719
+      8002 talos-cp-2           running    4096              20.00 353533
+      8102 talos-worker-2       running    10240             40.00 353592
 
 2025-11-30 16:54:15,538 p=33870 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
-      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID       
-      1100 truenas              running    32500             50.00 2236969   
-      8001 talos-cp-1           running    4096              20.00 2395621   
-      8101 talos-worker-1       running    32768             40.00 2395682   
+      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID
+      1100 truenas              running    32500             50.00 2236969
+      8001 talos-cp-1           running    4096              20.00 2395621
+      8101 talos-worker-1       running    32768             40.00 2395682
 
 2025-11-30 16:54:17,160 p=33870 u=olindo n=ansible INFO| pve3 | CHANGED | rc=0 >>
-      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID       
-      8003 talos-cp-3           running    4096              20.00 7352      
+      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID
+      8003 talos-cp-3           running    4096              20.00 7352
 
 2025-11-30 16:55:48,339 p=34039 u=olindo n=ansible ERROR| [ERROR]: Task failed: Module failed: non-zero return code
 Origin: <adhoc 'shell' task>
@@ -8096,7 +8096,7 @@ source /etc/network/interfaces.d/*
     link/ether 6c:92:bf:60:1a:1b brd ff:ff:ff:ff:ff:ff
     inet 192.168.1.125/24 scope global vmbr0
        valid_lft forever preferred_lft forever
-    inet6 fe80::6e92:bfff:fe60:1a1b/64 scope link proto kernel_ll 
+    inet6 fe80::6e92:bfff:fe60:1a1b/64 scope link proto kernel_ll
        valid_lft forever preferred_lft forever
 
 2025-11-30 17:09:22,648 p=45100 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
@@ -8117,7 +8117,7 @@ Origin: <adhoc 'shell' task>
 17:09:45.435021 bc:24:11:fe:54:85 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.154 tell 192.168.1.154, length 46
 17:09:45.456147 bc:24:11:99:c5:0b > ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 439: 0.0.0.0.68 > 255.255.255.255.67: BOOTP/DHCP, Request from bc:24:11:99:c5:0b, length 397
 17:09:46.490134 bc:24:11:99:c5:0b > ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 439: 0.0.0.0.68 > 255.255.255.255.67: BOOTP/DHCP, Request from bc:24:11:99:c5:0b, length 397
-17:09:46.530001 80:af:ca:c0:2e:5a > 01:80:c2:00:00:13, ethertype IEEE1905.1 (0x893a), length 66: 
+17:09:46.530001 80:af:ca:c0:2e:5a > 01:80:c2:00:00:13, ethertype IEEE1905.1 (0x893a), length 66:
 	0x0000:  0000 0000 9207 0080 0100 0680 afca c02e  ................
 	0x0010:  5a02 0006 80af cac0 2e5a 0b00 14b4 4bd6  Z........Z....K.
 	0x0020:  0100 0680 afca c02e 5a02 0002 0001 0000  ........Z.......
@@ -8130,7 +8130,7 @@ Origin: <adhoc 'shell' task>
 17:09:47.844311 bc:24:11:72:75:7d > ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 439: 0.0.0.0.68 > 255.255.255.255.67: BOOTP/DHCP, Request from bc:24:11:72:75:7d, length 397
 17:09:48.522325 bc:24:11:99:c5:0b > ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 451: 0.0.0.0.68 > 255.255.255.255.67: BOOTP/DHCP, Request from bc:24:11:99:c5:0b, length 409
 17:09:48.522737 bc:24:11:99:c5:0b > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 192.168.1.155 tell 192.168.1.155, length 28
-17:09:48.610013 80:af:ca:c0:2e:5a > 01:80:c2:00:00:13, ethertype IEEE1905.1 (0x893a), length 66: 
+17:09:48.610013 80:af:ca:c0:2e:5a > 01:80:c2:00:00:13, ethertype IEEE1905.1 (0x893a), length 66:
 	0x0000:  0000 0000 9208 0080 0100 0680 afca c02e  ................
 	0x0010:  5a02 0006 80af cac0 2e5a 0b00 14b4 4bd6  Z........Z....K.
 	0x0020:  0100 0680 afca c02e 5a02 0002 0001 0000  ........Z.......
@@ -8141,7 +8141,7 @@ Origin: <adhoc 'shell' task>
 17:09:50.057661 a2:95:de:d2:3b:98 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.1 tell 192.168.1.149, length 46
 17:09:50.149915 bc:24:11:92:b5:e3 > ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 439: 0.0.0.0.68 > 255.255.255.255.67: BOOTP/DHCP, Request from bc:24:11:92:b5:e3, length 397
 17:09:50.308892 fa:9d:ac:c5:97:6e > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.1 tell 192.168.1.111, length 46
-17:09:50.690041 80:af:ca:c0:2e:5a > 01:80:c2:00:00:13, ethertype IEEE1905.1 (0x893a), length 66: 
+17:09:50.690041 80:af:ca:c0:2e:5a > 01:80:c2:00:00:13, ethertype IEEE1905.1 (0x893a), length 66:
 	0x0000:  0000 0000 9209 0080 0100 0680 afca c02e  ................
 	0x0010:  5a02 0006 80af cac0 2e5a 0b00 14b4 4bd6  Z........Z....K.
 	0x0020:  0100 0680 afca c02e 5a02 0002 0001 0000  ........Z.......
@@ -8152,7 +8152,7 @@ Origin: <adhoc 'shell' task>
 17:09:51.876285 bc:24:11:0f:d8:cc > bc:24:11:84:ba:3b, ethertype IPv4 (0x0800), length 342: 192.168.1.1.67 > 192.168.1.152.68: BOOTP/DHCP, Reply, length 300
 17:09:52.182223 bc:24:11:92:b5:e3 > ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 451: 0.0.0.0.68 > 255.255.255.255.67: BOOTP/DHCP, Request from bc:24:11:92:b5:e3, length 409
 17:09:52.182574 bc:24:11:92:b5:e3 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.1.156 tell 192.168.1.156, length 46
-17:09:52.780015 80:af:ca:c0:2e:5a > 01:80:c2:00:00:13, ethertype IEEE1905.1 (0x893a), length 66: 
+17:09:52.780015 80:af:ca:c0:2e:5a > 01:80:c2:00:00:13, ethertype IEEE1905.1 (0x893a), length 66:
 	0x0000:  0000 0000 920a 0080 0100 0680 afca c02e  ................
 	0x0010:  5a02 0006 80af cac0 2e5a 0b00 14b4 4bd6  Z........Z....K.
 	0x0020:  0100 0680 afca c02e 5a02 0002 0001 0000  ........Z.......
@@ -8259,7 +8259,7 @@ From 192.168.1.125 icmp_seq=3 Destination Host Unreachable
 pipe 3non-zero return code
 
 2025-11-30 17:12:39,949 p=47927 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
-192.168.1.152 dev vmbr0 FAILED 
+192.168.1.152 dev vmbr0 FAILED
 
 2025-11-30 17:52:21,833 p=48876 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
 acpi: 1
@@ -8410,11 +8410,11 @@ boot: order=ide2;virtio0;net0
 net0: virtio=BC:24:11:C9:F9:66,bridge=vmbr0
 
 2025-11-30 17:56:03,491 p=54355 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
-fe80::be24:11ff:fec9:f966 dev vmbr0 lladdr bc:24:11:c9:f9:66 STALE 
+fe80::be24:11ff:fec9:f966 dev vmbr0 lladdr bc:24:11:c9:f9:66 STALE
 
 2025-11-30 18:00:53,949 p=58215 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
-192.168.1.152 dev vmbr0 lladdr bc:24:11:fe:54:85 STALE 
-fe80::be24:11ff:fefe:5485 dev vmbr0 lladdr bc:24:11:fe:54:85 STALE 
+192.168.1.152 dev vmbr0 lladdr bc:24:11:fe:54:85 STALE
+fe80::be24:11ff:fefe:5485 dev vmbr0 lladdr bc:24:11:fe:54:85 STALE
 
 2025-11-30 18:15:36,277 p=65213 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
 status: running
@@ -8655,4 +8655,3 @@ generating cloud-init ISO
 
 2025-11-30 18:55:46,148 p=74025 u=olindo n=ansible INFO| pve | CHANGED | rc=0 >>
 status: running
-

@@ -7,7 +7,7 @@
 - **Point 3 (Stateful Constraint)**: Validated. Shared-Nothing architectures with app-level replication (CNPG) are the only enterprise solution for bare-metal without distributed SANs.
 
 ## 2. The Paradox Handling
-Enterprise bare-metal treats local storage as ephemeral. When a node dies, the storage is considered lost. The application (CNPG) must spawn a new empty pod on a healthy node and rebuild data over the network from surviving replicas. 
+Enterprise bare-metal treats local storage as ephemeral. When a node dies, the storage is considered lost. The application (CNPG) must spawn a new empty pod on a healthy node and rebuild data over the network from surviving replicas.
 
 ## 3. Critical Edge Cases
 - **Split-Brain & Fencing**: If a node is network-partitioned but powered on, promoting a new DB primary can cause data corruption. Kubernetes Node Leases and fencing annotations are critical to prevent two primaries from writing simultaneously.

@@ -16,7 +16,7 @@ Un file sensibile contenente le credenziali in chiaro di Google OAuth2 (`client-
 ## 3. Corrective Actions Taken
 - **Credential Rotation**: Generate nuove credenziali su Google Cloud Console. Le vecchie chiavi sono state invalidate.
 - **Cluster Update**: Aggiornato il secret Kubernetes `oauth2-proxy` nel namespace `oauth2-proxy` e riavviato il deployment per rendere operative le nuove chiavi.
-- **Repository Hardening**: 
+- **Repository Hardening**:
     - Aggiunto `oauth2-proxy/secrets.yaml` al `.gitignore`.
     - Eseguito `git rm --cached` per rimuovere il file dall'indice Git mantenendo la copia locale.
 - **Local Alignment**: Aggiornati i file locali `secrets/setEnv.sh` e `secrets/google_client_secret.json` con le nuove credenziali.

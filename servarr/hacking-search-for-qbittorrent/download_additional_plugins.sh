@@ -72,16 +72,16 @@ echo "Starting download of additional qBittorrent search plugins..."
 for url in "${urls[@]}"; do
     filename=$(basename "$url")
     filepath="qbittorrent-search-plugins/$filename"
-    
+
     # Check if file already exists
     if [ -f "$filepath" ]; then
         echo "⚠️  Skipped: $filename (already exists)"
         ((skipped++))
         continue
     fi
-    
+
     echo "Downloading: $filename"
-    
+
     if curl -s -f -o "$filepath" "$url"; then
         echo "✓ Downloaded: $filename"
         ((successful++))

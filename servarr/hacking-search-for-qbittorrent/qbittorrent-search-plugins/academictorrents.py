@@ -23,7 +23,7 @@ cache_path = Path(f"{system_paths[sys.platform]}/qbit_plugins_data/academic_cach
 class academictorrents(object):
     url = 'https://academictorrents.com/'
     name = 'AcademicTorrents'
-    """ 
+    """
     ***TLDR; It is safer to force an 'all' research***
         AcademicTorrents categories are very specific
         qBittorrent does not provide enough categories to implement a good filtering.

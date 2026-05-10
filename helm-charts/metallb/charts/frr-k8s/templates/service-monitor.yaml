@@ -34,7 +34,7 @@ spec:
       scheme: "https"
 {{- if .Values.prometheus.serviceMonitor.tlsConfig }}
       tlsConfig:
-{{ toYaml .Values.prometheus.serviceMonitor.tlsConfig | indent 8 }}      
+{{ toYaml .Values.prometheus.serviceMonitor.tlsConfig | indent 8 }}
 {{- end }}
 {{ end }}
 {{ if .Values.frrk8s.frr.secureMetricsPort }}
@@ -55,7 +55,7 @@ spec:
       scheme: "https"
 {{- if .Values.prometheus.serviceMonitor.tlsConfig }}
       tlsConfig:
-{{ toYaml .Values.prometheus.serviceMonitor.tlsConfig | indent 8 }}      
+{{ toYaml .Values.prometheus.serviceMonitor.tlsConfig | indent 8 }}
 {{- end }}
 {{- end }}
   jobLabel: {{ .Values.prometheus.serviceMonitor.jobLabel | quote }}

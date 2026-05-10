@@ -24,15 +24,15 @@ La configurazione base è `talos-config/controlplane.yaml`.
 > [!IMPORTANT]
 > **Gestione Identità Nodi (Infrastructure as Code)**
 > Per evitare la perdita di identità al riavvio/reinstallazione (che bloccherebbe lo storage locale), l'hostname di ogni nodo è ora codificato in file specifici. **Non usare mai** il file `controlplane.yaml` generico per le installazioni.
-> 
+>
 > Ogni nodo ha il suo file dedicato:
 > - **CP-01**: `talos-config/controlplane-cp-01.yaml`
 > - **CP-02**: `talos-config/controlplane-cp-02.yaml`
 > - **CP-03**: `talos-config/controlplane-cp-03.yaml`
-> 
+>
 > In caso di reinstallazione da zero, la procedura corretta è:
 > `talosctl apply-config -n <IP> -f talos-config/controlplane-cp-<XX>.yaml`
-> 
+>
 > (Questo comando imposta correttamente sia l'IP statico che l'Hostname in un unico passaggio).
 
 | Nodo | IP | Ruolo | Stato |
@@ -49,7 +49,7 @@ La configurazione base è `talos-config/controlplane.yaml`.
 - **Virtual IP (VIP)**: `10.10.20.55` (Punto di ingresso per `kubectl`).
 
 ## 2. Configurazione DNS
-I nodi sono configurati per utilizzare [[OPNsense]] (`10.10.20.254`) come resolver primario. 
+I nodi sono configurati per utilizzare [[OPNsense]] (`10.10.20.254`) come resolver primario.
 - *Azione Storica*: Il 03/05/2026 abbiamo corretto l'IP DNS che puntava erroneamente allo switch L3 (Vedi [[2026-05-03-dns-split-horizon-conflict]]).
 
 ## 3. Gestione Etcd

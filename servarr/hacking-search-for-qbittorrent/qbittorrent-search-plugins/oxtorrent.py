@@ -125,7 +125,7 @@ class oxtorrent(object):
                     # names with special characters like '&' are splitted in several pieces
                     if 'name' not in self.current_item:
                         self.current_item["name"] = ''
-                    self.current_item["name"] += data.strip() 
+                    self.current_item["name"] += data.strip()
                 else:
                     self.current_item[self.save_item] = data
                     self.save_item = None

@@ -90,7 +90,7 @@ echo "Starting download of qBittorrent search plugins..."
 for url in "${urls[@]}"; do
     filename=$(basename "$url")
     echo "Downloading: $filename"
-    
+
     if curl -s -f -o "qbittorrent-search-plugins/$filename" "$url"; then
         echo "✓ Downloaded: $filename"
         ((successful++))

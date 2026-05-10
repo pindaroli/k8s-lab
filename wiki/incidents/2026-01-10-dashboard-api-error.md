@@ -11,11 +11,11 @@ The Homepage dashboard displayed a persistent "API Error" banner. Investigation 
 ## 2. Technical Details
 
 ### 2.1 The Issue
-*   **Symptoms**: 
+*   **Symptoms**:
     *   Red "API Error" banner at the top of the dashboard.
     *   Empty CPU/Memory graphs for the Cluster and Nodes.
     *   Homepage Pod logs contained repeated errors: `Error getting metrics, ensure you have metrics-server installed`.
-*   **Root Cause**: 
+*   **Root Cause**:
     *   The `metrics-server` is not included by default in the Talos Linux cluster bootstrap.
     *   The Homepage application's `kubernetes` widget depends on the Metrics API (`/apis/metrics.k8s.io/`) to fetch real-time usage data.
 

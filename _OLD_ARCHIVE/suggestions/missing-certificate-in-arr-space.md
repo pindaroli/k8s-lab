@@ -5,7 +5,7 @@ Chrome returned `ERR_ADDRESS_UNREACHABLE` when accessing `https://jellyfin.pinda
 
 ## Root Cause Analysis
 1. **Jellyfin IngressRoute Configuration**: ✅ Properly configured in `arr` namespace
-   - IngressRoute: `jellyfin-external` 
+   - IngressRoute: `jellyfin-external`
    - Host: `jellyfin.pindaroli.org`
    - Service: `servarr-jellyfin:8096`
    - TLS secret reference: `pindaroli-wildcard-tls`

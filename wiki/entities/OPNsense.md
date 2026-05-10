@@ -23,7 +23,7 @@ Il nodo OPNsense è il cuore della sicurezza e della risoluzione DNS della rete 
 ## 2. Configurazione DNS (Unbound)
 Il servizio Unbound gestisce la risoluzione interna per evitare l'uso di DNS pubblici per i record locali.
 - **Local Zone Type**: Impostato su `transparent` per permettere la coesistenza di record locali e fallback pubblici.
-- **Access Lists (ACL)**: 
+- **Access Lists (ACL)**:
   - Affinché i pod Kubernetes possano risolvere i nomi, la subnet `10.244.0.0/16` **DEVE** essere esplicitamente inserita nelle ACL con policy `Allow`.
   - Tensioni Note: In passato l'assenza di questa ACL ha causato il blocco delle richieste provenienti dal [[Talos_Cluster]] (Vedi [[2026-05-03-dns-split-horizon-conflict]]).
 
@@ -34,7 +34,7 @@ Kea DHCP assegna gli indirizzi dinamici ai client (inclusa la VLAN 20).
 ## 4. Filtraggio Pubblicitario (DNSBL / AdBlock)
 OPNsense usa il modulo nativo di Unbound per il blocco dei domini traccianti.
 - **Troubleshooting Base**: Le liste pubbliche spesso mancano i domini *root* (es. `doubleclick.net`). In caso di mancato blocco, verificare sempre le **Wildcard Domains**. (Vedi [[2026-05-03-dnsbl-filtering-failure]]).
-- **Automazione & SSoT**: La lista dei domini da bloccare in wildcard (telemetria, tracking aggressivo) è centralizzata in `rete.json` sotto la chiave `opnsense.outbound.blocked-domain`. 
+- **Automazione & SSoT**: La lista dei domini da bloccare in wildcard (telemetria, tracking aggressivo) è centralizzata in `rete.json` sotto la chiave `opnsense.outbound.blocked-domain`.
 - **Applicazione Modifiche**: Le modifiche si applicano eseguendo lo script Ansible dedicato:
   `ansible-playbook ansible/playbooks/opnsense_adblock_automation.yml`
 - **Importante**: Lo script aggiorna la configurazione, ma in alcune versioni di OPNsense è richiesto un click manuale su **"Download & Update"** nella UI per rigenerare fisicamente i file di blocco.

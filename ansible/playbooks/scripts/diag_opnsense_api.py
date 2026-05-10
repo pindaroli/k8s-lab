@@ -13,18 +13,18 @@ def call_api(endpoint, method='GET', data=None):
     full_url = f"{URL}{endpoint}"
     credentials = f"{API_KEY}:{API_SECRET}"
     auth_header = "Basic " + base64.b64encode(credentials.encode()).decode()
-    
+
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    
+
     payload = json.dumps(data).encode() if data else b'{}'
-    
+
     req = urllib.request.Request(full_url, method=method, data=payload, headers={
         'Content-Type': 'application/json',
         'Authorization': auth_header
     })
-    
+
     try:
         with urllib.request.urlopen(req, context=ctx) as response:
             return json.loads(response.read().decode())

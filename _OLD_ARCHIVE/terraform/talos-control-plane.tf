@@ -42,7 +42,7 @@ resource "proxmox_virtual_environment_vm" "talos_cp" {
   cdrom {
     file_id = "${var.iso_storage}:iso/talos-${var.talos_version}-metal-amd64.iso"
   }
-  
+
   network_device {
     bridge = "vmbr0"
     model  = "virtio"

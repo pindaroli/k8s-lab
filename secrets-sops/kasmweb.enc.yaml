@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: kasmweb-secret
+    namespace: kasmweb
+type: Opaque
+stringData:
+    password: ENC[AES256_GCM,data:b936/6lxKcY=,iv:wersbf8mnGWJV4uThX6fY3Hfp9PG8D/XCuaCV4p0de0=,tag:gPdV9tp4Cd9fSXfJxaFEtQ==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBCVUlOT0tMMEhlY3ovMG5B
+            ejB0bVFJL3VBMzdtclJydnlaTlRsRlJCN1JRCnZvKzlyVy9hTkJXSlM0SUZFdWJL
+            QTNoRWFuYklJMVFMSStxcUljTmdUSWcKLS0tIEJ2MmpJdWJoczBhZmZvckxsYVpw
+            ak91UE01QlNTOEtIVmxNczlmWHY2ZFEK6QcPDNd4yWh9jIHzcBvEk/dC+rU0buC3
+            f4r8ULTXY3Up3bm3TDZbuJ5oCZym3UOhHsWffDQ+GPUELRYZzF8jqg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-05-10T11:21:49Z"
+    mac: ENC[AES256_GCM,data:WCL0QcFlLGVRj1WUSGPST/GP8xV/iPs8jxDv2JDPPmOxZj7W0IcrGQ2mUK1a8LOFZGPkZUYxv8mXtA7AmV3wZmQiPtX8YBO9xWYqTYP7gNBhNHt8XyN9aXnv51rBpfYCXJ2FkIvm53dBtIbGOebDEmJoJ376DeiSGtOg93Y7QQI=,iv:MngtQ6B1FoQqTc1OSzZnylLWXXRSq5wr3PReasjtzTc=,tag:LtSzceJYXwy03LrAfvYTYg==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

@@ -180,9 +180,9 @@ class torrenflix(object):
     class MyHtmlParser(HTMLParser):
         def error(self, message):
             pass
-    
+
         MAIN, UL, LI, H, A = ('main', 'ul', 'li', 'h2', 'a')
-    
+
         def __init__(self, url):
             HTMLParser.__init__(self)
             self.url = url

@@ -34,7 +34,7 @@ def download_plugins():
         return
 
     soup = BeautifulSoup(response.text, 'html.parser')
-    
+
     # Trova la prima tabella (Plugins for Public Sites)
     table = soup.find('table')
     if not table:
@@ -49,25 +49,25 @@ def download_plugins():
         cols = row.find_all('td')
         if len(cols) < 5:
             continue
-        
+
         # Il nome del motore è nella prima colonna (o estratto dal file)
         engine_name = cols[0].get_text(strip=True)
-        
+
         # Il link di download è nella quinta colonna (indice 4)
         link_tag = cols[4].find('a')
         if not link_tag:
             continue
-            
+
         download_url = link_tag.get('href')
         if not download_url:
             continue
 
         # Gestione link relativi
         download_url = urljoin(WIKI_URL, download_url)
-        
+
         # Conversione in RAW per GitHub
         raw_url = convert_to_raw_url(download_url)
-        
+
         # Nome file
         filename = os.path.basename(urlparse(raw_url).path)
         if not filename.endswith('.py'):
@@ -80,7 +80,7 @@ def download_plugins():
             print(f"📥 Scaricando: {engine_name} ({filename})...", end=' ', flush=True)
             plugin_res = requests.get(raw_url, timeout=10)
             plugin_res.raise_for_status()
-            
+
             with open(dest_path, 'wb') as f:
                 f.write(plugin_res.content)
             print("DONE.")

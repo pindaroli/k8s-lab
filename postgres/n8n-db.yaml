@@ -5,7 +5,7 @@ metadata:
   namespace: n8n
 spec:
   instances: 3
-  
+
   # Image Management
   imageName: ghcr.io/cloudnative-pg/postgresql:16.1
 

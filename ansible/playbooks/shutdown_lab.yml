@@ -4,7 +4,7 @@
   gather_facts: no
   vars_files:
     - ../vars/secrets.yml
-    
+
   vars:
     # Safe delays to ensure shutdowns complete before moving to next tier
     vm_shutdown_wait: 10
@@ -65,7 +65,7 @@
             state: started
           register: cp03_alive
           ignore_errors: true
-          
+
         - name: Shutdown Talos CP 03
           command: talosctl -n 10.10.20.143 shutdown
           when: cp03_alive is succeeded
@@ -74,7 +74,7 @@
       rescue:
         - debug:
             msg: "⚠️ Phase 1 encountered errors but continued."
-    
+
     - name: "🔔 Notify: Phase 1 Complete"
       uri:
         url: "https://api.telegram.org/bot{{ telegram_bot_token }}/sendMessage"

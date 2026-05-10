@@ -1,6 +1,6 @@
 # Obiettivo: Ripristino e Debug Connessione Proxy Xray su OCI per l'ecosistema Servarr
 
-Ciao, dobbiamo riprendere il debugging per ripristinare la funzionalità di ricerca torrent (Search Plugins) su qBittorrent e Prowlarr. 
+Ciao, dobbiamo riprendere il debugging per ripristinare la funzionalità di ricerca torrent (Search Plugins) su qBittorrent e Prowlarr.
 
 ## Riassunto e Test già effettuati:
 Ieri abbiamo eseguito un debug approfondito e abbiamo risolto tutti i problemi software locali. Ecco los stato dell'arte:
@@ -13,8 +13,8 @@ Ieri abbiamo eseguito un debug approfondito e abbiamo risolto tutti i problemi s
 ## Prossimi Passaggi Richiesti:
 Abbiamo dedotto che il problema risiede o (A) Nel server Xray remoto su Oracle Cloud che per qualche motivo rigetta il traffico in ingresso (es. chiavi scadute o firewall OCI incastrato), oppure (B) In un problema di Routing Asimmetrico sul firewall OPNsense locale che impedisce ai nodi Talos di fare ritorno dalla VPS.
 
-Oggi ho verificato personalmente la macchina server remota Xray su Oracle. 
+Oggi ho verificato personalmente la macchina server remota Xray su Oracle.
 **[NOTA PER L'UTENTE: Compila questo spazio spiegando all'AI cosa hai scoperto loggandoti sulla VPS Oracle. Es: "Ho riavviato Xray e ho sistemato UFW", oppure "La VPS è intatta e funziona perfettamente, deve essere OPNsense locale"].**
 
-In base a questi nuovi sviluppi, proponimi i prossimi step (comandi di rete per testare i log di OPNsense, fix del certificato Xray o modifiche ai config.json nei secrets) in modo che possiamo ripristinare la connessione TCP passante, affinché Prowlarr possa estrarre i tracker e sbloccare qBittorrent! 
+In base a questi nuovi sviluppi, proponimi i prossimi step (comandi di rete per testare i log di OPNsense, fix del certificato Xray o modifiche ai config.json nei secrets) in modo che possiamo ripristinare la connessione TCP passante, affinché Prowlarr possa estrarre i tracker e sbloccare qBittorrent!
 ⚠️ *Ricorda sempre la regola del file GEMINI.md: spiegami cosa fa ogni comando e perché lo esegui prima di lanciarlo.*

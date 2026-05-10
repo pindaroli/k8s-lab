@@ -13,7 +13,7 @@ from novaprinter import prettyPrinter
 class ettv(object):
     url = 'https://www.ettvcentral.com/'
     name = 'ETTV'
-    """ 
+    """
     ***TLDR; It is safer to force an 'all' research***
         ETTV's categories are very specific
         qBittorrent does not provide enough categories to implement a good filtering.

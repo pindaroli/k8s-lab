@@ -23,7 +23,7 @@ During the maintenance period of node `talos-cp-02`, the Kubernetes cluster expe
 ### 1.1 Network Asymmetry (TCP Reset Phenomenon)
 - **Topological Bottleneck**: Traefik was deployed as a `Deployment` with 2 replicas, both residing on node `talos-cp-01`.
 - **L2 Failover Conflict**: MetalLB (Layer 2 mode) elected node `talos-cp-03` as the leader for the VIP.
-- **Asymmetric Routing Path**: 
+- **Asymmetric Routing Path**:
     1. Client (VLAN 20) -> VIP (Node `cp-03`).
     2. Node `cp-03` -> VXLAN Tunnel -> Node `cp-01` (Traefik Pod).
     3. Traefik Pod -> Egress directly to Gateway (OPNsense) or Client.

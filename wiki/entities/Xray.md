@@ -19,7 +19,7 @@ Le credenziali sensibili (UUID, Private Key, Public Key, ShortId) sono salvate l
 Nel cluster, questi dati vengono iniettati tramite il Kubernetes Secret `xray-secrets` nel namespace `xray`.
 
 ## 2. Stato
-*Deprecated / Standby*: In passato, i client torrent utilizzavano Xray come sidecar VPN. Attualmente, per massimizzare le performance e la connettività degli indexer, la stack [[Servarr]] instrada il traffico direttamente senza proxy. 
+*Deprecated / Standby*: In passato, i client torrent utilizzavano Xray come sidecar VPN. Attualmente, per massimizzare le performance e la connettività degli indexer, la stack [[Servarr]] instrada il traffico direttamente senza proxy.
 
 ## Relazioni
 - Namespace: `xray`

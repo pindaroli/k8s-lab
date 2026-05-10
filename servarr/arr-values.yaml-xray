@@ -48,7 +48,7 @@ sonarr:
   #   media:
   #     existingClaim: servarr-jellyfin-media
 
-  
+
 qbittorrent:
   image:
     tag: "5.1.4"  # was: 5.1.2
@@ -97,12 +97,12 @@ qbittorrent:
         - |
           echo "Current Routing Table:"
           ip route
-          
+
           # 1. CAPTURE GATEWAY BEFORE TOUCHING ANYTHING
           # We need to access the original default gateway to route Xray traffic out.
           DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
           echo "Original Gateway: $DEFAULT_GW"
-          
+
           # 2. Extract Remote IP (Scanning config)
           # Grep usually works, but if not found, we fail safe log.
           REMOTE_IP=$(grep -o '"address": *"[^"]*"' /etc/xray/config.json | head -1 | cut -d'"' -f4)
@@ -114,7 +114,7 @@ qbittorrent:
              # Often it is the .1 address of the subnet.
              # This is a hack, but might save the pod from crash loop if netns persisted.
              echo "Attempting to deduce gateway..."
-             DEFAULT_GW="10.244.0.1" 
+             DEFAULT_GW="10.244.0.1"
              echo "Fallback Gateway: $DEFAULT_GW"
           fi
 
@@ -131,7 +131,7 @@ qbittorrent:
           # 3. Start tun2socks (Background)
           tun2socks -device tun0 -proxy socks5://127.0.0.1:10808 &
           PID=$!
-          
+
           # Wait for interface
           echo "Waiting for tun0..."
           while ! ip link show tun0 >/dev/null 2>&1; do sleep 1; done
@@ -147,26 +147,26 @@ qbittorrent:
           # Create Routing Table 100 for tunneling
           echo "Setting up Table 100..."
           ip route add default dev tun0 table 100 || true
-          
+
           # Rule 1: Local Loopback
           ip rule add to 127.0.0.0/8 lookup main priority 400 || true
 
           # Rule 1.5: Private Class A (Nodes/Pods/Services) -> Main Table
           echo "Bypassing Private Class A (10.0.0.0/8)..."
           ip rule add to 10.0.0.0/8 lookup main priority 450 || true
-          
+
           # Rule 2: K8s Service CIDR (DNS & ClusterIPs) -> Main Table
           echo "Bypassing K8s Service CIDR..."
           ip rule add to 10.96.0.0/12 lookup main priority 500 || true
-          
+
           # Rule 3: Xray Traffic (Marked 255) -> Main Table
           echo "Bypassing Xray Traffic (Mark 255)..."
           ip rule add fwmark 255 lookup main priority 600 || true
-          
+
           # Rule 4: Route everything else through Table 100
           echo "Routing everything else to tun0..."
           ip rule add lookup 100 priority 800 || true
-          
+
           # Wait for tun2socks
           wait $PID
       volumeMounts:
@@ -206,7 +206,7 @@ flaresolverr:
     - name: LOG_LEVEL
       value: "info"
     # Note: Flaresolverr doesn't have a direct chrome-args env, but we can try generic ones or just rely on resources.
-    # Actually, let's just stick to resources. The sysctl failed. 
+    # Actually, let's just stick to resources. The sysctl failed.
     # If 1337x is the only one failing, we might just accept it.
     # But let's try to set the timezone at least.
     - name: TZ
@@ -269,11 +269,11 @@ prowlarr:
         - |
           echo "Current Routing Table:"
           ip route
-          
+
           # 1. CAPTURE GATEWAY BEFORE TOUCHING ANYTHING
           DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
           echo "Original Gateway: $DEFAULT_GW"
-          
+
           # 2. Extract Remote IP (Scanning config)
           REMOTE_IP=$(grep -o '"address": *"[^"]*"' /etc/xray/config.json | head -1 | cut -d'"' -f4)
           echo "Remote Server IP: $REMOTE_IP"
@@ -283,29 +283,29 @@ prowlarr:
              ip route
              exit 1
           fi
-          
+
           # Enable IP Forwarding
           echo 1 > /proc/sys/net/ipv4/ip_forward
-          
+
           # 3. Start tun2socks (Background)
           tun2socks -device tun0 -proxy socks5://127.0.0.1:10808 &
           PID=$!
-          
+
           # Wait for interface
           echo "Waiting for tun0..."
           while ! ip link show tun0 >/dev/null 2>&1; do sleep 1; done
           ip link set tun0 up
           ip addr add 10.255.0.1/32 dev tun0
           echo "tun0 is up with IP 10.255.0.1!"
-          
+
           # MSS Clamping
           iptables -t mangle -A POSTROUTING -o tun0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1300
-          
+
           # 4. Apply Routing (Policy Based Routing)
           # Create Routing Table 100 for tunneling
           echo "Setting up Table 100..."
           ip route add default dev tun0 table 100 || true
-          
+
           # Rule 1: Local Loopback
           ip rule add to 127.0.0.0/8 lookup main priority 400 || true
 
@@ -316,15 +316,15 @@ prowlarr:
           # Rule 2: K8s Service CIDR (DNS & ClusterIPs) -> Main Table
           echo "Bypassing K8s Service CIDR..."
           ip rule add to 10.96.0.0/12 lookup main priority 500 || true
-          
+
           # Rule 3: Xray Traffic (Marked 255) -> Main Table
           echo "Bypassing Xray Traffic (Mark 255)..."
           ip rule add fwmark 255 lookup main priority 600 || true
-          
+
           # Rule 4: Route everything else through Table 100
           echo "Routing everything else to tun0..."
           ip rule add lookup 100 priority 800 || true
-          
+
           # Wait for tun2socks
           wait $PID
       volumeMounts:
@@ -441,5 +441,3 @@ lidarr:
     media:
       enabled: true
       existingClaim: servarr-jellyfin-media
-
-

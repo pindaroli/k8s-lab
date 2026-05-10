@@ -48,7 +48,7 @@ sonarr:
   #   media:
   #     existingClaim: servarr-jellyfin-media
 
-  
+
 qbittorrent:
   image:
     tag: "5.1.4-r3-ls451"
@@ -124,7 +124,7 @@ flaresolverr:
     - name: LOG_LEVEL
       value: "info"
     # Note: Flaresolverr doesn't have a direct chrome-args env, but we can try generic ones or just rely on resources.
-    # Actually, let's just stick to resources. The sysctl failed. 
+    # Actually, let's just stick to resources. The sysctl failed.
     # If 1337x is the only one failing, we might just accept it.
     # But let's try to set the timezone at least.
     - name: TZ
@@ -336,4 +336,18 @@ lidarr:
         limits:
           memory: 64Mi
 
-
+## Recyclarr - Quality Automation
+recyclarr:
+  enabled: true
+  persistence:
+    enabled: true
+    existingClaim: "servarr-recyclarr-data"
+  apiKeys:
+    existingSecret: "servarr-api-keys"
+  radarr:
+    enabled: true
+    url: "http://servarr-radarr:7878"
+    include:
+      - radarr-quality-definition-movie
+      - radarr-quality-profile-remux-web-2160p
+      - radarr-quality-profile-hd-bluray-web
