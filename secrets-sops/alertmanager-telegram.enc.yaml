@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: alertmanager-telegram-secret
+    namespace: monitoring
+type: Opaque
+stringData:
+    chat_id: ENC[AES256_GCM,data:MzxR4dLfTjZd,iv:vzDR5ZZaVdzMyZzc+Bzqj2GWBXhaHIGSd9iSSpKarcY=,tag:aEoiSK0ZchyWWwbBStdIfQ==,type:str]
+    token: ENC[AES256_GCM,data:T0ftcQxxamlwD454UGOdhnXY6G9H1ul5V9lJusCRHtYo90jXkLkufG6eg1bNUg==,iv:y2uIeAcgef+Lm7ude9sgtcgxR3V3h9UhMLrM+MmRIPQ=,tag:tOMFM3GUdn0q6HQogVuPdg==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBLMmhKQTdQN1VZampLejJO
+            ckQrdmJVNVNZZ1NLbFVJeis3bUp5anNkY1JrCmN4bWZpUzlDdmhUZVBJdkRqV2ZS
+            dExvbEpEanE2MFR2T0VlYXFHRXBwdkEKLS0tIDdkZXREYldRRnAzUmFER2xjVE44
+            SzBubHh5WnozbkxRaTQvTnBlRmpBMFUKr/xl5r/dMd/WRTbIoJHSrIuo2WIj1/rh
+            F96OyoLMEJAUCfeW4UaraHrh0qfINuOeMEVsVeoDyWD/FwI7HRGfxA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-05-10T10:25:28Z"
+    mac: ENC[AES256_GCM,data:4IosfBHxK6gdEejSRPCoCKGHfKjVrXVrzLarjEEIiVN9+sjk1AS9QWLXLs/nN2X9hdr+xuB5JN89lrQmI/hQGfUkC/FME6zIQ+ztGz7OHHnneX46REYgHg+1M8HT71y1Aj4OCgeFB+R71Ae4y9HWNdZw+/z0XbSIBM8NdQ2XwQw=,iv:vahx9iHV7SCSxb/rFsn19yK2QBgukSHL69b+cfuUV74=,tag:Pqyj1C+sDTWm0Z4oXUTy9g==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

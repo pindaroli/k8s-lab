@@ -1,0 +1,17 @@
+# k8s-lab/.pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  - repo: local
+    hooks:
+      - id: sops-check
+        name: Check SOPS encryption
+        language: script
+        entry: scripts/check-sops-encrypted.sh
+        files: ^secrets-sops/.*\.enc\.yaml$
