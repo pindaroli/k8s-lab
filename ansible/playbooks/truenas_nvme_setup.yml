@@ -1,0 +1,41 @@
+---
+- name: 🚀 SETUP TRUENAS NVME DATASET FOR QBITTORRENT 🚀
+  hosts: truenas
+  gather_facts: no
+  become: no
+
+  vars:
+    dataset_path: "stripe/qb_temp"
+    owner_uid: 1000
+    owner_gid: 1000
+    recordsize: "16k"
+
+  tasks:
+    - name: "Check if dataset already exists"
+      command: "zfs list {{ dataset_path }}"
+      register: zfs_check
+      ignore_errors: yes
+      changed_when: false
+
+    - name: "Create ZFS Dataset on NVMe Stripe"
+      command: "zfs create {{ dataset_path }}"
+      when: zfs_check.rc != 0
+      register: zfs_create_res
+
+    - name: "Set Recordsize to 16k (Optimized for BitTorrent)"
+      command: "zfs set recordsize={{ recordsize }} {{ dataset_path }}"
+      when: zfs_create_res is succeeded or zfs_check.rc == 0
+
+    - name: "Set Permissions to 1000:1000"
+      command: "chown {{ owner_uid }}:{{ owner_gid }} /mnt/{{ dataset_path }}"
+
+    - name: "Set Directory Permissions (775)"
+      command: "chmod 775 /mnt/{{ dataset_path }}"
+
+    - name: "Verify Final Configuration"
+      command: "zfs get recordsize {{ dataset_path }}"
+      register: final_verify
+
+    - name: "Show Verification"
+      debug:
+        msg: "Dataset {{ dataset_path }} is ready with recordsize {{ final_verify.stdout_lines[1].split()[2] }}"
