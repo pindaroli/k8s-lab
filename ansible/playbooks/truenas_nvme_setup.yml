@@ -26,16 +26,28 @@
       command: "zfs set recordsize={{ recordsize }} {{ dataset_path }}"
       when: zfs_create_res is succeeded or zfs_check.rc == 0
 
+    - name: "Set Sync to Disabled (Force Async for Performance)"
+      command: "zfs set sync=disabled {{ dataset_path }}"
+
     - name: "Set Permissions to 1000:1000"
       command: "chown {{ owner_uid }}:{{ owner_gid }} /mnt/{{ dataset_path }}"
 
     - name: "Set Directory Permissions (775)"
       command: "chmod 775 /mnt/{{ dataset_path }}"
 
+    - name: "Increase NFS Threads to 64 (TrueNAS API)"
+      command: "midclt call nfs.update '{\"servers\": 64}'"
+      register: nfs_threads_res
+      changed_when: "'servers: 64' not in nfs_threads_res.stdout"
+
+    - name: "Restart NFS Service to apply thread changes"
+      command: "midclt call service.restart 'nfs'"
+      when: nfs_threads_res is changed
+
     - name: "Verify Final Configuration"
-      command: "zfs get recordsize {{ dataset_path }}"
+      command: "zfs get recordsize,sync {{ dataset_path }}"
       register: final_verify
 
     - name: "Show Verification"
       debug:
-        msg: "Dataset {{ dataset_path }} is ready with recordsize {{ final_verify.stdout_lines[1].split()[2] }}"
+        msg: "Dataset {{ dataset_path }} is ready with recordsize {{ final_verify.stdout_lines[1].split()[2] }} and sync {{ final_verify.stdout_lines[2].split()[2] }}"
