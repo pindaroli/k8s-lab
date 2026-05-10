@@ -16,7 +16,8 @@ L'obiettivo è spostare i download incompleti dal pool meccanico `oliraid` allo 
 - [x] Creato dataset (via Ansible): `stripe/qb_temp` con **Recordsize: 16K**.
 - [x] Configurato owner **1000:1000** nel playbook.
 - [x] Creati manifest K8s: `storage/incomplete-dw-pvc.yaml` (PV + PVC).
-- [x] Aggiornato `oli-arr-values.yaml` con il nuovo mount point `/data/incomplete`.
+- [x] Aggiornato `servarr/arr-values.yaml` con il nuovo mount point `/data/incomplete`.
+- [ ] **Infrastruttura (Proxmox)**: Aumentare la RAM delle VM `talos-cp-0x` a **almeno 24GB** (attualmente 15GB sono insufficienti per il burst a 12GB di qBittorrent + OS + Postgres).
 
 ## 2. Esecuzione (DA ESEGUIRE)
 - [ ] Eseguire `ansible-playbook ansible/playbooks/truenas_nvme_setup.yml`.
