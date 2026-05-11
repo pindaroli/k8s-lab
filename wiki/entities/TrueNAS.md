@@ -1,6 +1,6 @@
 ---
 title: "TrueNAS (Storage & Management)"
-last_updated: "2026-05-03"
+last_updated: "2026-05-11"
 confidence: "High"
 tags:
   - "#storage"
@@ -22,8 +22,9 @@ TrueNAS è il fornitore centrale di storage per l'intera infrastruttura Lab.
 ## 2. Pool e Dataset
 - **oliraid**: Pool principale per media e dati bulk.
   - Path Media: `/mnt/oliraid/arrdata/media`
-- **stripe**: Pool ad alte prestazioni (NVMe) utilizzato per la cache e database.
+- **stripe**: Pool ad alte prestazioni (NVMe) utilizzato per cache, database e storage temporaneo.
   - Path Cache: `/mnt/stripe/k8s-arr`
+  - Path qB Temp: `/mnt/stripe/qb_temp` (Ottimizzato: Recordsize 16k, Sync: Disabled).
 
 ## 3. Servizi e Condivisioni
 - **NFS**: Utilizzato per montare lo storage sul [[Talos_Cluster]] e sui nodi esterni come il Mac Studio.

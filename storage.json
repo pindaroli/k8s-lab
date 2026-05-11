@@ -57,6 +57,26 @@
           "10.10.10.0/24"
         ]
       },
+      "qbittorrent_temp": {
+        "path": "/mnt/stripe/qb_temp",
+        "description": "NVMe Optimized temporary storage for qBittorrent",
+        "protocol": "nfs",
+        "mount_options": [
+          "nfsvers=4.1",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime",
+          "resvport"
+        ],
+        "networks": [
+          "10.10.10.0/24",
+          "10.10.20.0/24"
+        ],
+        "zfs_recordsize": "16k",
+        "zfs_sync": "disabled",
+        "notes": "Optimized for IOPS burst. Force Async sync for high-speed download."
+      },
       "backup_proxmox": {
         "path": "/mnt/oliraid/backup-proxmox",
         "description": "Legacy Proxmox VZDump Backups (Archive)",
