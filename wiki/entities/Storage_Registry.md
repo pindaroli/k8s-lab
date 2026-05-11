@@ -1,6 +1,6 @@
 ---
 title: "Storage Registry (storage.json)"
-last_updated: "2026-05-03"
+last_updated: "2026-05-11"
 confidence: "High"
 tags:
   - "#storage"
@@ -21,10 +21,12 @@ Questo nodo del Wiki definisce le **regole** e la topologia dello storage condiv
 Lo storage primario è fornito da [[TrueNAS]] tramite protocollo NFS.
 Ci sono due pool principali:
 - **`oliraid`**: Pool HDD primario, alta capacità. Usato per i media (`arrdata`), backup e documenti a lungo termine.
-- **`stripe`**: Pool NVMe ad alte prestazioni. Usato per cache K8s e transcodifica temporanea di [[Tdarr]] (`k8s-arr/tdarr-cache`).
+- **`stripe`**: Pool NVMe ad alte prestazioni. Usato per cache K8s, transcodifica temporanea di [[Tdarr]] (`k8s-arr/tdarr-cache`) e storage temporaneo qBittorrent (`qb_temp`).
+  - **Ottimizzazione qB Temp**: Dataset `stripe/qb_temp` configurato con **Recordsize: 16k** e **Sync: Disabled** per gestire burst di IOPS a 20 MB/s.
 
 > [!CRITICAL]
-> **Database e Local Storage**: Il database `postgres-main` (CloudNativePG) NON usa NFS di TrueNAS, ma utilizza **Local Storage** (`rancher.io/local-path`) per massimizzare le performance IOPS. Questo introduce un **Single Point of Failure (SPOF) a livello di nodo fisico**: i dischi del database sono vincolati ai nodi specifici (es. `talos-cp-02`). Se l'hypervisor fisico che ospita il nodo (es. **PVE2**) viene spento per manutenzione, i dischi diventano irraggiungibili e il database va in crash, rompendo tutti i servizi dipendenti (Lidarr, etc). I dettagli sui mount point locali sono in `storage.json` alla voce `nas.local.postgres_disk`.
+> **Database e Local Storage**: Il database `postgres-main` (CloudNativePG) NON usa NFS di TrueNAS, ma utilizza **Local Storage** (`rancher.io/local-path`) per massimizzare le performance IOPS. Questo introduce un **Single Point of Failure (SPOF) a livello di nodo fisico**: i dischi del database sono vincolati ai nodi specifici (es. `talos-cp-02`).
+> **STATO ATTUALE (2026-05-11)**: Il sistema è in stato **DEGRADED (Missing Nodes)**. I dati di `postgres-main-2` sono inaccessibili poiché il nodo `talos-cp-02` è ospitato su PVE2 (attualmente offline). Il cluster DB non può avviarsi correttamente fino al ripristino dell'hardware. I dettagli sono in `storage.json` alla voce `nas.local.postgres_disk`.
 
 ## 2. Integrazione Kubernetes
 Il [[Talos_Cluster]] accede allo storage tramite il CSI Driver NFS (Local Path Provisioner customizzato o mount diretti nei container).
