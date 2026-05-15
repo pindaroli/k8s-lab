@@ -55,8 +55,18 @@
 
 ## Critical Actions
 
+### 🎵 Music Rescue Pipeline (Beets + Lidarr)
+- [ ] **Configurazione Mount Permanente (Mac Studio)**: Automatizzare il mount NFS `/Volumes/arrdata/media` con opzioni `noresvport,locallocks`.
+- [x] Setup ambiente Beets su Mac Studio (pipx, brew dependencies) [[beets-music-rescue-pipeline]]
+- [x] Definizione `config.yaml` con plugin chroma, scrub, parentwork [[beets-music-rescue-pipeline]]
+- [ ] Esecuzione Pilot Test su campione di 3 album [[beets-music-rescue-pipeline]]
+- [ ] Migrazione massiva con gestione Hardlinks/Seeding [[beets-music-rescue-pipeline]]
+- [ ] **Ripristino Battiato (Lidarr)**: Recuperare la discografia di Franco Battiato in formato **solo FLAC** tramite Lidarr (A seguito di cancellazione accidentale).
+- [ ] **Protezione Storage**: Configurare Periodic Snapshot Tasks su TrueNAS per il pool `oliraid` (dataset `arrdata`) per prevenire future perdite di dati.
+- [ ] Manual Import in Lidarr e validazione MusicBrainz ID [[beets-music-rescue-pipeline]]
+
 ### [ ] Security & Automation
-- [ ] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
+- [x] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
     - [x] Sviluppo Helm-Native in `pindaroli-arr-helm` (**v1.2.3**).
     - [x] Pubblicazione Chart su GitHub Registry.
     - [x] Post-Rebranding: Creare record CNAME su Cloudflare: `charts` -> `pindaroli.github.io`

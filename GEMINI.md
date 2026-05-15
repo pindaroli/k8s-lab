@@ -15,7 +15,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Workloads**: [[Servarr]], [[Tdarr]], [[Xray]].
 - **Data & Registry**: [[Network_Registry]], [[Storage_Registry]], [[Secret_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]].
-- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age per GitOps Secrets), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam e Qualità).
+- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam), [[beets-music-rescue-pipeline]] (Bonifica Libreria Musicale).
 - **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]], [[2026-05-06-google-oauth2-credential-leak]], [[2026-05-08-qbittorrent-port-forward-outage]].
 
 - **Grafi**: [Core Wiki k8s-lab](obsidian://graph?vault=k8s-lab&filter=path:wiki)
@@ -40,6 +40,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 > **ADDRESSING**: Usare sempre **VIP (Identità Logica)** per Ingress/Accesso Esterno; usare sempre **K8s DNS** per traffico interno. Mai usare IP fisici o hardcoded.
 > **EXECUTION PROTOCOL**: Durante l'esecuzione di un piano, per ogni singolo comando/azione: 1. Spiegare COSA sto facendo e PERCHÉ. 2. Aspettare approvazione esplicita. 3. Eseguire e testare il risultato. 4. Aspettare autorizzazione esplicita per il passo successivo. Senza eccezioni.
 > **PLANNING**: È tassativamente proibito pianificare o eseguire azioni basate su assunzioni non verificate. Ogni azione deve essere preceduta da una fase di raccolta dati e analisi che ne confermi la necessità.
+> **MASS DATA MODIFICATION (ANTI-DISASTER)**: È PERENTORIAMENTE VIETATO eseguire comandi di modifica massiva (es. `beet modify`, `sed`, `find -exec rm`) usando query lasche o basate su testo libero. Prima di OGNI modifica di massa, l'agente DEVE obbligatoriamente eseguire un "dry-run" o un comando di query/listing (es. `beet ls`) per validare il perimetro ESATTO d'azione. Qualsiasi bulk edit non testato preventivamente sul set di dati è una violazione gravissima dei protocolli di sicurezza.
 
 ## Future Integrations (n8n & Prefect)
 ### [ ] Transizione a Metodo B (Helm Secrets)
