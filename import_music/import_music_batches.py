@@ -118,12 +118,36 @@ def process_directory(dir_path):
 
     return True
 
+def check_for_running_beets(kill=False):
+    """Verifica che non ci siano processi 'beet' già in esecuzione sul sistema."""
+    try:
+        # Cerca i PID dei processi chiamati 'beet'
+        res = subprocess.run(["pgrep", "beet"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        pids = [pid for pid in res.stdout.strip().split('\n') if pid.isdigit()]
+
+        if pids:
+            if kill:
+                print(f"[!] Rilevati processi 'beet' in background (PIDs: {', '.join(pids)}). Li termino prima del reset...")
+                subprocess.run(["killall", "beet"], stderr=subprocess.PIPE)
+                time.sleep(1) # Aspetta che i processi muoiano effettivamente
+            else:
+                print(f"\n[!] ATTENZIONE CRITICA: Rilevati processi 'beet' attualmente in esecuzione o sospesi (PIDs: {', '.join(pids)}).")
+                print("Avviare istanze parallele causerebbe conflitti nel database e blocchi dalle API di MusicBrainz (Rate Limiting).")
+                print("L'esecuzione del batch è stata interrotta per sicurezza.")
+                print("-> Esegui un 'reset' per terminarli automaticamente o usa 'killall beet'.\n")
+                sys.exit(1)
+    except FileNotFoundError:
+        pass # Ignora se pgrep non è disponibile sul sistema
+
 def main():
     if len(sys.argv) < 2:
-        print("Uso: python3 import_music_batches.py <batch_size>")
+        print("Uso: python3 import_music_batches.py <batch_size|reset>")
         sys.exit(1)
 
-    if sys.argv[1] == "reset":
+    is_reset = sys.argv[1] == "reset"
+    check_for_running_beets(kill=is_reset)
+
+    if is_reset:
         print("[!] ATTENZIONE: Stai per cancellare il database e svuotare il backup.")
         confirm = input("Sei sicuro di voler procedere? (y/N): ")
         if confirm.lower() == 'y':
