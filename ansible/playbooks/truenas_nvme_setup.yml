@@ -1,8 +1,8 @@
 ---
 - name: 🚀 SETUP TRUENAS NVME DATASET FOR QBITTORRENT 🚀
   hosts: truenas
-  gather_facts: no
-  become: no
+  gather_facts: false
+  become: false
 
   vars:
     dataset_path: "stripe/qb_temp"
@@ -14,7 +14,7 @@
     - name: "Check if dataset already exists"
       command: "zfs list {{ dataset_path }}"
       register: zfs_check
-      ignore_errors: yes
+      ignore_errors: true
       changed_when: false
 
     - name: "Create ZFS Dataset on NVMe Stripe"
@@ -36,7 +36,7 @@
       command: "chmod 775 /mnt/{{ dataset_path }}"
 
     - name: "Increase NFS Threads to 64 (TrueNAS API)"
-      command: "midclt call nfs.update '{\"servers\": 64}'"
+      command: 'midclt call nfs.update ''{"servers": 64}'''
       register: nfs_threads_res
       changed_when: "'servers: 64' not in nfs_threads_res.stdout"
 

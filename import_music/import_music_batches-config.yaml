@@ -1,0 +1,51 @@
+directory: /Volumes/arrdata/media/music_backup
+library: /Users/olindo/prj/k8s-lab/import_music/musiclibrary.db
+plugins: chroma discogs edit ftintitle ihate lastgenre mbsync musicbrainz parentwork scrub zero missing
+
+import:
+    write: yes
+    copy: yes
+    move: no
+    incremental: yes
+    incremental_skip_later: yes
+    quiet: yes
+    quiet_fallback: skip
+    duplicate_action: remove
+    duplicate_preference:
+        - format: FLAC
+        - samplerate
+        - bitdepth
+        - bitrate
+    ignore: [incomplete, lidarr-incomplete, .DS_Store, '@eaDir', '.*', '*~']
+    resume: no
+    log: /Users/olindo/prj/k8s-lab/import_music/beets_batch.log
+
+match:
+    strong_rec_thresh: 0.10
+
+musicbrainz:
+    ignored_types: [bootleg, promotion, radio]
+    searchlimit: 20
+    preferred:
+        countries: [IT, XW, US, GB]
+        media: [CD, Digital Media|File]
+
+ihate:
+    albumtype: [bootleg, promotion, radio]
+
+chroma:
+    auto: yes
+
+# Altre configurazioni specifiche per mantenere la compatibilità Lidarr
+pathfields:
+    first_artist: |
+        import re
+        s = albumartist or artist
+        if s:
+            return re.split(', | & | and ', s)[0]
+        return "Unknown Artist"
+
+paths:
+    default: $first_artist/[$year] $album%aunique{}/$track $title
+    singleton: Non-Album/$artist/$title
+    comp: Compilations/[$year] $album%aunique{}/$track $title
