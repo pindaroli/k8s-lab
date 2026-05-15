@@ -1613,3 +1613,244 @@ beets.dbcore.db.NotFoundError: No matching Album found
   MusicBrainz, Digital Media, 1996, US, Philips, None, None
   [2mhttps://musicbrainz.org/release/c78b8fe6-050c-4eb7-86b9-65f9209b57f8[39;49;00m
   * Artist: Andrea Bocelli
+  * Album: Viaggio italiano
+scrub: could not open file to scrub: /Volumes/arrdata/media/music_backup/Andrea Bocelli/[1996] Viaggio italiano/16_02 Adeste fideles (O Come, All Ye Faithful).flac: file said 2 bytes, read 0 bytes
+
+--- IMPORTING: /Volumes/arrdata/media/music/André Previn_ Los Angeles Philharmonic O/Bartók_ Concerto For Orchestra_ Janáček_ ---
+  Match ([1;32m91.3%[39;49;00m):
+  [1;32mAndrea Bocelli - Viaggio italiano[39;49;00m
+  [33m≠ year, tracks, data source[39;49;00m
+  MusicBrainz, Digital Media, 1996, US, Philips, None, None
+  [2mhttps://musicbrainz.org/release/c78b8fe6-050c-4eb7-86b9-65f9209b57f8[39;49;00m
+  * Artist: Andrea Bocelli
+  * Album: Viaggio italiano
+
+--- IMPORTING: /Volumes/arrdata/media/music/André Previn_ Los Angeles Philharmonic O/Bartók_ Concerto For Orchestra_ Janáček_ ---
+
+[1;34m/Volumes/arrdata/media/music/André Previn_ Los Angeles Philharmonic O/Bartók_ Concerto For Orchestra_ Janáček_[39;49;00m [1;34m(10 items)[39;49;00m
+Skipping.
+
+[1;34m/Volumes/arrdata/media/music/André Previn_ Los Angeles Philharmonic O/Bartók_ Concerto For Orchestra_ Janáček_[39;49;00m [1;34m(10 items)[39;49;00m
+Skipping.
+
+--- IMPORTING: /Volumes/arrdata/media/music/Andrés Segovia/The Baroque Guitar ---
+
+--- IMPORTING: /Volumes/arrdata/media/music/Andrés Segovia/The Baroque Guitar ---
+
+[1;34m/Volumes/arrdata/media/music/Andrés Segovia/The Baroque Guitar[39;49;00m [1;34m(1 items)[39;49;00m
+Skipping.
+
+[1;34m/Volumes/arrdata/media/music/Andrés Segovia/The Baroque Guitar[39;49;00m [1;34m(1 items)[39;49;00m
+Skipping.
+
+--- IMPORTING: /Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Alla Fiera Dell'Est (1976 Pop) [Flac 16-44] ---
+
+--- IMPORTING: /Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Alla Fiera Dell'Est (1976 Pop) [Flac 16-44] ---
+
+[1;34m/Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Alla Fiera Dell'Est (1976 Pop) [Flac 16-44][39;49;00m [1;34m(10 items)[39;49;00m
+
+  Match ([1;32m84.8%[39;49;00m):
+  [1;32mAngelo Branduardi - Alla Fiera Dell'Est[39;49;00m
+  [33m≠ label, tracks, data source[39;49;00m
+  Discogs, Vinyl, 1978, Germany, Musiza, 26 394 XOT, None
+  [2mhttps://www.discogs.com/release/3689804-Angelo-Branduardi-Alla-Fiera-DellEst[39;49;00m
+  * Artist: Angelo Branduardi
+  * Album: Alla Fiera Dell'Est
+     [33m≠[39;49;00m [2m(#1)[39;49;00m Alla Fiera Dell'[1;31mE[39;49;00mst  [37m(5:25)[39;49;00m -> [2m(#1)[39;49;00m Alla Fiera Dell'[1;32me[39;49;00mst    [37m(5:23)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#2)[39;49;00m La Favola Degli      [37m(3:46)[39;49;00m -> [2m(#2)[39;49;00m La Favola Degli Aironi [37m(3:45)[39;49;00m
+            Aironi [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#3)[39;49;00m Il Vecchio E La      [37m(2:59)[39;49;00m -> [2m(#3)[39;49;00m Il Vecchio E La        [37m(2:56)[39;49;00m
+            Farfalla [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m            Farfalla
+     [33m≠[39;49;00m [2m(#4)[39;49;00m Canzone Per Sarah    [37m(4:23)[39;49;00m -> [2m(#4)[39;49;00m Canzone Per Sarah      [37m(4:20)[39;49;00m
+
+[1;34m/Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Alla Fiera Dell'Est (1976 Pop) [Flac 16-44][39;49;00m [1;34m(10 items)[39;49;00m
+
+  Match ([1;32m84.8%[39;49;00m):
+  [1;32mAngelo Branduardi - Alla Fiera Dell'Est[39;49;00m
+  [33m≠ label, tracks, data source[39;49;00m
+  Discogs, Vinyl, 1978, Germany, Musiza, 26 394 XOT, None
+  [2mhttps://www.discogs.com/release/3689804-Angelo-Branduardi-Alla-Fiera-DellEst[39;49;00m
+  * Artist: Angelo Branduardi
+  * Album: Alla Fiera Dell'Est
+     [33m≠[39;49;00m [2m(#1)[39;49;00m Alla Fiera Dell'[1;31mE[39;49;00mst  [37m(5:25)[39;49;00m -> [2m(#1)[39;49;00m Alla Fiera Dell'[1;32me[39;49;00mst    [37m(5:23)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#2)[39;49;00m La Favola Degli      [37m(3:46)[39;49;00m -> [2m(#2)[39;49;00m La Favola Degli Aironi [37m(3:45)[39;49;00m
+            Aironi [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#3)[39;49;00m Il Vecchio E La      [37m(2:59)[39;49;00m -> [2m(#3)[39;49;00m Il Vecchio E La        [37m(2:56)[39;49;00m
+            Farfalla [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m            Farfalla
+     [33m≠[39;49;00m [2m(#4)[39;49;00m Canzone Per Sarah    [37m(4:23)[39;49;00m -> [2m(#4)[39;49;00m Canzone Per Sarah      [37m(4:20)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#5)[39;49;00m La Serie Dei Numeri  [37m(4:30)[39;49;00m -> [2m(#5)[39;49;00m La Serie Dei Numeri    [37m(4:30)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#6)[39;49;00m Il Dono Del Cervo    [37m(3:17)[39;49;00m -> [2m(#6)[39;49;00m Il Dono Del Cervo      [37m(3:15)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#7)[39;49;00m Il Funerale[1;31m (Album Version)[39;49;00m [37m(8:04)[39;49;00m -> [2m(#7)[39;49;00m Il Funerale [37m(8:10)[39;49;00m
+     [33m≠[39;49;00m [2m(#8)[39;49;00m L'[1;31mU[39;49;00momo E La Nuvola   [37m(3:48)[39;49;00m -> [2m(#8)[39;49;00m L'[1;32mu[39;49;00momo E La Nuvola     [37m(3:45)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#9)[39;49;00m Sotto Il Tiglio      [37m(2:57)[39;49;00m -> [2m(#9)[39;49;00m Sotto Il Tiglio        [37m(2:53)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#10)[39;49;00m Canzone Del         [37m(3:04)[39;49;00m -> [2m(#10)[39;49;00m Canzone Del Rimpianto [37m(3:02)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#5)[39;49;00m La Serie Dei Numeri  [37m(4:30)[39;49;00m -> [2m(#5)[39;49;00m La Serie Dei Numeri    [37m(4:30)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#6)[39;49;00m Il Dono Del Cervo    [37m(3:17)[39;49;00m -> [2m(#6)[39;49;00m Il Dono Del Cervo      [37m(3:15)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#7)[39;49;00m Il Funerale[1;31m (Album Version)[39;49;00m [37m(8:04)[39;49;00m -> [2m(#7)[39;49;00m Il Funerale [37m(8:10)[39;49;00m
+     [33m≠[39;49;00m [2m(#8)[39;49;00m L'[1;31mU[39;49;00momo E La Nuvola   [37m(3:48)[39;49;00m -> [2m(#8)[39;49;00m L'[1;32mu[39;49;00momo E La Nuvola     [37m(3:45)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#9)[39;49;00m Sotto Il Tiglio      [37m(2:57)[39;49;00m -> [2m(#9)[39;49;00m Sotto Il Tiglio        [37m(2:53)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#10)[39;49;00m Canzone Del         [37m(3:04)[39;49;00m -> [2m(#10)[39;49;00m Canzone Del Rimpianto [37m(3:02)[39;49;00m
+             Rimpianto [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+Traceback (most recent call last):
+  File "/Users/olindo/.local/bin/beet", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/__init__.py", line 1009, in main
+    _raw_main(args)
+    ~~~~~~~~~^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/__init__.py", line 990, in _raw_main
+    subcommand.func(lib, suboptions, subargs)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/commands/import_/__init__.py", line 131, in import_func
+    import_files(lib, byte_paths, query)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/commands/import_/__init__.py", line 75, in import_files
+    session.run()
+    ~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/session.py", line 237, in run
+    pl.run_parallel(QUEUE_SIZE)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 489, in run_parallel
+    raise exc_info[1].with_traceback(exc_info[2])
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 390, in run
+    self._run_in_context(self.coro.send, msg)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 252, in _run_in_context
+    return self.ctx.run(func, *args)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 196, in coro
+    task = func(*args, task)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/stages.py", line 300, in manipulate_files
+    task.manipulate_files(
+    ~~~~~~~~~~~~~~~~~~~~~^
+        session=session,
+        ^^^^^^^^^^^^^^^^
+        operation=operation,
+        ^^^^^^^^^^^^^^^^^^^^
+        write=session.config["write"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/tasks.py", line 505, in manipulate_files
+    item.move(operation)
+    ~~~~~~~~~^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 1117, in move
+    dest = self.destination(basedir=basedir)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 1186, in destination
+    subpath = self.evaluate_template(subpath_tmpl, True)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/dbcore/db.py", line 749, in evaluate_template
+    return t.substitute(
+           ~~~~~~~~~~~~^
+        self.formatted(for_path=for_path), self._template_funcs()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/functemplate.py", line 546, in substitute
+    res = self.interpret(values, functions)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/functemplate.py", line 539, in interpret
+    return self.expr.evaluate(Environment(values, functions))
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/functemplate.py", line 236, in evaluate
+    out.append(part.evaluate(env))
+               ~~~~~~~~~~~~~^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/functemplate.py", line 143, in evaluate
+    if self.ident in env.values:
+       ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen _collections_abc>", line 801, in __contains__
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 220, in __getitem__
+    value = self._get(key)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 205, in _get
+    if self.for_path and key in self.album_keys:
+                                ^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/functools.py", line 1126, in __get__
+    val = self.func(instance)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 186, in album_keys
+    if self.album:
+       ^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 198, in album
+    return self.item._cached_album
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 740, in _cached_album
+    self.__album.load()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/dbcore/db.py", line 686, in load
+    self.__dict__.update(self.get_fresh_from_db().__dict__)
+                         ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/dbcore/db.py", line 396, in get_fresh_from_db
+    raise NotFoundError(f"No matching {model_cls.__name__} found") from None
+beets.dbcore.db.NotFoundError: No matching Album found
+             Rimpianto [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+Traceback (most recent call last):
+  File "/Users/olindo/.local/bin/beet", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/__init__.py", line 1009, in main
+    _raw_main(args)
+    ~~~~~~~~~^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/__init__.py", line 990, in _raw_main
+    subcommand.func(lib, suboptions, subargs)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/commands/import_/__init__.py", line 131, in import_func
+    import_files(lib, byte_paths, query)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/commands/import_/__init__.py", line 75, in import_files
+    session.run()
+    ~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/session.py", line 237, in run
+    pl.run_parallel(QUEUE_SIZE)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 489, in run_parallel
+    raise exc_info[1].with_traceback(exc_info[2])
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 390, in run
+    self._run_in_context(self.coro.send, msg)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 252, in _run_in_context
+    return self.ctx.run(func, *args)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 196, in coro
+    task = func(*args, task)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/stages.py", line 300, in manipulate_files
+    task.manipulate_files(
+    ~~~~~~~~~~~~~~~~~~~~~^
+        session=session,
+        ^^^^^^^^^^^^^^^^
+        operation=operation,
+        ^^^^^^^^^^^^^^^^^^^^
+        write=session.config["write"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/tasks.py", line 508, in manipulate_files
+    item.try_write()
+    ~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 948, in try_write
+    self.write(*args, **kwargs)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 915, in write
+    item_tags = dict(self)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 814, in keys
+    if with_album and self._cached_album:
+                      ^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 740, in _cached_album
+    self.__album.load()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/dbcore/db.py", line 686, in load
+    self.__dict__.update(self.get_fresh_from_db().__dict__)
+                         ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/dbcore/db.py", line 396, in get_fresh_from_db
+    raise NotFoundError(f"No matching {model_cls.__name__} found") from None
+beets.dbcore.db.NotFoundError: No matching Album found
+
+--- IMPORTING: /Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Cogli La Prima Mela (1979 Pop) [Flac 16-44] ---
