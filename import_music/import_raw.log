@@ -1854,3 +1854,226 @@ Traceback (most recent call last):
 beets.dbcore.db.NotFoundError: No matching Album found
 
 --- IMPORTING: /Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Cogli La Prima Mela (1979 Pop) [Flac 16-44] ---
+
+--- IMPORTING: /Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Cogli La Prima Mela (1979 Pop) [Flac 16-44] ---
+
+[1;34m/Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Cogli La Prima Mela (1979 Pop) [Flac 16-44][39;49;00m [1;34m(9 items)[39;49;00m
+
+  Match ([1;32m85.1%[39;49;00m):
+  [1;32mAngelo Branduardi - Cogli la prima mela[39;49;00m
+  [33m≠ label, tracks, data source[39;49;00m
+  MusicBrainz, Digital Media, 1979, XW, Universal Music Group, [none], None
+  [2mhttps://musicbrainz.org/release/5975b678-2dff-4fbe-b957-1c40cad1bb1d[39;49;00m
+  * Artist: Angelo Branduardi
+  [33m≠[39;49;00m Album: Cogli [1;31mL[39;49;00ma [1;31mP[39;49;00mrima [1;31mM[39;49;00mela -> Cogli [1;32ml[39;49;00ma [1;32mp[39;49;00mrima [1;32mm[39;49;00mela
+     [33m≠[39;49;00m [2m(#1)[39;49;00m Cogli la prima mela  [37m(3:27)[39;49;00m -> [2m(#1)[39;49;00m Cogli la prima mela    [37m(3:27)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#2)[39;49;00m Se [1;31mT[39;49;00mu [1;31mS[39;49;00mei [1;31mI[39;49;00ml [1;31mC[39;49;00mielo   [37m(3:14)[39;49;00m -> [2m(#2)[39;49;00m Se [1;32mt[39;49;00mu [1;32ms[39;49;00mei [1;32mi[39;49;00ml [1;32mc[39;49;00mielo     [37m(3:14)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#3)[39;49;00m La [1;31mS[39;49;00mtrega[1;31m (Album Version)[39;49;00m [37m(4:23)[39;49;00m -> [2m(#3)[39;49;00m La [1;32ms[39;49;00mtrega [37m(4:23)[39;49;00m
+
+[1;34m/Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Cogli La Prima Mela (1979 Pop) [Flac 16-44][39;49;00m [1;34m(9 items)[39;49;00m
+
+  Match ([1;32m85.1%[39;49;00m):
+  [1;32mAngelo Branduardi - Cogli la prima mela[39;49;00m
+  [33m≠ label, tracks, data source[39;49;00m
+  MusicBrainz, Digital Media, 1979, XW, Universal Music Group, [none], None
+  [2mhttps://musicbrainz.org/release/5975b678-2dff-4fbe-b957-1c40cad1bb1d[39;49;00m
+  * Artist: Angelo Branduardi
+  [33m≠[39;49;00m Album: Cogli [1;31mL[39;49;00ma [1;31mP[39;49;00mrima [1;31mM[39;49;00mela -> Cogli [1;32ml[39;49;00ma [1;32mp[39;49;00mrima [1;32mm[39;49;00mela
+     [33m≠[39;49;00m [2m(#1)[39;49;00m Cogli la prima mela  [37m(3:27)[39;49;00m -> [2m(#1)[39;49;00m Cogli la prima mela    [37m(3:27)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#2)[39;49;00m Se [1;31mT[39;49;00mu [1;31mS[39;49;00mei [1;31mI[39;49;00ml [1;31mC[39;49;00mielo   [37m(3:14)[39;49;00m -> [2m(#2)[39;49;00m Se [1;32mt[39;49;00mu [1;32ms[39;49;00mei [1;32mi[39;49;00ml [1;32mc[39;49;00mielo     [37m(3:14)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#3)[39;49;00m La [1;31mS[39;49;00mtrega[1;31m (Album Version)[39;49;00m [37m(4:23)[39;49;00m -> [2m(#3)[39;49;00m La [1;32ms[39;49;00mtrega [37m(4:23)[39;49;00m
+     [33m≠[39;49;00m [2m(#4)[39;49;00m Donna [1;31mT[39;49;00mi [1;31mV[39;49;00moglio      [37m(3:28)[39;49;00m -> [2m(#4)[39;49;00m Donna [1;32mt[39;49;00mi [1;32mv[39;49;00moglio        [37m(3:28)[39;49;00m
+     [33m≠[39;49;00m [2m(#4)[39;49;00m Donna [1;31mT[39;49;00mi [1;31mV[39;49;00moglio      [37m(3:28)[39;49;00m -> [2m(#4)[39;49;00m Donna [1;32mt[39;49;00mi [1;32mv[39;49;00moglio        [37m(3:28)[39;49;00m
+            [1;31mC[39;49;00mantare [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m             [1;32mc[39;49;00mantare
+     [33m≠[39;49;00m [2m(#5)[39;49;00m La [1;31mR[39;49;00maccolta[1;31m (Album Version)[39;49;00m [37m(4:53)[39;49;00m -> [2m(#5)[39;49;00m La [1;32mr[39;49;00maccolta [37m(4:53)[39;49;00m
+     [33m≠[39;49;00m [2m(#6)[39;49;00m Colori[1;31m (Album Version)[39;49;00m [37m(3:32)[39;49;00m -> [2m(#6)[39;49;00m Colori [37m(3:32)[39;49;00m
+     [33m≠[39;49;00m [2m(#7)[39;49;00m Il [1;31mS[39;49;00mignore [1;31mD[39;49;00mi Baux   [37m(4:31)[39;49;00m -> [2m(#7)[39;49;00m Il [1;32ms[39;49;00mignore [1;32md[39;49;00mi Baux     [37m(4:31)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#8)[39;49;00m Il [1;31mG[39;49;00mufo [1;31mE[39;49;00m [1;31mI[39;49;00ml [1;31mP[39;49;00mavone  [37m(3:14)[39;49;00m -> [2m(#8)[39;49;00m Il [1;32mg[39;49;00mufo [1;32me[39;49;00m [1;32mi[39;49;00ml [1;32mp[39;49;00mavone    [37m(3:14)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#9)[39;49;00m Ninna [1;31mN[39;49;00manna[1;31m (Album Version)[39;49;00m [37m(7:25)[39;49;00m -> [2m(#9)[39;49;00m Ninna [1;32mn[39;49;00manna [37m(7:25)[39;49;00m
+Traceback (most recent call last):
+  File "/Users/olindo/.local/bin/beet", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/__init__.py", line 1009, in main
+    _raw_main(args)
+    ~~~~~~~~~^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/__init__.py", line 990, in _raw_main
+    subcommand.func(lib, suboptions, subargs)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/commands/import_/__init__.py", line 131, in import_func
+    import_files(lib, byte_paths, query)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/commands/import_/__init__.py", line 75, in import_files
+    session.run()
+    ~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/session.py", line 237, in run
+    pl.run_parallel(QUEUE_SIZE)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 489, in run_parallel
+    raise exc_info[1].with_traceback(exc_info[2])
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 390, in run
+    self._run_in_context(self.coro.send, msg)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 252, in _run_in_context
+    return self.ctx.run(func, *args)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 196, in coro
+    task = func(*args, task)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/stages.py", line 300, in manipulate_files
+    task.manipulate_files(
+    ~~~~~~~~~~~~~~~~~~~~~^
+        session=session,
+        ^^^^^^^^^^^^^^^^
+        operation=operation,
+        ^^^^^^^^^^^^^^^^^^^^
+        write=session.config["write"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/tasks.py", line 508, in manipulate_files
+    item.try_write()
+    ~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 948, in try_write
+    self.write(*args, **kwargs)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 938, in write
+    self.mtime = self.current_mtime()
+                 ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 1033, in current_mtime
+    return int(os.path.getmtime(syspath(self.path)))
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "<frozen genericpath>", line 91, in getmtime
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/arrdata/media/music_backup/Angelo Branduardi/[1979] Cogli la prima mela/03_02 La strega.flac'
+            [1;31mC[39;49;00mantare [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m             [1;32mc[39;49;00mantare
+     [33m≠[39;49;00m [2m(#5)[39;49;00m La [1;31mR[39;49;00maccolta[1;31m (Album Version)[39;49;00m [37m(4:53)[39;49;00m -> [2m(#5)[39;49;00m La [1;32mr[39;49;00maccolta [37m(4:53)[39;49;00m
+     [33m≠[39;49;00m [2m(#6)[39;49;00m Colori[1;31m (Album Version)[39;49;00m [37m(3:32)[39;49;00m -> [2m(#6)[39;49;00m Colori [37m(3:32)[39;49;00m
+     [33m≠[39;49;00m [2m(#7)[39;49;00m Il [1;31mS[39;49;00mignore [1;31mD[39;49;00mi Baux   [37m(4:31)[39;49;00m -> [2m(#7)[39;49;00m Il [1;32ms[39;49;00mignore [1;32md[39;49;00mi Baux     [37m(4:31)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#8)[39;49;00m Il [1;31mG[39;49;00mufo [1;31mE[39;49;00m [1;31mI[39;49;00ml [1;31mP[39;49;00mavone  [37m(3:14)[39;49;00m -> [2m(#8)[39;49;00m Il [1;32mg[39;49;00mufo [1;32me[39;49;00m [1;32mi[39;49;00ml [1;32mp[39;49;00mavone    [37m(3:14)[39;49;00m
+            [1;31m(Album[39;49;00m [1;31mVersion)[39;49;00m
+     [33m≠[39;49;00m [2m(#9)[39;49;00m Ninna [1;31mN[39;49;00manna[1;31m (Album Version)[39;49;00m [37m(7:25)[39;49;00m -> [2m(#9)[39;49;00m Ninna [1;32mn[39;49;00manna [37m(7:25)[39;49;00m
+Traceback (most recent call last):
+  File "/Users/olindo/.local/bin/beet", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/__init__.py", line 1009, in main
+    _raw_main(args)
+    ~~~~~~~~~^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/__init__.py", line 990, in _raw_main
+    subcommand.func(lib, suboptions, subargs)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/commands/import_/__init__.py", line 131, in import_func
+    import_files(lib, byte_paths, query)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/ui/commands/import_/__init__.py", line 75, in import_files
+    session.run()
+    ~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/session.py", line 237, in run
+    pl.run_parallel(QUEUE_SIZE)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 489, in run_parallel
+    raise exc_info[1].with_traceback(exc_info[2])
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 390, in run
+    self._run_in_context(self.coro.send, msg)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 252, in _run_in_context
+    return self.ctx.run(func, *args)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/pipeline.py", line 196, in coro
+    task = func(*args, task)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/stages.py", line 300, in manipulate_files
+    task.manipulate_files(
+    ~~~~~~~~~~~~~~~~~~~~~^
+        session=session,
+        ^^^^^^^^^^^^^^^^
+        operation=operation,
+        ^^^^^^^^^^^^^^^^^^^^
+        write=session.config["write"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/importer/tasks.py", line 505, in manipulate_files
+    item.move(operation)
+    ~~~~~~~~~^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 1117, in move
+    dest = self.destination(basedir=basedir)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 1186, in destination
+    subpath = self.evaluate_template(subpath_tmpl, True)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/dbcore/db.py", line 749, in evaluate_template
+    return t.substitute(
+           ~~~~~~~~~~~~^
+        self.formatted(for_path=for_path), self._template_funcs()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/functemplate.py", line 546, in substitute
+    res = self.interpret(values, functions)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/functemplate.py", line 539, in interpret
+    return self.expr.evaluate(Environment(values, functions))
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/functemplate.py", line 236, in evaluate
+    out.append(part.evaluate(env))
+               ~~~~~~~~~~~~~^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/util/functemplate.py", line 143, in evaluate
+    if self.ident in env.values:
+       ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen _collections_abc>", line 801, in __contains__
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 220, in __getitem__
+    value = self._get(key)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 205, in _get
+    if self.for_path and key in self.album_keys:
+                                ^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/functools.py", line 1126, in __get__
+    val = self.func(instance)
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 186, in album_keys
+    if self.album:
+       ^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 198, in album
+    return self.item._cached_album
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/library/models.py", line 740, in _cached_album
+    self.__album.load()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/dbcore/db.py", line 686, in load
+    self.__dict__.update(self.get_fresh_from_db().__dict__)
+                         ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/olindo/.local/pipx/venvs/beets/lib/python3.14/site-packages/beets/dbcore/db.py", line 396, in get_fresh_from_db
+    raise NotFoundError(f"No matching {model_cls.__name__} found") from None
+beets.dbcore.db.NotFoundError: No matching Album found
+
+--- IMPORTING: /Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Gulliver, la luna e altri disegni (1980 Pop) [Flac 16-44] ---
+
+--- IMPORTING: /Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Gulliver, la luna e altri disegni (1980 Pop) [Flac 16-44] ---
+
+[1;34m/Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Gulliver, la luna e altri disegni (1980 Pop) [Flac 16-44][39;49;00m [1;34m(10 items)[39;49;00m
+
+  Match ([1;32m87.7%[39;49;00m):
+  [1;32mAngelo Branduardi - Gulliver, La Luna E Altri Disegni[39;49;00m
+  [33m≠ label, tracks, data source[39;49;00m
+  MusicBrainz, CD, 2008, DE, Trecolori Media, 0188935TRM, None
+  [2mhttps://musicbrainz.org/release/af563f37-4e7c-48d5-a988-80b302e1aab8[39;49;00m
+  * Artist: Angelo Branduardi
+  [33m≠[39;49;00m Album: Gulliver, [1;31ml[39;49;00ma [1;31ml[39;49;00muna [1;31me[39;49;00m [1;31ma[39;49;00mltri    -> Gulliver, [1;32mL[39;49;00ma [1;32mL[39;49;00muna [1;32mE[39;49;00m [1;32mA[39;49;00mltri [1;32mD[39;49;00misegni
+           [1;31md[39;49;00misegni
+     [33m≠[39;49;00m [2m(#1)[39;49;00m La [1;31ml[39;49;00muna [37m(2:50)[39;49;00m -> [2m(#1)[39;49;00m La [1;32mL[39;49;00muna [37m(2:50)[39;49;00m
+
+[1;34m/Volumes/arrdata/media/music/Angelo Branduardi/Angelo Branduardi - Gulliver, la luna e altri disegni (1980 Pop) [Flac 16-44][39;49;00m [1;34m(10 items)[39;49;00m
+
+  Match ([1;32m87.7%[39;49;00m):
+  [1;32mAngelo Branduardi - Gulliver, La Luna E Altri Disegni[39;49;00m
+  [33m≠ label, tracks, data source[39;49;00m
+  MusicBrainz, CD, 2008, DE, Trecolori Media, 0188935TRM, None
+  [2mhttps://musicbrainz.org/release/af563f37-4e7c-48d5-a988-80b302e1aab8[39;49;00m
+  * Artist: Angelo Branduardi
+  [33m≠[39;49;00m Album: Gulliver, [1;31ml[39;49;00ma [1;31ml[39;49;00muna [1;31me[39;49;00m [1;31ma[39;49;00mltri    -> Gulliver, [1;32mL[39;49;00ma [1;32mL[39;49;00muna [1;32mE[39;49;00m [1;32mA[39;49;00mltri [1;32mD[39;49;00misegni
+           [1;31md[39;49;00misegni
+     [33m≠[39;49;00m [2m(#1)[39;49;00m La [1;31ml[39;49;00muna [37m(2:50)[39;49;00m -> [2m(#1)[39;49;00m La [1;32mL[39;49;00muna [37m(2:50)[39;49;00m
+     [33m≠[39;49;00m [2m(#2)[39;49;00m Confessioni [1;31md[39;49;00mi [1;31mu[39;49;00mn    [37m(5:08)[39;49;00m -> [2m(#2)[39;49;00m Confessioni [1;32mD[39;49;00mi [1;32mU[39;49;00mn      [37m(5:08)[39;49;00m
+            [1;31mm[39;49;00malandrino                          [1;32mM[39;49;00malandrino
+     [33m≠[39;49;00m [2m(#3)[39;49;00m Tanti [1;31ma[39;49;00mnni [1;31mf[39;49;00ma [37m(2:51)[39;49;00m -> [2m(#3)[39;49;00m Tanti [1;32mA[39;49;00mnni [1;32mF[39;49;00ma [37m(2:51)[39;49;00m

@@ -19,6 +19,7 @@ import:
     ignore: [incomplete, lidarr-incomplete, .DS_Store, '@eaDir', '.*', '*~']
     resume: no
     log: /Users/olindo/prj/k8s-lab/import_music/beets_batch.log
+    threaded: no  # Disabilita il multithreading per evitare lock SQLite e NotFoundError
 statefile: /Users/olindo/prj/k8s-lab/import_music/state.pickle
 
 match:
