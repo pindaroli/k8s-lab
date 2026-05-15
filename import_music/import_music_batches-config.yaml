@@ -19,6 +19,7 @@ import:
     ignore: [incomplete, lidarr-incomplete, .DS_Store, '@eaDir', '.*', '*~']
     resume: no
     log: /Users/olindo/prj/k8s-lab/import_music/beets_batch.log
+statefile: /Users/olindo/prj/k8s-lab/import_music/state.pickle
 
 match:
     strong_rec_thresh: 0.10
