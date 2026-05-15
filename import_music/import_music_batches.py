@@ -63,11 +63,13 @@ def process_directory(dir_path):
 
     # Carica la configurazione specifica per il batch
     config_path = os.path.join(os.path.dirname(__file__), "import_music_batches-config.yaml")
-    cmd = ["beet", "-c", config_path, "import", "-q", dir_path]
+    # Aggiunto -v per far generare a Beets log diagnostici di rete e plugin interni
+    cmd = ["beet", "-v", "-c", config_path, "import", "-q", dir_path]
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
 
     last_output_time = time.time()
     anomaly_reasons = []
+    rolling_buffer = []  # Mantiene le ultime righe verbose per il debug dei timeout
 
     while True:
         rlist, _, _ = select.select([process.stdout], [], [], 5.0)
@@ -77,8 +79,16 @@ def process_directory(dir_path):
             if not line:
                 break # EOF
             last_output_time = time.time()
-            sys.stdout.write(line)
+
+            # Logghiamo tutto su file e nel buffer diagnostico
             log_raw(line)
+            rolling_buffer.append(line.strip())
+            if len(rolling_buffer) > 15:
+                rolling_buffer.pop(0)
+
+            # Nascondiamo i log di debug dal terminale per non inondare lo schermo
+            if "DEBUG:" not in line:
+                sys.stdout.write(line)
 
             line_lower = line.lower()
             # Filtri più ampi per catturare i motivi reali
@@ -90,13 +100,18 @@ def process_directory(dir_path):
                 print(f"\n[!!!] TIMEOUT: Nessun output per {TIMEOUT_SECONDS}s. Uccido il processo.")
                 log_raw(f"TIMEOUT: Ucciso dopo {TIMEOUT_SECONDS}s\n")
                 process.kill()
-                log_anomaly(dir_path, "CRASH/TIMEOUT STUCK")
+
+                # Salviamo le ultime 15 righe verbose nel log delle anomalie
+                last_trace = " | ".join(rolling_buffer[-15:])
+                log_anomaly(dir_path, f"CRASH/TIMEOUT STUCK. Verbose Trace: {last_trace}")
                 return False
 
         if process.poll() is not None:
             for line in process.stdout:
-                sys.stdout.write(line)
                 log_raw(line)
+                rolling_buffer.append(line.strip())
+                if "DEBUG:" not in line:
+                    sys.stdout.write(line)
                 line_lower = line.lower()
                 if any(key in line_lower for key in keywords):
                     anomaly_reasons.append(line.strip())
