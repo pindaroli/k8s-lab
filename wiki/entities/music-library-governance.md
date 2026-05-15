@@ -60,3 +60,10 @@ In caso di nomi duplicati (es. `Us3` vs `US3`), utilizzare `beet modify` per uni
 > **MAI eseguire `beet modify` usando query generiche o parziali (es. `album="Nome Album"`).** Questo può causare match collaterali distruttivi sull'intera libreria.
 > - Usare SEMPRE query esatte se basate su testo (es. `album::^Nome Esatto$`) o, preferibilmente, identificatori univoci e percorsi assoluti.
 > - Prima di eseguire un `modify`, si DEVE SEMPRE fare un `beet ls` con la stessa identica query per verificare preventivamente la lista dei file interessati.
+
+### Pipeline di Migrazione Massiva (Automated Import)
+Per importare grosse librerie frammentate (Fase di Migrazione), utilizziamo uno script in Python (`import_music_batches.py`) che orchestra Beets in modo massivo e isolato, secondo questa logica:
+1. **Pre-Analisi (Reset)**: Il comando `python3 import_music_batches.py reset` azzera il database, scansiona il disco e crea un file `import_targets.txt` contenente solo le "cartelle foglia" con file audio reali. Viene distrutto anche il file `state.pickle` per evitare falsi skip.
+2. **Batch Processing**: Il comando `python3 import_music_batches.py 100` elabora le cartelle in lotti da 100 per non sovraccaricare le API di MusicBrainz o il disco.
+3. **Thresholding (Soglia)**: La tolleranza di match (`strong_rec_thresh`) è impostata a `0.17` (83% di confidenza). Gli album sopra questa soglia vengono auto-accettati (`import_success.log`).
+4. **Anomalie**: Le cartelle sotto l'83% (o che violano regole come bootleg/promozionali) vengono saltate e loggate in `import_anomalies.log` assieme ai punteggi esatti (Distance) e al comando CLI preimpostato (`CMD: beet import -i ...`) per la risoluzione manuale.
