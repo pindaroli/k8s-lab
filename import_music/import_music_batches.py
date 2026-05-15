@@ -144,6 +144,44 @@ def main():
         print("Uso: python3 import_music_batches.py <batch_size|reset>")
         sys.exit(1)
 
+    if sys.argv[1] == "control":
+        print("\n=== MUSIC BATCH STATUS ===")
+        # 1. Processi
+        try:
+            res = subprocess.run(["pgrep", "beet"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            pids = [pid for pid in res.stdout.strip().split('\n') if pid.isdigit()]
+            if pids:
+                print(f"[!] ATTENZIONE: Rilevati {len(pids)} processi 'beet' in esecuzione/sospesi (PIDs: {', '.join(pids)}).")
+            else:
+                print("[+] Nessun processo 'beet' appeso rilevato.")
+        except FileNotFoundError:
+            pass
+
+        # 2. Statistiche
+        try:
+            with open(TARGETS_FILE, "r") as f:
+                all_dirs = [line.strip() for line in f if line.strip()]
+
+            processed = load_processed_dirs()
+            anomalies = 0
+            if os.path.exists(ANOMALIES_LOG):
+                with open(ANOMALIES_LOG, "r") as f:
+                    anomalies = len([line for line in f if line.strip()])
+
+            successes = len(processed) - anomalies
+            remaining = len(all_dirs) - len(processed)
+            perc = (len(processed) / len(all_dirs) * 100) if all_dirs else 0
+
+            print(f"\n[+] Avanzamento:")
+            print(f"    - Target Totali:  {len(all_dirs)}")
+            print(f"    - Auto-Import:    {successes} (Completati con successo)")
+            print(f"    - Anomalie:       {anomalies} (Saltati / In attesa di review)")
+            print(f"    - Rimanenti:      {remaining}")
+            print(f"    - Progresso:      {perc:.1f}%\n")
+        except FileNotFoundError:
+            print("\n[!] Nessun target trovato. Esegui prima 'python3 import_music_batches.py reset'.\n")
+        sys.exit(0)
+
     is_reset = sys.argv[1] == "reset"
     check_for_running_beets(kill=is_reset)
 
