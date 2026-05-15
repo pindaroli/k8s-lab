@@ -41,17 +41,10 @@ chroma:
 album_fields:
     first_artist: |
         import re
-        s = albumartist or artist
-        if s:
-            return re.split(', | & | and ', s)[0]
-        return "Unknown Artist"
-
-item_fields:
-    first_artist: |
-        import re
-        s = albumartist or artist
-        if s:
-            return re.split(', | & | and ', s)[0]
+        if albumartist:
+            # Pulisce i 'feat.' dall'album artist
+            clean = re.split(r'(?i) feat\. | ft\. | featuring ', albumartist)[0]
+            return clean.strip()
         return "Unknown Artist"
 
 paths:

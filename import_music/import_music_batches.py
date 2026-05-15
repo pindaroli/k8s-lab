@@ -9,7 +9,7 @@ SRC_DIR = "/Volumes/arrdata/media/music"
 SUCCESS_LOG = os.path.join(os.path.dirname(__file__), "import_success.log")
 ANOMALIES_LOG = os.path.join(os.path.dirname(__file__), "import_anomalies.log")
 RAW_LOG = os.path.join(os.path.dirname(__file__), "import_raw.log")
-TIMEOUT_SECONDS = 300  # 5 minuti senza output = blocco
+TIMEOUT_SECONDS = 600  # 10 minuti senza output = blocco
 TARGETS_FILE = os.path.join(os.path.dirname(__file__), "import_targets.txt")
 
 def load_processed_dirs():
@@ -163,10 +163,14 @@ def main():
                 all_dirs = [line.strip() for line in f if line.strip()]
 
             processed = load_processed_dirs()
-            anomalies = 0
+            anomalies_set = set()
             if os.path.exists(ANOMALIES_LOG):
                 with open(ANOMALIES_LOG, "r") as f:
-                    anomalies = len([line for line in f if line.strip()])
+                    for line in f:
+                        if line.startswith("[") and "] LOG:" in line:
+                            path = line.split("] LOG:")[0][1:]
+                            anomalies_set.add(path)
+            anomalies = len(anomalies_set)
 
             successes = len(processed) - anomalies
             remaining = len(all_dirs) - len(processed)
@@ -197,7 +201,7 @@ def main():
 
             print("Svuoto cartella backup...")
             if os.path.exists(backup_dir):
-                subprocess.run(f"rm -rf {backup_dir}/*", shell=True)
+                subprocess.run(f"rm -rf '{backup_dir}' && mkdir -p '{backup_dir}'", shell=True)
 
             print("Resetto log e stato...")
             for log in [SUCCESS_LOG, ANOMALIES_LOG, RAW_LOG, "beets_batch.log", TARGETS_FILE, "state.pickle"]:
