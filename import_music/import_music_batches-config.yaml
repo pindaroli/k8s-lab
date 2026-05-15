@@ -1,6 +1,6 @@
 directory: /Volumes/arrdata/media/music_backup
 library: /Users/olindo/prj/k8s-lab/import_music/musiclibrary.db
-plugins: chroma discogs edit ftintitle ihate lastgenre mbsync musicbrainz parentwork scrub zero missing
+plugins: chroma discogs edit ftintitle ihate lastgenre mbsync musicbrainz parentwork scrub zero missing inline
 
 import:
     write: yes
@@ -22,7 +22,7 @@ import:
 statefile: /Users/olindo/prj/k8s-lab/import_music/state.pickle
 
 match:
-    strong_rec_thresh: 0.10
+    strong_rec_thresh: 0.17
 
 musicbrainz:
     ignored_types: [bootleg, promotion, radio]
@@ -38,7 +38,15 @@ chroma:
     auto: yes
 
 # Altre configurazioni specifiche per mantenere la compatibilità Lidarr
-pathfields:
+album_fields:
+    first_artist: |
+        import re
+        s = albumartist or artist
+        if s:
+            return re.split(', | & | and ', s)[0]
+        return "Unknown Artist"
+
+item_fields:
     first_artist: |
         import re
         s = albumartist or artist
@@ -47,6 +55,6 @@ pathfields:
         return "Unknown Artist"
 
 paths:
-    default: $first_artist/[$year] $album%aunique{}/$track $title
+    default: $first_artist/[$year] $album%aunique{}/$track:02 $title
     singleton: Non-Album/$artist/$title
-    comp: Compilations/[$year] $album%aunique{}/$track $title
+    comp: Compilations/[$year] $album%aunique{}/$track:02 $title
