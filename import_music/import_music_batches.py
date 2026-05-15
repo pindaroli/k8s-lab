@@ -6,10 +6,11 @@ import subprocess
 import select
 
 SRC_DIR = "/Volumes/arrdata/media/music"
-SUCCESS_LOG = "import_success.log"
-ANOMALIES_LOG = "import_anomalies.log"
-RAW_LOG = "import_raw.log"
+SUCCESS_LOG = os.path.join(os.path.dirname(__file__), "import_success.log")
+ANOMALIES_LOG = os.path.join(os.path.dirname(__file__), "import_anomalies.log")
+RAW_LOG = os.path.join(os.path.dirname(__file__), "import_raw.log")
 TIMEOUT_SECONDS = 300  # 5 minuti senza output = blocco
+TARGETS_FILE = os.path.join(os.path.dirname(__file__), "import_targets.txt")
 
 def load_processed_dirs():
     if not os.path.exists(SUCCESS_LOG):
@@ -56,10 +57,9 @@ def get_diagnostic_info(dir_path):
         return f"Diagnosi fallita: {str(e)}"
 
 def process_directory(dir_path):
-    dir_name = os.path.basename(dir_path)
     print(f"\n========================================")
-    print(f"Importing: {dir_name}")
-    log_raw(f"\n--- IMPORTING: {dir_name} ---\n")
+    print(f"Importing: {dir_path}")
+    log_raw(f"\n--- IMPORTING: {dir_path} ---\n")
 
     # Carica la configurazione specifica per il batch
     config_path = os.path.join(os.path.dirname(__file__), "import_music_batches-config.yaml")
@@ -90,7 +90,7 @@ def process_directory(dir_path):
                 print(f"\n[!!!] TIMEOUT: Nessun output per {TIMEOUT_SECONDS}s. Uccido il processo.")
                 log_raw(f"TIMEOUT: Ucciso dopo {TIMEOUT_SECONDS}s\n")
                 process.kill()
-                log_anomaly(dir_name, "CRASH/TIMEOUT STUCK")
+                log_anomaly(dir_path, "CRASH/TIMEOUT STUCK")
                 return False
 
         if process.poll() is not None:
@@ -106,15 +106,15 @@ def process_directory(dir_path):
 
     if anomaly_reasons:
         diag = get_diagnostic_info(dir_path)
-        log_anomaly(dir_name, f"LOG: {' | '.join(anomaly_reasons)} | DIAG: {diag} | CMD: beet import -i \"{dir_path}\"")
-        print(f"--> Anomalia Registrata con diagnosi per {dir_name}")
-        log_success(dir_name) # Lo segniamo comunque processato per non riprovarci all'infinito
+        log_anomaly(dir_path, f"LOG: {' | '.join(anomaly_reasons)} | DIAG: {diag} | CMD: beet import -i \"{dir_path}\"")
+        print(f"--> Anomalia Registrata con diagnosi per {dir_path}")
+        log_success(dir_path) # Lo segniamo comunque processato
     elif exit_code != 0:
-        log_anomaly(dir_name, f"Exited with code {exit_code}")
-        log_success(dir_name)
+        log_anomaly(dir_path, f"Exited with code {exit_code}")
+        log_success(dir_path)
     else:
-        log_success(dir_name)
-        print(f"--> Successo: {dir_name}")
+        log_success(dir_path)
+        print(f"--> Successo: {dir_path}")
 
     return True
 
@@ -137,9 +137,26 @@ def main():
             if os.path.exists(backup_dir):
                 subprocess.run(f"rm -rf {backup_dir}/*", shell=True)
 
-            print("Resetto log...")
-            for log in [SUCCESS_LOG, ANOMALIES_LOG, RAW_LOG, "beets_batch.log"]:
+            print("Resetto log e stato...")
+            for log in [SUCCESS_LOG, ANOMALIES_LOG, RAW_LOG, "beets_batch.log", TARGETS_FILE, "state.pickle"]:
                 if os.path.exists(log): os.remove(log)
+
+            print("Eseguo pre-analisi del disco per trovare gli album...")
+            valid_extensions = {'.mp3', '.flac', '.m4a', '.ogg', '.wav', '.aac', '.wma'}
+            dirs_with_music = set()
+            for root, dirs, files in os.walk(SRC_DIR):
+                if '/.' in root or '@eaDir' in root:
+                    continue
+                for f in files:
+                    if os.path.splitext(f)[1].lower() in valid_extensions:
+                        dirs_with_music.add(root)
+                        break
+
+            all_dirs = sorted(list(dirs_with_music))
+            with open(TARGETS_FILE, "w") as f:
+                for d in all_dirs:
+                    f.write(f"{d}\n")
+            print(f"Pre-analisi completata: trovate {len(all_dirs)} cartelle con audio.")
 
             print("Reset completato. Sistema pronto per un nuovo import.")
             sys.exit(0)
@@ -156,12 +173,13 @@ def main():
     processed_dirs = load_processed_dirs()
 
     try:
-        all_dirs = sorted([os.path.join(SRC_DIR, d) for d in os.listdir(SRC_DIR) if os.path.isdir(os.path.join(SRC_DIR, d))])
+        with open(TARGETS_FILE, "r") as f:
+            all_dirs = [line.strip() for line in f if line.strip()]
     except FileNotFoundError:
-        print(f"Cartella sorgente {SRC_DIR} non trovata.")
+        print(f"File {TARGETS_FILE} non trovato. Esegui prima: python3 import_music_batches.py reset")
         sys.exit(1)
 
-    to_process = [d for d in all_dirs if os.path.basename(d) not in processed_dirs]
+    to_process = [d for d in all_dirs if d not in processed_dirs]
 
     if not to_process:
         print("Tutte le cartelle sono state processate!")
