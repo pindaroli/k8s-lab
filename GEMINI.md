@@ -39,6 +39,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 > **HELM DEPLOYMENT**: È tassativamente proibito installare chart da cartelle locali. Ogni deploy deve passare dal repository ufficiale (Helm Repo) per garantire la coerenza GitOps e la tracciabilità delle versioni, a meno di casi eccezionali esplicitamente approvati.
 > **ADDRESSING**: Usare sempre **VIP (Identità Logica)** per Ingress/Accesso Esterno; usare sempre **K8s DNS** per traffico interno. Mai usare IP fisici o hardcoded.
 > **EXECUTION PROTOCOL**: Durante l'esecuzione di un piano, per ogni singolo comando/azione: 1. Spiegare COSA sto facendo e PERCHÉ. 2. Aspettare approvazione esplicita. 3. Eseguire e testare il risultato. 4. Aspettare autorizzazione esplicita per il passo successivo. Senza eccezioni.
+> **PLANNING vs EXECUTION**: L'AI deve limitarsi esclusivamente alla documentazione e alla pianificazione. È TASSATIVAMENTE VIETATO eseguire comandi operativi (es. kill, mv, cp, rm) o manipolare processi durante la fase di stesura o aggiornamento di un piano, a meno di autorizzazione esplicita al comando singolo. L'AI non deve mai assumere che un "vai" durante il planning sia un'autorizzazione a eseguire codice o fermare processi.
 > **PLANNING**: È tassativamente proibito pianificare o eseguire azioni basate su assunzioni non verificate. Ogni azione deve essere preceduta da una fase di raccolta dati e analisi che ne confermi la necessità.
 > **MASS DATA MODIFICATION (ANTI-DISASTER)**: È PERENTORIAMENTE VIETATO eseguire comandi di modifica massiva (es. `beet modify`, `sed`, `find -exec rm`) usando query lasche o basate su testo libero. Prima di OGNI modifica di massa, l'agente DEVE obbligatoriamente eseguire un "dry-run" o un comando di query/listing (es. `beet ls`) per validare il perimetro ESATTO d'azione. Qualsiasi bulk edit non testato preventivamente sul set di dati è una violazione gravissima dei protocolli di sicurezza.
 
@@ -77,3 +78,5 @@ Per garantire la coerenza della conoscenza e la tracciabilità delle azioni:
 > Per una visione completa dell'infrastruttura, aprire questa cartella in **Obsidian** e attivare la **Graph View** filtrando per `path:wiki`.
 
    ```
+
+> **EXECUTION PROTOCOL (HARD ENFORCEMENT)**: È assolutamente vietato eseguire comandi di modifica (bash, replace_file_content) senza aver prima concluso il messaggio precedente con la stringa esatta: **[ATTENDO AUTORIZZAZIONE]**. Nessuna eccezione, nemmeno per emergenze o per fermare script in corso.

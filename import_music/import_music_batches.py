@@ -11,6 +11,7 @@ ANOMALIES_LOG = os.path.join(os.path.dirname(__file__), "import_anomalies.log")
 RAW_LOG = os.path.join(os.path.dirname(__file__), "import_raw.log")
 TIMEOUT_SECONDS = 600  # 10 minuti senza output = blocco
 TARGETS_FILE = os.path.join(os.path.dirname(__file__), "import_targets.txt")
+DELAY_BETWEEN_ALBUMS = 7  # Secondi di pausa tra un disco e l'altro per non sovraccaricare le API (Discogs)
 
 def load_processed_dirs():
     if not os.path.exists(SUCCESS_LOG):
@@ -91,9 +92,20 @@ def process_directory(dir_path):
                 sys.stdout.write(line)
 
             line_lower = line.lower()
-            # Filtri più ampi per catturare i motivi reali
-            keywords = ["skip", "no match", "error", "no files imported", "similarity", "confidence", "missing", "duplicate"]
+            # Saltiamo il log iniziale dei plugin per evitare falsi positivi con il plugin "missing"
+            if "loading plugins:" in line_lower:
+                continue
+
+            # Filtri intelligenti: segnaliamo anomalie solo per veri problemi di match o errori
+            keywords = ["no match", "error", "similarity", "confidence", "missing tracks", "duplicate"]
             if any(key in line_lower for key in keywords):
+                # Ignoriamo i messaggi di skip "buoni" (brani già importati)
+                if "previously-imported" not in line_lower and "already in the library" not in line_lower:
+                    # La parola 'skip' da sola (senza 'previously') indica un fallimento del match in quiet mode
+                    if "skip" in line_lower or any(key in line_lower for key in keywords):
+                        anomaly_reasons.append(line.strip())
+            elif "skipping." in line_lower and "previously" not in line_lower:
+                # Beets scrive "Skipping." quando fallisce il match in quiet mode
                 anomaly_reasons.append(line.strip())
         else:
             if time.time() - last_output_time > TIMEOUT_SECONDS:
@@ -246,19 +258,43 @@ def main():
             sys.exit(0)
 
     try:
-        batch_size = int(sys.argv[1])
-    except ValueError:
-        print("Uso: python3 import_music_batches.py <batch_size|reset>")
+        is_recover = sys.argv[1] == "recover"
+        if is_recover:
+            batch_size = int(sys.argv[2])
+        else:
+            batch_size = int(sys.argv[1])
+    except (IndexError, ValueError):
+        print("Uso: python3 import_music_batches.py <batch_size|reset|recover <batch_size>>")
         sys.exit(1)
+
+    # Controllo critico: Impedisce esecuzioni parallele accidentali
+    check_for_running_beets(kill=False)
 
     processed_dirs = load_processed_dirs()
 
-    try:
-        with open(TARGETS_FILE, "r") as f:
-            all_dirs = [line.strip() for line in f if line.strip()]
-    except FileNotFoundError:
-        print(f"File {TARGETS_FILE} non trovato. Esegui prima: python3 import_music_batches.py reset")
-        sys.exit(1)
+    if is_recover:
+        anomalies_set = set()
+        recoverable_keywords = [
+            "429:", "JSONDecodeError", "FileNotFoundError",
+            "NotFoundError", "file exists", "readonly", "ReadError", "CRASH:"
+        ]
+        if os.path.exists(ANOMALIES_LOG):
+            with open(ANOMALIES_LOG, "r") as f:
+                for line in f:
+                    if line.startswith("[") and "] LOG:" in line:
+                        path = line.split("] LOG:")[0][1:]
+                        # Filtro intelligente: recuperiamo solo se c'è un errore tecnico noto
+                        if any(kw in line for kw in recoverable_keywords):
+                            anomalies_set.add(path)
+        all_dirs = sorted(list(anomalies_set))
+        print(f"Modalità RECOVER SMART attivata: trovate {len(all_dirs)} cartelle con errori tecnici recuperabili (ignorati i match deboli).")
+    else:
+        try:
+            with open(TARGETS_FILE, "r") as f:
+                all_dirs = [line.strip() for line in f if line.strip()]
+        except FileNotFoundError:
+            print(f"File {TARGETS_FILE} non trovato. Esegui prima: python3 import_music_batches.py reset")
+            sys.exit(1)
 
     to_process = [d for d in all_dirs if d not in processed_dirs]
 
@@ -276,6 +312,10 @@ def main():
         if not process_directory(dir_path):
             print("Elaborazione batch interrotta a causa di un Timeout di sistema.")
             break
+
+        if i < batch_size - 1:
+            print(f"Pausa di {DELAY_BETWEEN_ALBUMS}s per rispettare i limiti API...")
+            time.sleep(DELAY_BETWEEN_ALBUMS)
 
     print("\nBatch completato.")
 
