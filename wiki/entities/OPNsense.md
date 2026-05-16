@@ -9,6 +9,7 @@ tags:
 provenance:
   - "homelab_notebooklm.md"
   - "incidents/2026-05-03-dns-split-horizon-conflict.md"
+  - "incidents/2026-05-16-dnsbl-automation-payload-mismatch.md"
 ---
 
 # OPNsense (Gateway & Security)
@@ -37,7 +38,7 @@ OPNsense usa il modulo nativo di Unbound per il blocco dei domini traccianti.
 - **Automazione & SSoT**: La lista dei domini da bloccare in wildcard (telemetria, tracking aggressivo) è centralizzata in `rete.json` sotto la chiave `opnsense.outbound.blocked-domain`.
 - **Applicazione Modifiche**: Le modifiche si applicano eseguendo lo script Ansible dedicato:
   `ansible-playbook ansible/playbooks/opnsense_adblock_automation.yml`
-- **Importante**: Lo script aggiorna la configurazione, ma in alcune versioni di OPNsense è richiesto un click manuale su **"Download & Update"** nella UI per rigenerare fisicamente i file di blocco.
+- **Importante**: Per attivare le nuove wildcard DNS, lo script esegue ora un **`service/restart`** di Unbound. In precedenza, il semplice `reconfigure` o l'azione `dnsbl` fallivano silenziosamente l'applicazione delle zone personalizzate (Vedi [[2026-05-16-dnsbl-automation-payload-mismatch]]).
 
 ## 5. Protezione Anti-Rebind
 Per accedere all'interfaccia web di OPNsense usando un dominio personalizzato (es. `firewall-direct.pindaroli.org`), tale dominio deve essere registrato in `System -> Settings -> Administration -> Alternate Hostnames`.

@@ -813,7 +813,12 @@
                 "telemetry.microsoft.com",
                 "scorecardresearch.com",
                 "quantserve.com",
-                "advertising.com"
+                "advertising.com",
+                "adnxs.com",
+                "rubiconproject.com",
+                "taboola.com",
+                "criteo.com",
+                "outbrain.com"
             ]
         }
     }
