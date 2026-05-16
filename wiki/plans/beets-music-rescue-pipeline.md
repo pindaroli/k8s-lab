@@ -137,11 +137,60 @@ ihate:
     - **Lato AI**: L'agente leggerà esclusivamente il file di log (`/tmp/beets_import.log`) per conoscere lo stato, astenendosi rigorosamente dal fare query su SQLite (`beet ls`) finché il processo è in corso.
 5.  **Deduplicazione & Verifica**: Solo a processo concluso, verificare con `beet duplicates artist:"<Artist>"` e ispezionare il database per validare la congruenza in `music_backup`.
 
+### Fase 4.1: Automated Anomaly Recovery (Rescue Pipeline)
+Invece di procedere manualmente, si adotta una strategia a tre fasi per automatizzare il recupero degli scarti loggati in `import_anomalies.log`.
+
+1.  **Fase 1: Hard Recovery (Algoritmico)**:
+    - Sviluppo/Uso di uno script Python che parsa il log, calcola la durata totale dei file locali e interroga le API di MusicBrainz per trovare un match univoco.
+    - Esecuzione forzata via ID: `beet import --search-id <MBID> --quiet <PATH>`.
+    - *Obiettivo*: Risolvere l'80% delle anomalie di bassa confidenza.
+
+2.  **Fase 2: Soft Recovery (Permissivo)**:
+    - **Isolamento**: Estrazione dei path che hanno fallito i passaggi precedenti dal log:
+      `grep "skip" import_anomalies.log | cut -d ' ' -f 2- > paths_to_recover.txt`
+    - **Importazione Forzata**: Uso di `soft_recovery_config.yaml` (permissivo) con tagging flessibile per rintracciabilità:
+      `beet import -q --set recovery_status=soft --set recovery_phase=2 --from-logfile paths_to_recover.txt`
+    - **Obiettivo**: Spostare fisicamente ogni file residuo nella struttura `Artist/Album` su TrueNAS, marcandoli nel DB SQLite per l'elaborazione a "bocce ferme".
+
+3.  **Fase 3: Post-Processing & Enrichment**:
+    - **Chroma Enrichment**: Esecuzione del plugin `chroma` sugli album marcati `soft` per generare AcoustID e tentare il recupero degli MBID mancanti tramite impronta acustica.
+    - **MBSync Mirato**: `beet mbsync recovery_status:soft` per scaricare i metadati ufficiali una volta ottenuto l'ID.
+    - **Audit Automatizzato**:
+        - `beet missing`: Generazione report tracce assenti da passare a Lidarr per il completamento.
+        - `beet bad`: Identificazione di file fisicamente corrotti che bloccherebbero Lidarr.
+    - **Sincronizzazione Finale**:
+        - In Lidarr, impostare `Write Audio Tags: Never` per proteggere il lavoro di Beets.
+        - `beet update`: Allineamento finale dei path nel DB di Beets prima dello swap definitivo.
+
 ### Fase 5: Final Sync & Swap
-1.  **Permission Sync**: Allineamento di owner (1000:1000) e permessi (777) di `music_backup` con `music`.
-2.  **Archiviazione**: Rinominare `music` in `music_old` (o cancellazione se svuotata).
-3.  **Promozione**: Rinominare `music_backup` in `music`.
-4.  **Lidarr Recovery**: Esecuzione "Rescan" in Lidarr e avvio recupero FLAC mancanti.
+> [!CAUTION]
+> **ESECUZIONE MANUALE**: Questa fase e la successiva devono essere eseguite **esclusivamente dall'utente** direttamente sul NAS per garantire la massima velocità e sicurezza. L'AI non deve intervenire sui processi o sui file.
+
+1.  **Backup Database**: Eseguire backup manuale del DB di Lidarr e del file `musiclibrary.db` di Beets.
+2.  **Lidarr Offline**: Scalare il deployment di Lidarr a 0 (`kubectl scale deployment lidarr -n arr --replicas=0`).
+3.  **Permission Sync**: Allineamento di owner (1000:1000) e permessi (777) di `music_backup`.
+4.  **Lo Swap fisico**:
+    - `mv /Volumes/arrdata/media/music /Volumes/arrdata/media/music_old`
+    - `mv /Volumes/arrdata/media/music_backup /Volumes/arrdata/media/music`
+5.  **Lidarr Recovery (Smart Mapping)**:
+    - Riavviare Lidarr.
+    - Utilizzare lo strumento **Library > Import** (e NON il semplice Rescan) puntando alla "nuova" cartella `music`.
+    - Lidarr riconoscerà la struttura pulita di Beets e permetterà il match di massa, aggiornando i percorsi nel database senza perdere la storia degli artisti.
+6.  **Verifica**: Test di riproduzione via Jellyfin per confermare che i nuovi percorsi siano corretti.
+
+### Fase 6: Riallineamento Manuale Seeding (Hardlinks)
+Questa fase ripristina il seeding su qBittorrent per i file che Beets ha spostato/rinominato.
+
+1.  **Identificazione**: Per ogni album in seeding che risulta "Missing" su qBittorrent:
+    - Trovare la nuova posizione in `media/music`.
+    - Verificare il nome della cartella originale in `downloads/lidarr`.
+2.  **Hardlinking**: Ricreare il legame fisico (Zero spazio extra occupato):
+    - `cp -al "/Volumes/arrdata/media/music/Artista/Album/." "/Volumes/arrdata/downloads/lidarr/Cartella_Originale_Torrent/"`
+3.  **qBittorrent Validation**:
+    - Selezionare i torrent interessati.
+    - Eseguire **"Force Recheck"**.
+    - Una volta raggiunto il 100%, il torrent riprenderà il seeding direttamente dai file della libreria "pulita".
+4.  **Cleanup**: Dopo 48h di stabilità, eliminazione definitiva di `music_old`.
 
 ---
 

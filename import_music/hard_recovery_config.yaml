@@ -1,0 +1,24 @@
+# Hard Recovery Configuration for Beets
+# Optimized for targeted imports using MusicBrainz/Discogs IDs
+
+include: import_music_batches-config.yaml
+
+import:
+    quiet: yes
+    autotag: yes
+    search_ids: yes # Mandatory for this phase
+    incremental: no # We are re-processing specific items
+    copy: yes
+    write: yes
+    resume: no
+    log: hard_recovery.log
+
+match:
+    strong_rec_thresh: 0.15 # Slightly more permissive for recovery
+    medium_rec_thresh: 0.25
+    max_rec:
+        missing_tracks: strong
+        unmatched_tracks: strong
+
+# Ensure we don't accidentally skip due to interactive prompts
+# since we are in quiet mode, it should be fine.

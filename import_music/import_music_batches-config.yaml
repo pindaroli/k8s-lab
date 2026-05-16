@@ -1,6 +1,6 @@
 directory: /Volumes/arrdata/media/music_backup
 library: /Users/olindo/prj/k8s-lab/import_music/musiclibrary.db
-plugins: chroma discogs edit ftintitle ihate lastgenre mbsync musicbrainz parentwork scrub zero missing inline
+plugins: chroma discogs edit ftintitle ihate lastgenre mbsync musicbrainz parentwork zero missing
 
 import:
     write: yes
@@ -39,16 +39,8 @@ chroma:
     auto: yes
 
 # Altre configurazioni specifiche per mantenere la compatibilità Lidarr
-album_fields:
-    first_artist: |
-        import re
-        if albumartist:
-            # Pulisce i 'feat.' dall'album artist
-            clean = re.split(r'(?i) feat\. | ft\. | featuring ', albumartist)[0]
-            return clean.strip()
-        return "Unknown Artist"
 
 paths:
-    default: $first_artist/[$year] $album%aunique{}/$track:02 $title
+    default: $albumartist/[$year] $album%aunique{}/$track:02 $title
     singleton: Non-Album/$artist/$title
     comp: Compilations/[$year] $album%aunique{}/$track:02 $title

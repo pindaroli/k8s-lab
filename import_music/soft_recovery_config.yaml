@@ -1,0 +1,34 @@
+# Soft Recovery Configuration for Beets
+# Goal: Force-import items that failed automated matching
+
+include: import_music_batches-config.yaml
+
+import:
+    quiet: yes
+    autotag: yes
+    incremental: no
+    copy: yes
+    write: yes
+    resume: no
+    log: soft_recovery.log
+    # Crucial fallback for items with no match
+    quiet_fallback: asis
+
+match:
+    # Extremely permissive thresholds
+    strong_rec_thresh: 0.20
+    medium_rec_thresh: 0.35
+    max_rec:
+        missing_tracks: strong
+        unmatched_tracks: strong
+
+# Ensure chroma is enabled for later enrichment if we want to run it during import
+# or we can run it separately in Phase 3 as planned.
+plugins:
+    - chroma
+    - edit
+    - fetchart
+    - embedart
+    - info
+    - missing
+    - badfiles
