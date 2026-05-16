@@ -203,3 +203,6 @@ Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttam
 - [ ] Installazione binario su `pve1`, `pve2`, `pve3`.
 - [ ] Installazione binario su `truenas` (SCALE).
 - [ ] Configurazione endpoint: `http://10.10.20.100:11434`.
+### [ ] Multimedia Clients & Integration
+- [ ] **Feishin Installation**: Configurare Feishin come player musicale desktop/mobile puntando alla libreria Navidrome/Lidarr.
+    > **Ref**: [Gemini Share - Feishin Setup](https://gemini.google.com/share/8b7a061246b0)

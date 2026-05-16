@@ -35,12 +35,9 @@ def main():
         dnsbl_section = full_config.get("unbound", {}).get("dnsbl", {}).get("blocklist", {})
         uuid = list(dnsbl_section.keys())[0]
 
-        current_wildcards = dnsbl_section[uuid].get("wildcards", {})
-        if not isinstance(current_wildcards, dict):
-            current_wildcards = {}
-
-        for domain in tracking_wildcards:
-            current_wildcards[domain] = {"value": domain, "selected": 1}
+        # OPNsense API expects a comma-separated string for multi-select fields in SET calls
+        # We use the list from rete.json (SSoT)
+        wildcards_str = ",".join(tracking_wildcards)
 
         payload = {
             "unbound": {
@@ -48,7 +45,7 @@ def main():
                     "blocklist": {
                         uuid: {
                             "enabled": "1",
-                            "wildcards": current_wildcards
+                            "wildcards": wildcards_str
                         }
                     }
                 }
@@ -71,8 +68,8 @@ def main():
             action_r = requests.post(f"{args.url}/api/core/configd/run/unbound/download_dnsbl", auth=auth, verify=False)
 
         # 3. Final Reconfigure to be sure
-        print("[*] Final Unbound reconfigure...")
-        requests.post(f"{args.url}/api/unbound/service/reconfigure", auth=auth, verify=False)
+        print("[*] Final Unbound restart (to apply wildcards)...")
+        requests.post(f"{args.url}/api/unbound/service/restart", auth=auth, verify=False)
 
         print("[SUCCESS] All automated steps completed.")
 
