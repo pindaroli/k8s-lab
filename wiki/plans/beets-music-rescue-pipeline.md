@@ -1,8 +1,12 @@
-# Piano: Beets Music Rescue Pipeline
+# Piano: Beets Music Rescue Pipeline (Phase 1 of 3 — Modern Music)
 
-**Target**: Mac Studio (Host) · **Data**: 2026-05-11
+**Target**: Mac Studio (Host) · **Data**: 2026-05-11 · **Aggiornato**: 2026-05-17
 **Stato**: 🟢 In Esecuzione
-**Obiettivo**: Bonifica della libreria musicale "messy" tramite Beets per importazione perfetta in Lidarr, **escludendo categoricamente i bootleg**, e **preservando rigorosamente gli hardlink** con la directory `downloads/lidarr` per mantenere attivo il seeding su qBittorrent senza duplicazione di spazio.
+**Scope**: **Pop/Rock/Electronic soltanto.** La musica classica è intercettata da `segregate_classical.py` e deviata in [[classical-music-strategy]].
+**Obiettivo**: Bonifica della libreria musicale "messy" tramite Beets per importazione in `lidarr-pop`, escludendo categoricamente i bootleg e preservando gli hardlink per il seeding qBittorrent.
+
+> [!NOTE]
+> Il **Final Sync & Swap** (rename `music_backup` → `music/pop_rock`) e il **Riallineamento Hardlink Seeding** sono stati spostati in [[dual-pipeline-gitops-integration]] come pre-condizione del deploy GitOps. La pipeline classica può girare **in parallelo** a questa senza conflitti di DB.
 
 ---
 
@@ -40,15 +44,16 @@ graph TD
 
 ### 2.1 Percorsi e Mount (Mac Studio)
 - **Root Share**: `/Volumes/arrdata/media`
-- **Libreria Finale (TARGET)**: `/Volumes/arrdata/media/music`
+- **Libreria Finale (TARGET)**: `/Volumes/arrdata/media/music/pop_rock` (Landing Zone temporanea: `music_backup`)
 - **Sorgente Bonifica**: `/Volumes/arrdata/media/downloads/lidarr` + cartelle messy.
 - **ZONA PROTETTA (IGNORE)**: `/Volumes/arrdata/media/downloads/incomplete`
+- **Sotto-Segregazione Classica (REDIRECT)**: Tutte le cartelle classiche presenti nella sorgente o scartate come anomalie vengono intercettate dallo script `segregate_classical.py` e spostate in `/Volumes/arrdata/staging/classical` delegando l'ingestione al piano [[classical-music-strategy]].
 
 ### 2.2 Requisiti Tecnici & Validazione
 - **Modalità Operativa**: **COPY + WRITE**. I file originali rimangono intatti nella sorgente. Beets crea una copia pulita nella cartella di backup.
 - **Seeding**: Preservato nella sorgente originale (poiché non muoviamo i file).
 - **Protocollo**: **NFS** con opzioni ottimizzate: `noresvport,locallocks`.
-- **Target Primario**: `/Volumes/arrdata/media/music_backup` (Landing Zone).
+- **Target Primario (Modern Landing Zone)**: `/Volumes/arrdata/media/music_backup` (che diventerà `/Volumes/arrdata/media/music/pop_rock` ad importazione ultimata).
 - **Naming Pattern (Allineamento Lidarr)**:
     - Standard: `{Album Title} ({Release Year})/{Artist Name} - {Album Title} - {track:02} - {Track Title}`
     - Multi-Disc: `{Album Title} ({Release Year})/CD {medium:02}/{Artist Name} - {Album Title} - {track:02} - {Track Title}`
@@ -140,10 +145,10 @@ ihate:
 ### Fase 4.1: Automated Anomaly Recovery (Rescue Pipeline)
 Invece di procedere manualmente, si adotta una strategia a tre fasi per automatizzare il recupero degli scarti loggati in `import_anomalies.log`.
 
-1.  **Fase 1: Hard Recovery (Algoritmico)**:
-    - Sviluppo/Uso di uno script Python che parsa il log, calcola la durata totale dei file locali e interroga le API di MusicBrainz per trovare un match univoco.
+1.  **Fase 1: Hard Recovery (Algoritmico)** — ✅ **TERMINATA (2026-05-17)**:
+    - Script Python (`hard_recovery.py`) ha parsato il log, calcolato le durate e interrogato MusicBrainz per match univoco.
     - Esecuzione forzata via ID: `beet import --search-id <MBID> --quiet <PATH>`.
-    - *Obiettivo*: Risolvere l'80% delle anomalie di bassa confidenza.
+    - *Risultato*: Riduzione anomalie, ~80% dei casi di bassa confidenza risolti.
 
 2.  **Fase 2: Soft Recovery (Permissivo)**:
     - **Isolamento**: Estrazione dei path che hanno fallito i passaggi precedenti dal log:
@@ -162,35 +167,121 @@ Invece di procedere manualmente, si adotta una strategia a tre fasi per automati
         - In Lidarr, impostare `Write Audio Tags: Never` per proteggere il lavoro di Beets.
         - `beet update`: Allineamento finale dei path nel DB di Beets prima dello swap definitivo.
 
-### Fase 5: Final Sync & Swap
-> [!CAUTION]
-> **ESECUZIONE MANUALE**: Questa fase e la successiva devono essere eseguite **esclusivamente dall'utente** direttamente sul NAS per garantire la massima velocità e sicurezza. L'AI non deve intervenire sui processi o sui file.
+### Fase 4.2: Artist Case Clash Unification ("Us3 vs US3")
 
-1.  **Backup Database**: Eseguire backup manuale del DB di Lidarr e del file `musiclibrary.db` di Beets.
-2.  **Lidarr Offline**: Scalare il deployment di Lidarr a 0 (`kubectl scale deployment lidarr -n arr --replicas=0`).
-3.  **Permission Sync**: Allineamento di owner (1000:1000) e permessi (777) di `music_backup`.
-4.  **Lo Swap fisico**:
-    - `mv /Volumes/arrdata/media/music /Volumes/arrdata/media/music_old`
-    - `mv /Volumes/arrdata/media/music_backup /Volumes/arrdata/media/music`
-5.  **Lidarr Recovery (Smart Mapping)**:
-    - Riavviare Lidarr.
-    - Utilizzare lo strumento **Library > Import** (e NON il semplice Rescan) puntando alla "nuova" cartella `music`.
-    - Lidarr riconoscerà la struttura pulita di Beets e permetterà il match di massa, aggiornando i percorsi nel database senza perdere la storia degli artisti.
-6.  **Verifica**: Test di riproduzione via Jellyfin per confermare che i nuovi percorsi siano corretti.
+> [!IMPORTANT]
+> **PRE-REQUISITI**: Eseguire **solo dopo** il completamento di Fase 4.1. Il DB deve essere stabile e nessun processo di import deve essere in corso.
+> **CONTESTO**: ZFS su TrueNAS è case-sensitive (`Us3/` e `US3/` sono directory distinte). macOS via NFS è case-insensitive. Questa divergenza causa frammentazione della libreria e potenziali collisioni silenziose durante i `beet move`.
 
-### Fase 6: Riallineamento Manuale Seeding (Hardlinks)
-Questa fase ripristina il seeding su qBittorrent per i file che Beets ha spostato/rinominato.
+#### Step 1: Audit (Solo Lettura — Zero Rischi)
 
-1.  **Identificazione**: Per ogni album in seeding che risulta "Missing" su qBittorrent:
-    - Trovare la nuova posizione in `media/music`.
-    - Verificare il nome della cartella originale in `downloads/lidarr`.
-2.  **Hardlinking**: Ricreare il legame fisico (Zero spazio extra occupato):
-    - `cp -al "/Volumes/arrdata/media/music/Artista/Album/." "/Volumes/arrdata/downloads/lidarr/Cartella_Originale_Torrent/"`
-3.  **qBittorrent Validation**:
-    - Selezionare i torrent interessati.
-    - Eseguire **"Force Recheck"**.
-    - Una volta raggiunto il 100%, il torrent riprenderà il seeding direttamente dai file della libreria "pulita".
-4.  **Cleanup**: Dopo 48h di stabilità, eliminazione definitiva di `music_old`.
+Esegui lo script di detection per mappare tutti i clash nel DB:
+
+```bash
+cd /Users/olindo/prj/k8s-lab/import_music
+python3 detect_case_clashes.py
+```
+
+Output atteso: file `artist_clashes.txt` con la lista dei conflitti. Valuta la dimensione del problema:
+- **< 10 artisti**: usa Opzione A (rewrite plugin per casi noti).
+- **≥ 10 artisti**: usa Opzione B (lowercase path universale).
+
+#### Step 2: Canonicalizzazione via MusicBrainz
+
+Per ogni artista in conflitto, aggiorna i metadati nel DB usando l'MBID ufficiale:
+
+```bash
+# Esempio per ogni artista trovato nell'audit (la query è case-insensitive)
+beet mbsync albumartist:us3
+beet mbsync albumartist:abba
+```
+
+Questo allinea la grafia nel DB di Beets a quella ufficiale di MusicBrainz, senza toccare il filesystem.
+
+#### Step 3a: Normalizzazione DB (senza spostare file)
+
+Usa il flag `-M` (`--nomove`) per aggiornare solo il DB, lasciando i file nelle posizioni attuali:
+
+```bash
+# Sostituisci la variante errata con quella canonica
+# (ripeti per ogni coppia trovata nello script)
+beet modify -M albumartist="US3" albumartist="Us3"
+beet modify -M artist="US3" artist="Us3"
+```
+
+#### Step 4: Lo Spostamento Sicuro (Two-Step Move via `_TMP_`)
+
+> [!WARNING]
+> **Non usare mai `mv` diretto** da macOS su NFS per rinominare directory che differiscono solo per case. L'operazione fallisce silenziosamente o corrompe l'indice della directory.
+
+**Opzione B (Raccomandato — Lowercase path universale):**
+
+Modifica temporaneamente `~/.config/beets/config.yaml` aggiungendo la variabile `lower_artist`:
+
+```yaml
+# AGGIUNTA TEMPORANEA per il two-step move
+plugins: inline
+item_fields:
+    lower_artist: albumartist.lower()
+paths:
+    default: $lower_artist/_TMP_/$album/$track $title
+```
+
+Esegui il move verso `_TMP_`:
+```bash
+beet move  # Sposta tutto in .../<artista>/_TMP_/...
+```
+
+Verifica su TrueNAS (via SSH) che le vecchie directory ambigue siano vuote, poi rimuovile:
+```bash
+# Su TrueNAS via SSH — non da macOS
+rmdir "/mnt/oliraid/arrdata/media/music_backup/Us3" 2>/dev/null
+rmdir "/mnt/oliraid/arrdata/media/music_backup/US3" 2>/dev/null
+```
+
+Aggiorna `config.yaml` con la configurazione finale (senza `_TMP_`):
+```yaml
+plugins: inline
+item_fields:
+    lower_artist: albumartist.lower()
+paths:
+    default: $lower_artist/$album/$track $title
+```
+
+Esegui il move finale:
+```bash
+beet move  # Riorganizza nella struttura lowercase definitiva
+```
+
+#### Step 5: Flush Cache NFS macOS
+
+Dopo operazioni di merge su NFS, svuota la cache VFS del Mac per evitare descrittori di file stantii:
+
+```bash
+sudo umount /Volumes/arrdata/media
+sudo mount -t nfs -o rw,tcp,hard,intr,noresvport,locallocks <IP_NAS>:/mnt/oliraid/arrdata/media /Volumes/arrdata/media
+```
+
+#### Step 6: Verifica Post-Unificazione
+
+```bash
+# Nessun artista dovrebbe avere più varianti di case nel DB
+python3 detect_case_clashes.py
+# Output atteso: "Good news! No case-insensitive artist clashes found."
+
+# Verifica l'assenza di duplicati nella libreria
+beet duplicates
+```
+
+#### Prevenzione Futura
+
+Il `config.yaml` aggiornato (con `$lower_artist`) previene automaticamente future collisioni durante i prossimi import, senza impatto su Jellyfin/Lidarr che leggono i tag — non i nomi delle cartelle.
+
+---
+
+> [!IMPORTANT]
+> **Fase 5 e Fase 6 sono state spostate in [[dual-pipeline-gitops-integration]]** — Sezione "Pre-Condizioni: Final Sync & Swap (Modern)".
+> Il rename da `music_backup` → `music/pop_rock` e il riallineamento degli hardlink di seeding sono ora considerati pre-condizioni del deploy K8s duale e vengono eseguiti contestualmente all'avvio di `lidarr-pop`.
 
 ---
 

@@ -55,15 +55,26 @@
 
 ## Critical Actions
 
-### 🎵 Music Rescue Pipeline (Beets + Lidarr)
-- [ ] **Configurazione Mount Permanente (Mac Studio)**: Automatizzare il mount NFS `/Volumes/arrdata/media` con opzioni `noresvport,locallocks`.
-- [x] Setup ambiente Beets su Mac Studio (pipx, brew dependencies) [[beets-music-rescue-pipeline]]
-- [x] Definizione `config.yaml` con plugin chroma, scrub, parentwork [[beets-music-rescue-pipeline]]
-- [ ] Esecuzione Pilot Test su campione di 3 album [[beets-music-rescue-pipeline]]
-- [ ] Migrazione massiva con gestione Hardlinks/Seeding [[beets-music-rescue-pipeline]]
-- [ ] **Ripristino Battiato (Lidarr)**: Recuperare la discografia di Franco Battiato in formato **solo FLAC** tramite Lidarr (A seguito di cancellazione accidentale).
-- [ ] **Protezione Storage**: Configurare Periodic Snapshot Tasks su TrueNAS per il pool `oliraid` (dataset `arrdata`) per prevenire future perdite di dati.
-- [ ] Manual Import in Lidarr e validazione MusicBrainz ID [[beets-music-rescue-pipeline]]
+### 🎵 Music Rescue & Ingestion Pipeline (Modern & Classical)
+- [ ] **Phase 1: Modern Music Rescue Pipeline** [[beets-music-rescue-pipeline]]
+    - [ ] Automatizzare il mount NFS `/Volumes/arrdata/media` con opzioni `noresvport,locallocks`.
+    - [ ] Esecuzione Pilot Test su campione di 3 album.
+    - [ ] Migrazione massiva con gestione Hardlinks/Seeding.
+    - [ ] Case clash detection e unificazione (`Us3 vs US3`).
+    - [ ] Spostamento da `music_backup` alla Landing Zone definitiva `/Volumes/arrdata/media/music/pop_rock`.
+    - [ ] Manual Import in `lidarr-pop` e ripristino Battiato (solo FLAC).
+- [ ] **Phase 2: Classical Music Segregation** [[classical-music-strategy]]
+    - [x] Creare dataset ZFS dedicato `/Volumes/classical` (staging & library) su TrueNAS (recordsize=1M).
+    - [ ] Eseguire `segregate_classical.py` per isolare i file classici dalle anomalie.
+    - [ ] Configurare `beets_classical_config.yaml` e avviare l'import nello staging (`./run_import.sh batch <N>`).
+    - [ ] Triage Picard per gli unmatched residui in `_Triage_Unmatched`.
+- [ ] **Phase 3: GitOps Homelab Integration (Dual-Pipeline Ingestion)** [[dual-pipeline-gitops-integration]]
+    - [x] Provisioning dataset ZFS TrueNAS con recordsize custom (1M).
+    - [ ] Deploy di `lidarr-classical` in `pindaroli-arr-helm` (completo di ingress e staging mount).
+    - [ ] Configurazione Prowlarr tagging (`classical-indexers`) e qBittorrent category routing (`music-classical` / `music-pop`).
+    - [ ] Disabilitare completed download handling in `lidarr-classical`.
+    - [ ] Integrazione script di unmonitoring API (`segregate_classical.py` come Beets post-import hook).
+    - [ ] Declarative Jellyfin options.xml ConfigMap (Metadata Hardening) per la classica.
 
 ### [ ] Security & Automation
 - [x] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
