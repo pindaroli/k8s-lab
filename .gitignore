@@ -49,3 +49,6 @@ oauth2-proxy/secrets.yaml
 # SOPS Secrets
 secrets-sops/**/*.yaml
 !secrets-sops/**/*.enc.yaml
+import_music/import_classical/restore_dryrun.sh
+import_music/import_classical/*.log
+import_music/*.log

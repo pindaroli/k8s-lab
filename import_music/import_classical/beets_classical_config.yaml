@@ -1,0 +1,223 @@
+# beets_classical_config.yaml
+# ============================================================
+# Configurazione Beets dedicata alla Pipeline Musica Classica
+# Unità autonoma: /import_music/import_classical/
+# ============================================================
+#
+# Architettura Storage (dataset ZFS unificato — hardlink cross-dir):
+#   Dataset ZFS    : oliraid/arrdata/classical  (recordsize=1M, sync=standard)
+#   Staging        : /Volumes/arrdata/classical/staging/   ← qBittorrent scarica qui
+#   Library finale : /Volumes/arrdata/classical/library/   ← Beets hardlinka qui
+#
+# Usando link: yes (hardlink) invece di copy: yes:
+#   - Seeding qBittorrent preservato (stesso inode)
+#   - Zero spazio disco extra durante l'import
+#   - Funziona SOLO perché staging e library sono sullo stesso dataset ZFS
+#
+# DB                   : (questa directory)/classical_musiclibrary.db
+# State file           : (questa directory)/classical_state.pickle
+# Log beets            : (questa directory)/beets_classical_batch.log
+
+directory: /Volumes/classical/library
+library: /Users/olindo/prj/k8s-lab/import_music/import_classical/classical_musiclibrary.db
+statefile: /Users/olindo/prj/k8s-lab/import_music/import_classical/classical_state.pickle
+
+plugins: chroma discogs edit ftintitle ihate lastgenre mbsync musicbrainz parentwork zero missing inline
+
+import:
+  write: yes
+  link: yes    # Hardlink invece di copia — preserva seeding qBittorrent, zero spazio extra
+  copy: no     # Disabilitato: link e copy si escludono a vicenda
+  move: no     # I file originali restano in staging per il seeding
+  incremental: yes
+  incremental_skip_later: yes
+
+  # Modalità quiet — non interattivo, adatto per run overnight
+  quiet: yes
+
+  # FONDAMENTALE: invece di saltare i fallimenti, li importa "as-is" e li
+  # instrada in _Triage_Unmatched per revisione manuale successiva (Picard)
+  quiet_fallback: asis
+
+  duplicate_action: remove
+  duplicate_preference:
+    - format: FLAC
+    - samplerate
+    - bitdepth
+    - bitrate
+
+  ignore: [incomplete, lidarr-incomplete, .DS_Store, '@eaDir', '.*', '*~']
+  resume: no
+  log: /Users/olindo/prj/k8s-lab/import_music/import_classical/beets_classical_batch.log
+  threaded: no  # Disabilita il multithreading per evitare lock SQLite
+
+# ─── Plugin Parentwork ─────────────────────────────────────────────────────
+# Recupera l'opera madre su MusicBrainz (es. "Symphony No.9" per ogni singolo
+# movimento). Risolve il conflitto Compositore vs Artista Album.
+parentwork:
+  force: yes    # Recupera anche per tracce già taggate
+  auto: yes     # Attivo durante l'import automatico
+
+# ─── Custom Fields via Inline Python ───────────────────────────────────────
+# Campi virtuali calcolati a runtime per costruire il path filesystem corretto.
+item_fields:
+  clean_composer: |
+    mbid = getattr(db_obj, 'mb_albumid', '') or ''
+    c = getattr(db_obj, 'composer', '') or ''
+    p = getattr(db_obj, 'parent_composer', '') or ''
+
+    comp = c.strip() or p.strip()
+
+    # 1. Caricamento della tabella esterna con cache a livello di processo (sys)
+    import sys
+    if not hasattr(sys, '_composer_map_cache'):
+        import json
+        try:
+            with open('/Users/olindo/prj/k8s-lab/import_music/import_classical/composer_normalization.json', 'r') as f:
+                sys._composer_map_cache = json.load(f)
+        except Exception:
+            sys._composer_map_cache = {}
+    composer_map = sys._composer_map_cache
+
+    # 2. Se as-is e tag vuoto, cerchiamo nelle sorgenti candidate
+    if not mbid and not comp:
+        candidates = []
+        art = getattr(db_obj, 'artist', '') or ''
+        alb_art = getattr(db_obj, 'albumartist', '') or ''
+        alb = getattr(db_obj, 'album', '') or ''
+        if art: candidates.append(art)
+        if alb_art: candidates.append(alb_art)
+        if alb: candidates.append(alb)
+        try:
+            path_str = db_obj.path.decode('utf-8', 'ignore')
+            parts = path_str.split('/')
+            for i in range(2, min(5, len(parts))):
+                candidates.append(parts[-i])
+        except Exception:
+            pass
+
+        found_famous = None
+        for text in candidates:
+            if not text: continue
+            text_lower = text.lower().strip()
+            for normalized, variations in composer_map.items():
+                if normalized == "Johann Sebastian Bach":
+                    if any(var in text_lower for var in variations) or text_lower == 'bach':
+                        found_famous = normalized
+                        break
+                else:
+                    if any(var in text_lower for var in variations):
+                        found_famous = normalized
+                        break
+            if found_famous:
+                break
+
+        if found_famous:
+            comp = found_famous
+        else:
+            # Fallback sul percorso fisico se nessun compositore celebre
+            try:
+                path_str = db_obj.path.decode('utf-8', 'ignore')
+                parts = path_str.split('/')
+                if len(parts) >= 2:
+                    p2 = parts[-2]
+                    p2_lower = p2.lower()
+                    if len(parts) >= 3 and ('disc' in p2_lower or 'cd' in p2_lower or p2_lower.startswith('d') and p2_lower[1:].isdigit()):
+                        comp = parts[-3]
+                    else:
+                        comp = p2
+            except Exception:
+                pass
+
+    if mbid:
+        return (comp or "Unknown Composer").replace('/', '-').strip()
+
+    if not comp:
+        return "_Triage_Unmatched"
+
+    # 3. Normalizzazione finale tramite tabella esterna
+    c_lower = comp.lower().strip()
+    for normalized, variations in composer_map.items():
+        if normalized == "Johann Sebastian Bach":
+            if any(var in c_lower for var in variations) or c_lower == 'bach':
+                return normalized
+        else:
+            if any(var in c_lower for var in variations):
+                return normalized
+
+    return comp.replace('/', '-').strip()
+
+  year_bracket: |
+    y = getattr(db_obj, 'original_year', 0) or getattr(db_obj, 'year', 0) or 0
+    try:
+        y_int = int(y)
+        if y_int > 0:
+            return f" [{y_int}]"
+    except Exception:
+        pass
+    return ""
+
+  clean_conductor: |
+    cond = getattr(db_obj, 'conductor', '') or ''
+    art  = getattr(db_obj, 'albumartist', '') or getattr(db_obj, 'artist', '') or ''
+    if cond:
+        return cond.replace('/', '-').strip()
+    elif art:
+        return art.replace('/', '-').strip()
+    else:
+        return "Unknown Ensemble"
+
+  clean_title: |
+    t = getattr(db_obj, 'title', '') or ''
+    if t:
+        return t.replace(':', ' -').replace('/', '-').strip()
+    else:
+        return "Unknown Movement"
+
+  disc_and_track: |
+    disc = getattr(db_obj, 'disc', 1) or 1
+    track = getattr(db_obj, 'track', 1) or 1
+    return f"{disc:02d}-{track:02d}"
+
+  clean_work: |
+    pw = getattr(db_obj, 'parentwork', '') or getattr(db_obj, 'work', '') or getattr(db_obj, 'album', '') or 'Unknown Work'
+    return pw.replace('/', '-').replace(':', ' -').strip()
+
+# ─── Path Templating ────────────────────────────────────────────────────────
+# Gerarchia: Compositore → Opera Madre [Anno] - Esecutore → Tracce
+#
+# Esempio reale:
+#   Ludwig van Beethoven/
+#     Symphony No. 9 in D minor [1824] - Karajan, Berliner Philharmoniker/
+#       01-01 - Allegro ma non troppo.flac
+#       ...
+paths:
+  default: >-
+    $clean_composer/$clean_work$year_bracket - $albumartist/$disc_and_track - $clean_title
+
+  singleton: $clean_composer/Singles/$clean_title
+
+per_disc_numbering: yes
+
+# ─── Match Engine ─────────────────────────────────────────────────────────
+match:
+  # Soglia conservativa: preferiamo mandare in _Triage_ che applicare
+  # metadati errati a una sinfonia. I match superiori al 15% di distanza
+  # vengono accettati come "strong".
+  strong_rec_thresh: 0.15
+
+# ─── MusicBrainz ────────────────────────────────────────────────────────────
+musicbrainz:
+  ignored_types: [bootleg, promotion, radio]
+  searchlimit: 20
+  preferred:
+    countries: [IT, XW, US, GB]
+    media: [CD, Digital Media|File]
+
+# ─── Bootleg Filtering ──────────────────────────────────────────────────────
+ihate:
+  albumtype: [bootleg, promotion, radio]
+
+# ─── AcoustID Fingerprinting ────────────────────────────────────────────────
+chroma:
+  auto: yes

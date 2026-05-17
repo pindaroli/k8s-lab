@@ -1,0 +1,414 @@
+[WARNING] Mutagen not found. Falling back to path-based heuristics only.
+         Install with: pip install mutagen
+
+============================================================
+  CLASSICAL MUSIC SEGREGATION — DRY-RUN
+============================================================
+  Sorgente anomalie : /Users/olindo/prj/k8s-lab/import_music/import_anomalies.log
+  Staging dest.     : /Volumes/arrdata/classical/staging
+
+[INFO] Trovati 1602 path unici in import_anomalies.log
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 1 & Lieder eines fahrenden G
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 3 & Symphony No 2 - Resurrec
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 5
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 6
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 7
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 8
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Mahler/Symphony No 9
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gustav Malher/Mahler_ Symphony No. 1 _Titan_ (includin
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Gösta Winbergh_ Herbert Von Karajan_ Ber/Mozart_ Don Giovanni (Highlights)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Herbert Von Karajan_ Berlin Philharmonic/Mozart_ Don Giovanni (Highlights)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Hilary Hann/Concerto per violino Brahms, Strawinsky
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Itzhak Perlman, Seiji Ozawa, Boston Sym
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 10
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 11
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 12
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 13
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 14
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 15
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 16
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 17
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 18
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 19
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 20
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 21
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 22
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 5
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 6
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 7
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 8
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Igor Stravinsky/Works of Igor Stravinsky/Disc 9
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/001 - Cantatas 150, 4, 71, 196 (1706-1708)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/002 - Cantatas 131, 106, 143, 18 (1708-1713)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/003 - Cantatas 182, 12, 54, 172 (1714)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/004 - Cantatas 21, 199 (1714)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/005 - Cantatas 61, 63, 152, 158, 31 (1714-1715)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/006 - Cantatas 165, 185, 163, 132, 155 (1715-1716)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/007 - Cantatas 161, 162, 22, 23, 59 (1716 & 1723)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/008 - Cantatas 75, 76, 24 (1723)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/009 - Cantatas 167, 147, 186, 136 (1723)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/010 - Cantatas 105, 46, 179, 50, 69a (1723)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/011 - Cantatas 77, 25, 119, 138 (1723)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/012 - Cantatas 95, 148, 48, 109 (1723)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/013 - Cantatas 89, 60, 90, 70, 40 (1723)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/014 - Cantatas 64, 190, 153, 65, 154 (1723-1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/015 - Cantatas 73, 81, 83, 144, 181 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/016 - Cantatas 18, 66, 134, 67 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/017 - Cantatas 104, 166, 86, 37, 44 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/018 - Cantatas 173, 184, 194 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/019 - Cantatas 20, 2, 7, 135 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/020 - Cantatas 10, 93, 107, 178 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/021 - Cantatas 94, 101, 113 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/022 - Cantatas 33, 78, 99, 8 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/023 - Cantatas 130, 114, 96, 5 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/024 - Cantatas 180, 38, 115, 139 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/025 - Cantatas 26, 116, 62, 91, 121 (1724)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/026 - Cantatas 133, 122, 41, 123 (1724-1725)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/027 - Cantatas 124, 3, 111, 92 (1725)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/028 - Cantatas 125, 126, 127 (1725)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/029 - Cantatas 1, 6, 42 (1725)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/030 - Cantatas 85, 103, 108, 87, 128 (1725)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/031 - Cantatas 183, 74, 68, 175, 176 (1725)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/032 - Cantatas 168, 137, 164, 79, 110 (1725)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/033 - Cantatas 57, 151, 28, 16 (1725-1726)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/034 - Cantatas 32, 13, 72, 43 (1726)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/035 - Cantatas 146, 129, 39 (1726)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/036 - Cantatas 88, 170, 187, 45 (1726)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/037 - Cantatas 102, 35, 17, 19 (1726)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/038 - Cantatas 27, 47, 169, 56 (1726)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/039 - Cantatas 49, 98, 55, 52, 58 (1726-1727)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/040 - Cantatas 82, 157, 84 (1727)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/041 - Cantatas 34, 193, 117, 188 (1727-1728)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/042 - Cantatas 171, 156, 159, 120a (1729)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/043 - Cantatas 174, 149, 51, 192, 112 (1729-1731)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/044 - Cantatas 29, 140, 36 (1731)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/045 - Cantatas 177, 9, 97, 14 (1732-1735)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/046 - Cantatas 100, 195, 197, 197a (c. 1728-1736)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/047 - Cantatas 30, 80b, 80, 120 (c. 1737-c. 1742)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/048 - Cantatas 191, 69 (1745-1748) ／ 4 Spurious Cantatas
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/049 - 4-Part Chorales, BWV 250-318 AC-GO
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/050 - 4-Part Chorales, BWV 319-381 GO-ME
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/051 - 4-Part Chorales, BWV 382-438 MI-WO
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/052 - Magnificat BWV 243, 243a
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/053 - Motets
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/054 - Mass in B minor (1 Mortensen)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/055 - Mass in B minor (2 Mortensen)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/056 - Mass in B minor (1 Brüggen)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/057 - Mass in B minor (2 Brüggen) ／ Missa BWV 233
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/058 - Missas BWV 234-236
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/059 - St. John Passion (1724) (1 Gardiner)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/060 - St. John Passion (1724) (2 Gardiner)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/061 - St. John Passion (1749) (1 Suzuki)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/062 - St. John Passion (1749) (2 Suzuki)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/063 - St. Matthew Passion (1 Gardiner)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/064 - St. Matthew Passion (2 Gardiner)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/065 - St. Matthew Passion (1 McCreesh)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/066 - St. Matthew Passion (2 McCreesh)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/067 - Easter Oratorio (McCreesh) ／ Ascension Oratorio (Gardiner)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/068 - Easter Oratorio ／ Ascension Oratorio (Leonhardt)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/069 - Christmas Oratorio (1 Gardiner)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/070 - Christmas Oratorio (2 Gardiner)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/071 - Christmas Oratorio (1 Chailly)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/072 - Christmas Oratorio (2 Chailly)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/073 - Cantatas 208, 202 ／ Quodlibet BWV 524 (c. 1708-c. 1717)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/074 - Cantatas 134a, 203, 173a (1719-c. 1723)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/075 - Cantatas 36c, 205, 34a (1725-1726)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/076 - Cantatas 207, 204, 216a (1726-1728)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/077 - Cantatas 198, 201 (1727-1729)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/078 - Cantatas 213, 214 (1733)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/079 - Cantatas 211, 215 (1734)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/080 - Cantatas 206, 30a (1736-1737)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/081 - Cantatas 209, 210, 212 (1730s-1740s)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/082 - Cantatas 67, 106, 19 ／ St. Matthew Passion (excerpts)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/083 - Cantatas 56, 82, 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/084 - Cantatas 31, 104, 57
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/085 - Cantatas 199, 173, 74, 151
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/086 - Easter Oratorio ／ Cantata 140
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/087 - Cantatas 170, 159, 102
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/088 - Cantatas 80, 52, 84, 209
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/089 - Cantatas 82, 158, 56
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/090 - Cantatas 61, 63, 121, 28 (Advent & Christmas)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/091 - Cantatas 64, 65, 111, 81 (Advent & Christmas)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/092 - Cantatas 92, 126, 182 (Easter)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/093 - Cantatas 1, 4, 67, 104 (Easter)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/094 - Cantatas 34, 68, 39 (Whitsun)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/095 - Cantatas 30, 147 (Whitsun)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/096 - Cantatas 76, 21 (Trinity)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/097 - Cantatas 135, 10, 45, 105 (Trinity)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/098 - Cantatas 51, 78, 8, 130 (Trinity)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/099 - Cantatas 27, 5, 60, 26 (Trinity)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/100 - St. Matthew Passion (1 Richter)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/101 - St. Matthew Passion (2 Richter)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/102 - St. Matthew Passion (3 Richter)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/103 - Great Singers (1952-1965)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/104 - Great Singers (1967-2011)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/105 - Great Singers (Period Instruments)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/106 - Organ Works (Introduction 1)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/107 - Organ Works (Introduction 2)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/108 - Toccata & Fugue, BWV 565 ／ Other early works (c. 1700-1707)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/109 - Passacaglia & Fugue, BWV 582 ／ Other Weimar works
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/110 - Fantasia & Fugue, BWV 542 ／ BWV 538-541 ／ Other Weimar works
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/111 - Prelude & Fugue, BWV 548 ／ BWV 544-547 ／ Other Leipzig works
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/112 - 6 Trio Sonatas, BWV 525-530 (Koopman)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/113 - 6 Trio Sonatas, BWV 525-530 (Chorzempa ／ Hurford ／ Preston ／ Walcha)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/114 - 31 Neumeister Chorales, BWV 1090-1120 (1700-1707)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/115 - Early Chorale Preludes ／ Chorale Partitas
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/116 - Chorale Preludes (Mühlhausen & Weimar)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/117 - Breitkopf Collection, BWV 690-713
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/118 - Orgelbüchlein (Preston)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/119 - 17 Chorale Preludes, BWV 651a-667a (Weimar) (Schmitt)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/120 - 18 Chorale Preludes, BWV 651-668 (Leipzig) (Rübsam)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/121 - 21 Chorale Preludes, BWV 669-689 (Walcha)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/122 - Clavier-Übung III (1) (Preston)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/123 - Clavier-Übung III (2) ／ Kleine Orgelmesse ／ 6 Schübler Chorales (Preston ／ Koopman)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/124 - Free Works of Unproven Authenticity
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/125 - Chorale-Based Works of Unproven Authenticity (Fragments)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/126 - Keyboard Works (Introduction 1： Harpsichord)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/127 - Keyboard Works (Introduction 2： Piano)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/128 - Early Fugues & Capriccios
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/129 - Early Suites & Sonatas
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/130 - Toccatas, BWV 910-916
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/131 - Virtuoso Fantasias & Fugues
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/132 - Suites, BWV 996-997 ／ Aria variata, BWV 989 (Doubtful Works)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/133 - 2- & 3-Part Inventions ／ Preludes, BWV 924-943
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/134 - English Suites 1-3 (Dreyfus)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/135 - English Suites 4-6 (Dreyfus)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/136 - French Suites 1-4 (Hogwood)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/137 - French Suites 5-6 ／ Suites, BWV 818a-819 (Hogwood)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/138 - Partitas 1, 2, 6 (Rousset)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/139 - Partitas 3-5 (Rousset)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/140 - Italian Concerto ／ French Overture ／ 4 Duets (Rousset)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/141 - The Well-Tempered Clavier, Book I (1 Gilbert)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/142 - The Well-Tempered Clavier, Book I (2 Gilbert)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/143 - The Well-Tempered Clavier, Book II (1 Gilbert)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/144 - The Well-Tempered Clavier, Book II (2 Gilbert)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/145 - Goldberg Variations (Rousset)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/146 - Goldberg Variations (Esfahani)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/147 - English Suites 1-3 (Pogorelich ／ Schiff ／ Argerich)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/148 - English Suites 4-6 (Schiff ／ Bahrami ／ Hewitt)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/149 - French Suites 1-3 (Perahia)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/150 - French Suites 4-6 (Perahia)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/151 - Partitas 1-4 (Pires ／ Argerich ／ Blechacz ／ Grosvenor)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/152 - Partitas 5-6 ／ French Overture (Ashkenazy ／ Schiff)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/153 - 2- & 3-Part Inventions ／ Italian Concerto ／ 4 Duets (Schiff ／ Brendel ／ Hewitt)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/154 - The Well-Tempered Clavier, Book I (1 Pollini)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/155 - The Well-Tempered Clavier, Book I (2 Pollini)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/156 - The Well-Tempered Clavier, Book II (1 Schiff)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/157 - The Well-Tempered Clavier, Book II (2 Schiff)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/158 - Goldberg Variations (Schiff)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/159 - Piano Legends (1933-1956) (Fischer ／ Gulda ／ Lipatti ／ Gieseking ／ Tureck ／ Hess)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/160 - Piano Legends (1959-1993) (Demus ／ Richter ／ Gilels ／ Gould ／ Horowitz ／ Gavrilov)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/161 - Keyboard Legends (Landowska ／ Kirkpatrick ／ Malcolm ／ Růžičková ／ Ahlgrimm ／ Leonhardt)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/162 - Organ Legends (Schweitzer ／ Walcha ／ Richter ／ Dupré ／ Guillou ／ Alain)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/163 - Orgelbüchlein (Walcha)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/164 - Brandenburg Concertos 1-6 (Goebel)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/165 - Brandenburg Concertos 1-4 ／ Concerto BWV 1057 (Pinnock)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/166 - Brandenburg Concertos 5-6 ／ Concertos BWV 1046a, 1050a (Pinnock ／ Hogwood)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/167 - Orchestral Suites 1-3 (Goebel)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/168 - Orchestral Suites 2-4 (Goebel ／ Hogwood)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/169 - Orchestral Suites 1-4 (Pinnock)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/170 - Violin Concertos BWV 1041, 1042 ／ Versions for Keyboard BWV 1058, 1054
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/171 - Concerto for 2 Violins BWV 1043 ／ Version for 2 Keyboards BWV 1062 ／ Concerto BWV 1052／1052R
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/172 - Keyboard Concertos BWV 1053, 1055 ／ Oboe d'amore Concertos BWV 1053R, 1055R
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/173 - Concertos BWV 1056, 1059, 1060 ／ Concertos BWV 1056R, 1059R, 1060R (Keyboard ／ Violin & Oboe)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/174 - Concertos for 2 & 3 Keyboards BWV 1061, 1063, 1064
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/175 - Brandenburg Concertos (Landmark Performances 1935-1964)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/176 - Brandenburg Concertos (Landmark Performances 1967-2013)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/177 - Concerto for 2 Violins (Grumiaux ／ Oistrakh ／ Hahn ／ Radulović ／ Mutter)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/178 - Violin Concertos (Mutter ／ Hahn ／ Fischer ／ Jansen ／ Mullova ／ Lozakovich)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/179 - Keyboard Concertos BWV 1052-1056 (Schiff ／ Bahrami)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/180 - Concertos (Alternative Instrumentations)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/181 - Violin Sonatas & Partitas BWV 1001-1003 (Carmignola)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/182 - Violin Sonatas & Partitas BWV 1004-1006 (Carmignola)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/183 - Suites for _Lute_
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/184 - Cello Suites 1, 3, 5 (Watkin)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/185 - Cello Suites 2, 4, 6 (Watkin)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/186 - Violin Sonatas BWV 1014-1018
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/187 - Violin Sonatas, Viola da gamba Sonatas BWV 1019, 1021, 1023, 1027-1029
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/188 - 5 Flute Sonatas ／ Partita for Solo Flute
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/189 - Flute Sonata BWV 1031 ／ Doubtful & Spurious Sonatas
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/190 - Musical Offering ／ Canons (Goebel)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/191 - The Art of Fugue (Accademia Bizantina, Dantone)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/192 - The Art of Fugue (Aimard)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/193 - The Art of Fugue (1742) (Gilbert)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/194 - Legendary Performances (Casals ／ Starker ／ Segovia ／ Bream ／ Szeryng ／ Wenzinger)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/195 - Violin Sonatas & Partitas BWV 1001-1004 (Milstein)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/196 - Violin Sonatas & Partitas BWV 1004-1006 (Grumiaux)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/197 - Violin Sonatas & Partitas BWV 1001, 1003, 1004, 1006 (Kremer ／ Mullova ／ Batiashvili ／ Jansen)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/198 - Cello Suites 1-3 (Fournier)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/199 - Cello Suites 4-6 (Fournier)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/200 - Solo & Chamber Works (Alternative Instrumentations)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/201 - Clavier-Büchlein W. F. Bach (1)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/202 - Clavier-Büchlein W. F. Bach (2) ／ A. M. Bach (1722)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/203 - Notenbüchlein A. M. Bach (1725) (1)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/204 - Notenbüchlein A. M. Bach (1725) (2)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/205 - Schemelli Gesangbuch BWV 439-474
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/206 - Schemelli Gesangbuch BWV 475-507
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/207 - Bach： Early Influences
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/208 - Concertos at Weimar (Telemann ／ Prince Johann Ernst)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/209 - Concertos at Weimar (Vivaldi)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/210 - Concertos at Weimar (Vivaldi ／ A. & B. Marcello)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/211 - The Bach Family
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/212 - Bach & Other Composers (c. 1715-1730)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/213 - Bach & Other Composers (c. 1730-1742)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/214 - Bach & Other Composers (1742-1750)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/215 - Bach Renewed (From Bach's Sons to Mahler)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/216 - Bach Reimagined (Chaconne & Passacaglia)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/217 - Bach Orchestrated (Reger to Stokowski)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/218 - Inspired by Bach (Gounod to Pärt)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/219 - Bach & The Virtuoso Piano (Liszt and Busoni)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/220 - Bach & The Virtuoso Piano (The 20th Century)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/221 - Bach à la Jazz
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Joan Sebastian Bach/Bach 333 (2018)/222 - New Colours of Bach
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Kaaren Erickson, Sylvia McNair, Etc._ Ro/Handel_ Messiah - Favorite Choruses & Ar
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Kathleen Battle_ Herbert Von Karajan_ Be/Mozart_ Don Giovanni (Highlights)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Leonard Bernstein/Schubert Symphonies Nos. 7 and 8
+  [✓ CLASSICA] /Volumes/arrdata/media/music/London Philharmonic Orchestra/Symphonic Music of Yes (1993)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Lorin Maazel_ Cleveland Orchestra/Stravinsky - Le Sacre Du Printemps
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Luciano Pavarotti & Friends/For War Child
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Marisa Monte & Cesaria Evora/Unknown Album
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Maurice de Abravanel/Mahler_ Symphony No4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Mississippi Mass Choir/Unknown Album
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Monks' Choir of the Benedictin/Gregorian Chants
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Mozart/Unknown Album
+  [✓ CLASSICA] /Volumes/arrdata/media/music/No Smoking Orchestra/Unza Unza Time
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Original U.S.A. Gospel Choir/Unknown Album
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Phyllis Curtin, Donald Gramm, Etc._ Frit/Beethoven_ Symphony #9, _Choral_
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Das Liebesverbot Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Das Liebesverbot Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Das Rheingold Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Das Rheingold Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Der Fliegende Holländer Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Der Fliegende Holländer Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Feen Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Feen Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Feen Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Meistersinger von Nürnberg Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Meistersinger von Nürnberg Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Meistersinger von Nürnberg Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Meistersinger von Nürnberg Disc 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Walküre Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Walküre Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Walküre Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Die Walküre Disc 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Götterdämmerung Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Götterdämmerung Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Götterdämmerung Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Götterdämmerung Disc 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Lohengrin Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Lohengrin Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Lohengrin Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Parsifal Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Parsifal Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Parsifal Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Parsifal Disc 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Rienzi Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Rienzi Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Rienzi Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Rienzi Disc 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Siegfried Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Siegfried Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Siegfried Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Siegfried Disc 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Tannhäuser Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Tannhäuser Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Tannhäuser Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Tristan und Isolde Disc 1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Tristan und Isolde Disc 2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Tristan und Isolde Disc 3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Richard Wagner - opera omnia/Tristan und Isolde Disc 4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Tannhäuser (Acto 1) - Georg Solti, Wiene
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Tannhäuser (Acto 3) - Georg Solti, Wiene
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Tristan Und Isolde - Karajan 1972 - Flac (Wagner)/CD 1 - Flac
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Tristan Und Isolde - Karajan 1972 - Flac (Wagner)/CD 2 - Flac
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Tristan Und Isolde - Karajan 1972 - Flac (Wagner)/CD 3 - Flac
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Richard Wagner/Tristan Und Isolde - Karajan 1972 - Flac (Wagner)/CD 4 - Flac
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Samuel Ramey, Ferruccio Furlanetto_ Herb/Mozart_ Don Giovanni (Highlights)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Samuel Ramey, Kathleen Battle, Etc._ Her/Mozart_ Don Giovanni (Highlights)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Samuel Ramey_ Herbert Von Karajan_ Berli/Mozart_ Don Giovanni (Highlights)
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Semyon Bychkov_ Berlin Philharmonic Orch/Shostakovich_ Symphony #5
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Simon Preston_ Westminster Abbey Choir/Palestrina_ Missa Papae Marcelli_ Allegr
+  [✓ CLASSICA] /Volumes/arrdata/media/music/The American Chamber Players/Stravinsky_ Chamber Music
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Ulrich Backofen/Schubert_ Mass No. 4 in C major_ Symphon
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vienna Philharmonic/Leonard Bernstein _ Bernstein - Mahler,
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Ashkenazy_ Royal Concertgebouw/Prokofiev Symphony No.5
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Horowitz/Horowitz in Moscow - Mozart Chopin Liszt - 1986
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Horowitz/Vladimir Horowitz - The Chopin Collection/CD1
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Horowitz/Vladimir Horowitz - The Chopin Collection/CD2
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Horowitz/Vladimir Horowitz - The Chopin Collection/CD3
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Horowitz/Vladimir Horowitz - The Chopin Collection/CD4
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Horowitz/Vladimir Horowitz - The Chopin Collection/CD5
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Horowitz/Vladimir Horowitz - The Chopin Collection/CD6
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Vladimir Horowitz/Vladimir Horowitz - The Chopin Collection/CD7
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/Don Giovanni. Berliner PO, Karajan
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-050
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-051
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-052
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-053
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-054
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-055
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-056
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-057
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-058
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-059
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-060
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-061
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-062
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-063
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-064
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-065
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-066
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-067
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-068
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-069
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-070
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-071
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-072
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-073
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-074
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-075
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-076
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-077
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-078
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-079
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-080
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-081
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-082
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-083
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-084
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-085
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-086
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-087
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-088
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-089
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-090
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-091
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-092
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-093
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-094
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-095
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-096
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-097
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-098
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-099
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-100
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/MOZART 225/FLAC/02 - Orchestral (050-101)/CD-101
+  [✓ CLASSICA] /Volumes/arrdata/media/music/Wolfgang Amadeus Mozart/_DON GIOVANNI__Karajan_BPO
+
+============================================================
+  RIEPILOGO
+============================================================
+  Path totali nel log    : 1602
+  Identificati classica  : 393
+  Saltati (pop/rock/jazz): 955
+  Non presenti su disco  : 254
+
+  ➡  Dry-run completato. Per eseguire la migrazione reale:
+     python3 segregate_classical.py run

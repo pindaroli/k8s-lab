@@ -1,0 +1,216 @@
+01 Mahler Plays Mahler The Welte-Mignon Piano Rolls (Tacet, 1905)
+03 Walter, Wiener Philharmoniker (Opus Kura, 1938)
+04 Walter, New York Philharmonic (Sony, 1947)
+05 Kempe, Runfunk-Sinfonieorchester Leipzig (Archipel, 1948)
+06 Rosbaud, Südwestfunk Sinfonieorchester Baden-Baden (SWR, 1951)
+07 Kubelik, Royal Concertgebouw Orchestra (Tahra, 1951)
+08 Scherchen, Wiener Staatsoper Orchester (Documents, 1953)
+10 Horenstein, London Symphony Orchestra (Pristine, 1958)
+101 Briggs (Priory, 1998)
+102 Sinopoli, Orchestra Sinfonica Nazionale Della RAI (RAI, 1999)
+103 Barshai, Junge Deutsche Philharmonie (Brilliant, 1999)
+104 Kobayashi, Czech Philharmonic Orchestra (Canyon, 1999)
+107 Yadin, Radio-Symphonieorchester Wien (Music Bank, 2001)
+108 Mácal, Prague Symphony Orchestra (Vars, 2001)
+109 Rattle, Berliner Philharmoniker (EMI, 2002)
+11 Paray, Detroit Symphony Orchestra (Tahra, 1959)
+110 Stenz, Melbourne Symphony Orchestra (ABC Classics, 2002)
+111 Temirkanov, St Petersburg Philharmonic Orchestra (Water Lily Acoustics, 2003)
+113 Gielen, SWF Sinfonieorchester Baden-Baden and Freiburg (Hanssler, 2003)
+114 Levine, Verbier Festival Orchestra (Amadeus, 2003)
+115 Albrecht, Yomiuri Nippon Symphony Orchestra (Exton, 2003)
+116 Maazel, New York Philharmonic (NYP, 2003)
+117 Abbado, Lucerne Festival Orchestra (EuroArts, 2004)
+118 Eschenbach, Philadelphia Orchestra (TPO, 2004)
+119 DePreist, London Symphony Orchestra (Naxos, 2005)
+120 Tilson Thomas, San Francisco Symphony Orchestra (SFS, 2005)
+121 Botstein, American Symphony Orchestra (ASO, ~2006)
+122 Dudamel, Joven Orquesta Simón Bolívar de Venezuela (DG, 2006)
+123 Norrington, Radio-Sinfonieorchester Stuttgart (Hänssler, 2006)
+124 Jansons, Royal Concertgebouw Orchestra (RCO Live, 2007)
+125 Zinman, Zurich Tonhalle Orchestra (RCA, 2007)
+126 Mehta, Bayerisches Staatsorchester (Farao, 2008)
+127 Zweden, London Philharmonic Orchestra (LSO, 2008)
+128 Feltz, Stuttgarter Philharmoniker (Dreyer Gaido, 2009)
+129 Gilbert, New York Philharmonic (NYP, 2010)
+13 Horenstein, Berliner Philharmoniker (Pristine, 1961)
+130 Inbal, Czech Philharmonic Orchestra (Exton, 2010)
+131 Gergiev, London Symphony Orchestra (LSO Live, 2010)
+132 Gatti, Royal Concertgebouw (RCO, 2010)
+133 Ashkenazy, Sydney Symphony (Sydney Symphony, 2010)
+134 Darlington, Duisburger Philharmoniker (Acousence, 2010)
+135 Honeck,  Pittsburgh Symphony Orchestra (Exton, 2011)
+136 Järvi, Frankfurt Radio Symphony Orchestra (Unitel, 2011)
+137 Meister, Radio Symphonieorchester Wien (ORF, 2011)
+138 Schwarz, Colburn Orchestra (Yarlung, 2011)
+139 Maazel, Philharmonia Orchestra (Signum, 2011)
+14 Scherchen, Orchestra della RAI di Milano (Stradivarius, 1962)
+140 Inbal, Tokyo Metropolitan Symphony (Exton, 2013)
+141 Chailly, Gewandhausorchester Leipzig (Accentus, 2013)
+142 Fischer, Budapest Festival Orchestra (Channel, 2013)
+143 Saraste, WDR Sinfonieorchester Köln (Profil, 2013)
+144 Chung, Seoul Philharmonic Orchestra (DG, 2014)
+145 Simon, Holst-Sinfonietta (Bastille Musique, 2015)
+146 Jansons, Bavarian Radio Symphony Orchestra (BR-Klassik, 2016)
+147 Harding, Swedish Radio Symphony Orchestra (HM, 2016)
+148 Sladkovsky, Tartastan National Symphony Orchestra (Melodiya, 2016)
+149 Sung, Gyeonggi Philharmonic Orchestra (Decca, 2016)
+15 Bernstein, New York Philharmonic (Sony, 1963)
+150 Vänskä, Minnesota Orchestra (Bis, 2016)
+151 Roth, Gürzenich-Orchester Köln (HM, 2017)
+152 Fischer, Düsseldorfer Symphoniker (AVI, 2017)
+153 Klumpp, Landesjugendorchester Baden-Württemberg (Animato, 2018)
+154 Dudamel, Berliner Philharmoniker (BP, 2018)
+155 Duo Trenkner-Speidel (MDG, 2018)
+156 Sado, Tonkünstler-Orchester (Tonkünstler, 2019)
+157 Fuchs, Philharmonie Salzburg (PS, ~2020)
+158 Moreno Valiente, Orquesta Filarmónica de Málaga (IBS, 2020)
+159 Nanasakov (Ratspack, 2020)
+16 Leinsdorf, Boston Symphony Orchestra (RCA, 1963)
+160 Wong, Japan Philharmonic Orchestra (Denon, 2021)
+17 Scherchen, Philadelphia Orchestra (Tahra, 1964)
+18 Scherchen, Orchestre National de l'ORTF (HM, 1965)
+20 Boulez, BBC Symphony Orchestra (Arkadia, 1968)
+21 Barbirolli, New Philharmonia Orchestra (Warner, 1969)
+22 Ancerl, Toronto Symphony Orchestra (Tahra, 1969)
+23 Horenstein, Gothenburg Symphony Orchestra (Pristine, 1969)
+24 Boulez, BBC Symphony Orchestra (Arkadia, 1970)
+25 Solti, Chicago Symphony Orchestra (Decca, 1970)
+26 Haitink, Royal Concertgebouw Orchestra (Decca, 1970)
+28 Swarowsky, Wiener Symphoniker (Berlin, 1971)
+29 Gielen, Rundfunk-Sinfonieorchester Saarbrücken (Altus, 1971)
+30 Maderna, Philadelphia Orchestra (Saint Laurent Studios, 1971)
+32 Karajan, Berliner Philharmoniker (Fachmann, 28.8.1973)
+33 Morris, Symphonica of London (Imp, 1973)
+34 Dorati, Kungliga Filharmoniska Orkestern Stockholm (Lyssna, 1973)
+35 Rozhdestvensky, URSS Symphony Orchestra of Radio and Television (Revelation, 1973)
+36 Kondrashin, Moscow Philharmonic Orchestra (Melodiya, 1974)
+38 Mehta, Los Angeles Philharmonic (Decca, 1976)
+39 Levine, Philadelphia Orchestra (RCA, 1977)
+40 Neumann, Czech Philharmonic Orchestra (Supraphon, 1977)
+41 Tennstedt, London Philharmonic Orchestra (EMI, 1978)
+42 Tennstedt, Philadelphia Orchestra (En Larmes, 1979)
+43 Abbado, Chicago Symphony Orchestra (DG, 1980)
+45 Watanabe, Japan Philharmonic Orchestra (Jasrac, 1980)
+46 Tennstedt, NDR Sinfonieorchester (Profil, 1980)
+47 Tennstedt, New York Philharmonic (NYP, 1980)
+48 Herbig, Berliner Sinfonie Orchester (Eterna, 1980)
+49 Pesek, Slovak Philharmonic Orchestra (EMG, ~1981)
+50 Kubelik, Bayerischen Rundfunks (Audite, 1981)
+51 Maazel, Wiener Philharmoniker (Sony, 1982)
+52 Suitner, Staatskapelle Berlin (Eterna, 1984)
+53 Tennstedt, London Philharmonic Orchestra (Tokyo FM, 1984)
+54 Herbig, BBC Philharmonic Orchestra (IMP, 1984)
+55 Otaka, Tokyo Philharmonic Orchestra (Camerata, 1984)
+56 Sinopoli, Philharmonia Orchestra (DG, 1985)
+58 Haitink, Koninklijk Concertgebouworkest (Philips, 1986)
+59 Froment, Orchestre Symphonique de la Radio Luxembourgeoise (Black Pearl, ~1987)
+60 Bernstein, Wiener Philharmoniker (DG, 1987)
+61 Dohnányi, Cleveland Orchestra (Decca, 1988)
+62 Tabakov, Sofia Philharmonic Orchestra (Capriccio, 1988)
+63 Wakasugi, Tokyo Metropolitan (Fontec, 1988)
+64 Haitink, Berliner Philharmoniker (Philips, 1988)
+66 Freeman, Czech National Symphony Orchestra (Maestoso, 1988)
+67 Järvi, Scottish National Orchestra (Chandos, 1989)
+68 Mehta, New York Philharmonic (Teldec, 1989)
+69 Nanut, Rundfunk-Sinfonie-Orchester Ljubljana (Classica, 1989)
+70 Ozawa, Boston Symphony Orchestra (Philips, 1990)
+71 Bertini, Kölner Rundfunk-Sinfonieorchester (EMI, 1990)
+72 Tennstedt, Royal Concertgebouw Orchestra (RCO, 1990)
+73 Saraste, Finnish Radio Symphony Orchestra (Virgin, 1990)
+74 Wit, Polish Radio National Symphony Orchestra (Naxos, 1990)
+75 Caetani, Symphonieorchester des Bayerischen Rundfunks (Antec, 1990)
+Bartók_ Concerto For Orchestra_ Janáček_
+Beethoven_ Symphony #9, _Choral_
+Chopin - Mazurkas Waltzes Etc. - Benedet
+Des Knaben Wunderhorn
+Disc_1
+Disc_2
+Disc_3
+Don Giovanni - Karajan
+Franz Schubert_ Symfonieën Nr. 3 & 5
+Gran concerto classico Vol.3
+Gustav Mahler
+Gustav Malher
+Gösta Winbergh_ Herbert Von Karajan_ Ber
+Herbert Von Karajan_ Berlin Philharmonic
+Hilary Hann
+Idomeneo (Disc 1 of 3)
+Idomeneo (Disc 2 of 3)
+Idomeneo (Disc 3 of 3)
+Igor Stravinsky
+Jazz Music
+Joan Sebastian Bach
+Kaaren Erickson, Sylvia McNair, Etc._ Ro
+Kathleen Battle_ Herbert Von Karajan_ Be
+Leonard Bernstein
+Lorin Maazel_ Cleveland Orchestra
+Luciano Pavarotti & Friends
+Mahler Symphonies 8, 9, 10, Das Lied Von
+Mahler Symphony no. 5
+Masterworks Disc 10_ Brokes Passion Part 2 (1)
+Masterworks Disc 11_ Brokes Passion Part 3 (1)
+Masterworks Disc 12_ Johannes Passion (1)
+Masterworks Disc 13_ Acis & Galatea Part 1 (1)
+Masterworks Disc 14_ Acis & Galatea Part 2 (1)
+Masterworks Disc 15_ Imeneo Part 1 (1)
+Masterworks Disc 16_ Imeneo Part 2 (1)
+Masterworks Disc 17_ Faramondo Part 1 (1)
+Masterworks Disc 18_ Faramondo Part 2 (1)
+Masterworks Disc 19_ Faramondo Part 3 (1)
+Masterworks Disc 1_ Jephtha Part 1 (1)
+Masterworks Disc 20_ Rinaldo Part 1 (1)
+Masterworks Disc 21_ Rinaldo Part 2 (1)
+Masterworks Disc 22_ Coronation Anthems (1)
+Masterworks Disc 23_ Italian Cantatas vol.1 (1)
+Masterworks Disc 24_ Italian Cantatas vol.2 (1)
+Masterworks Disc 25_ German Arias (1)
+Masterworks Disc 26_ Music for the Royal Fireworks. Water Music. (1)
+Masterworks Disc 27_ Concerti Grossi Op.3 (1)
+Masterworks Disc 28_ Concerti Grossi Op.6 Nos.1-4 (1)
+Masterworks Disc 29_ Concerti Grossi Op.6 Nos.5-8 (1)
+Masterworks Disc 2_ Jephtha Part 2 (1)
+Masterworks Disc 30_ Concerti Grossi Op.6 Nos.9-12 (1)
+Masterworks Disc 31_ Concerti a due chori (1)
+Masterworks Disc 32_ Organ Concertos vol.1 (1)
+Masterworks Disc 33_ Organ Concertos vol.2 (1)
+Masterworks Disc 34_ Organ Concertos vol.3 (1)
+Masterworks Disc 35_ Flute Sonatas (1)
+Masterworks Disc 36_ Violin Sonatas. Oboe Sonatas (1)
+Masterworks Disc 37_ Trio Sonatas Op.2 (1)
+Masterworks Disc 38_ Trio Sonatas Op.5 (1)
+Masterworks Disc 39_ Trio Sonatas for 2 violins & b.c. (1)
+Masterworks Disc 3_ Jephtha Part 3 (1)
+Masterworks Disc 40_ Recorder Sonatas (1)
+Masterworks Disc 4_ Belsazar Part 1 (1)
+Masterworks Disc 5_ Belsazar Part 2 (1)
+Masterworks Disc 6_ Belsazar Part 3 (1)
+Masterworks Disc 7_ Messiah Part 1 (1)
+Masterworks Disc 8_ Messiah Part 2 (1)
+Masterworks Disc 9_ Brokes Passion Part 1 (1)
+Maurice de Abravanel
+Melos Quartet
+Monks' Choir of the Benedictin
+Mozart
+Mozart_ Don Giovanni (Highlights)
+Phyllis Curtin, Donald Gramm, Etc._ Frit
+Richard Wagner
+Rinaldo (Disk 1 of 3)
+Rinaldo (Disk 2 of 3)
+Rinaldo (Disk 3 of 3)
+Rossini_ Stabat Mater
+Samuel Ramey, Ferruccio Furlanetto_ Herb
+Samuel Ramey, Kathleen Battle, Etc._ Her
+Samuel Ramey_ Herbert Von Karajan_ Berli
+Semyon Bychkov_ Berlin Philharmonic Orch
+Simon Preston_ Westminster Abbey Choir
+The American Chamber Players
+The Baroque Guitar
+Ulrich Backofen
+Verdi_ Requiem, Operatic Choruses [Disc
+Vienna Philharmonic
+Vivaldi_ Le Quattro Stagioni
+Vladimir Ashkenazy_ Royal Concertgebouw
+Vladimir Horowitz
+W. A. Mozart - Messen KV317 & KV337 u.a_
+Wolfgang Amadeus Mozart
