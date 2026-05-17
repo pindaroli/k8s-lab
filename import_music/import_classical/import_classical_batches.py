@@ -37,6 +37,12 @@ DB_PATH       = SCRIPT_DIR / "classical_musiclibrary.db"
 STATE_FILE    = SCRIPT_DIR / "classical_state.pickle"
 BEETS_LOG     = SCRIPT_DIR / "beets_classical_batch.log"
 
+# Resolving local venv beets binary dynamically
+BEET_BIN = str(SCRIPT_DIR / "venv" / "bin" / "beet")
+if not os.path.exists(BEET_BIN):
+    BEET_BIN = "beet"
+
+
 # ─── Tuning ───────────────────────────────────────────────────────────────────
 TIMEOUT_SECONDS      = 900   # 15 min senza output = processo bloccato (classica è più lenta)
 DELAY_BETWEEN_ALBUMS = 10    # Pausa tra un album e l'altro (rispetto API MusicBrainz)
@@ -70,7 +76,7 @@ def log_anomaly(dir_name: str, reason: str):
 
 def get_diagnostic_info(dir_path: str) -> str:
     """Esegue un preview beet -p per capire perché Beets ha saltato la cartella."""
-    cmd = ["beet", "-v", "-c", str(CONFIG_PATH), "import", "-p", dir_path]
+    cmd = [BEET_BIN, "-v", "-c", str(CONFIG_PATH), "import", "-p", dir_path]
     try:
         res = subprocess.run(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -107,7 +113,7 @@ def process_directory(dir_path: str) -> bool:
     print(f"{'='*60}")
     log_raw(f"\n--- IMPORTING: {dir_path} ---\n")
 
-    cmd = ["beet", "-v", "-c", str(CONFIG_PATH), "import", "-q", dir_path]
+    cmd = [BEET_BIN, "-v", "-c", str(CONFIG_PATH), "import", "-q", dir_path]
     process = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
         text=True, bufsize=1

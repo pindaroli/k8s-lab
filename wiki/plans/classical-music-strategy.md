@@ -1,6 +1,6 @@
 # Piano: Strategia di Ingestione e Bonifica per la Musica Classica
 
-**Stato**: 🔵 Implementato — Pipeline operativa
+**Stato**: 🟢 Operativo — Pipeline migrata con successo su Python 3.12 isolato
 **Data**: 2026-05-17
 **Obiettivo**: Segregazione fisica e logica della musica classica dal raggio d'azione di Lidarr, con una pipeline batch autonoma che preserva l'ontologia classica (Compositore → Opera → Direttore/Orchestra → Movimenti).
 
@@ -48,10 +48,12 @@ Tutti i file della pipeline risiedono in un'unica directory autocontenuta:
 ```
 k8s-lab/import_music/import_classical/
 │
-├── run_import.sh                  ← Entry point unico (launcher)
+├── run_import.sh                  ← Entry point unico (launcher, rileva venv locale)
 ├── segregate_classical.py         ← Fase 1: identifica e isola la classica
 ├── import_classical_batches.py    ← Fase 2: import beets con resume automatico
 ├── beets_classical_config.yaml    ← Config beets dedicata (DB, path, plugin)
+│
+├── venv/                          ← Ambiente Python 3.12 isolato dedicato (ignorato in .gitignore)
 │
 ├── [classical_targets.txt]        ← Generato da reset: lista master dello staging
 ├── [classical_success.log]        ← Generato dall'import: traccia il resume
@@ -80,6 +82,7 @@ cd /Users/olindo/prj/k8s-lab/import_music/import_classical
 | :--- | :--- | :--- | :--- |
 | `segregate-dry` | 1 | Stampa le cartelle classiche identificate nelle anomalie | ❌ |
 | `segregate` | 1 | Sposta fisicamente le cartelle in `classical_staging` | ✅ (chiede conferma) |
+| `setup-env` | — | Inizializza/Ripristina l'ambiente locale Python 3.12 (venv) | ✅ |
 | `reset` | 2 | Cancella DB/log/stato e ri-scansiona staging | ✅ |
 | `batch <N>` | 2 | Importa le prossime N cartelle (riprende da dove era rimasto) | ✅ |
 | `control` | 2 | Mostra avanzamento: totali / successi / anomalie / % | ❌ |
@@ -213,14 +216,19 @@ Le cartelle in `_Triage_Unmatched` richiedono elaborazione manuale:
 
 ---
 
-## Dipendenze Software (Mac Studio)
+## Dipendenze Software (Mac Studio — Ambiente Isolato Python 3.12)
 
-| Tool | Installazione | Ruolo |
+> [!IMPORTANT]
+> L'ambiente globale `pipx` basato su **Python 3.14.4** causava eccezioni bloccanti (`KeyError: 'aliases'` / `KeyError: 'tracks'`) con AcoustID e MusicBrainz.
+> La pipeline è stata migrata con successo su un **ambiente virtuale locale isolato (Python 3.12.13)**.
+
+| Tool / Libreria | Installazione | Ruolo / Dettaglio |
 | :--- | :--- | :--- |
-| `beet` | `pipx install beets` | Engine di tagging e organizzazione |
-| `fpcalc` | `brew install chromaprint` | Fingerprinting acustico (AcoustID) |
-| `mutagen` | `pip install mutagen` | Ispezione tag audio per le euristiche |
-| `python3` | sistema | Runtime script |
+| `python3.12` | `brew install python@3.12` | Interprete stabile nel `venv` locale |
+| `beet` | Interno al `venv` | Beets versione `2.11.0` (eseguito sotto Python 3.12) |
+| `fpcalc` | `brew install chromaprint` | Fingerprinting acustico globale (AcoustID) |
+| `mutagen` | Interno al `venv` | Ispezione tag audio per le euristiche |
+| `musicbrainzngs` | Interno al `venv` | API Client per lookup metadati MusicBrainz |
 
 ---
 
