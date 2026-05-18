@@ -63,11 +63,12 @@
     - [ ] Case clash detection e unificazione (`Us3 vs US3`).
     - [ ] Spostamento da `music_backup` alla Landing Zone definitiva `/Volumes/arrdata/media/music/pop_rock`.
     - [ ] Manual Import in `lidarr-pop` e ripristino Battiato (solo FLAC).
-- [ ] **Phase 2: Classical Music Segregation** [[classical-music-strategy]]
+- [x] **Phase 2: Classical Music Segregation** [[classical-music-strategy]] (COMPLETED 2026-05-18)
     - [x] Creare dataset ZFS dedicato `/Volumes/classical` (staging & library) su TrueNAS (recordsize=1M).
-    - [ ] Eseguire `segregate_classical.py` per isolare i file classici dalle anomalie.
-    - [ ] Configurare `beets_classical_config.yaml` e avviare l'import nello staging (`./run_import.sh batch <N>`).
-    - [ ] Triage Picard per gli unmatched residui in `_Triage_Unmatched`.
+    - [x] Eseguire `segregate_classical.py` per isolare i file classici dalle anomalie.
+    - [x] Configurare `beets_classical_config.yaml` e avviare l'import nello staging (`./run_import.sh batch <N>`).
+    - [x] Triage Picard per gli unmatched residui in `_Triage_Unmatched` (Completato via Beets con patch MusicBrainz).
+    - [x] Valutare/Applicare la logica regex dinamica per il parsing del numero disco (`disc_and_track`) in `beets_classical_config.yaml` in caso di importazioni `asis` successive al reset.
 - [ ] **Phase 3: GitOps Homelab Integration (Dual-Pipeline Ingestion)** [[dual-pipeline-gitops-integration]]
     - [x] Provisioning dataset ZFS TrueNAS con recordsize custom (1M).
     - [ ] Deploy di `lidarr-classical` in `pindaroli-arr-helm` (completo di ingress e staging mount).

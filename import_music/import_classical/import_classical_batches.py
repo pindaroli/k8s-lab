@@ -104,99 +104,132 @@ def get_diagnostic_info(dir_path: str) -> str:
 
 def process_directory(dir_path: str) -> bool:
     """
-    Lancia 'beet import -q' su una singola cartella.
-    Ritorna True se il processo è terminato normalmente (anche con anomalie),
+    Lancia 'beet import -q' su una singola cartella, con retry esponenziale in caso di errori di rete.
+    Ritorna True se il processo è terminato normalmente (anche con anomalie o dopo tentativi),
     False solo se il watchdog ha rilevato un blocco irreversibile.
     """
-    print(f"\n{'='*60}")
-    print(f"  IMPORTING: {dir_path}")
-    print(f"{'='*60}")
-    log_raw(f"\n--- IMPORTING: {dir_path} ---\n")
+    max_attempts = 4
+    backoff = 30  # secondi di attesa iniziale
 
-    cmd = [BEET_BIN, "-v", "-c", str(CONFIG_PATH), "import", "-q", dir_path]
-    process = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        text=True, bufsize=1
-    )
+    for attempt in range(1, max_attempts + 1):
+        if attempt > 1:
+            print(f"\n[🔄] RETRY {attempt}/{max_attempts} per {dir_path} dopo errore di rete. Attesa {backoff}s...")
+            time.sleep(backoff)
+            backoff *= 2  # Raddoppia il tempo di attesa
 
-    last_output_time = time.time()
-    anomaly_reasons  = []
-    rolling_buffer   = []
-    keywords = [
-        "no match", "error", "similarity", "confidence",
-        "missing tracks", "duplicate"
-    ]
+        print(f"\n{'='*60}")
+        print(f"  IMPORTING (Tentativo {attempt}/{max_attempts}): {dir_path}")
+        print(f"{'='*60}")
+        log_raw(f"\n--- IMPORTING: {dir_path} (Tentativo {attempt}) ---\n")
 
-    while True:
-        rlist, _, _ = select.select([process.stdout], [], [], 5.0)
+        cmd = [BEET_BIN, "-v", "-c", str(CONFIG_PATH), "import", "-q", dir_path]
+        process = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, bufsize=1
+        )
 
-        if rlist:
-            line = process.stdout.readline()
-            if not line:
-                break  # EOF
-            last_output_time = time.time()
+        last_output_time = time.time()
+        anomaly_reasons  = []
+        rolling_buffer   = []
+        is_network_error = False
 
-            log_raw(line)
-            rolling_buffer.append(line.strip())
-            if len(rolling_buffer) > 20:
-                rolling_buffer.pop(0)
+        keywords = [
+            "no match", "error", "similarity", "confidence",
+            "missing tracks", "duplicate"
+        ]
 
-            # Mostriamo tutto tranne il rumore di debug interno di beets
-            if "DEBUG:" not in line:
-                sys.stdout.write(line)
+        # Parole chiave che indicano un disservizio di rete o API temporaneo
+        network_keywords = [
+            "429", "too many requests", "502 bad gateway", "503 service", "504 gateway",
+            "jsondecodeerror", "connection aborted", "remotedisconnected", "connection reset",
+            "http error", "urlerror", "timeout", "temporary failure"
+        ]
 
-            line_lower = line.lower()
+        while True:
+            rlist, _, _ = select.select([process.stdout], [], [], 5.0)
 
-            # Skip falsi positivi dal log di caricamento plugin
-            if "loading plugins:" in line_lower:
-                continue
+            if rlist:
+                line = process.stdout.readline()
+                if not line:
+                    break  # EOF
+                last_output_time = time.time()
 
-            # Intercettiamo segnali di anomalia significativi (escludendo parentwork)
-            if any(key in line_lower for key in keywords) and "parentwork:" not in line_lower:
-                if ("previously-imported" not in line_lower
-                        and "already in the library" not in line_lower):
-                    anomaly_reasons.append(line.strip())
-            elif "skipping." in line_lower and "previously" not in line_lower:
-                anomaly_reasons.append(line.strip())
-
-        else:
-            # Watchdog: nessun output per TIMEOUT_SECONDS
-            if time.time() - last_output_time > TIMEOUT_SECONDS:
-                print(f"\n[!!!] WATCHDOG: Nessun output per {TIMEOUT_SECONDS}s — processo bloccato. Kill.")
-                log_raw(f"TIMEOUT: ucciso dopo {TIMEOUT_SECONDS}s\n")
-                process.kill()
-                trace = " | ".join(rolling_buffer[-20:])
-                log_anomaly(dir_path, f"CRASH/TIMEOUT STUCK. Trace: {trace}")
-                return False
-
-        # Drain output residuo se il processo è già terminato
-        if process.poll() is not None:
-            for line in process.stdout:
                 log_raw(line)
                 rolling_buffer.append(line.strip())
+                if len(rolling_buffer) > 20:
+                    rolling_buffer.pop(0)
+
+                # Mostriamo tutto tranne il rumore di debug interno di beets
                 if "DEBUG:" not in line:
                     sys.stdout.write(line)
-                if any(key in line.lower() for key in keywords) and "parentwork:" not in line.lower():
+
+                line_lower = line.lower()
+
+                # Skip falsi positivi dal log di caricamento plugin
+                if "loading plugins:" in line_lower:
+                    continue
+
+                # Rilevamento errore di rete o API rate-limit
+                if any(net_kw in line_lower for net_kw in network_keywords):
+                    is_network_error = True
+
+                # Intercettiamo segnali di anomalia significativi (escludendo parentwork)
+                if any(key in line_lower for key in keywords) and "parentwork:" not in line_lower:
+                    if ("previously-imported" not in line_lower
+                            and "already in the library" not in line_lower):
+                        anomaly_reasons.append(line.strip())
+                elif "skipping." in line_lower and "previously" not in line_lower:
                     anomaly_reasons.append(line.strip())
-            break
 
-    exit_code = process.wait()
+            else:
+                # Watchdog: nessun output per TIMEOUT_SECONDS
+                if time.time() - last_output_time > TIMEOUT_SECONDS:
+                    print(f"\n[!!!] WATCHDOG: Nessun output per {TIMEOUT_SECONDS}s — processo bloccato. Kill.")
+                    log_raw(f"TIMEOUT: ucciso dopo {TIMEOUT_SECONDS}s\n")
+                    process.kill()
+                    trace = " | ".join(rolling_buffer[-20:])
+                    log_anomaly(dir_path, f"CRASH/TIMEOUT STUCK. Trace: {trace}")
+                    return False
 
-    if anomaly_reasons:
-        diag = get_diagnostic_info(dir_path)
-        log_anomaly(
-            dir_path,
-            f"{' | '.join(anomaly_reasons)} | DIAG: {diag} | "
-            f"CMD: beet import -i \"{dir_path}\""
-        )
-        print(f"  --> Anomalia registrata: {dir_path}")
-        log_success(dir_path)  # Segniamo comunque come processato per il resume
-    elif exit_code != 0:
-        log_anomaly(dir_path, f"Exit code non-zero: {exit_code}")
-        log_success(dir_path)
-    else:
-        log_success(dir_path)
-        print(f"  --> Successo: {os.path.basename(dir_path)}")
+            # Drain output residuo se il processo è già terminato
+            if process.poll() is not None:
+                for line in process.stdout:
+                    log_raw(line)
+                    rolling_buffer.append(line.strip())
+                    if "DEBUG:" not in line:
+                        sys.stdout.write(line)
+                    line_lower = line.lower()
+                    if any(net_kw in line_lower for net_kw in network_keywords):
+                        is_network_error = True
+                    if any(key in line_lower for key in keywords) and "parentwork:" not in line_lower:
+                        anomaly_reasons.append(line.strip())
+                break
+
+        exit_code = process.wait()
+
+        # Se c'è stato un errore di rete e non abbiamo esaurito i tentativi, eseguiamo retry
+        if (is_network_error or exit_code in [2, 3]) and attempt < max_attempts:
+            print(f"\n[⚠️] Rilevato errore di rete (Exit code: {exit_code}, Network error flag: {is_network_error}). Eseguo retry...")
+            continue
+
+        # Gestione definitiva (successo o anomalia permanente)
+        if anomaly_reasons:
+            diag = get_diagnostic_info(dir_path)
+            log_anomaly(
+                dir_path,
+                f"{' | '.join(anomaly_reasons)} | DIAG: {diag} | "
+                f"CMD: beet import -i \"{dir_path}\""
+            )
+            print(f"  --> Anomalia registrata: {dir_path}")
+            log_success(dir_path)  # Segniamo comunque come processato per il resume
+        elif exit_code != 0:
+            log_anomaly(dir_path, f"Exit code non-zero: {exit_code}")
+            log_success(dir_path)
+        else:
+            log_success(dir_path)
+            print(f"  --> Successo: {os.path.basename(dir_path)}")
+
+        break
 
     return True
 

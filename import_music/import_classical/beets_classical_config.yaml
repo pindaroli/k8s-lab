@@ -97,18 +97,14 @@ item_fields:
             pass
 
         found_famous = None
+        import re
         for text in candidates:
             if not text: continue
             text_lower = text.lower().strip()
             for normalized, variations in composer_map.items():
-                if normalized == "Johann Sebastian Bach":
-                    if any(var in text_lower for var in variations) or text_lower == 'bach':
-                        found_famous = normalized
-                        break
-                else:
-                    if any(var in text_lower for var in variations):
-                        found_famous = normalized
-                        break
+                if any(re.search(r'\b' + re.escape(var) + r'\b', text_lower) for var in variations):
+                    found_famous = normalized
+                    break
             if found_famous:
                 break
 
@@ -137,13 +133,10 @@ item_fields:
 
     # 3. Normalizzazione finale tramite tabella esterna
     c_lower = comp.lower().strip()
+    import re
     for normalized, variations in composer_map.items():
-        if normalized == "Johann Sebastian Bach":
-            if any(var in c_lower for var in variations) or c_lower == 'bach':
-                return normalized
-        else:
-            if any(var in c_lower for var in variations):
-                return normalized
+        if any(re.search(r'\b' + re.escape(var) + r'\b', c_lower) for var in variations):
+            return normalized
 
     return comp.replace('/', '-').strip()
 
