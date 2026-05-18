@@ -69,13 +69,21 @@
     - [x] Configurare `beets_classical_config.yaml` e avviare l'import nello staging (`./run_import.sh batch <N>`).
     - [x] Triage Picard per gli unmatched residui in `_Triage_Unmatched` (Completato via Beets con patch MusicBrainz).
     - [x] Valutare/Applicare la logica regex dinamica per il parsing del numero disco (`disc_and_track`) in `beets_classical_config.yaml` in caso di importazioni `asis` successive al reset.
-- [ ] **Phase 3: GitOps Homelab Integration (Dual-Pipeline Ingestion)** [[dual-pipeline-gitops-integration]]
+- [x] **Phase 3: GitOps Homelab Integration (Dual-Pipeline Ingestion)** [[dual-pipeline-gitops-integration]] (COMPLETED 2026-05-18)
     - [x] Provisioning dataset ZFS TrueNAS con recordsize custom (1M).
-    - [ ] Deploy di `lidarr-classical` in `pindaroli-arr-helm` (completo di ingress e staging mount).
-    - [ ] Configurazione Prowlarr tagging (`classical-indexers`) e qBittorrent category routing (`music-classical` / `music-pop`).
-    - [ ] Disabilitare completed download handling in `lidarr-classical`.
+    - [x] Sviluppo template Helm per `jellyfin-classic` e `lidarr-classic` in `pindaroli-arr-helm`.
+    - [x] Aggiornare `oli-arr-values.yaml` in `pindaroli-arr-helm` con i blocchi di configurazione per i due nuovi servizi.
+    - [x] Upgrade release Helm `oli-arr` con i nuovi servizi abilitati.
+- [ ] **Phase 4: Non-Helm Infrastructure Provisioning (Classical Music)** [[classical-infrastructure-provisioning]]
+    - [x] Applicare manifest di storage PV/PVC per la classica: `kubectl apply -f storage/classical-media-pvc.yaml`.
+    - [ ] Configurare qBittorrent (categoria `music-classical` su `/staging/classical`).
+    - [ ] Configurare Prowlarr (tag `classical-indexers` per tracker dedicati).
+    - [x] Configurare IngressRoutes di Traefik (Dual Route: esterno con OAuth2, interno senza OAuth2).
+    - [x] Aggiornare `rete.json` con i record DNS per `jellyfin-classic` e `lidarr-classic`.
+    - [x] Eseguire sync DNS Unbound su OPNsense con Ansible: `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml`.
+    - [ ] Disabilitare completed download handling in `lidarr-classic`.
     - [ ] Integrazione script di unmonitoring API (`segregate_classical.py` come Beets post-import hook).
-    - [ ] Declarative Jellyfin options.xml ConfigMap (Metadata Hardening) per la classica.
+    - [ ] Dichiarare Jellyfin options.xml ConfigMap per la classica.
 
 ### [ ] Security & Automation
 - [x] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
@@ -84,16 +92,9 @@
     - [x] Post-Rebranding: Creare record CNAME su Cloudflare: `charts` -> `pindaroli.github.io`
     - [x] Post-Rebranding: Assicurarsi che l'icona sia raggiungibile su `pindaroli.org/images/pindaroli.svg` (o caricarla nel repo)
     - [x] Deployment release `servarr` con `helm upgrade --version 1.2.3`.
+    - [ ] **Verifica Sync**: Investigare il fallimento dell'ultimo sync (errore API/timeout) e validare i Custom Formats caricati in Radarr UI.
 - [x] **Automazione Ansible Vault**: Configurato il file di password (es. `.vault_pass`) e mappare il percorso in `ansible.cfg` per permettere all'agente di gestire i segreti in autonomia senza richieste manuali.
 - [x] **Ottimizzazione Secret Registry**: Definire un workflow (es. script di auditing) per alimentare e mantenere aggiornato il `wiki/entities/Secret_Registry.md` partendo dai dati reali di K8s e Ansible.
-- [ ] **Automazione Anti-Spam (Recyclarr)**:
-    > **Ref**: [[recyclarr-anti-spam-automation]]
-    - [ ] Configurare `servarr/recyclarr.yaml` con filtri euristici (Bad Groups, Fake, Size Limits).
-
-
-    - [ ] Deploy di Recyclarr come `CronJob` nel namespace `servarr`.
-    - [ ] Sincronizzare Custom Formats in Radarr/Sonarr.
-
 
 ### [ ] Implementazione e Introduzione QMD in k8slab
 - [ ] Studiare/definire architettura per l'integrazione di file `.qmd` (Quarto Markdown) nel progetto.
@@ -113,7 +114,6 @@
   - Bloccare la categoria **"Advertisements"** e creare regole esplicite per **"Google Ads"** e **"DoubleClick"**.
 - [ ] **Nota Tecnica**: Gli ad "first-party" (es. Youtube) continueranno a richiedere uBlock Origin a livello browser.
 
-
 ### [x] DNS Stabilization & Split-Horizon (COMPLETED 2026-05-03)
 - [x] Sincronizzato IP DNS Talos (`10.10.20.254`).
 - [x] Configurate Access List Unbound per Pod Subnet (`10.244.0.0/16`).
@@ -126,28 +126,28 @@
 - [x] Libreria `/Volumes/arrdata/media` montata correttamente.
 - [x] **Automazione Mount**: Configurato `sudoers` su Mac Studio per mount passwordless.
 - [x] Eliminato il file di configurazione duplicato e inutilizzato.
-- [ ] Implementazione MakeMKV su Kubernetes per conversione automatizzata ISO/DVD in MKV.
 - [x] **Ottimizzazione Tdarr Server**:
     - [x] Disabilitare AutoUpdater.
     - [x] Ridurre `initialDelaySeconds` della Readiness Probe.
 
-### [ ] Ripristino PVE2 (Hardware Pending)
+## 🖥️ Ripristino PVE2 (Hardware Pending)
 - [ ] Riaggiungere IP `10.10.20.142` nel file `talos-config/talosconfig`.
-- [ ] Applicare configurazione Talos `bind-address=0.0.0.0` a `talos-cp-02`.
-- [ ] Verificare lo stato del nodo con `talosctl get members`.
-- [ ] Verificare il quorum etcd e la salute del cluster Kubernetes.
+- [ ] Verificare lo stato hardware e ricongiungere il nodo come nuovo membro (rimosso da etcd il 01/05 per stabilità).
+- [ ] Applicare configurazione Talos: `talosctl apply-config -n 10.10.20.142 -f talos-config/controlplane.yaml` (impostando `bind-address=0.0.0.0`).
+- [ ] Verificare lo stato del nodo con `talosctl get members` e salute quorum etcd.
 
 ## Future Integrations (n8n & Prefect)
 ### [ ] Transizione a Metodo B (Helm Secrets)
 - [ ] Valutare il passaggio dal Metodo A (Apply manuale) al Metodo B (Integrazione atomica Helm + SOPS) per migliorare la coerenza GitOps.
-- [ ] Richiede installazione plugin `helm-secrets` in tutti gli ambienti CI/CD.
+- [ ] Richiede l'installazione plugin `helm-secrets` in tutti gli ambienti CI/CD.
 
-### [ ] Migrazione Database n8n su postgres-main
-- [ ] Preparazione: Crea un nuovo database `n8n` e un utente dedicato nel cluster `postgres-main` (CloudNativePG).
-- [ ] Configurazione: Aggiorna il deployment di `n8n` per puntare a `postgres-main-rw.cnpg-system.svc.cluster.local`.
-- [ ] Verifica: Assicurati che n8n funzioni correttamente con i nuovi dati.
-- [ ] Cleanup: Elimina il vecchio cluster `n8n/postgres-n8n`.
-- [ ] Monitoring: Attiva lo scraping per n8n su `postgres-main`.
+## 🔄 Migrazione Database n8n su postgres-main
+- **Stato Attuale**: `n8n` utilizza SQLite all'interno di `n8n-config-pvc`.
+- [ ] **Preparazione**: Creare database `n8n` e utente dedicato nel cluster `postgres-main` (CNPG).
+- [ ] **Configurazione**: Aggiornare il deployment di `n8n` per puntare a `postgres-main-rw.cnpg-system.svc.cluster.local`.
+- [ ] **Verifica**: Verificare la migrazione dei dati e stabilità n8n.
+- [ ] **Cleanup**: Eliminare il vecchio cluster PostgreSQL locale `n8n/postgres-n8n`.
+- [ ] **Monitoring**: Attivare lo scraping metriche per n8n su `postgres-main`.
 
 ### [ ] Integrazione Tdarr & Prefect (Fase 4)
 - [ ] **Storage**: Definire se usare storage locale veloce (Talos nodes) o share NFS per la Transcode Cache.
@@ -174,16 +174,6 @@
   - Verificato ripristino target in `vmagent` (32 target attivi).
 - [x] **Documentazione Incidente**
   - Creato `traefik/INCIDENT_REPORT_20260501.md`.
-
-## PVE2 Recovery (Pending Hardware)
-- [ ] Applicare configurazione Talos `bind-address=0.0.0.0` a `talos-cp-02` (10.10.20.142).
-  - *Nota*: Il nodo è stato rimosso da etcd il 01/05 per stabilizzare il cluster. Al rientro dovrà essere aggiunto come nuovo membro.
-  - Comando: `talosctl apply-config -n 10.10.20.142 -f talos-config/controlplane.yaml`
-
-### [ ] Consolidate n8n Database
-Migrate `n8n` from local SQLite storage to a dedicated database within the `postgres-main` cluster.
-- **Current Status**: `n8n` is using SQLite in `n8n-config-pvc`.
-- **Goal**: Create user/db in `postgres-main` and update n8n deployment.
 
 ## Maintenance & Monitoring
 
@@ -215,6 +205,10 @@ Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttam
 - [ ] Installazione binario su `pve1`, `pve2`, `pve3`.
 - [ ] Installazione binario su `truenas` (SCALE).
 - [ ] Configurazione endpoint: `http://10.10.20.100:11434`.
+
 ### [ ] Multimedia Clients & Integration
 - [ ] **Feishin Installation**: Configurare Feishin come player musicale desktop/mobile puntando alla libreria Navidrome/Lidarr.
     > **Ref**: [Gemini Share - Feishin Setup](https://gemini.google.com/share/8b7a061246b0)
+
+## 💿 Workload Futuro: Integrazione MakeMKV
+- [ ] **⚠️ B. Il Task MakeMKV**: Configurare un pod per la conversione automatizzata ISO/DVD in MKV agganciato a Tdarr o come servizio standalone.

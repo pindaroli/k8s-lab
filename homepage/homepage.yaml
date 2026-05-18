@@ -146,6 +146,10 @@ data:
             href: https://jellyfin.pindaroli.org
             description: Media server for movies, TV shows and music
             icon: jellyfin.png
+        - Jellyfin Classic:
+            href: https://jellyfin-classic.pindaroli.org
+            description: Media server for classical music
+            icon: jellyfin.png
         - qBittorrent:
             href: https://qbittorrent.pindaroli.org
             description: BitTorrent client
@@ -158,6 +162,11 @@ data:
             href: https://lidarr.pindaroli.org
             description: Music management
             icon: lidarr.png
+        - Lidarr Classic:
+            href: https://lidarr-classic.pindaroli.org
+            description: Classical music management
+            icon: lidarr.png
+
 
         - Prowlarr:
             href: https://prowlarr.pindaroli.org

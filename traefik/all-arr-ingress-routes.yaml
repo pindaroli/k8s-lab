@@ -184,3 +184,58 @@ subsets:
       - ip: "10.10.20.32"
     ports:
       - port: 8096
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jellyfin-classic-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # External / Public: OAuth Protected
+    - match: Host(`jellyfin-classic.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-jellyfin-classic
+          port: 8096
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Direct
+    - match: Host(`jellyfin-classic`) || Host(`jellyfin-classic-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-jellyfin-classic
+          port: 8096
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lidarr-classic-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # External / Public: OAuth Protected
+    - match: Host(`lidarr-classic.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-lidarr-classic
+          port: 8686
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Direct
+    - match: Host(`lidarr-classic`) || Host(`lidarr-classic-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-lidarr-classic
+          port: 8686
+  tls:
+    secretName: pindaroli-wildcard-tls

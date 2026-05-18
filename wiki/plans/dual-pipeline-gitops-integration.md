@@ -1,17 +1,65 @@
-# Piano: GitOps Orchestration for Segregated Ontological Structures (Dual-Pipeline Ingestion)
+# Wiki Plan: Classical Homelab Integration & GitOps Orchestration
 
-**Stato**: 🔵 Pianificato — In attesa di approvazione
-**Data**: 2026-05-17
-**Obiettivo**: Piano finale e unificante dell'architettura musicale. Copre il **Final Sync** della libreria moderna, l'**avvio della pipeline classica in parallelo**, e il **deploy GitOps K8s** dell'intera infrastruttura duale (Lidarr-Pop + Lidarr-Classical + Jellyfin segregato).
-
-> [!NOTE]
-> **Dipendenze (Subordinazione)**:
-> - Questo piano si attiva quando [[beets-music-rescue-pipeline]] raggiunge la Fase 4.2 (Case Clash completato, DB stabile).
-> - [[classical-music-strategy]] può essere avviata **in parallelo** alla Fase 3 della rescue pipeline, in quanto usa un database Beets separato (`classical_musiclibrary.db`) e path di staging distinti. Nessun conflitto di I/O o DB con la pipeline moderna.
+> [!IMPORTANT]
+> **Stato**: 🔄 **PARZIALMENTE COMPLETATO / CONSOLIDATO (2026-05-18)**
+> **Target**: Cluster GEMINI (`pindaroli.org`) · **Ultimo Aggiornamento**: 2026-05-18 23:05
+> **Obiettivo**: Questo piano unificato definisce sia il rilascio Helm GitOps sia l'infrastruttura di contorno per l'Isola Classica segregata (`jellyfin-classic` e `lidarr-classic`), garantendo la coerenza con la Dual-Pipeline.
+>
+> ### 📌 Consolidamento Stato (Fine Sessione 2026-05-18)
+> - **Storage PV/PVC**: **COMPLETATO** (`csi-nfs-stripe-arr-conf` e dataset classici agganciati).
+> - **GitOps Workloads (Lidarr/Jellyfin Classic)**: **COMPLETATO** (Helm upgrade eseguito e Pods attivi e stabili).
+> - **Infrastruttura di Ingresso (Traefik IngressRoutes)**: **COMPLETATO** (Dual-Route con OAuth2 per l'esterno e Direct-access per la LAN).
+> - **DNS Split-Horizon (OPNsense)**: **COMPLETATO** (Nuovi domini classici interni/esterni mappati in `rete.json` e propagati su Unbound via Ansible).
+> - **Presentation Layer (Homepage)**: **COMPLETATO** (Nuovi pannelli per Lidarr Classic e Jellyfin Classic inseriti e visibili).
+>
+> ### 🚀 Prossimi Passi (Domani)
+> 1. Configurazione Categoria `music-classical` su qBittorrent (`/staging/classical`).
+> 2. Associazione tag `classical-indexers` su Prowlarr.
+> 3. Disabilitazione "Completed Download Handling" su `lidarr-classic`.
+> 4. Deploy del ConfigMap per `options.xml` di `jellyfin-classic` e aggancio del volume.
+> 5. Implementazione e test dello script di riconciliazione/unmonitoring `segregate_classical.py` come post-import hook in Beets.
 
 ---
 
-## Pre-Condizione: Final Sync & Swap (Modern Music — ex Fase 5 + 6)
+## 🗺️ Mappa delle Risorse & Relazioni
+
+```mermaid
+graph TD
+    subgraph Storage [TrueNAS & K8s Storage]
+        nfs["TrueNAS ZFS: /mnt/oliraid/arrdata/classical"]
+        pv["PV: pv-classical-media"]
+        pvc["PVC: servarr-classical-media"]
+        nfs --> pv --> pvc
+    end
+
+    subgraph Pods [Workloads Segregati 1:1]
+        j_classic["Pod: jellyfin-classic"]
+        l_classic["Pod: lidarr-classic"]
+        pvc -->|Mount Read-Only /media/music/classical| j_classic
+        pvc -->|Mount Read-Write /staging/classical| l_classic
+    end
+
+    subgraph Traefik [Traefik Routing & Sicurezza]
+        ir_ext_j["IngressRoute Ext: jellyfin-classic.pindaroli.org"]
+        ir_int_j["IngressRoute Int: jellyfin-classic-internal.pindaroli.org"]
+        ir_ext_l["IngressRoute Ext: lidarr-classic.pindaroli.org"]
+        ir_int_l["IngressRoute Int: lidarr-classic-internal.pindaroli.org"]
+
+        ir_ext_j -->|oauth2-auth| j_classic
+        ir_int_j --> j_classic
+        ir_ext_l -->|oauth2-auth| l_classic
+        ir_int_l --> l_classic
+    end
+
+    subgraph OPNsense [DNS Split-Horizon]
+        dns["OPNsense Unbound DNS"]
+        dns -->|Internal IP| VIP[Traefik VIP: 10.10.20.254]
+    end
+```
+
+---
+
+## Pre-Condizione: Final Sync & Swap (Modern Music — Pop/Rock)
 
 > [!CAUTION]
 > **ESECUZIONE MANUALE**: Queste operazioni devono essere eseguite **dall'utente direttamente sul NAS** per garantire la massima velocità e sicurezza. L'AI non deve intervenire su processi o file in questa fase.
@@ -54,8 +102,6 @@ Dopo 48h di stabilità: `zfs destroy oliraid/arrdata/media/music_old`.
 
 ---
 
-
-
 ## 1. Topologia Storage (TrueNAS & NFS)
 
 Per garantire la separazione fisica tra i domini, lo storage è organizzato a livello ZFS su TrueNAS SCALE con export NFS dedicati:
@@ -64,14 +110,13 @@ Per garantire la separazione fisica tra i domini, lo storage è organizzato a li
 | :--- | :--- | :--- | :--- | :--- |
 | `oliraid/arrdata/media/music/pop_rock` | `1M` | Pop/Rock Final | `1000:1000` (Media) | `lidarr-pop` (RW), `jellyfin` (RO) |
 | `oliraid/arrdata/staging/pop_rock` | `128K` | Pop/Rock Staging | `1000:1000` (Media) | `qbittorrent` (RW), `lidarr-pop` (RW) |
-| `oliraid/arrdata/classical` | `1M` | Classical Unified | `1000:1000` (Media) | `qbittorrent` (RW), `jellyfin` (RO) |
+| `oliraid/arrdata/classical` | `1M` | Classical Unified | `1000:1000` (Media) | `qbittorrent` (RW), `jellyfin-classic` (RO) |
 
 > [!IMPORTANT]
 > **Dataset Classico Unificato & Nota Duplicazione**:
 > Sebbene staging e library risiedano nello stesso dataset ZFS (`oliraid/arrdata/classical`), l'utilizzo di Beets con `write: yes` da macOS via NFS rompe gli hardlink all'atto della scrittura dei metadati (Mutagen riscrive fisicamente il file).
 > - **Stato Attuale**: Si accetta la duplicazione temporanea dello spazio per preservare il seeding e la perfezione dei metadati fisici.
 > - **Cleanup Staging**: La pulizia di `/Volumes/classical/staging` è demandata all'utente manualmente a fine importazione e completamento seeding.
-> - **Automazione Futura**: È pianificata l'integrazione di uno script di cleanup post-seeding agganciato a qBittorrent o l'esecuzione periodica di `jdupes`/`duperemove` sul NAS per rifondere i blocchi identici tramite il ZFS Block Cloning nativo del pool.
 
 ```
 /Volumes/arrdata/classical/
@@ -81,62 +126,59 @@ Per garantire la separazione fisica tra i domini, lo storage è organizzato a li
 
 ---
 
-## 2. Manifesti Kubernetes & Overrides Helm (`pindaroli-arr-helm`)
+## 2. Rilascio GitOps & Helm (`pindaroli-arr-helm`)
 
-### 2.1 Deployment `lidarr-classical`
-Questo pod agisce esclusivamente come motore di ricerca e invio torrent. È privo di accesso in scrittura al dataset `/music/classical`.
+### 2.1 Definizione di `lidarr-classic`
+L'istanza `lidarr-classic` agisce esclusivamente come motore di ricerca e invio torrent. È montata in sola lettura sul dataset classico.
 
 ```yaml
-# values/lidarr-classical-values.yaml
+# values/lidarr-classic-values.yaml
 podSecurityContext:
   runAsUser: 1000
   runAsGroup: 1000
   fsGroup: 1000
 
 ingress:
-  enabled: true
-  hosts:
-    - host: lidarr-classical.internal.pindaroli.org
-      paths:
-        - path: /
-          pathType: Prefix
+  enabled: false  # Gestito via IngressRoute Traefik custom in k8s-lab
 
 persistence:
   config:
     enabled: true
-    existingClaim: lidarr-classical-config-pvc
+    existingClaim: lidarr-classic-config-pvc
   staging-classical:
     enabled: true
     type: custom
     volumeSpec:
       nfs:
-        server: truenas.internal.pindaroli.org
-        path: /mnt/oliraid/arrdata/staging/classical
+        server: 10.10.10.50
+        path: /mnt/oliraid/arrdata/classical/staging
     mountPath: /staging/classical
     readOnly: false
 ```
 
-### 2.2 Mount Segregati in `jellyfin`
-Jellyfin monta entrambi i percorsi in modalità **strettamente read-only**.
+### 2.2 Definizione di `jellyfin-classic` (Opzione A - 1:1)
+`jellyfin-classic` è un'istanza segregata e indipendente che monta **esclusivamente** il dataset classico pulito.
 
 ```yaml
-# values/jellyfin-values.yaml (estratto)
+# values/jellyfin-classic-values.yaml
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+ingress:
+  enabled: false  # Gestito via IngressRoute Traefik custom in k8s-lab
+
 persistence:
-  music-pop:
+  config:
+    enabled: true
+    existingClaim: jellyfin-classic-config-pvc
+  media:
     enabled: true
     type: custom
     volumeSpec:
       nfs:
-        server: truenas.internal.pindaroli.org
-        path: /mnt/oliraid/arrdata/media/music/pop_rock
-    mountPath: /media/music/pop_rock
-    readOnly: true
-  music-classical:
-    enabled: true
-    type: custom
-    volumeSpec:
-      nfs:
-        server: truenas.internal.pindaroli.org
+        server: 10.10.10.50
         path: /mnt/oliraid/arrdata/classical/library
     mountPath: /media/music/classical
     readOnly: true
@@ -144,38 +186,138 @@ persistence:
 
 ---
 
-## 3. Instradamento & Disaccoppiamento (Prowlarr & qBittorrent)
+## 3. Infrastruttura Non-Helm (`k8s-lab`)
 
-### 3.1 Tagging Indexer (Prowlarr)
-1. In Prowlarr, creare il tag `classical-indexers`.
-2. Assegnare questo tag esclusivamente agli indexer ad alta fedeltà classica (RED, Usenet dedicati).
-3. Mappare i profili di sincronizzazione in modo che:
-   - I tracker generici vengano inviati solo a `lidarr-pop`.
-   - I tracker `classical-indexers` vadano esclusivamente a `lidarr-classical`.
+### 3.1 PV & PVC: `storage/classical-media-pvc.yaml`
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-classical-media
+spec:
+  capacity:
+    storage: 500Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: csi-nfs-stripe-arr-conf
+  nfs:
+    path: /mnt/oliraid/arrdata/classical
+    server: 10.10.10.50
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: servarr-classical-media
+  namespace: arr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: csi-nfs-stripe-arr-conf
+  volumeName: pv-classical-media
+```
 
-### 3.2 Categorie di Routing (qBittorrent)
-qBittorrent mappa i save path fisici in base alla categoria passata dalle API delle applicazioni:
-- Categoria **`music-pop`** $\rightarrow$ Save Path: `/staging/pop_rock`
-- Categoria **`music-classical`** $\rightarrow$ Save Path: `/staging/classical`
+### 3.2 Ingress & Sicurezza (Traefik IngressRoutes)
+Le rotte in `k8s-lab/traefik/all-arr-ingress-routes.yaml` per garantire il **Dual Ingress (Esterno con OAuth2, Interno Diretto)**:
 
-### 3.3 Disabilitazione Completed Download Handling
-> [!CRITICAL]
-> In `lidarr-classical` $\rightarrow$ **Settings** $\rightarrow$ **Download Clients**, disabilitare **"Enable Completed Download Handling"**.
-> Questo interrompe il controllo di Lidarr sul file system una volta completato il download, lasciando il payload in staging per la curation Beets. Ignorare il warning di errore permanente visualizzato nella dashboard di Lidarr.
+```yaml
+# IngressRoute per Jellyfin-Classic
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jellyfin-classic-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # Accesso Esterno: protetto da OAuth2
+    - match: Host(`jellyfin-classic.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: oli-arr-jellyfin-classic
+          port: 8096
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Accesso Interno: diretto (No OAuth2)
+    - match: Host(`jellyfin-classic`) || Host(`jellyfin-classic-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: oli-arr-jellyfin-classic
+          port: 8096
+  tls:
+    secretName: pindaroli-wildcard-tls
+
+---
+# IngressRoute per Lidarr-Classic
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lidarr-classic-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # Accesso Esterno: protetto da OAuth2
+    - match: Host(`lidarr-classic.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: oli-arr-lidarr-classic
+          port: 8686
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Accesso Interno: diretto (No OAuth2)
+    - match: Host(`lidarr-classic`) || Host(`lidarr-classic-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: oli-arr-lidarr-classic
+          port: 8686
+  tls:
+    secretName: pindaroli-wildcard-tls
+```
+
+### 3.3 DNS Split-Horizon (OPNsense / `rete.json`)
+Aggiungere i seguenti alias sotto `traefik-lb` in `rete.json` ed avviare il sync DNS:
+- `jellyfin-classic`
+- `jellyfin-classic-internal`
+- `lidarr-classic`
+- `lidarr-classic-internal`
+
+```bash
+ansible-playbook ansible/playbooks/opnsense_sync_dns.yml
+```
 
 ---
 
-## 4. API Reconciliation Loop (Chiusura del Cerchio)
+## 4. Integrazione Applicativa & Routing
 
-Poiché Lidarr non sposta i file, crederà che l'album sia permanentemente mancante e continuerà a cercarlo. Risolviamo questo loop tramite uno script di unmonitoring API eseguito al termine dell'importazione Beets.
+### 4.1 qBittorrent (Routing per Categoria)
+- **Categoria**: `music-classical`
+- **Save Path**: `/staging/classical` (TrueNAS: `/mnt/oliraid/arrdata/classical/staging`)
+
+### 4.2 Prowlarr (Tagging degli Indexer Classici)
+- **Tag**: `classical-indexers`
+- Assegnare il tag agli indexer classical e forzare la sincronizzazione **solo** su `lidarr-classic`.
+
+### 4.3 Completed Download Handling
+- Disabilitare **"Enable Completed Download Handling"** in `lidarr-classic` settings.
+
+### 4.4 API Reconciliation Loop (Chiusura del Cerchio)
+Hook post-import Beets eseguito su macOS dopo ogni consolidamento di metadati classica per spegnere il monitoraggio dell'album in `lidarr-classic` (evitando loop di download infiniti):
 
 ```python
-# import_classical/segregate_classical.py (Hook post-import Beets)
+# import_classical/segregate_classical.py
 import os
 import sys
 import requests
 
-LIDARR_API_URL = "http://lidarr-classical.svc.cluster.local:8686/api/v1"
+LIDARR_API_URL = "http://oli-arr-lidarr-classic.arr.svc.cluster.local:8686/api/v1"
 API_KEY = os.environ.get("LIDARR_CLASSICAL_API_KEY")
 
 def query_lidarr_album_by_path(folder_name):
@@ -192,7 +334,7 @@ def unmonitor_album(album_id):
     payload = {"albumIds": [album_id], "monitored": False}
     r = requests.put(f"{LIDARR_API_URL}/album/monitor", headers=headers, json=payload)
     r.raise_for_status()
-    print(f"Successfully unmonitored Classical Album ID: {album_id} in Lidarr-Classical")
+    print(f"Successfully unmonitored Classical Album ID: {album_id} in Lidarr-Classic")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -206,16 +348,16 @@ if __name__ == "__main__":
 
 ---
 
-## 5. Hardening Presentation Layer (Jellyfin options.xml)
+## 5. Hardening Presentation Layer (Jellyfin options.xml ConfigMap)
 
-Per impedire a Jellyfin di interrogare database web musicali e distruggere l'ontologia Bespoke creata da Beets, usiamo un ConfigMap Kubernetes montato in `/config/root/default/Classical/options.xml` per la libreria classica.
+Per costringere `jellyfin-classic` a basarsi esclusivamente sui perfetti metadati Vorbis/ID3 generati da Beets e ignorare i DB web generici:
 
 ```yaml
-# kubernetes/manifests/jellyfin-classical-configmap.yaml
+# kubernetes/manifests/jellyfin-classic-configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: jellyfin-classical-options
+  name: jellyfin-classic-options
   namespace: arr
 data:
   options.xml: |
@@ -242,11 +384,9 @@ data:
     </LibraryOptions>
 ```
 
-QuestoConfigMap rimuove gli array di scraping per la libreria Classica, forzando Jellyfin a basarsi esclusivamente sui tag Vorbis/ID3 ed elaborando correttamente i delimitatori di artisti multipli (es. `Compositore; Direttore; Orchestra`).
-
 ---
 
-## Relazioni
-- Implementa: [[classical-music-strategy]]
-- Dipende da: [[beets-music-rescue-pipeline]]
-- Configura: [[Servarr]]
+## 🔗 Relazioni & Tracciabilità
+- Sostituisce: `classical-infrastructure-provisioning.md`
+- Collegato a: [[classical-music-strategy]]
+- Monitorato da: [[todo]]

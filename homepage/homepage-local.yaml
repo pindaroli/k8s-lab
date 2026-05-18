@@ -121,6 +121,10 @@ data:
             href: https://jellyfin-internal.pindaroli.org
             description: Media server (Internal)
             icon: jellyfin.png
+        - Jellyfin Classic:
+            href: https://jellyfin-classic-internal.pindaroli.org
+            description: Classical media server (Internal)
+            icon: jellyfin.png
         - qBittorrent:
             href: https://qbittorrent-internal.pindaroli.org
             description: BitTorrent client (Internal)
@@ -132,6 +136,10 @@ data:
         - Lidarr:
             href: https://lidarr-internal.pindaroli.org
             description: Music management (Internal)
+            icon: lidarr.png
+        - Lidarr Classic:
+            href: https://lidarr-classic-internal.pindaroli.org
+            description: Classical music management (Internal)
             icon: lidarr.png
         - Prowlarr:
             href: https://prowlarr-internal.pindaroli.org

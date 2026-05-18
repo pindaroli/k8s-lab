@@ -1,10 +1,11 @@
 # Piano: Sovranità dei Segreti con SOPS + Age
 
-**Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-05-07
+**Stato**: ✅ **Completato & Operativo**
+**Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-05-07 (Aggiornato: 2026-05-18)
 **Autore**: Antigravity AI Engineering
 
 > [!IMPORTANT]
-> Questo piano sostituisce il workflow manuale basato su `gitignore + secrets.yaml locale`.
+> Questo piano ha sostituito con successo il workflow manuale basato su `gitignore + secrets.yaml locale`.
 > Al termine, **NESSUN segreto** viaggerà mai più in chiaro nel repository, né come Base64.
 
 ---

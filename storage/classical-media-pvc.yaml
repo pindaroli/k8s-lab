@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-classical-media
+spec:
+  capacity:
+    storage: 500Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: csi-nfs-stripe-arr-conf
+  nfs:
+    path: /mnt/oliraid/arrdata/classical
+    server: 10.10.10.50
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: servarr-classical-media
+  namespace: arr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: csi-nfs-stripe-arr-conf
+  volumeName: pv-classical-media
