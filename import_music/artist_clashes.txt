@@ -1,0 +1,4 @@
+# Artist case clashes — generato da detect_case_clashes.py
+# Formato: variante1;variante2;...
+
+Elio E Le Storie Tese;Elio e le Storie Tese

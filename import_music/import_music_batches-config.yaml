@@ -1,6 +1,61 @@
 directory: /Volumes/arrdata/media/music_backup
 library: /Users/olindo/prj/k8s-lab/import_music/musiclibrary.db
-plugins: chroma discogs edit ftintitle ihate lastgenre mbsync musicbrainz parentwork zero missing
+plugins: chroma discogs edit ftintitle ihate lastgenre mbsync musicbrainz parentwork zero missing inline
+
+item_fields:
+    clean_albumartist: |
+        import sys
+        import os
+        import re
+        import unicodedata
+
+        val = getattr(db_obj, 'albumartist', '') or ''
+        if not val:
+            val = getattr(db_obj, 'artist', '') or 'Unknown Artist'
+
+        # Standardizza unicode a NFC ed elimina spazi ideografici (Giapponesi)
+        val = unicodedata.normalize('NFC', val).replace('\u3000', ' ').strip()
+
+        # Funzione di normalizzazione smart per il confronto
+        def get_compare_key(name):
+            n = name.lower()
+            n = re.sub(r'\b(and|with|feat|featuring|&|,)\b', ' ', n)
+            n = re.sub(r'[^a-z0-9\s]', '', n)
+            return re.sub(r'\s+', ' ', n).strip()
+
+        candidate_key = get_compare_key(val)
+        if not candidate_key:
+            return val
+
+        # Directory di destinazione (risolve dinamicamente la root configurata)
+        dest_dir = "/Volumes/arrdata/media/music_backup"
+        if not os.path.exists(dest_dir):
+            return val
+
+        # Carica la cache dei nomi reali sul filesystem (una sola volta per l'esecuzione)
+        if not hasattr(sys, '_music_backup_cache'):
+            try:
+                subdirs = [d for d in os.listdir(dest_dir) if os.path.isdir(os.path.join(dest_dir, d))]
+                cache = {}
+                for sd in subdirs:
+                    if sd.startswith('.') or sd.startswith('_'):
+                        continue
+                    sd_nfc = unicodedata.normalize('NFC', sd)
+                    key = get_compare_key(sd_nfc)
+                    if key and key not in cache:
+                        cache[key] = sd_nfc
+                sys._music_backup_cache = cache
+            except Exception:
+                sys._music_backup_cache = {}
+
+        # Cerca corrispondenza case/separatori-insensitive
+        cached_name = sys._music_backup_cache.get(candidate_key)
+        if cached_name:
+            return cached_name
+
+        # Aggiunge il candidato alla cache per album successivi del batch
+        sys._music_backup_cache[candidate_key] = val
+        return val
 
 import:
     write: yes
@@ -41,6 +96,6 @@ chroma:
 # Altre configurazioni specifiche per mantenere la compatibilità Lidarr
 
 paths:
-    default: $albumartist/[$year] $album%aunique{}/$track:02 $title
-    singleton: Non-Album/$artist/$title
+    default: $clean_albumartist/[$year] $album%aunique{}/$track:02 $title
+    singleton: Non-Album/$clean_albumartist/$title
     comp: Compilations/[$year] $album%aunique{}/$track:02 $title

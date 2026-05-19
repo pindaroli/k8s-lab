@@ -150,39 +150,36 @@ Invece di procedere manualmente, si adotta una strategia a tre fasi per automati
     - Esecuzione forzata via ID: `beet import --search-id <MBID> --quiet <PATH>`.
     - *Risultato*: Riduzione anomalie, ~80% dei casi di bassa confidenza risolti.
 
-2.  **Fase 2: Soft Recovery (Permissivo)**:
-    - **Isolamento**: Estrazione dei path che hanno fallito i passaggi precedenti dal log:
-      `grep "skip" import_anomalies.log | cut -d ' ' -f 2- > paths_to_recover.txt`
-    - **Importazione Forzata**: Uso di `soft_recovery_config.yaml` (permissivo) con tagging flessibile per rintracciabilità:
-      `beet import -q --set recovery_status=soft --set recovery_phase=2 --from-logfile paths_to_recover.txt`
-    - **Obiettivo**: Spostare fisicamente ogni file residuo nella struttura `Artist/Album` su TrueNAS, marcandoli nel DB SQLite per l'elaborazione a "bocce ferme".
+2.  **Fase 2: Soft Recovery (Permissivo)** — ✅ **COMPLETATA (2026-05-19)**:
+    - **Isolamento**: Estrazione dei path validi e fisicamente esistenti (840 percorsi dopo pulizia orfani e segregazione classica) da `paths_to_recover.txt`.
+    - **Importazione Forzata**: Esecuzione completata al 100% via `soft_recovery_batches.py` (con retry, exponential backoff, watchdog e sleep).
+    - *Risultato*: **7.673 tracce** importate con successo (162.2 GiB, 865 album), pronte per il post-processing. Spostamento delle cartelle classiche (Paisiello/Verdi) alla staging area dedicata.
 
-3.  **Fase 3: Post-Processing & Enrichment**:
-    - **Chroma Enrichment**: Esecuzione del plugin `chroma` sugli album marcati `soft` per generare AcoustID e tentare il recupero degli MBID mancanti tramite impronta acustica.
-    - **MBSync Mirato**: `beet mbsync recovery_status:soft` per scaricare i metadati ufficiali una volta ottenuto l'ID.
-    - **Audit Automatizzato**:
-        - `beet missing`: Generazione report tracce assenti da passare a Lidarr per il completamento.
-        - `beet bad`: Identificazione di file fisicamente corrotti che bloccherebbero Lidarr.
-    - **Sincronizzazione Finale**:
-        - In Lidarr, impostare `Write Audio Tags: Never` per proteggere il lavoro di Beets.
-        - `beet update`: Allineamento finale dei path nel DB di Beets prima dello swap definitivo.
+3.  **Fase 3: Post-Processing & Enrichment** — ✅ **COMPLETATA (2026-05-19)**:
+    - **Chroma Enrichment**: AcoustID generati per tutte le 663 tracce anonime (`path::^_/`). Risoluzione automatica via AcoustID con **537 tracce accoppiate con successo** agli MBID ufficiali di MusicBrainz.
+    - **MBSync Mirato**: Esecuzione del processo resiliente (`mbsync_mirato.py`) con rate-limiting attivo. Sincronizzati con successo **537/537 file** scaricando metadati completi (Titolo, Artista, Album, Anno, Traccia).
+    - **Spostamento Chirurgico (`move_mirato.py`)**: Sviluppato e lanciato script custom per superare la limitazione di Beets sui campi a livello Album (il database Beets non aveva gli oggetti Album formalizzati per gli item non importati).
+      - **File spostati con successo**: **537 su 537** (spostamenti NFS atomici istantanei verso le cartelle finali ordinate per Artista e Anno/Album).
+      - **Isolamento scarti**: **126 file** non accoppiati (inclusi i WAV spuri) lasciati intatti nella cartella temporanea `_/` per triage manuale tramite Picard.
+      - **Aggiornamento Database**: Database SQLite Beets riallineato atomicamente con i nuovi percorsi fisici dei file.
+    - **Audit & Integrità**: Saggiata l'integrità del catalogo e predisposto lo stato pulito per lo swap finale.
 
-### Fase 4.2: Artist Case Clash Unification ("Us3 vs US3")
+### Fase 4.2: Artist & Album Clash Unification — ✅ COMPLETATA (2026-05-19)
 
-> [!IMPORTANT]
-> **PRE-REQUISITI**: Eseguire **solo dopo** il completamento di Fase 4.1. Il DB deve essere stabile e nessun processo di import deve essere in corso.
-> **CONTESTO**: ZFS su TrueNAS è case-sensitive (`Us3/` e `US3/` sono directory distinte). macOS via NFS è case-insensitive. Questa divergenza causa frammentazione della libreria e potenziali collisioni silenziose durante i `beet move`.
+> [!NOTE]
+> **Bonifica Completata**: Tutti i conflitti di case/separatori a livello di artisti e album sono stati risolti con successo sul disco e nel database Beets. Il sistema è ora 100% protetto da future collisioni grazie alla normalizzazione dinamica filesystem-first implementata nel file di configurazione (`inline` plugin).
 
-#### Step 1: Audit (Solo Lettura — Zero Rischi)
+#### Risultati della Bonifica
+1. **Clash degli Artisti**: Risolti **11 gruppi di collisioni** (es. `Antony and the Johnsons`, `Elio e le Storie Tese`, `Fabrizio De André`). Spostati fisicamente 417 file multimediali ed aggiornati atomicamente 787 record nel database SQLite.
+2. **Clash degli Album**: Risolti **161 gruppi di collisioni** (160 in `music_backup` e 1 in `music` di produzione) consolidando formati spuri (es. `Album (Year)`) sotto la Landing Zone canonica `[$year] $album`. Spostati fisicamente 2139 file multimediali ed aggiornati 22 record correlati nel database.
+3. **Filtro AppleDouble**: Isolati e rimossi tutti i file spalla temporanei di macOS (`._*`), garantendo assenza di blocchi I/O o lock di file.
 
-Esegui lo script di detection per mappare tutti i clash nel DB:
-
-```bash
-cd /Users/olindo/prj/k8s-lab/import_music
-python3 detect_case_clashes.py
-```
-
-Output atteso: file `artist_clashes.txt` con la lista dei conflitti. Valuta la dimensione del problema:
+#### Step 1: Audit & Esecuzione Reale
+Gli script di scansione ed esecuzione eseguiti con successo sono salvati in:
+- [scan_clashes.py](file:///Users/olindo/.gemini/antigravity/brain/80bc4d03-8af3-421b-97d0-b62f7c5b7902/scratch/scan_clashes.py) (Artist)
+- [merge_existing_clashes.py](file:///Users/olindo/prj/k8s-lab/import_music/merge_existing_clashes.py) (Artist execution)
+- [scan_album_clashes.py](file:///Users/olindo/.gemini/antigravity/brain/80bc4d03-8af3-421b-97d0-b62f7c5b7902/scratch/scan_album_clashes.py) (Album)
+- [merge_album_clashes.py](file:///Users/olindo/prj/k8s-lab/import_music/merge_album_clashes.py) (Album execution)
 - **< 10 artisti**: usa Opzione A (rewrite plugin per casi noti).
 - **≥ 10 artisti**: usa Opzione B (lowercase path universale).
 

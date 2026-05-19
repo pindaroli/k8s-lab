@@ -216,6 +216,24 @@ Le cartelle in `_Triage_Unmatched` richiedono elaborazione manuale:
 
 ---
 
+## 10. Deviazioni e Segregazioni Straordinarie
+
+Nel corso dell'esecuzione delle altre pipeline, possono essere intercettati falsi positivi di musica classica sfuggiti alle scansioni iniziali:
+
+### 🎼 Giovanni Paisiello & Estratti Soft Recovery (Salvato da Pop/Rock Rescue)
+* **Incidente**: Durante la Fase 2 di Soft Recovery Pop/Rock, alcuni artisti e album classici o crossover sono stati rilevati nella lista della soft recovery.
+* **Azione correttiva (2026-05-19)**:
+  1. Rimozione dei relativi percorsi dal database e dalla lista della soft recovery pop/rock (`paths_to_recover.txt`).
+  2. Spostamento delle cartelle identificate alla directory di staging classica `/Volumes/classical/staging/` per essere elaborate dalla pipeline classica dedicata.
+  3. **Cartelle Segregate**:
+     - `Paisiello/Il Barbiere di Siviglia` -> `/Volumes/classical/staging/Paisiello/Il Barbiere di Siviglia`
+     - `Paisiello/La passione` -> `/Volumes/classical/staging/Paisiello/La passione`
+     - `Verdi/Verdi - La Traviata [2CD] ... FLAC/CD 1` -> `/Volumes/classical/staging/Verdi/.../CD 1`
+     - `Verdi/Verdi - La Traviata [2CD] ... FLAC/CD 2` -> `/Volumes/classical/staging/Verdi/.../CD 2`
+  4. Ingestione programmata tramite la pipeline classica (`./run_import.sh batch` dedicato su staging).
+
+---
+
 ## Dipendenze Software (Mac Studio — Ambiente Isolato Python 3.12)
 
 > [!IMPORTANT]

@@ -58,9 +58,14 @@
 ### 🎵 Music Rescue & Ingestion Pipeline (Modern & Classical)
 - [ ] **Phase 1: Modern Music Rescue Pipeline** [[beets-music-rescue-pipeline]]
     - [ ] Automatizzare il mount NFS `/Volumes/arrdata/media` con opzioni `noresvport,locallocks`.
-    - [ ] Esecuzione Pilot Test su campione di 3 album.
-    - [ ] Migrazione massiva con gestione Hardlinks/Seeding.
-    - [ ] Case clash detection e unificazione (`Us3 vs US3`).
+    - [x] Esecuzione Pilot Test su campione di 3 album. (COMPLETED)
+    - [x] Migrazione massiva con gestione Hardlinks/Seeding. (COMPLETED)
+    - [x] Case clash detection e unificazione (`Us3 vs US3`). (COMPLETED)
+    - [ ] **Fase 3 (Post-Processing & Enrichment)**:
+        - [x] Chroma Enrichment: Generazione AcoustID completata per tutte le 663 tracce anonime (`path::^_/`) + avviata risoluzione automatica via script custom `resolve_acoustids.py` in background. (COMPLETED 2026-05-19)
+        - [x] MBSync Mirato: Recupero metadati ufficiali MusicBrainz via ID. (COMPLETED 2026-05-19)
+        - [ ] Integrity Audit: Controllo file corrotti (`beet badfiles`) e tracce mancanti (`beet missing`).
+        - [x] Allineamento Path Finale: Esecuzione di `beet update`/`move` pre-swap. (COMPLETED 2026-05-19)
     - [ ] Spostamento da `music_backup` alla Landing Zone definitiva `/Volumes/arrdata/media/music/pop_rock`.
     - [ ] Manual Import in `lidarr-pop` e ripristino Battiato (solo FLAC).
 - [x] **Phase 2: Classical Music Segregation** [[classical-music-strategy]] (COMPLETED 2026-05-18)
