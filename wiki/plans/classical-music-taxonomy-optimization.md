@@ -1,6 +1,6 @@
 ---
 title: "Piano: Ottimizzazione della Tassonomia per la Musica Classica"
-status: "Completato"
+status: "In Corso"
 priority: "High"
 tags:
   - "#beets"
@@ -35,6 +35,7 @@ graph TD
     B --> C[Fase 3: Materializzazione Script di Migrazione]
     C --> D[Fase 4: Esecuzione Dry-Run & Validazione]
     D --> E[Fase 5: Esecuzione Reale & Allineamento Jellyfin]
+    E --> F[Fase 6: Bonifica & Normalizzazione Monumentali Mozart 225]
 ```
 
 ### Fase 1: Preparazione Ambiente & Librerie
@@ -61,6 +62,11 @@ Modifica del file [beets_classical_config.yaml](file:///Users/olindo/prj/k8s-lab
 ### Fase 5: Esecuzione Reale ed Allineamento Jellyfin-Classic
 * Applicare le modifiche sul disco e sul database Beets.
 * Configurare Jellyfin-Classic con l'opzione "Prefer ARTISTS tag if available" ed installare `jellyfin-musictags-plugin`.
+
+### Fase 6: Bonifica e Normalizzazione Monumentali (Mozart 225)
+* **Definizione della Regola**: Per edizioni complete monumentali (come "Mozart 225" da 200 CD), si vieta la dispersione fisica delle tracce nella radice. È obbligatoria la categorizzazione strutturata sotto la cartella del Compositore: `Monographs/Compositore/Mozart 225 - Sezione/[Anno] Album/`.
+* **Tracciamento a Database**: Le tracce devono avere `composer` valorizzato (es. `Wolfgang Amadeus Mozart`) per attivare Monographs, `work` valorizzato con il nome della macro-sezione (es. `Mozart 225 - 01 Chamber`) per raggruppare i CD, ed `album` normalizzato con nomi parlanti privi di sigle tecniche.
+* **Esecuzione dello Script**: Creazione di `standardize_complete_editions.py` per automatizzare il refactoring a database tramite ORM di Beets ed esecuzione fisica di `beet move`.
 
 ---
 
