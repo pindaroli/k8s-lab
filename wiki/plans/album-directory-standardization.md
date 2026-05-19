@@ -1,6 +1,6 @@
 ---
 title: "Piano: Standardizzazione Nomi Directory Album"
-status: "Draft / Under Discussion"
+status: "Completato (2026-05-19)"
 priority: "Medium"
 tags:
   - "#beets"
@@ -102,3 +102,21 @@ for album_id, items in albums.items():
 1. **Verifica Esistenza Sorgente**: Il file viene spostato solo se esiste fisicamente sul disco.
 2. **Nessun File Sovrascritto**: Lo script verificherà che non ci siano collisioni distruttive nella cartella di destinazione.
 3. **Rollback Facile**: Avendo il backup del database `musiclibrary.db`, in caso di problemi possiamo ripristinare il database e rimettere a posto le cartelle (essendo le operazioni locali su ZFS, sono istantanee).
+
+---
+
+## 5. Stato dell'Esecuzione & Consolidamento (2026-05-19)
+
+Il piano è stato **interamente completato ed eseguito con successo**:
+
+1. **Standardizzazione Massiva (`standardize_album_paths.py`)**:
+   * Eseguito su **1101** album totali.
+   * **675** album ristrutturati correttamente nel formato standard `[Anno] Titolo`.
+   * **5626** tracce riposizionate fisicamente e allineate nel database SQLite di Beets.
+
+2. **Risoluzione Duplicati e Mirror Clean (`clean_all_zeros_duplicates.py`)**:
+   * Rilevata una criticità legata a duplicazioni ad Anno 0 (sia su cartelle separate `[0000]` che case-clash nella stessa cartella ZFS).
+   * Eseguito il master script di pulizia speculare che ha eliminato con successo **165** record ridondanti a DB e **129** file duplicati sul filesystem, rimuovendo **5** cartelle orfane vuote.
+   * La tecnica è stata integrata ufficialmente come **Regola 7** nelle linee guida di **[[music-library-governance]]**.
+
+La Landing Zone `music_backup` è ora normalizzata, consolidata e pronta per lo **ZFS Swap finale** e l'importazione in produzione.

@@ -92,6 +92,21 @@ Per garantire che la Landing Zone `/Volumes/arrdata/media/music_backup/` sia sem
   * **Allineamento Tracce (Items)**: Tutte le tracce associate devono avere `albumartist` dell'artista reale. Eventuali tracce orfane o isolate devono essere collegate all'album corretto compilando il rispettivo `album_id` (che punta al record album) e impostando il numero traccia corretto (`track`).
   * **Riposizionamento Fisico**: L'esecuzione di `standardize_album_paths.py --artist "Nome Artista" --run` sposterà fisicamente l'album intero (incluse le tracce precedentemente orfane) sotto il percorso dell'artista (`/{Artista}/[Anno] Album/`) e ripulirà le cartelle vuote residue.
 
+### 7. Bonifica Intelligente dei Duplicati ad Anno 0 (Mirror Clean)
+* **Problema**: La case-sensitivity dei filesystem Linux (ZFS su TrueNAS SCALE) combinata con importazioni Beets non allineate può causare la creazione di duplicati speculari interi ad Anno 0. Questo avviene in due forme: cartelle separate ad anno `[0000]` vs `[YYYY]`, oppure file duplicati con differenze di case nella stessa cartella (es. `01 - Mi Fai Stare Bene.mp3` vs `01 - Mi fai stare bene.mp3`).
+* **Regola di Sicurezza (Thresholding)**: Un album ad Anno 0 è considerato un duplicato sicuro da eliminare solo se esiste già una copia pulita (con anno > 0) dello stesso album che contiene almeno lo stesso numero di tracce della copia sporca (e con un minimo di 3 tracce). Se la copia sporca ha più tracce (es. album incompleto con anno), l'operazione viene saltata per prevenire perdite.
+* **Azione**:
+  * Rimozione logica delle tracce ad Anno 0 dal database Beets.
+  * Rimozione fisica dei file duplicati (evitando di toccare file condivisi in caso di collisioni case-clash).
+  * Rimozione ricorsiva delle cartelle orfane residue rimaste vuote.
+* **Automazione**: Lo script `clean_all_zeros_duplicates.py` automatizza il rilevamento, il thresholding e la bonifica sia a DB che a filesystem.
+
+### 8. Bonifica dei File Audio Orfani / Residui di Importazione (Orphan Clean)
+* **Problema**: Importazioni storiche incomplete o cambi di convenzione di naming eseguiti senza l'opzione "move" nativa di Beets possono lasciare sul filesystem migliaia di file audio non tracciati ma fisicamente duplicati di quelli corretti (es. file con il vecchio nome che coesiste come sibling del file tracciato con il nuovo standard).
+* **Regola di Rilevamento**: Se una directory contiene almeno un file audio tracciato a DB, tutti gli altri file con estensione audio presenti nella stessa cartella che *non* compaiono nella tabella `items` del DB Beets sono considerati residui spuri sicuri da rimuovere.
+* **Azione**: Scansione ricorsiva del filesystem, confronto con i percorsi relativi del DB, eliminazione fisica dei file audio orfani identificati (preservando i metadati non audio come copertine o log) e conservazione delle cartelle di triage/staging.
+* **Automazione**: Lo script `clean_untracked_orphans.py` automatizza l'audit del filesystem e la bonifica massiva dello spazio sprecato.
+
 ---
 
 ## 🛠️ Strumenti e Plugin (Beets)

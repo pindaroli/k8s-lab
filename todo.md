@@ -64,6 +64,8 @@
     - [ ] **Fase 3 (Post-Processing & Enrichment)**:
         - [x] Chroma Enrichment: Generazione AcoustID completata per tutte le 663 tracce anonime (`path::^_/`) + avviata risoluzione automatica via script custom `resolve_acoustids.py` in background. (COMPLETED 2026-05-19)
         - [x] MBSync Mirato: Recupero metadati ufficiali MusicBrainz via ID. (COMPLETED 2026-05-19)
+        - [x] Mirror Clean: Bonifica speculare duplicati ad Anno 0 (DB + FS via `clean_all_zeros_duplicates.py`). (COMPLETED 2026-05-19)
+        - [x] Orphan Clean: Rimozione massiva di 1845 file audio orfani/doppi lasciati da vecchi import, liberando 60.13 GB su TrueNAS via `clean_untracked_orphans.py`. (COMPLETED 2026-05-19)
         - [ ] Integrity Audit: Controllo file corrotti (`beet badfiles`) e tracce mancanti (`beet missing`).
         - [x] Allineamento Path Finale: Esecuzione di `beet update`/`move` pre-swap. (COMPLETED 2026-05-19)
     - [ ] Spostamento da `music_backup` alla Landing Zone definitiva `/Volumes/arrdata/media/music/pop_rock`.
