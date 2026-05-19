@@ -24,19 +24,33 @@ def backup_database():
 
 def parse_featuring(artist_name):
     """
-    Spezza l'artista in (artista_principale, artista_ospite) se contiene un featuring.
-    Esempio: 'Akon Feat. 2Pac' -> ('Akon', '2Pac')
+    Spezza l'artista in (artista_principale, artista_ospite) se contiene un featuring o un '+'.
+    Esempio:
+      'Akon Feat. 2Pac' -> ('Akon', '2Pac')
+      'Queen + David Bowie' -> ('Queen', 'David Bowie')
+      'Black Eyed Peas + Shakira + David Guetta' -> ('Black Eyed Peas', 'Shakira & David Guetta')
     """
     if not artist_name:
         return None
 
+    # 1. Controlla prima la regex dei feat standard
     match = FEAT_REGEX.search(artist_name)
     if match:
         guest = match.group(2).strip()
-        # Rimuove il tag feat dall'artista principale
         main = artist_name[:match.start()].strip()
         return main, guest
+
+    # 2. Controlla la relazione '+' (con spazi attorno) per le collaborazioni
+    if ' + ' in artist_name:
+        parts = artist_name.split(' + ', 1)
+        main = parts[0].strip()
+        guest = parts[1].strip()
+        # Sostituiamo eventuali altri '+' nel nome dei guest con '&' per pulizia ed eleganza
+        guest = guest.replace(' + ', ' & ')
+        return main, guest
+
     return None
+
 
 def main():
     parser = argparse.ArgumentParser(description="Generalizza ed estrae i Featuring dai nomi degli artisti spostandoli nei titoli dei brani.")

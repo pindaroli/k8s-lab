@@ -97,11 +97,11 @@ def main():
             album_groups[group_key].append(item)
 
     # Filtriamo i gruppi candidati a diventare "Singoli/Brani Sparsi" (Non-Album)
-    # Criterio: Il gruppo ha meno di 3 tracce (indica brani singoli o sparsi, non album strutturati)
+    # Criterio: Il gruppo ha meno di 3 tracce (o l'album è vuotato, a indicare brani singoli/sparsi reali)
     singles_to_process = []
 
     for (artist_key, album_key), items in album_groups.items():
-        if len(items) <= 2:
+        if len(items) <= 2 or album_key == "":
             singles_to_process.extend(items)
 
     print(f"Trovate {len(singles_to_process)} tracce candidate al consolidamento in 'Non-Album'.")
