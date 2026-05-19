@@ -83,7 +83,14 @@ Per garantire che la Landing Zone `/Volumes/arrdata/media/music_backup/` sia sem
 ### 5. Eliminazione dei File e Metadati Totalmente Anonimi (Purge)
 * **Regola**: Se un file musicale non ha né un artista identificabile (es. `Unknown Artist` o vuoto) né un titolo/traccia identificabile (es. `Track 12`, `Unknown Title` o vuoto), il file è considerato privo di qualsiasi utilità e valore archivistico.
 * **Azione**: Tali elementi devono essere eliminati in modo definitivo sia dal database Beets (`item.remove()`) sia dal filesystem (`os.remove()`).
-* **Automazione**: Lo script `purge_anonymous.py` esegue una scansione relazionale per identificare tali file spuri, esegue un backup preventivo del database e procede all'eliminazione totale logica e fisica, rimuovendo anche le cartelle madre rimaste vuote.
+* **Automazione**: Lo script `purge_anonymous.py` esegue una scansione relazionale per identificare tali file spuri, esegue un backup preventivo del database e procede all'elimazione totale logica e fisica, rimuovendo anche le cartelle madre rimaste vuote.
+
+### 6. Risoluzione Conflitti Compilation vs Album Singolo Artista (Caso "The Who - Tommy")
+* **Problema**: Album realizzati da un singolo gruppo/artista (es. `Tommy` dei `The Who`) che vengono erroneamente taggati o importati con `albumartist` impostato su `Artisti Vari` (compilation). Questo li frammenta sul disco sotto `/Artisti Vari/` e causa l'isolamento di singole tracce orfane (es. `Tommy (overture)`) che finiscono erroneamente in `/Non-Album/` poiché prive del corretto `album_id`.
+* **Regola di Risoluzione**:
+  * **Allineamento Record Album**: Il record dell'album nella tabella `albums` deve avere `albumartist` uguale all'artista reale (es. `The Who`).
+  * **Allineamento Tracce (Items)**: Tutte le tracce associate devono avere `albumartist` dell'artista reale. Eventuali tracce orfane o isolate devono essere collegate all'album corretto compilando il rispettivo `album_id` (che punta al record album) e impostando il numero traccia corretto (`track`).
+  * **Riposizionamento Fisico**: L'esecuzione di `standardize_album_paths.py --artist "Nome Artista" --run` sposterà fisicamente l'album intero (incluse le tracce precedentemente orfane) sotto il percorso dell'artista (`/{Artista}/[Anno] Album/`) e ripulirà le cartelle vuote residue.
 
 ---
 
