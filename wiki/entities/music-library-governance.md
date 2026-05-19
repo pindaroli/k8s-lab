@@ -43,6 +43,14 @@ Pristine e isolata da Lidarr. Curata tramite Beets CLI + Picard.
 ## 🏷️ Standard di Metadati
 
 ### Naming Convention
+- **Formato dei File delle Tracce (Standard Unificato)**:
+  Tutte le tracce audio seguono rigidamente il pattern **`[Prefisso] - [Titolo].[Estensione]`**, garantendo consistenza e leggibilità ottimali:
+  - **Album CD Singolo** (o disctotal = 1):
+    * Prefisso: `{track:02}` (Traccia a due cifre).
+    * Pattern: `[Traccia] - [Titolo].[Estensione]` (es. `01 - Hells Bells.mp3`)
+  - **Album CD Multiplo** (se disctotal > 1 o disc > 1):
+    * Prefisso: `{disc:02}-{track:02}` (CD a due cifre + Traccia a due cifre, uniti da trattino `-`).
+    * Pattern: `[CD]-[Traccia] - [Titolo].[Estensione]` (es. `01-02 - One Woman.flac`)
 - Tutti i file utilizzano il **Leading Zero** per le tracce (es. `01`, `02`) per mantenere l'ordine alfabetico corretto nel file system.
 - L'anno dell'album è sempre incluso nel nome della cartella tra parentesi tonde (quadre per la classica per indicare l'anno di composizione dell'opera).
 
@@ -106,6 +114,12 @@ Per garantire che la Landing Zone `/Volumes/arrdata/media/music_backup/` sia sem
 * **Regola di Rilevamento**: Se una directory contiene almeno un file audio tracciato a DB, tutti gli altri file con estensione audio presenti nella stessa cartella che *non* compaiono nella tabella `items` del DB Beets sono considerati residui spuri sicuri da rimuovere.
 * **Azione**: Scansione ricorsiva del filesystem, confronto con i percorsi relativi del DB, eliminazione fisica dei file audio orfani identificati (preservando i metadati non audio come copertine o log) e conservazione delle cartelle di triage/staging.
 * **Automazione**: Lo script `clean_untracked_orphans.py` automatizza l'audit del filesystem e la bonifica massiva dello spazio sprecato.
+
+### 9. Standardizzazione Unificata dei File Traccia (Track Filename Standardization)
+* **Problema**: Convenzioni di naming storiche disomogenee (es. prefissi CD ridondanti negli album singoli, mancanza di separatori coerenti prima del titolo) che compromettono l'ordine e la pulizia estetica delle cartelle album.
+* **Regola**: Tutte le tracce audio sul filesystem devono uniformarsi al formato standardizzato `[Prefisso] - [Titolo].[Estensione]`, rimuovendo il prefisso CD se l'album è a disco singolo e utilizzando il trattino `-` come unificatore nei CD multipli.
+* **Azione**: Ridenominazione fisica dei file sul disco e contestuale aggiornamento a DB per prevenire disallineamenti logici.
+* **Automazione**: Lo script `standardize_track_filenames.py` automatizza l'audit, il rinominamento fisico ed il caricamento dei percorsi a database Beets.
 
 ---
 
