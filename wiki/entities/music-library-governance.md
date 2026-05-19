@@ -9,6 +9,7 @@ tags:
 provenance:
   - "beets-music-rescue-pipeline.md"
   - "album-directory-standardization.md"
+  - "classical-music-standardization.md"
 ---
 
 # Music Library Governance
@@ -37,6 +38,9 @@ Pristine e isolata da Lidarr. Curata tramite Beets CLI + Picard.
 * **Percorso**: `/Volumes/classical/library/{Compositore}/{Opera} [{Anno}] - {Esecutori}/{CD-Traccia} - {Titolo Movimento}`
 * **Regola**: Il tag `genre` deve essere impostato esplicitamente su `classical`.
 * **Esempio**: `Ludwig van Beethoven/Symphony No. 9 in D minor [1824] - Karajan, Berliner Philharmoniker/101 - Allegro ma non troppo.flac`
+
+> [!IMPORTANT]
+> **PORTABILITÀ DEI SYMLINK (NFS)**: Poiché la libreria classica è interamente strutturata su collegamenti simbolici per preservare il seeding torrent in staging, tutti i symlink **devono** essere creati in forma **relativa**. Questo previene la rottura dei collegamenti tra client diversi (es. macOS e Kubernetes). Vedi la direttiva dedicata: [[nfs-symlink-portability]].
 
 ---
 

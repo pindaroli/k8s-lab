@@ -61,12 +61,59 @@ parentwork:
 # ─── Custom Fields via Inline Python ───────────────────────────────────────
 # Campi virtuali calcolati a runtime per costruire il path filesystem corretto.
 item_fields:
+  is_recital: |
+    album = db_obj.get_album() if 'db_obj' in locals() and db_obj else None
+    if not album:
+        return ''
+    album_comps = set()
+    for i in album.items():
+        cs = i.get('composers')
+        if cs:
+            if isinstance(cs, list):
+                for c in cs:
+                    if c: album_comps.add(c.strip().lower())
+            else:
+                for c in cs.replace(';', ',').split(','):
+                    if c.strip(): album_comps.add(c.strip().lower())
+        c = i.get('composer')
+        if c:
+            if isinstance(c, list):
+                for x in c:
+                    if x: album_comps.add(x.strip().lower())
+            else:
+                for x in c.replace(';', ',').split(','):
+                    if x.strip(): album_comps.add(x.strip().lower())
+
+    # Normalizziamo anche qui con clean_name per evitare falsi positivi (es. Mozart con date diverse)
+    import sys
+    sys.path.append('/Users/olindo/prj/k8s-lab/import_music/import_classical')
+    try:
+        from reorganize_recitals import normalize_artist_name
+        norm_comps = {normalize_artist_name(c).strip().lower() for c in album_comps}
+    except Exception:
+        norm_comps = album_comps
+    return '1' if len(norm_comps) > 1 else ''
+
   clean_composer: |
     mbid = getattr(db_obj, 'mb_albumid', '') or ''
-    c = getattr(db_obj, 'composer', '') or ''
-    p = getattr(db_obj, 'parent_composer', '') or ''
 
-    comp = c.strip() or p.strip()
+    # Tentiamo di estrarre da composers prima
+    c = ''
+    cs = db_obj.get('composers')
+    if cs:
+        if isinstance(cs, list):
+            c = cs[0] if cs else ''
+        else:
+            parts = [x.strip() for x in cs.replace(';', ',').split(',') if x.strip()]
+            c = parts[0] if parts else ''
+
+    if not c:
+        c = getattr(db_obj, 'composer', '') or ''
+    if isinstance(c, list):
+        c = c[0] if c else ''
+
+    p = getattr(db_obj, 'parent_composer', '') or ''
+    comp = str(c).strip() or str(p).strip()
 
     # 1. Caricamento della tabella esterna con cache a livello di processo (sys)
     import sys
@@ -126,19 +173,28 @@ item_fields:
                 pass
 
     if mbid:
-        return (comp or "Unknown Composer").replace('/', '-').strip()
+        res = comp or "Unknown Composer"
+    elif not comp:
+        res = "_Triage_Unmatched"
+    else:
+        # 3. Normalizzazione finale tramite tabella esterna dei compositori celebri
+        c_lower = comp.lower().strip()
+        import re
+        found_famous = None
+        for normalized, variations in composer_map.items():
+            if any(re.search(r'\b' + re.escape(var) + r'\b', c_lower) for var in variations):
+                found_famous = normalized
+                break
+        res = found_famous if found_famous else comp
 
-    if not comp:
-        return "_Triage_Unmatched"
-
-    # 3. Normalizzazione finale tramite tabella esterna
-    c_lower = comp.lower().strip()
-    import re
-    for normalized, variations in composer_map.items():
-        if any(re.search(r'\b' + re.escape(var) + r'\b', c_lower) for var in variations):
-            return normalized
-
-    return comp.replace('/', '-').strip()
+    # Ora applichiamo la normalizzazione linguistica a tre livelli (JSON, Cyrillic, NFD)
+    import sys
+    sys.path.append('/Users/olindo/prj/k8s-lab/import_music/import_classical')
+    try:
+        from reorganize_recitals import normalize_artist_name
+        return normalize_artist_name(res)
+    except Exception:
+        return res.replace('/', '-').strip()
 
   year_bracket: |
     y = getattr(db_obj, 'original_year', 0) or getattr(db_obj, 'year', 0) or 0
@@ -167,10 +223,35 @@ item_fields:
     else:
         return "Unknown Movement"
 
+  clean_albumartist: |
+    val = getattr(db_obj, 'albumartist', '') or getattr(db_obj, 'artist', '') or 'Unknown Performer'
+    import sys
+    sys.path.append('/Users/olindo/prj/k8s-lab/import_music/import_classical')
+    try:
+        from reorganize_recitals import normalize_artist_name
+        return normalize_artist_name(val)
+    except Exception:
+        return str(val).strip()
+
   disc_and_track: |
     disc = getattr(db_obj, 'disc', 1) or 1
     track = getattr(db_obj, 'track', 1) or 1
-    return f"{disc:02d}-{track:02d}"
+    disctotal = getattr(db_obj, 'disctotal', 1) or 1
+
+    is_multi = (disc > 1 or disctotal > 1)
+
+    if not is_multi:
+        try:
+            path_str = db_obj.path.decode('utf-8', 'ignore').lower()
+            import re
+            if re.search(r'\b(cd|disc|disco|vol|volume)[-_\s]*\d+', path_str):
+                is_multi = True
+        except Exception:
+            pass
+
+    if is_multi:
+        return f"{disc:02d}-{track:02d}"
+    return f"{track:02d}"
 
   clean_work: |
     pw = getattr(db_obj, 'parentwork', '') or getattr(db_obj, 'work', '') or getattr(db_obj, 'album', '') or 'Unknown Work'
@@ -185,8 +266,11 @@ item_fields:
 #       01-01 - Allegro ma non troppo.flac
 #       ...
 paths:
-  default: >-
-    $clean_composer/$clean_work$year_bracket - $albumartist/$disc_and_track - $clean_title
+  default: >
+    %if{is_recital,
+    Recitals/$clean_albumartist/[$year] $album/$disc_and_track - $clean_composer - $clean_title,
+    Monographs/$clean_composer/$clean_work/[$year] $album/$disc_and_track - $clean_title
+    }
 
   singleton: $clean_composer/Singles/$clean_title
 

@@ -92,6 +92,20 @@
     - [ ] Integrazione script di unmonitoring API (`segregate_classical.py` come Beets post-import hook).
     - [ ] Dichiarare Jellyfin options.xml ConfigMap per la classica.
 
+- [ ] **Standardizzazione e Bonifica Libreria Classica** [[classical-music-standardization]]
+    - [ ] **Esecuzione Standardizzazione**: Eseguire lo script `standardize_classical_track_filenames.py --run` per standardizzare i symlinks e allineare il database Beets classica (`classical_musiclibrary.db`).
+    - [ ] **Bonifica Spazzatura macOS**: Purge massivo di tutti i 9.512 file di risorsa Apple Double `._*` nella libreria classica via `find /Volumes/classical/library -name "._*" -delete`.
+    - [ ] **Vaccino macOS (Prevenzione permanente)**: Eseguire `defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true` su Mac Studio per disabilitare la scrittura di file `._*` e `.DS_Store` su share di rete (NFS/SMB) e riavviare Finder.
+
+- [ ] **Ottimizzazione Tassonomia Classica: Integrazione Ibrida Beets + Jellyfin** [[classical-music-taxonomy-optimization]]
+    - [x] **Preparazione Ambiente**: Installare `cyrtranslit`, `transliterate` e `unidecode` nel virtualenv di Beets.
+    - [x] **Materializzazione Mapping**: Creare il file `artist_normalization.json` con i mapping canonicati.
+    - [x] **Materializzazione Script**: Creare lo script `reorganize_recitals.py` per la normalizzazione linguistica ed allineamento dei recital.
+    - [x] **Integrazione Configurazione**: Aggiornare `beets_classical_config.yaml` con i campi inline (`is_recital`, ecc.) e i tracciati dinamici condizionali.
+    - [x] **Verifica Dry-Run**: Eseguire lo script in modalità dry-run e validare il comportamento delle espressioni Beets.
+    - [x] **Esecuzione Reale**: Applicare la migrazione fisica dei symlinks dei recital e sincronizzare il database di Beets.
+    - [ ] **Allineamento Jellyfin-Classic**: Ottimizzare Jellyfin-Classic con tag multivalore e plugin `jellyfin-musictags-plugin`.
+
 ### [ ] Security & Automation
 - [x] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
     - [x] Sviluppo Helm-Native in `pindaroli-arr-helm` (**v1.2.3**).
