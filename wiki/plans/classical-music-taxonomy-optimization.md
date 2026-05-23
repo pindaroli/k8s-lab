@@ -1,6 +1,6 @@
 ---
 title: "Piano: Ottimizzazione della Tassonomia per la Musica Classica"
-status: "In Corso"
+status: "Completato"
 priority: "High"
 tags:
   - "#beets"
@@ -67,6 +67,7 @@ Modifica del file [beets_classical_config.yaml](file:///Users/olindo/prj/k8s-lab
 * **Definizione della Regola**: Per edizioni complete monumentali (come "Mozart 225" da 200 CD), si vieta la dispersione fisica delle tracce nella radice. È obbligatoria la categorizzazione strutturata sotto la cartella del Compositore: `Monographs/Compositore/Mozart 225 - Sezione/[Anno] Album/`.
 * **Tracciamento a Database**: Le tracce devono avere `composer` valorizzato (es. `Wolfgang Amadeus Mozart`) per attivare Monographs, `work` valorizzato con il nome della macro-sezione (es. `Mozart 225 - 01 Chamber`) per raggruppare i CD, ed `album` normalizzato con nomi parlanti privi di sigle tecniche.
 * **Esecuzione dello Script**: Creazione di `standardize_complete_editions.py` per automatizzare il refactoring a database tramite ORM di Beets ed esecuzione fisica di `beet move`.
+* **Esito & Risoluzione (2026-05-21)**: A causa dell'irreperibilità dei file fisici originari in staging, si è proceduto con il consolidamento della perdita. Tutte le 3.323 tracce relative a `Mozart 225` sono state rimosse forzatamente dal database Beets e il filesystem `/Volumes/classical/library` è stato interamente bonificato da tutti i symlink orfani e dalle relative directory vuote rimaste.
 
 ---
 

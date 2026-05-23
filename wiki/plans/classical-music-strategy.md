@@ -5,7 +5,7 @@
 **Obiettivo**: Segregazione fisica e logica della musica classica dal raggio d'azione di Lidarr, con una pipeline batch autonoma che preserva l'ontologia classica (Compositore → Opera → Direttore/Orchestra → Movimenti).
 
 > [!NOTE]
-> **Architettura Storage**: staging e library sono **subdirectory dello stesso dataset ZFS** (`oliraid/arrdata/classical`). Questo abilita i hardlink ZFS (`import.link: yes` in Beets), preservando il seeding qBittorrent a zero costo di spazio disco.
+> **Architettura Storage (Isolamento Fisico)**: staging e library sono **subdirectory dello stesso dataset ZFS** (`oliraid/arrdata/classical`). Per garantire l'integrità dei dati e l'isolamento completo, Beets è configurato per eseguire una **copia fisica** (`copy: yes`), permettendo di svuotare lo staging in sicurezza e modificare i tag senza corrompere il seeding qBittorrent.
 
 
 ---
@@ -33,11 +33,11 @@ Il modello "Artista-Album-Traccia" di Lidarr è incompatibile con la musica clas
 > [!IMPORTANT]
 > Lidarr NON ha mount su `.../music/classical`. Il dataset classico è invisibile al daemon Lidarr.
 >
-> **Nota Sistemistica (Duplicazione Storage & Seeding)**:
-> A causa del funzionamento di Beets/Mutagen (riscrittura fisica del file per i nuovi tag `.m4a` via NFS che non sfrutta in-place copy o `copy_file_range` macOS-side), la creazione iniziale dell'hardlink viene rotta durante la scrittura dei metadati.
-> - **Scelta Operativa**: Si accetta la duplicazione temporanea dello spazio su ZFS per preservare l'integrità dei tag interni (`write: yes`) e il seeding su qBittorrent.
-> - **Cleanup Staging**: Sarà cura dell'utente ripulire manualmente l'area `/Volumes/classical/staging` una volta completato l'intero processo di importazione e seeding.
-> - **Evoluzione Futura (Automazione)**: Sviluppare un meccanismo di cleanup automatico dei file in staging post-seeding o uno script di deduplica differita direttamente sul NAS (`jdupes`/`duperemove` che fonde i blocchi duplicati tramite il ZFS Block Cloning locale del pool `oliraid`).
+> **Nota Sistemistica (Duplicazione Operativa & Copia Fisica)**:
+> L'uso dei symlink e hardlink è stato **ufficialmente deprecato**. Per garantire la sicurezza totale dei dati (isolamento) e l'integrità dei torrent in seeding, la libreria viene popolata tramite copia fisica.
+> - **Scelta Operativa**: Si accetta il raddoppio temporaneo dello spazio su ZFS.
+> - **Cleanup Staging**: L'utente può svuotare liberamente e senza rischi l'area `/Volumes/classical/staging` una volta completato il seeding.
+> - **Evoluzione Futura (Automazione)**: Sviluppare uno script di deduplica differita direttamente sul NAS (`jdupes`/`duperemove` che fonde i blocchi identici tramite il ZFS Block Cloning locale del pool `oliraid`) per azzerare il costo della copia.
 
 ---
 
@@ -104,13 +104,13 @@ import_anomalies.log           ← prodotta dalla pipeline pop/rock (già esiste
         ▼
 /Volumes/arrdata/classical/staging/           ← stessa dataset di library → hardlink possibili
         │
-        │  Fase 2: import_classical_batches.py → beet import -q (link: yes)
+        │  Fase 2: import_classical_batches.py → beet import -q (copy: yes)
         │  Plugin: parentwork, inline, chroma, discogs
         │  Match sicuro → classical/library/$clean_composer/$parentwork/...
         │  Match fallito → classical/library/_Triage_Unmatched/...
         │  Resume: classical_success.log + classical_targets.txt
         ▼
-/Volumes/arrdata/classical/library/                   ← Beets hardlinka qui (stesso inode)
+/Volumes/arrdata/classical/library/                   ← Beets copia qui fisicamente (indipendenza)
 ├── Ludwig van Beethoven/
 │   └── Symphony No. 9 in D minor [1824] - Karajan, Berliner Philharmoniker/
 │       ├── 101 - Allegro ma non troppo.flac
@@ -120,7 +120,7 @@ import_anomalies.log           ← prodotta dalla pipeline pop/rock (già esiste
 └── _Triage_Unmatched/         ← per revisione manuale con Picard
 
 # Staging: /Volumes/arrdata/classical/staging/
-# i file originali restano qui (stesso inode via hardlink), seeding qBT attivo
+# i file originali restano qui per il seeding qBT attivo, e possono essere cancellati a piacere
 ```
 
 ---

@@ -57,6 +57,26 @@
           "10.10.10.0/24"
         ]
       },
+      "classical": {
+        "path": "/mnt/oliraid/arrdata/classical",
+        "description": "Mass Storage for Classical Music Library",
+        "protocol": "nfs",
+        "mount_options": [
+          "nfsvers=4.1",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime",
+          "resvport"
+        ],
+        "networks": [
+          "10.10.20.141",
+          "10.10.20.142",
+          "10.10.20.143",
+          "10.10.20.100",
+          "10.10.10.0/24"
+        ]
+      },
       "qbittorrent_temp": {
         "path": "/mnt/stripe/qb_temp",
         "description": "NVMe Optimized temporary storage for qBittorrent",

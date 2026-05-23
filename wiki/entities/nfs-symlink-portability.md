@@ -12,7 +12,12 @@ provenance:
   - "music-library-governance.md"
 ---
 
-# NFS Symlink Portability Governance
+# [DEPRECATED] NFS Symlink Portability Governance
+
+> [!WARNING]
+> **STATUS: DEPRECATO (2026-05-21)**
+> Questa direttiva è stata formalmente abbandonata a seguito di un incidente di *data loss*. L'uso dei symlink verso l'area di staging legava a doppio filo i dati in seeding con la libreria finale, causando la perdita dell'intera libreria quando lo staging veniva ripulito. Inoltre, la creazione accidentale di symlink assoluti (`/Volumes/...`) su macOS rompeva l'accesso nei container Linux.
+> **Nuova Direttiva**: Tutti i file vengono ora **copiati fisicamente** isolando `staging` e `library`. Questo documento è mantenuto unicamente per ragioni storiche e come *lessons learned*.
 
 Questa direttiva definisce gli standard e le convenzioni architetturali per l'uso di collegamenti simbolici (symlinks) all'interno dell'infrastruttura di storage distribuito del progetto GEMINI.
 

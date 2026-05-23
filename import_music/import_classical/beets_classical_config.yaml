@@ -267,7 +267,7 @@ item_fields:
 #       ...
 paths:
   default: >
-    %if{is_recital,
+    %if{$is_recital,
     Recitals/$clean_albumartist/[$year] $album/$disc_and_track - $clean_composer - $clean_title,
     Monographs/$clean_composer/$clean_work/[$year] $album/$disc_and_track - $clean_title
     }

@@ -113,10 +113,10 @@ Per garantire la separazione fisica tra i domini, lo storage è organizzato a li
 | `oliraid/arrdata/classical` | `1M` | Classical Unified | `1000:1000` (Media) | `qbittorrent` (RW), `jellyfin-classic` (RO) |
 
 > [!IMPORTANT]
-> **Dataset Classico Unificato & Nota Duplicazione**:
-> Sebbene staging e library risiedano nello stesso dataset ZFS (`oliraid/arrdata/classical`), l'utilizzo di Beets con `write: yes` da macOS via NFS rompe gli hardlink all'atto della scrittura dei metadati (Mutagen riscrive fisicamente il file).
-> - **Stato Attuale**: Si accetta la duplicazione temporanea dello spazio per preservare il seeding e la perfezione dei metadati fisici.
-> - **Cleanup Staging**: La pulizia di `/Volumes/classical/staging` è demandata all'utente manualmente a fine importazione e completamento seeding.
+> **Isolamento Fisico (Copia)**:
+> La libreria classica è interamente disaccoppiata dall'area di staging tramite la creazione di **copie fisiche** (`copy: yes` in Beets). L'uso di symlink o hardlink è stato deprecato per prevenire data-loss (cancellazione accidentale da staging) e la corruzione del seeding (modifica dei tag ID3).
+> - **Stato Attuale**: Si accetta la duplicazione temporanea dello spazio per preservare il seeding torrent in `staging`.
+> - **Cleanup Staging**: La pulizia di `/Volumes/classical/staging` è demandata all'utente manualmente a fine importazione e completamento seeding, e può essere eseguita in totale sicurezza senza impattare la `library`.
 
 ```
 /Volumes/arrdata/classical/

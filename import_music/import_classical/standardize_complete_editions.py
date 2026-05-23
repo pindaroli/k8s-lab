@@ -34,7 +34,7 @@ def parse_mozart_album(album_name):
     Riconosce se un album appartiene a Mozart 225 e ne estrae CD, Sezione e Descrizione.
     Esempio: "CD-025-Chamber-a4-String Quartets" -> (025, Chamber, 01 Chamber, a4 - String Quartets)
     """
-    m = re.match(r'^CD[-_ ]?(\d{3})[-_ ]?([A-Za-z0-9]+)[-_ ]?(.*)$', album_name, re.IGNORECASE)
+    m = re.match(r'^CD[-_ ]?(\d{3})[-_ ]+([A-Za-z0-9]+)(?:[-_ ]+(.*))?$', album_name, re.IGNORECASE)
     if m:
         cd_num = m.group(1)
         raw_section = m.group(2).lower()

@@ -40,7 +40,7 @@ Pristine e isolata da Lidarr. Curata tramite Beets CLI + Picard.
 * **Esempio**: `Ludwig van Beethoven/Symphony No. 9 in D minor [1824] - Karajan, Berliner Philharmoniker/101 - Allegro ma non troppo.flac`
 
 > [!IMPORTANT]
-> **PORTABILITÀ DEI SYMLINK (NFS)**: Poiché la libreria classica è interamente strutturata su collegamenti simbolici per preservare il seeding torrent in staging, tutti i symlink **devono** essere creati in forma **relativa**. Questo previene la rottura dei collegamenti tra client diversi (es. macOS e Kubernetes). Vedi la direttiva dedicata: [[nfs-symlink-portability]].
+> **ISOLAMENTO FISICO (COPY)**: La libreria classica è strutturata tramite copie fisiche isolate dall'area di staging (`copy: yes` in Beets). Questo garantisce che la libreria sia indipendente e prevenga la perdita di dati in caso di cancellazione dello staging, permettendo inoltre l'editing sicuro dei tag ID3 senza corrompere i file in seeding. L'uso dei symlink o hardlink è formalmente deprecato (vedi [[nfs-symlink-portability]]).
 
 ---
 
@@ -168,6 +168,6 @@ Per importare grosse librerie frammentate (Fase di Migrazione), utilizziamo uno 
 La pipeline classica opera secondo un modello disaccoppiato ("Blackhole"):
 1. L'istanza K8s `lidarr-classical` inoltra i download a qBittorrent con la categoria `music-classical`.
 2. Una volta completati in `/staging/classical`, `lidarr-classical` NON esegue l'importazione (Completed Download Handling disabilitato).
-3. Beets processa lo staging ed esporta la traccia pulita nel dataset ZFS classico (`/media/music/classical`).
+3. Beets processa lo staging ed esporta la traccia pulita eseguendo una copia fisica nel dataset ZFS classico (`/media/music/classical`). L'area di staging può essere svuotata liberamente al termine del seeding senza intaccare la libreria.
 4. Uno script di unmonitoring API (`segregate_classical.py` richiamato come hook post-import) interroga `lidarr-classical` via REST e spegne il monitoraggio dell'album per evitare loop di download infiniti.
 5. Jellyfin monta il dataset classico in **Sola Lettura** e con tutti gli **scraper disabilitati** (via ConfigMap `options.xml`), forzando l'utilizzo esclusivo dei metadati embedded di Beets.

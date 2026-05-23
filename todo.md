@@ -1,5 +1,19 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## [x] Ottimizzazione Diagnostica Avvio Tdarr Node (COMPLETED 2026-05-23)
+> **Ref**: [[tdarr-startup-diagnostics-optimization]]
+- [x] Modificare `start_node.sh` per aggiungere il controllo preventivo TCP verso il Tdarr Server (`tdarr-api.pindaroli.org:8266`). (COMPLETED 2026-05-23)
+- [x] Verificare il comportamento in modalità fallimento (messaggi sintetici di retry, diagnostica estesa solo al blocco definitivo). (COMPLETED 2026-05-23)
+- [x] Verificare il corretto avvio in modalità regolare. (COMPLETED 2026-05-23)
+
+## [x] Ripresa Bonifica e Spostamento Mozart 225 (COMPLETED 2026-05-21)
+> **Ref**: [[classical-music-taxonomy-optimization]]
+- [x] **Rilevamento File (NFS Autofs)**: Identificato dataset ZFS figlio `/mnt/oliraid/arrdata/classical` non montato. Configurato automount nativo via `autofs` su macOS per `/Volumes/classical` e `/Volumes/media`, ripristinando l'accesso completo ai file fisici senza bisogno di rollback! (COMPLETED 2026-05-21)
+- [x] **Rimozione & Consolidamento Perdita**: Accettata la perdita dei dati originali di Mozart 225. Eseguita la rimozione forzata dal database classico di Beets (3.323 tracce) e pulizia completa sul filesystem `/Volumes/classical` di tutti i symlink a staging e delle relative cartelle orfane di Mozart 225. (COMPLETED 2026-05-21)
+*Vedi file di contesto dettagliato:* [/import_music/import_classical/context_resume_mozart225.md](file:///Users/olindo/prj/k8s-lab/import_music/import_classical/context_resume_mozart225.md)
+
+---
+
 ## [x] Ripristino Connettività qBittorrent (Port Forwarding) (COMPLETED 2026-05-09)
 > **Ref**: [[2026-05-08-qbittorrent-port-forward-outage]]
 - [x] **Azione Manuale (OPNsense)**: Creare regola "Destination NAT" su `WAN` per porta `30661` (TCP/UDP) verso `10.10.20.60`.
@@ -57,7 +71,7 @@
 
 ### 🎵 Music Rescue & Ingestion Pipeline (Modern & Classical)
 - [ ] **Phase 1: Modern Music Rescue Pipeline** [[beets-music-rescue-pipeline]]
-    - [ ] Automatizzare il mount NFS `/Volumes/arrdata/media` con opzioni `noresvport,locallocks`.
+    - [x] Automatizzare il mount NFS di /Volumes/media e /Volumes/classical in modo centralizzato tramite autofs su macOS (Script setup_autofs.sh pronto). (COMPLETED 2026-05-21)
     - [x] Esecuzione Pilot Test su campione di 3 album. (COMPLETED)
     - [x] Migrazione massiva con gestione Hardlinks/Seeding. (COMPLETED)
     - [x] Case clash detection e unificazione (`Us3 vs US3`). (COMPLETED)
@@ -233,3 +247,8 @@ Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttam
 
 ## 💿 Workload Futuro: Integrazione MakeMKV
 - [ ] **⚠️ B. Il Task MakeMKV**: Configurare un pod per la conversione automatizzata ISO/DVD in MKV agganciato a Tdarr o come servizio standalone.
+
+---
+
+## 🛠️ Automazione Declarativa Storage (TrueNAS GitOps)
+- [ ] **Configurazione Automatica TrueNAS**: Progettare ed implementare un meccanismo (es. playbook Ansible o script basato sulle API di TrueNAS SCALE) per allineare ed applicare dichiarativamente i dataset ZFS e le esportazioni NFS/SMB definiti nel file `storage.json` direttamente su TrueNAS.

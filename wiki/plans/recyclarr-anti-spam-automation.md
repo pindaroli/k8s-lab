@@ -112,7 +112,7 @@ recyclarr:
     - [x] **Cleanup**: Rimozione vecchi manifesti statici `recyclarr.yaml` e `recyclarr-cronjob.yaml`.
 4. [ ] **Deployment**:
     - [ ] Eseguire `helm repo update` per scaricare la versione `1.2.3`.
-    - [ ] Eseguire `helm upgrade servarr kubitodev/servarr --version 1.2.3 -n arr -f servarr/arr-values.yaml`.
+    - [ ] Eseguire `helm upgrade servarr pindaroli/servarr --version 1.2.3 -n arr -f servarr/arr-values.yaml`.
 5. [ ] **Verifica**:
     - [ ] Creazione Job di test: `kubectl create job --from=cronjob/servarr-recyclarr recyclarr-test-sync -n arr`.
     - [ ] Controllo log e validazione Custom Formats in Radarr UI.

@@ -37,7 +37,7 @@ jellyfin:
       subPath: foto
 
 jellyfin-classic:
-  enabled: true
+  enabled: false
   image:
     tag: "10.10.7"
   extraEnvVars:
@@ -51,6 +51,14 @@ jellyfin-classic:
     enabled: false
   service:
     type: ClusterIP
+  podSecurityContext:
+    runAsUser: null
+    runAsGroup: null
+    fsGroup: null
+  securityContext:
+    runAsUser: null
+    runAsGroup: null
+    fsGroup: null
   persistence:
     config:
       enabled: true
@@ -60,7 +68,8 @@ jellyfin-classic:
       enabled: true
       type: persistentVolumeClaim
       existingClaim: servarr-classical-media
-      subPath: library
+      subPath: "library"
+
   resources:
     requests:
       cpu: 2000m
