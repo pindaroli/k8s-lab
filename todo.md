@@ -244,6 +244,14 @@ Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttam
 ### [ ] Multimedia Clients & Integration
 - [ ] **Feishin Installation**: Configurare Feishin come player musicale desktop/mobile puntando alla libreria Navidrome/Lidarr.
     > **Ref**: [Gemini Share - Feishin Setup](https://gemini.google.com/share/8b7a061246b0)
+- [ ] **Migrazione Jellyfin (jellyfin-srv) su Storage NFS (Stripe NVMe)** [[jellyfin-srv-storage-migration]]
+    - [ ] Creare le directory `servarr-jellyfin-srv-config` e `servarr-jellyfin-srv-metadata` all'interno della share `/Volumes/k8s-arr-1/` (TrueNAS NVMe).
+    - [ ] Impostare la corretta proprietà e permessi per UID `1000` (o l'utente jellyfin nel container).
+    - [ ] Fermare a freddo il servizio Jellyfin nell'LXC `2200` (`systemctl stop jellyfin`).
+    - [ ] Creare e committare su Git la pre-configurazione XML stabile in `servarr/jellyfin-srv/etc-jellyfin/`.
+    - [ ] Eseguire il primo sync rsync speculare da Git e da LXC (metadati) a NFS.
+    - [ ] Configurare i bind-mount `mp1` e `mp2` nel file `/etc/pve/lxc/2200.conf` del nodo `pve3` puntando a `/mnt/pve/k8s-arr/servarr-jellyfin-srv-*` e applicare l'ID Mapping custom (`lxc.idmap`).
+    - [ ] Configurare l'override Systemd `XDG_CACHE_HOME=/var/cache/jellyfin` nell'LXC, riavviare il container e verificare stabilità e performance del database.
 
 ## 💿 Workload Futuro: Integrazione MakeMKV
 - [ ] **⚠️ B. Il Task MakeMKV**: Configurare un pod per la conversione automatizzata ISO/DVD in MKV agganciato a Tdarr o come servizio standalone.

@@ -18,6 +18,11 @@ provenance: # Riferimenti ai file RAW o incidenti originali
 ---
 ```
 
+Per i piani in `wiki/plans/`, è obbligatorio definire anche lo stato di avanzamento nel blocco frontmatter o all'inizio del file per tracciare il ciclo di vita del piano:
+```yaml
+status: "In fase di elaborazione" | "In corso" | "Concluso"
+```
+
 ## 2. Sintassi di Collegamento (Wikilinks)
 - Utilizzare sempre i doppi bracket per collegare le entità: `[[NomeEntita]]`.
 - Non utilizzare link Markdown standard per file interni (es. `[testo](file.md)`), ma usare i wikilinks per mantenere la compatibilità con la Graph View di Obsidian.
@@ -73,3 +78,20 @@ Per garantire l'Alta Affidabilità (HA) definita in [[GEMINI]]:
 1.  **Ingress/External**: Puntare i record DNS esterni (Cloudflare) o interni (OPNsense) sempre al **VIP** (es. `10.10.10.100`) o al nome host logico (es. `k1`).
 2.  **Pod-to-Pod**: Usare sempre il Service Name `svc.cluster.local`. È vietato usare l'IP del VIP o l'IP fisico del nodo per la comunicazione interna tra container.
 3.  **Stateful Awareness**: L'indirizzamento logico non sposta lo storage locale. La resilienza dei dati deve essere gestita a livello applicativo (replicazione DB).
+
+## 11. Ripresa Sessione e Save-State (/resume)
+Per garantire la continuità del lavoro e della conoscenza tra sessioni o contesti diversi dell'agente (LLM):
+
+1.  **Il Comando `/resume`**: Quando l'utente inserisce `/resume [[nome-piano]]`, l'agente deve immediatamente:
+    - Scansionare il piano specificato in `wiki/plans/`.
+    - Leggere la sezione `## 💾 Stato di Ripristino (AI Save-State)` per riprendere il contesto esatto.
+    - Controllare i relativi task pendenti in `todo.md`.
+    - Proporre la sintesi dello stato e l'azione immediata successiva.
+2.  **La sezione "Save-State"**: Ogni piano in corso di elaborazione o esecuzione **DEVE** terminare con un blocco standardizzato aggiornato dall'agente al termine di ogni turno:
+    ```markdown
+    ## 💾 Stato di Ripristino (AI Save-State)
+    - **Fase Attiva**: [Fase X / Nome Fase]
+    - **Ultima Azione Completata**: [Descrizione sintetica del comando/azione eseguita con successo]
+    - **Prossimo Passo Operativo**: [Comando esatto o modifica da fare successivamente]
+    - **Blocchi/Decisioni Pendenti**: [Attesa via libera, info mancanti o discussioni aperte]
+    ```
