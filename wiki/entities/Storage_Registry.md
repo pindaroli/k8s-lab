@@ -1,6 +1,6 @@
 ---
 title: "Storage Registry (storage.json)"
-last_updated: "2026-05-11"
+last_updated: "2026-05-24"
 confidence: "High"
 tags:
   - "#storage"
@@ -20,8 +20,8 @@ Questo nodo del Wiki definisce le **regole** e la topologia dello storage condiv
 ## 1. Topologia Storage
 Lo storage primario è fornito da [[TrueNAS]] tramite protocollo NFS.
 Ci sono due pool principali:
-- **`oliraid`**: Pool HDD primario, alta capacità. Usato per i media (`arrdata`), backup e documenti a lungo termine.
-- **`stripe`**: Pool NVMe ad alte prestazioni. Usato per cache K8s, transcodifica temporanea di [[Tdarr]] (`k8s-arr/tdarr-cache`) e storage temporaneo qBittorrent (`qb_temp`).
+- **`oliraid`**: Pool HDD primario, alta capacità. Usato per i media (`arrdata`), backup, musica classica e documenti a lungo termine.
+- **`stripe`**: Pool NVMe ad alte prestazioni. Usato per cache K8s, transcodifica temporanea di [[Tdarr]] (`k8s-arr/tdarr-cache`), storage temporaneo qBittorrent (`qb_temp`), PVC NFS per la suite n8n (`k8s-n8n`) e libreria Steam/Games (`games`).
   - **Ottimizzazione qB Temp**: Dataset `stripe/qb_temp` configurato con **Recordsize: 16k** e **Sync: Disabled** per gestire burst di IOPS a 20 MB/s.
 
 > [!CRITICAL]

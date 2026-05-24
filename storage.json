@@ -35,8 +35,11 @@
           "noatime"
         ],
         "networks": [
-          "10.10.10.0/24",
-          "10.10.20.0/24"
+          "10.10.20.141",
+          "10.10.20.142",
+          "10.10.20.143",
+          "10.10.20.100",
+          "10.10.10.0/24"
         ]
       },
       "media": {
@@ -54,6 +57,7 @@
           "10.10.20.141",
           "10.10.20.142",
           "10.10.20.143",
+          "10.10.20.100",
           "10.10.10.0/24"
         ]
       },
@@ -90,8 +94,11 @@
           "resvport"
         ],
         "networks": [
-          "10.10.10.0/24",
-          "10.10.20.0/24"
+          "10.10.20.141",
+          "10.10.20.142",
+          "10.10.20.143",
+          "10.10.20.100",
+          "10.10.10.0/24"
         ],
         "zfs_recordsize": "16k",
         "zfs_sync": "disabled",
@@ -118,6 +125,39 @@
         "description": "Replica Target for Stripe (ZFS Snapshots)",
         "protocol": "zfs-replication",
         "networks": []
+      },
+      "k8s_n8n": {
+        "path": "/mnt/stripe/k8s-n8n",
+        "description": "NFS PVCs for n8n stack (Config / Database / Workflows)",
+        "protocol": "nfs",
+        "mount_options": [
+          "nfsvers=4.1",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime"
+        ],
+        "networks": [
+          "10.10.20.141",
+          "10.10.20.142",
+          "10.10.20.143",
+          "10.10.20.100"
+        ]
+      },
+      "games": {
+        "path": "/mnt/stripe/games",
+        "description": "NFS Share for Games / Steam Library in Proxmox",
+        "protocol": "nfs",
+        "mount_options": [
+          "nfsvers=4.2",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime"
+        ],
+        "networks": [
+          "*"
+        ]
       }
     }
   }

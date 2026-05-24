@@ -260,3 +260,4 @@ Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttam
 
 ## 🛠️ Automazione Declarativa Storage (TrueNAS GitOps)
 - [ ] **Configurazione Automatica TrueNAS**: Progettare ed implementare un meccanismo (es. playbook Ansible o script basato sulle API di TrueNAS SCALE) per allineare ed applicare dichiarativamente i dataset ZFS e le esportazioni NFS/SMB definiti nel file `storage.json` direttamente su TrueNAS.
+- [ ] **Re-ingegnerizzazione Sincronizzazione via Ansible**: Re-ingegnerizzare le procedure di sincronizzazione dello storage (attualmente basate su `sync_storage.py` ed expect script) all'interno di playbook Ansible per garantire idempotenza ed una gestione unificata e dichiarativa degli share NFS e dei mountpoint Proxmox/K8s.
