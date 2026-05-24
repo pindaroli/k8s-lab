@@ -13,7 +13,7 @@
 > - **Presentation Layer (Homepage)**: **COMPLETATO** (Nuovi pannelli per Lidarr Classic e Jellyfin Classic inseriti e visibili).
 >
 > ### 🚀 Prossimi Passi (Domani)
-> 1. Configurazione Categoria `music-classical` su qBittorrent (`/staging/classical`).
+> 1. Configurazione Categoria `lidarr-classic` su qBittorrent (share nfs `/mnt/oliraid/arrdata/classical/staging`).
 > 2. Associazione tag `classical-indexers` su Prowlarr.
 > 3. Disabilitazione "Completed Download Handling" su `lidarr-classic`.
 > 4. Deploy del ConfigMap per `options.xml` di `jellyfin-classic` e aggancio del volume.
@@ -36,7 +36,7 @@ graph TD
         j_classic["Pod: jellyfin-classic"]
         l_classic["Pod: lidarr-classic"]
         pvc -->|Mount Read-Only /media/music/classical| j_classic
-        pvc -->|Mount Read-Write /staging/classical| l_classic
+        pvc -->|Mount Read-Write /media (staging)| l_classic
     end
 
     subgraph Traefik [Traefik Routing & Sicurezza]
@@ -298,7 +298,7 @@ ansible-playbook ansible/playbooks/opnsense_sync_dns.yml
 ## 4. Integrazione Applicativa & Routing
 
 ### 4.1 qBittorrent (Routing per Categoria)
-- **Categoria**: `music-classical`
+- **Categoria**: `lidarr-classic`
 - **Save Path**: `/staging/classical` (TrueNAS: `/mnt/oliraid/arrdata/classical/staging`)
 
 ### 4.2 Prowlarr (Tagging degli Indexer Classici)

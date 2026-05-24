@@ -38,17 +38,17 @@ Per gestire l'incompatibilità intrinseca tra la tassonomia standard di Lidarr e
 - **Volume Ingestione (RW)**: `/Volumes/arrdata/media/music/pop_rock`.
 - **Categoria qBittorrent**: `music-pop` (mappato a `/staging/pop_rock`).
 
-### B. `lidarr-classical` (Classical Music Search-and-Dispatch)
+### B. `lidarr-classic` (Classical Music Search-and-Dispatch)
 - **Scopo**: Scoperta e invio download per materiale classico, senza diritti di scrittura sulla libreria finale.
 - **Ingestione**: Decoppiata. Completed Download Handling **disabilitato** (Genera warning in UI, ignorabile).
-- **Volume Staging (RO)**: `/staging/classical` (Nessun mount su `/media/music/classical`).
-- **Categoria qBittorrent**: `music-classical` (mappato a `/staging/classical`).
+- **Volume Staging (RW)**: `/media` (punta a `staging` della share NFS).
+- **Categoria qBittorrent**: `lidarr-classic` (mappato fisicamente alla share NFS `/mnt/oliraid/arrdata/classical/staging`).
 - **Sincronizzazione API**: Lo stato dei download viene chiuso spegnendo la proprietà `monitored` dell'album via API POST/PUT dopo l'importazione operata esternamente da Beets.
 
 ### C. Prowlarr Indexer Tags
 Per evitare conflitti di scaricamento tra le due istanze:
 - Tag `classical-indexers` creato in Prowlarr e assegnato a tracker ad alta fedeltà di classica (es. RED, Usenet dedicati).
-- Il profilo di sincronizzazione in Prowlarr mappa i tracker taggati `classical-indexers` **esclusivamente** a `lidarr-classical`. Tracker generici e moderni sono mappati a `lidarr-pop`.
+- Il profilo di sincronizzazione in Prowlarr mappa i tracker taggati `classical-indexers` **esclusivamente** a `lidarr-classic`. Tracker generici e moderni sono mappati a `lidarr-pop`.
 
 ## Relazioni
 - Namespace: `arr`
