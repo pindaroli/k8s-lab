@@ -159,6 +159,15 @@ qbittorrent:
     additionalMounts:
       - name: incomplete-dw
         mountPath: /data/incomplete
+  # Ottimizzazione I/O interna per bypassare la Page Cache dell'host Linux
+  qbittorrentConf:
+    enabled: true
+    entries:
+      BitTorrent:
+        Session\DiskIOType: "Posix"
+        Session\DiskIOReadMode: "DisableOSCache"
+        Session\DiskIOWriteMode: "DisableOSCache"
+        Session\MaxActiveCheckingTorrents: "1"
 
 
 flaresolverr:

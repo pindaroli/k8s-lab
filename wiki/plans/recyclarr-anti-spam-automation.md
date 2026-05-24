@@ -1,7 +1,20 @@
+---
+title: "Wiki Plan: Recyclarr Anti-Spam Automation"
+last_updated: "2026-05-24"
+confidence: "High"
+status: "Concluso"
+tags:
+  - "#app"
+  - "#recyclarr"
+  - "#helm"
+provenance:
+  - "pindaroli-arr-helm"
+---
+
 # Wiki Plan: Recyclarr Anti-Spam Automation
 
 > [!NOTE]
-> **Status**: ✅ **APPROVATO — Pronto per Esecuzione**
+> **Status**: ✅ **CONCLUSO & OPERATIVO**
 > **Goal**: Integrare Recyclarr **nativamente nel chart `pindaroli-arr-helm`** per eliminare fake/spam torrent in modo automatico e dichiarativo.
 
 ## 🎯 Obiettivo

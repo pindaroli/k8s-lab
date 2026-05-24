@@ -2,13 +2,13 @@
 - name: 🚀 SETUP TRUENAS NVME DATASET FOR QBITTORRENT 🚀
   hosts: truenas
   gather_facts: false
-  become: false
+  become: true
 
   vars:
     dataset_path: "stripe/qb_temp"
     owner_uid: 1000
     owner_gid: 1000
-    recordsize: "16k"
+    recordsize: "1M"
 
   tasks:
     - name: "Check if dataset already exists"

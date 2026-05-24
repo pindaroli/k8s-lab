@@ -95,3 +95,10 @@ Per garantire la continuità del lavoro e della conoscenza tra sessioni o contes
     - **Prossimo Passo Operativo**: [Comando esatto o modifica da fare successivamente]
     - **Blocchi/Decisioni Pendenti**: [Attesa via libera, info mancanti o discussioni aperte]
     ```
+
+## 12. Test-Driven Verification Protocol (Operational)
+Per garantire la stabilità del cluster homelab ed evitare disastri derivanti da configurazioni errate, ogni piano operativo e la relativa esecuzione devono seguire un protocollo rigorosamente **Test-Driven**:
+
+1.  **Test Ad Ogni Passo**: Ogni singolo comando di modifica (Ansible, kubectl, modifiche file, script, comandi ZFS) deve essere seguito da un'operazione di verifica esplicita (es. query SQL, log audit, test di porta, curl, df, mount inspection) per validare l'esito reale.
+2.  **Documentazione nel Piano**: Ogni piano di migrazione o manutenzione in `wiki/plans/` deve includere esplicitamente i comandi di test e verifica a corredo di ciascun comando operativo, in modo che l'operatore e l'AI possano validare lo stato passo dopo passo.
+3.  **No Assunzioni**: È vietato passare al comando successivo se il test del passo corrente non ha restituito esito positivo al 100%.

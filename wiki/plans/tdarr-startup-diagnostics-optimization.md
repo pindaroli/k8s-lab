@@ -1,7 +1,20 @@
+---
+title: "Piano: Ottimizzazione Diagnostica Avvio Tdarr Node"
+last_updated: "2026-05-24"
+confidence: "High"
+status: "Concluso"
+tags:
+  - "#app"
+  - "#tdarr"
+  - "#macstudio"
+provenance:
+  - "start_node.sh"
+---
+
 # Piano: Ottimizzazione Diagnostica Avvio Tdarr Node
 
 > [!NOTE]
-> **Stato**: In approvazione.
+> **Stato**: ✅ **CONCLUSO & OPERATIVO (2026-05-23)**
 > **Obiettivo**: Impedire al binario `Tdarr_Node` di avviarsi se il server Tdarr (`tdarr-api.pindaroli.org:8266`) non è raggiungibile. Questo evita lo spam di log Axios (AxiosError) chilometrici se l'avvio del nodo avviene quando il server non è ancora pronto o raggiungibile, limitando la diagnostica verbosa ai soli casi in cui l'avvio viene abortito definitivamente.
 
 ## 1. Analisi del Problema

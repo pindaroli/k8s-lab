@@ -12,12 +12,13 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: nfs-csi
   mountOptions:
-    - nfsvers=4.1
-    - resvport
-    - soft
-    - timeo=50
+    - nfsvers=4.2
+    - rsize=1048576
+    - wsize=1048576
+    - hard
+    - timeo=600
     - retrans=3
-    - noatime
+    - noresvport
   nfs:
     server: 10.10.10.50
     path: /mnt/stripe/qb_temp
@@ -26,7 +27,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-incomplete-dw
-  namespace: servarr
+  namespace: arr
 spec:
   accessModes:
     - ReadWriteMany

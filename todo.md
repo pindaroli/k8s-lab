@@ -23,15 +23,15 @@
 
 # PostgreSQL Post-Recovery Tasks
 
-## [ ] qBittorrent NVMe Migration (High Priority)
+## [x] qBittorrent NVMe Migration (COMPLETED 2026-05-24)
 > Ref: [[qbittorrent-nvme-migration]]
-- [x] **Ansible**: Creato playbook `truenas_nvme_setup.yml` per dataset `stripe/qb_temp` (16k, 1000:1000).
-- [x] **K8s Storage**: Creato manifest `storage/incomplete-dw-pvc.yaml` (PV/PVC).
-- [ ] **K8s Deploy**: Eseguire playbook Ansible su TrueNAS.
-- [ ] **K8s Deploy**: Applicare manifest storage: `kubectl apply -f storage/incomplete-dw-pvc.yaml`.
-- [x] **Helm**: Aggiornare `servarr/arr-values.yaml` con `additionalVolumes` e `additionalMounts`.
-- [ ] **Verifica**: Controllare mount `/data/incomplete` nel pod qBittorrent.
-- [ ] **Migrazione**: Procedere con lo spostamento fisico dei torrent (Set Location).
+- [x] **Ansible**: Creato playbook `truenas_nvme_setup.yml` per dataset `stripe/qb_temp` ed eseguito con successo con recordsize=1M e sync=disabled.
+- [x] **K8s Storage**: Creato manifest `storage/incomplete-dw-pvc.yaml` (PV/PVC) con ottimizzazioni NFSv4.2 ed applicato con successo nel namespace `arr`.
+- [x] **Helm**: Aggiornato `servarr/arr-values.yaml` con l'integrazione di `pvc-incomplete-dw` e tuning I/O avanzati di libtorrent (`DisableOSCache`), release aggiornata con successo alla REVISION 89.
+- [x] **Patch Configurazione**: Riconfigurato a freddo `qBittorrent.conf` via SSH su TrueNAS con successo per abilitare `/data/incomplete`.
+- [x] **Migrazione Fisica**: Spostati con successo 91.6 GB di file parziali a freddo via `rsync` su TrueNAS ad una velocità media di 367.2 MB/s.
+- [x] **Verifica**: Convalidato il corretto funzionamento, il mount `/data/incomplete` di 4.9T su NVMe e lo stato Running di tutto il namespace `arr`.
+- [x] **Backup**: Rinominata la vecchia directory HDD in `downloads/incomplete_backup` per sicurezza.
 
 ## Vaultwarden Deployment (PAUSED)
 
@@ -95,7 +95,7 @@
     - [x] Sviluppo template Helm per `jellyfin-classic` e `lidarr-classic` in `pindaroli-arr-helm`.
     - [x] Aggiornare `oli-arr-values.yaml` in `pindaroli-arr-helm` con i blocchi di configurazione per i due nuovi servizi.
     - [x] Upgrade release Helm `oli-arr` con i nuovi servizi abilitati.
-- [ ] **Phase 4: Non-Helm Infrastructure Provisioning (Classical Music)** [[classical-infrastructure-provisioning]]
+- [ ] **Phase 4: Non-Helm Infrastructure Provisioning (Classical Music)** [[dual-pipeline-gitops-integration]]
     - [x] Applicare manifest di storage PV/PVC per la classica: `kubectl apply -f storage/classical-media-pvc.yaml`.
     - [ ] Configurare qBittorrent (categoria `music-classical` su `/staging/classical`).
     - [ ] Configurare Prowlarr (tag `classical-indexers` per tracker dedicati).
