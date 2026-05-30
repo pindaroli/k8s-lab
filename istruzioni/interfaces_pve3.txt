@@ -2,23 +2,21 @@ auto lo
 iface lo inet loopback
 
 # -----------------------------------------------------------
-# NODO: PVE (Node 1) - IP: 10.10.10.11
-# PATH: /etc/network/interfaces
+# INTERFACCE LOGICHE FITTIZIE (PLACEHOLDER MIGRAZIONE 10G)
 # -----------------------------------------------------------
+iface dac1 inet manual
+# Future Port 1 (VLAN 10 - Server)
 
-iface nic0 inet manual
-# Porta 1 (VLAN 10 - Server)
-
-iface nic1 inet manual
-# Porta 2 (VLAN 20 - Client)
+iface dac2 inet manual
+# Future Port 2 (VLAN 20 - Client)
 
 # -----------------------------------------------------------
-# PORTA DI SERVIZIO (DIRECT ACCESS - VLAN 1 Admin Subnet)
+# PORTA DI SERVIZIO OUT-OF-BAND (VLAN 99) - PORTA FISICA 2.5G
 # -----------------------------------------------------------
-#auto nic0
-#iface eno3 inet static
-#    address 192.168.100.11/24
-    # NESSUN GATEWAY. Collega PC con IP 192.168.100.x
+auto nic0
+iface nic0 inet static
+    address 192.168.100.31/24
+    # NESSUN GATEWAY. Collega allo switch LIAGUO in Access VLAN 99
 
 # -----------------------------------------------------------
 # BRIDGE MANAGEMENT & SERVER (VLAN 10)
@@ -27,7 +25,7 @@ auto vmbr10
 iface vmbr10 inet static
     address 10.10.10.31/24
     gateway 10.10.10.1
-    bridge-ports nic0
+    bridge-ports dac1
     bridge-stp off
     bridge-fd 0
 
@@ -36,6 +34,6 @@ iface vmbr10 inet static
 # -----------------------------------------------------------
 auto vmbr20
 iface vmbr20 inet manual
-    bridge-ports nic1
+    bridge-ports dac2
     bridge-stp off
     bridge-fd 0

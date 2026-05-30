@@ -15,7 +15,8 @@ iface enp1s0f1 inet manual
 # -----------------------------------------------------------
 # PORTA DI SERVIZIO (DIRECT ACCESS - VLAN 1 Admin Subnet)
 # -----------------------------------------------------------
-iface eno3 inet static
+auto nic0
+iface nic0 inet static
     address 192.168.100.11/24
     # NESSUN GATEWAY. Collega PC con IP 192.168.100.x
 

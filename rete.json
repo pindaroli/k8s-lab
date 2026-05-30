@@ -54,7 +54,8 @@
                         "1",
                         "10",
                         "20",
-                        "30"
+                        "30",
+                        "99"
                     ]
                 },
                 {
@@ -68,7 +69,8 @@
                         "1",
                         "10",
                         "20",
-                        "30"
+                        "30",
+                        "99"
                     ]
                 },
                 {
@@ -117,10 +119,10 @@
                 },
                 {
                     "id": "3",
-                    "role": "Free / Unused",
+                    "role": "Mac Studio OOB USB adapter (VLAN 99)",
                     "mode": "ACCESS",
                     "speed": "2.5Gbs",
-                    "pvid": 1
+                    "pvid": 99
                 },
                 {
                     "id": "4",
@@ -144,7 +146,8 @@
                         "1",
                         "10",
                         "20",
-                        "30"
+                        "30",
+                        "99"
                     ]
                 },
                 {
@@ -167,33 +170,32 @@
             "ports": [
                 {
                     "id": "1",
-                    "role": "Connection to pve2 Port 1",
+                    "role": "PVE2 OOB Service Port (VLAN 99)",
                     "mode": "ACCESS",
                     "speed": "2.5Gbs",
-                    "pvid": 10
+                    "pvid": 99
                 },
                 {
                     "id": "2",
-                    "role": "Connection to pve2 Port 2",
+                    "role": "PVE1 OOB Service Port (VLAN 99)",
                     "mode": "ACCESS",
                     "speed": "2.5Gbs",
-                    "pvid": 20
+                    "pvid": 99
                 },
                 {
                     "id": "3",
-                    "role": "Connection to pve3 Port 1",
+                    "role": "PVE3 OOB Service Port (VLAN 99)",
                     "mode": "ACCESS",
                     "speed": "2.5Gbs",
-                    "pvid": 10,
+                    "pvid": 99,
                     "os_name": "nic0"
                 },
                 {
                     "id": "4",
-                    "role": "Connection to pve3 Port 2",
+                    "role": "Free / Unused",
                     "mode": "ACCESS",
                     "speed": "2.5Gbs",
-                    "pvid": 20,
-                    "os_name": "nic1"
+                    "pvid": 1
                 },
                 {
                     "id": "5",
@@ -217,7 +219,8 @@
                         "1",
                         "10",
                         "20",
-                        "30"
+                        "30",
+                        "99"
                     ]
                 }
             ],
@@ -420,7 +423,7 @@
                 },
                 {
                     "id": "3",
-                    "os_name": "eno3",
+                    "os_name": "nic0",
                     "speed": "2.5Gbs",
                     "connected_to": "Direct Access",
                     "ip": "192.168.100.11",
@@ -523,19 +526,27 @@
             "ports": [
                 {
                     "id": "1",
-                    "os_name": "nic0",
-                    "speed": "2.5Gbs",
-                    "connected_to": "switch-25g-server",
+                    "os_name": "dac1",
+                    "speed": "10Gbs",
+                    "connected_to": "switch10g",
                     "vlan": "10",
-                    "note": "LAN Server Bridge (vmbr10)"
+                    "note": "LAN Server Bridge (vmbr10) - Future 10G"
                 },
                 {
                     "id": "2",
-                    "os_name": "nic1",
+                    "os_name": "dac2",
+                    "speed": "10Gbs",
+                    "connected_to": "switch10g",
+                    "vlan": "20",
+                    "note": "LAN Client Bridge (vmbr20) - Future 10G"
+                },
+                {
+                    "id": "3",
+                    "os_name": "nic0",
                     "speed": "2.5Gbs",
                     "connected_to": "switch-25g-server",
-                    "vlan": "20",
-                    "note": "LAN Client Bridge (vmbr20)"
+                    "ip": "192.168.100.31",
+                    "note": "Service Port (VLAN 99 OOB - No Gateway)"
                 }
             ],
             "disks": [

@@ -165,11 +165,24 @@
     - [x] Disabilitare AutoUpdater.
     - [x] Ridurre `initialDelaySeconds` della Readiness Probe.
 
-## 🖥️ Ripristino PVE2 (Hardware Pending)
-- [ ] Riaggiungere IP `10.10.20.142` nel file `talos-config/talosconfig`.
-- [ ] Verificare lo stato hardware e ricongiungere il nodo come nuovo membro (rimosso da etcd il 01/05 per stabilità).
-- [ ] Applicare configurazione Talos: `talosctl apply-config -n 10.10.20.142 -f talos-config/controlplane.yaml` (impostando `bind-address=0.0.0.0`).
-- [ ] Verificare lo stato del nodo con `talosctl get members` e salute quorum etcd.
+## 🖥️ Connettività OOB e Migrazione 10G PVE3
+- [ ] **Fase 1: Configurazione Canale di Servizio Fisico (OOB)** [[plan-out-of-band-service-access]]
+    - [ ] Creare VLAN 99 sui tre switch e taggarla sui link di Uplink
+    - [ ] Configurare le porte OOB dei nodi Proxmox e dell'adattatore USB Mac Studio in Access VLAN 99
+    - [ ] Configurare lo split-routing fisso sull'adattatore USB Ethernet del Mac Studio (`192.168.100.99`, no gateway)
+    - [ ] Validare la connettività OOB ed isolamento IP degli switch (No-SVI su VLAN 99)
+- [ ] **Fase 2: Test Isolato a Freddo di PVE2** [[plan-out-of-band-service-access]]
+    - [ ] Collegare la porta di servizio di PVE2 al switch camera ed accenderlo
+    - [ ] Eseguire il ping a `192.168.100.200` ed entrare nella GUI Proxmox per convalidare l'hardware
+    - [ ] Spegnere PVE2 e riposizionarlo nel rack definitivo in sala server
+- [ ] **Fase 3: Migrazione Fisica 10G PVE3 e DR del Cluster** [[pve3-10g-migration-recovery]]
+    - [ ] Forzare i backup manuali su Proxmox Backup Server (PBS) ed eseguire lo shutdown ordinato del rack
+    - [ ] Spostare fisicamente PVE3 sul core switch 10G (`switch10g`) e configurare Access VLAN 10/20 su ONTi
+    - [ ] Avviare PVE3 in OOB, rilevare i nuovi nomi delle schede 10G ed aggiornare `/etc/network/interfaces`
+    - [ ] Riavviare l'Homelab in sequenza ordinata (PVE1/TrueNAS prima, satelliti poi) ed allineare hosts e Corosync
+    - [ ] Reinstallare da zero `talos-cp-02` (VM 2300) applicando la configurazione controlplane per rientrare in etcd
+    - [ ] Rimuovere il fencing su CNPG e riscalare `postgres-main` a 3 repliche per forzare il riallineamento locale
+
 
 ## Future Integrations (n8n & Prefect)
 ### [ ] Transizione a Metodo B (Helm Secrets)
