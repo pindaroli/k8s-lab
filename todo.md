@@ -174,8 +174,8 @@
     - [x] Validare la connettività OOB ed isolamento IP degli switch (No-SVI su VLAN 99) (COMPLETED 2026-05-31)
 - [ ] **Fase 2: Test Isolato a Freddo di PVE2** [[plan-out-of-band-service-access]]
     - [ ] Collegare la porta di servizio di PVE2 al switch camera ed accenderlo
-    - [ ] Eseguire il ping a `192.168.100.200` ed entrare nella GUI Proxmox per convalidare l'hardware
-    - [ ] **Riallineamento IP OOB PVE2**: Cambiare l'IP di servizio OOB di PVE2 da `192.168.100.200` a `192.168.100.21` (in `/etc/network/interfaces` e `rete.json`) per allinearlo al pattern di PVE1 (`100.11`) e PVE3 (`100.31`).
+    - [ ] Eseguire il ping a `192.168.100.21` ed entrare nella GUI Proxmox per convalidare l'hardware
+    - [x] **Riallineamento IP OOB PVE2**: Cambiare l'IP di servizio OOB di PVE2 da `192.168.100.200` a `192.168.100.21` (in `/etc/network/interfaces` e `rete.json`) per allinearlo al pattern di PVE1 (`100.11`) e PVE3 (`100.31`). (COMPLETED 2026-06-02)
     - [ ] Spegnere PVE2 e riposizionarlo nel rack definitivo in sala server
 
 - [x] **Fase 3: Upgrade PVE3 a Proxmox VE 9.2 e Re-join Cluster (PRIORITY 0)** [[pve3-reinstallation-ve9.2]] (COMPLETED 2026-06-02)

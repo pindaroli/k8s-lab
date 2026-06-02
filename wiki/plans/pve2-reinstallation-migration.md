@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > **PREREQUISITO**: PVE2 deve essere acceso e raggiungibile via SSH (`10.10.10.21`) per la Fase 0. Console fisica (monitor + tastiera) disponibile per la Fase 1.
 >
-> **Accesso OOB attuale**: IP OOB corrente è `192.168.100.200` (sarà migrato a `192.168.100.21` nella Fase 6).
+> **Accesso OOB attuale**: IP OOB corrente è `192.168.100.21` (allineato e configurato).
 
 ## Dizionario Fisico (DEFINITIVO)
 
@@ -14,7 +14,7 @@
 
 > [!NOTE]
 > **PBS**: Confermato online su PVE1 (LXC 1400, uptime 17 giorni, disk 24.9%). Backup disponibili.
-> **OOB IP PVE2**: Il desiderata è `192.168.100.21` (non `192.168.100.200`). `rete.json` sarà aggiornato durante la Fase 6.
+> **OOB IP PVE2**: IP OOB è impostato a `192.168.100.21` (allineato con il pattern di PVE1 e PVE3).
 > **IP Management**: `10.10.10.21` — confermato come definitivo.
 
 ---
@@ -23,7 +23,7 @@
 
 > [!CAUTION]
 > Questa fase deve essere eseguita **con oldPVE2 acceso** e raggiungibile, prima di toccare qualsiasi SSD fisicamente.
-> PVE2 può essere raggiunto via produzione (`10.10.10.21`) oppure OOB (`192.168.100.200`).
+> PVE2 può essere raggiunto via produzione (`10.10.10.21`) oppure OOB (`192.168.100.21`).
 
 ### Step 0.1: Dump Configurazione Completa di oldPVE2
 
@@ -344,7 +344,7 @@ Per ogni altra macchina presente su oldPVE2 (verificate nel Step 0.1):
 
 ## Fase 6: Aggiornamento Documentazione
 
-- [ ] Aggiornare `rete.json`: rimuovere status `OFFLINE`, aggiornare dischi PVE2, IP OOB da `192.168.100.200` a `192.168.100.21`, aggiornare `talos-cp-02`.
+- [ ] Aggiornare `rete.json`: rimuovere status `OFFLINE`, aggiornare dischi PVE2, verificare IP OOB `192.168.100.21`, aggiornare `talos-cp-02`.
 - [ ] Aggiornare `istruzioni/interfaces_pve2.txt` con il file di rete definitivo (OOB `.21`).
 - [ ] Aggiornare `wiki/entities/Talos_Cluster.md` con la topologia aggiornata.
 - [ ] Creare incident/report di completamento migrazione in `wiki/incidents/`.
@@ -370,4 +370,4 @@ Per ogni altra macchina presente su oldPVE2 (verificate nel Step 0.1):
 - ✅ **Q1 — Disco Target**: `nvme1n1` (Acer 2TB) = **oldPVE2** (OS corrente). `nvme0n1` (Intel 512GB) = **newPVE2** (target installazione). Piano aggiornato.
 - ✅ **Q2 — Console**: Disponibile fisicamente su PVE2.
 - ✅ **Q3 — PBS**: Online confermato (LXC 1400, uptime 17 giorni, screenshot GUI PVE1).
-- ✅ **Q4 — IP OOB**: Desiderata `192.168.100.21`. IP attuale `192.168.100.200` funzionante. Migrazione inclusa in Fase 6.
+- ✅ **Q4 — IP OOB**: IP OOB allineato definitivamente a `192.168.100.21`.

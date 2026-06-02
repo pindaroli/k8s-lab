@@ -8,7 +8,7 @@ iface lo inet loopback
 
 
 iface nic0 inet static
-    address 192.168.100.200
+    address 192.168.100.21
 # Porta 0 nodo di servizio
 
 

@@ -515,7 +515,7 @@
           "id": "nic0",
           "os_name": "nic0",
           "connected_to": "Direct Access",
-          "ip": "192.168.100.200",
+          "ip": "192.168.100.21",
           "note": "Service Port (No Gateway)"
         }
       ],

@@ -43,7 +43,7 @@ Questo piano preliminare ha l'obiettivo di configurare la tua rete locale e gli 
     │     │   │   │   │  (Access VLAN 99)
     │     ▼   ▼   ▼   ▼
     │ [PVE1][PVE2][PVE3][OPNsense igc3]
-    │ (100.11)(100.200)(100.31)(100.1)
+    │ (100.11)(100.21)(100.31)(100.1)
     │
     │  [PLANNED] Porta 5 LIAGUO → [KVM Extender (100.x)]
     │  [PLANNED] Porta 4 ONTi  → [OPNsense igc1 Trunk]
@@ -55,7 +55,7 @@ Questo piano preliminare ha l'obiettivo di configurare la tua rete locale e gli 
 | :--- | :--- | :--- | :--- | :--- |
 | **Mac Studio** (Camera) | en0 (Virtual interface `vlan99`) | `192.168.100.99/24` | **switch-25g-letto** Porta 6 | **Trunk (Native 20, Tagged 99)** |
 | **PVE1** (Sala Server) | Port 3 (`nic0`) | `192.168.100.11/24` | **switch-25g-server** Porta 1 | **Access VLAN 99** (PVID 99) |
-| **PVE2** (Sala Server) | Port 3 (`nic0`) | `192.168.100.200/24` | **switch-25g-server** Porta 2 | **Access VLAN 99** (PVID 99) |
+| **PVE2** (Sala Server) | Port 3 (`nic0`) | `192.168.100.21/24` | **switch-25g-server** Porta 2 | **Access VLAN 99** (PVID 99) |
 | **PVE3** (Sala Server) | Port 3 (`nic0`) | `192.168.100.31/24` | **switch-25g-server** Porta 3 | **Access VLAN 99** (PVID 99) |
 | **OPNsense** | `igc3` (interfaccia `lan`) | `192.168.100.1/24` | **switch-25g-server** Porta 4 | **Access VLAN 99** (PVID 99) |
 | **KVM Extender** *(PLANNED)* | RJ45 nativo | `192.168.100.x` (TBD) | **switch-25g-server** Porta 5 | **Access VLAN 99** (PVID 99) |
@@ -121,10 +121,10 @@ Poiché PVE2 si trova connesso al switch LIAGUO e la tua rete OOB è propagata i
 1.  Accendi PVE2 fisicamente.
 2.  Dal tuo Mac Studio in camera da letto, esegui il ping a PVE2:
     ```bash
-    ping 192.168.100.200
+    ping 192.168.100.21
     ```
-3.  Apri il browser su `https://192.168.100.200:8006`, accedi alla GUI Proxmox come root e valida lo stato hardware (RAM 64GB, dischi).
-4.  Una volta validato, spegni PVE2: `ssh root@192.168.100.200 "shutdown -h now"`.
+3.  Apri il browser su `https://192.168.100.21:8006`, accedi alla GUI Proxmox come root e valida lo stato hardware (RAM 64GB, dischi).
+4.  Una volta validato, spegni PVE2: `ssh root@192.168.100.21 "shutdown -h now"`..
 5.  Lascia PVE2 cablato ed alloggiato nella sua posizione nel rack; ora fa parte permanentemente dell'infrastruttura OOB!
 
 ---
@@ -134,7 +134,7 @@ Poiché PVE2 si trova connesso al switch LIAGUO e la tua rete OOB è propagata i
 Esegui questi ping veloci dal Mac Studio (in Camera) per confermare il funzionamento complessivo attraverso gli switch della casa:
 *   [ ] `ping -c 2 192.168.100.1` (OPNsense `igc3`)
 *   [ ] `ping -c 2 192.168.100.11` (PVE1)
-*   [ ] `ping -c 2 192.168.100.200` (PVE2)
+*   [ ] `ping -c 2 192.168.100.21` (PVE2)
 *   [ ] `ping -c 2 192.168.100.31` (PVE3)
 
 > [!NOTE]
