@@ -10,11 +10,10 @@ Questo piano dettagliato descrive le fasi per la migrazione fisica di PVE3 al co
 ## 1. Stato Attuale e Obiettivi
 
 1.  **PVE2**: Hardware ripristinato e testato con successo nello Studio (tramite porta di servizio OOB). Posizionato nel rack definitivo e connesso allo switch core **switch10g (ONTi)** in Access VLAN 99.
-2.  **PVE3**: Attualmente connesso allo switch a 2.5G (`switch-25g-server`).
+2.  **PVE3**: **[COMPLETATO]** Riconfigurazione di rete Trunk 10G effettuata con successo via OOB (`nic0`) e testata. Server ora pienamente operativo sul link `enp101s0f0` a 10G.
 3.  **Obiettivi di questa fase**:
     *   Effettuare il backup manuale dello stato del cluster Proxmox.
     *   Spegnere in sicurezza l'intera infrastruttura.
-    *   Spostare PVE3 sul core switch 10G (`switch10g` / ONTi) e configurare le sue nuove schede di rete.
     *   Riavviare tutto l'homelab, allineare i cluster Proxmox e Kubernetes, e reinstallare/re-integrare `talos-cp-02`.
 
 ---
@@ -104,8 +103,7 @@ Ora che tutto è spento, procediamo alle modifiche fisiche.
     *   Collega le nuove porte 10G SFP+ di PVE3 a due porte libere sullo switch **switch10g** (ad esempio, porta 2 e porta 7).
 3.  **Configurazione delle porte VLAN su switch10g**:
     *   Accendi solo lo switch `switch10g` (se spento) ed entra nella Web GUI all'indirizzo `http://192.168.2.1`.
-    *   Associa la porta dello switch collegata alla **Porta 1 (Server/Mgmt) di PVE3** come **Access** su **VLAN 10** (PVID 10).
-    *   Associa la porta dello switch collegata alla **Porta 2 (Client VM) di PVE3** come **Access** su **VLAN 20** (PVID 20).
+    *   Associa la singola porta dello switch collegata alla **Porta 1 (Attiva) di PVE3** in modalità **TRUNK**, impostando come Allowed VLANs sia la **10** che la **20** (e opzionalmente la native VLAN 1).
 
 ---
 
@@ -120,64 +118,68 @@ Poiché hai cambiato le schede fisiche di PVE3 collegandolo allo switch 10G, i n
 4. Accedi come `root`.
 
 ### Step 4.2: Identificazione delle Nuove Schede di Rete
-Dobbiamo scoprire come Linux chiama le tue nuove porte 10G.
+Dobbiamo scoprire come Linux chiama la tua nuova porta 10G attiva.
 1. Esegui il comando:
    ```bash
    ip -c link
    ```
-2. Cerca l'interfaccia che si trova in stato **UP** o **LOWER_UP** (ovvero che rileva il link fisico del cavo collegato). Annota il suo nome esatto (es. `enp3s0f0`). Questa sarà la porta dedicata a **VLAN 10**.
-3. Collega ora il secondo cavo (VLAN 20) alla **Porta 2** di PVE3.
-4. Rilancia `ip -c link` e individua quale nuova interfaccia è andata in stato **UP** (es. `enp3s0f1`). Questa sarà la porta dedicata a **VLAN 20**.
+2. Cerca l'interfaccia che si trova in stato **UP** o **LOWER_UP** (ovvero che rileva il link fisico del cavo collegato). Annota il suo nome esatto (es. `enp3s0f0` o `enp101s0f0`). Questa sarà la singola porta Trunk dedicata a trasportare sia la **VLAN 10** che la **VLAN 20**.
 
 ### Step 4.3: Aggiornamento di `/etc/network/interfaces`
-1. Apri il file delle interfacce:
+1. **FONDAMENTALE: Fai un backup del file originale prima di modificarlo**:
+   ```bash
+   cp /etc/network/interfaces /etc/network/interfaces.bak-$(date +%F_%H-%M-%S)
+   ```
+2. Apri il file delle interfacce:
    ```bash
    nano /etc/network/interfaces
    ```
-2. Modifica il file inserendo i nuovi nomi delle schede identificati al punto precedente. Il file deve avere questa struttura (sostituisci `enp3s0f0` e `enp3s0f1` con i tuoi nomi reali):
+3. Modifica il file inserendo il nome della singola scheda 10G attiva identificata al punto precedente. Il file deve avere questa struttura (sostituisci `enp101s0f0` con il tuo nome reale). In questo modo creeremo un Trunk che trasporta entrambe le VLAN sulla singola porta funzionante:
 
    ```text
    auto lo
    iface lo inet loopback
 
    # -----------------------------------------------------------
-   # PORTA 1 (VLAN 10 - Server/Mgmt) -> Collegata allo Switch 10G
+   # PORTA DI SERVIZIO OOB (VLAN 99 Access dal LIAGUO)
    # -----------------------------------------------------------
-   iface enp3s0f0 inet manual
-
-   # -----------------------------------------------------------
-   # PORTA 2 (VLAN 20 - Client VM) -> Collegata allo Switch 10G
-   # -----------------------------------------------------------
-   iface enp3s0f1 inet manual
-
-   # -----------------------------------------------------------
-   # PORTA DI SERVIZIO OOB (Configurata nel piano preliminare)
-   # -----------------------------------------------------------
-   auto eno3
-   iface eno3 inet static
+   auto nic0
+   iface nic0 inet static
        address 192.168.100.31/24
 
    # -----------------------------------------------------------
-   # BRIDGE MANAGEMENT & SERVER (VLAN 10)
+   # LINK ATTIVO 10G (Trunk Fisico - Nessun IP sulla radice)
    # -----------------------------------------------------------
+   auto enp101s0f0
+   iface enp101s0f0 inet manual
+
+   # -----------------------------------------------------------
+   # VLAN 10 (Server/Mgmt PVE3)
+   # -----------------------------------------------------------
+   auto enp101s0f0.10
+   iface enp101s0f0.10 inet manual
+
    auto vmbr10
    iface vmbr10 inet static
        address 10.10.10.31/24
        gateway 10.10.10.1
-       bridge-ports enp3s0f0
+       bridge-ports enp101s0f0.10
        bridge-stp off
        bridge-fd 0
 
    # -----------------------------------------------------------
-   # BRIDGE CLIENT (VLAN 20)
+   # VLAN 20 (Client VM)
    # -----------------------------------------------------------
+   auto enp101s0f0.20
+   iface enp101s0f0.20 inet manual
+
    auto vmbr20
    iface vmbr20 inet manual
-       bridge-ports enp3s0f1
+       bridge-ports enp101s0f0.20
        bridge-stp off
        bridge-fd 0
    ```
-3. Salva il file (`Ctrl+O`, `Invio`, `Ctrl+X`).
+4. Salva il file (`Ctrl+O`, `Invio`, `Ctrl+X`).
 
 ### Step 4.4: Applicazione delle Modifiche e Verifica
 1. Riavvia il nodo:
@@ -237,9 +239,22 @@ Con PVE2 offline per molto tempo, Corosync potrebbe aver perso la sincronizzazio
 
 ---
 
-## 6. Fase 6: Ripristino Cluster Kubernetes e Ricostruzione Talos CP02
+## 6. Fase 6: ➡️ Ripristino Cluster Kubernetes
 
-Poiché `talos-cp-02` (IP `10.10.20.142`) è stato rimosso dal quorum di `etcd` per garantire la stabilità durante l'assenza di PVE2, dobbiamo reinstallare il sistema operativo Talos sulla VM e riapplicare la configurazione in modo pulito.
+> [!IMPORTANT]
+> **Il ripristino completo del cluster Kubernetes (talos-cp-02, etcd, CloudNativePG) è documentato nel piano dedicato:**
+> ### [[talos-k8s-cluster-restoration]]
+>
+> Questo piano va eseguito come **ultimo step**, dopo che:
+> - L'intero piano `[[pve2-reinstallation-migration]]` è completato (PVE2 online, VM 2300 ripristinata da PBS).
+> - L'intero piano `[[pve3-10g-migration-recovery]]` (questo documento) è completato fino alla Fase 5.
+> - Il cluster Proxmox ha **3 nodi in quorum stabile**.
+
+### Contesto (cosa è successo a talos-cp-02)
+
+`talos-cp-02` (IP `10.10.20.142`) è stato **rimosso formalmente dal quorum etcd** il 2026-05-01 (vedi [[2026-05-01-network-asymmetry-incident]]).
+La strategia di ripristino scelta è **re-apply config da `controlplane-cp-02.yaml`** (non reinstallazione da ISO).
+Il piano dedicato gestisce entrambi gli scenari (auto-reintegrazione da backup PBS o re-apply manuale).
 
 ### Step 6.1: Preparazione della VM su PVE2
 1. Accedi alla GUI di Proxmox su **PVE2** (`https://10.10.10.21:8006`).

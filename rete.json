@@ -1,846 +1,896 @@
 {
-    "description": "Configurazione home lab networks",
-    "VLAN": [
-        {
-            "id": "10",
-            "description": "VLAN dei Server Interni",
-            "subnet": "10.10.10.0/24"
-        },
-        {
-            "id": "20",
-            "description": "VLAN dei Client",
-            "subnet": "10.10.20.0/24"
-        },
-        {
-            "id": "30",
-            "description": "VLAN IoT (Isolation, Internet Only) - DEPRECATED / UNUSED",
-            "subnet": "10.10.30.0/24"
-        }
-    ],
-    "nodi": [
-        {
-            "id": "truenas",
-            "label": "TrueNAS Scale",
-            "type": "VM",
-            "vm_id": "1100",
-            "role": "NAS",
-            "hostname": "truenas",
-            "domain": "pindaroli.org",
-            "aliases": [
-                "s3",
-                "nas-direct"
-            ],
-            "management_ip": "10.10.10.50",
-            "default_gateway": "10.10.10.1",
-            "dns": "192.168.2.254, 1.1.1.1",
-            "notes": "Single homing on VLAN 10. L3 Switch handles routing from VLAN 20 symmetrically."
-        },
-        {
-            "id": "switch10g",
-            "label": "Switch Managed (ONTi)",
-            "model": "ONT-S508cl-8S",
-            "alias-model": "XikeStor SKS8300-8X",
-            "vendor": "ONTi",
-            "type": "L3 Switch",
-            "ip": "192.168.2.1",
-            "ports": [
-                {
-                    "id": "1",
-                    "role": "Uplink to switch-25g-server Port 6",
-                    "mode": "Trunk",
-                    "speed": "10Gbs",
-                    "native_vlan": "1",
-                    "allowed_vlans": [
-                        "1",
-                        "10",
-                        "20",
-                        "30",
-                        "99"
-                    ]
-                },
-                {
-                    "id": "8",
-                    "role": "Downlink to switch-25g-letto Port 5",
-                    "mode": "Hybrid",
-                    "note": "Set to Hybrid to allow Untagged VLAN 1 (Workaround for Trunk bug)",
-                    "speed": "10Gbs",
-                    "native_vlan": "1",
-                    "allowed_vlans": [
-                        "1",
-                        "10",
-                        "20",
-                        "30",
-                        "99"
-                    ]
-                },
-                {
-                    "id": "3",
-                    "role": "LAN Server (VLAN 10) - Linked to pve Port 1",
-                    "mode": "ACCESS",
-                    "pvid": 10
-                },
-                {
-                    "id": "4",
-                    "role": "Unused / Free",
-                    "mode": "ACCESS",
-                    "pvid": 1
-                },
-                {
-                    "id": "5",
-                    "role": "LAN Client (VLAN 20) - Linked to pve Port 2",
-                    "mode": "ACCESS",
-                    "pvid": 20
-                }
-            ]
-        },
-        {
-            "id": "switch-25g-letto",
-            "description": "Switch managed with 4 porte 2.5G e 2 10G SFP+ ports",
-            "model": "GT-ST024M",
-            "vendor": "GoodTop",
-            "location": "stanza da letto",
-            "aliases": [
-                "goodtop"
-            ],
-            "ports": [
-                {
-                    "id": "2",
-                    "role": "Server Access / Free",
-                    "mode": "ACCESS",
-                    "speed": "2.5Gbs",
-                    "pvid": 10
-                },
-                {
-                    "id": "1",
-                    "role": "Free / Unused",
-                    "mode": "ACCESS",
-                    "speed": "2.5Gbs",
-                    "pvid": 1
-                },
-                {
-                    "id": "3",
-                    "role": "Mac Studio OOB USB adapter (VLAN 99)",
-                    "mode": "ACCESS",
-                    "speed": "2.5Gbs",
-                    "pvid": 99
-                },
-                {
-                    "id": "4",
-                    "role": "Trunk to ap11000",
-                    "mode": "Trunk (Currently in Access 20 workaround)",
-                    "speed": "2.5Gbs",
-                    "native_vlan": "20",
-                    "allowed_vlans": [
-                        "20",
-                        "30"
-                    ],
-                    "note": "WARNING: Trunk mode with Native VLAN 20 and Tagged 30 currently fails to pass traffic correctly on this port. Using Access VLAN 20 as a temporary fix."
-                },
-                {
-                    "id": "5",
-                    "role": "Uplink to switch10g Port 8",
-                    "mode": "Trunk",
-                    "speed": "10Gbs",
-                    "native_vlan": "1",
-                    "allowed_vlans": [
-                        "1",
-                        "10",
-                        "20",
-                        "30",
-                        "99"
-                    ]
-                },
-                {
-                    "id": "6",
-                    "role": "Mac Studio Client (en0)",
-                    "mode": "ACCESS",
-                    "speed": "10Gbs",
-                    "pvid": 20
-                }
-            ],
-            "management_ip": "192.168.2.2"
-        },
-        {
-            "id": "switch-25g-server",
-            "description": "Switch managed with 5 porte 2.5G e 1 10G SFP+ ports",
-            "model": "LG-SG5T1",
-            "vendor": "LIAGUO",
-            "support": "www.sodola-network.com",
-            "location": "Sala Server",
-            "ports": [
-                {
-                    "id": "1",
-                    "role": "PVE2 OOB Service Port (VLAN 99)",
-                    "mode": "ACCESS",
-                    "speed": "2.5Gbs",
-                    "pvid": 99
-                },
-                {
-                    "id": "2",
-                    "role": "PVE1 OOB Service Port (VLAN 99)",
-                    "mode": "ACCESS",
-                    "speed": "2.5Gbs",
-                    "pvid": 99
-                },
-                {
-                    "id": "3",
-                    "role": "PVE3 OOB Service Port (VLAN 99)",
-                    "mode": "ACCESS",
-                    "speed": "2.5Gbs",
-                    "pvid": 99,
-                    "os_name": "nic0"
-                },
-                {
-                    "id": "4",
-                    "role": "Free / Unused",
-                    "mode": "ACCESS",
-                    "speed": "2.5Gbs",
-                    "pvid": 1
-                },
-                {
-                    "id": "5",
-                    "role": "Uplink to opnSense Port 2",
-                    "mode": "Trunk",
-                    "speed": "2.5Gbs",
-                    "native_vlan": "1",
-                    "allowed_vlans": [
-                        "10",
-                        "20",
-                        "30"
-                    ]
-                },
-                {
-                    "id": "6",
-                    "role": "Downlink to switch10g Port 1",
-                    "mode": "Trunk",
-                    "speed": "10Gbs",
-                    "native_vlan": "1",
-                    "allowed_vlans": [
-                        "1",
-                        "10",
-                        "20",
-                        "30",
-                        "99"
-                    ]
-                }
-            ],
-            "management_ip": "192.168.2.3"
-        },
-        {
-            "id": "opnsense",
-            "label": "OPNsense Firewall",
-            "type": "Firewall/Router",
-            "model": "Mini PC (4x 2.5GbE)",
-            "management_ip": "10.10.20.254",
-            "aliases": [
-                "opnsense",
-                "firewall-direct"
-            ],
-            "configuration_notes": [
-                "Kea DHCP is the active DHCP server. Ansible playbooks manage static DHCP reservations via the Kea API.",
-                "Ensure 'Static route filtering' is DISABLED (Firewall > Settings > Advanced) to maintain stateful symmetry with the L3 Switch.",
-                "Ensure Unbound DNS is listening on TRANSIT interface (192.168.2.254) to allow infrastructure DNS resolution.",
-                "Ensure Unbound DNS is NOT listening on WAN interface to prevent external DNS amplification attacks."
-            ],
-            "ports": [
-                {
-                    "id": "igc0",
-                    "role": "Direct WAN (Modem)",
-                    "speed": "2.5Gbs",
-                    "note": "Direct physical connection to Modem (No VLAN)"
-                },
-                {
-                    "id": "igc1",
-                    "role": "Trunk LAN Master",
-                    "speed": "2.5Gbs",
-                    "mode": "Trunk",
-                    "allowed_vlans": [
-                        "10",
-                        "20",
-                        "30"
-                    ],
-                    "logical_interfaces": [
-                        {
-                            "name": "gw-vlan20",
-                            "interface": "opt2",
-                            "vlan_tag": "20",
-                            "ip": "10.10.20.254",
-                            "subnet": "10.10.20.0/24",
-                            "dhcp": "enabled",
-                            "dns": "10.10.20.254",
-                            "firewall_policy": "Allow All"
-                        },
-                        {
-                            "name": "gw-vlan30",
-                            "interface": "opt3",
-                            "vlan_tag": "30",
-                            "ip": "10.10.30.1",
-                            "subnet": "10.10.30.0/24",
-                            "dhcp": "enabled",
-                            "dns": "1.1.1.1, 8.8.8.8",
-                            "firewall_policy": "Allow Internet (Careful with RFC1918 blocks on Transit!)"
-                        },
-                        {
-                            "name": "gw-vlan10",
-                            "interface": "opt1",
-                            "vlan_tag": "10",
-                            "ip": "10.10.10.254",
-                            "subnet": "10.10.10.0/24",
-                            "dhcp": "static_only",
-                            "dns": "10.10.10.254",
-                            "firewall_policy": "Allow Internet, Allow from LAN_CLIENT"
-                        },
-                        {
-                            "name": "gw-transit",
-                            "interface": "opt4",
-                            "vlan_tag": "Native (Untagged)",
-                            "ip": "192.168.2.254",
-                            "subnet": "192.168.2.0/24",
-                            "gateway": "192.168.2.1 (Switch L3)",
-                            "dhcp": "disabled",
-                            "firewall_policy": "Allow All / Transit"
-                        }
-                    ]
-                },
-                {
-                    "id": "igc2",
-                    "role": "Unused/Spare",
-                    "speed": "2.5Gbs"
-                },
-                {
-                    "id": "igc3",
-                    "role": "ADMIN_LAN",
-                    "speed": "2.5Gbs",
-                    "description": "Emergency/Admin Port (Not connected to Switch)",
-                    "logical_interfaces": [
-                        {
-                            "name": "gw-admin",
-                            "interface": "lan",
-                            "ip": "192.168.100.1",
-                            "subnet": "192.168.100.0/24",
-                            "dhcp": "enabled",
-                            "firewall_policy": "Allow All"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "id": "mac studio",
-            "label": "Mac Studio M2 Ultra",
-            "hostname": "olindo-macstudio",
-            "aliases": [
-                "olindo-macstudio"
-            ],
-            "domain": "pindaroli.org",
-            "ip": "10.10.20.100",
-            "interfaces": [
-                {
-                    "interface": "en0 (Ethernet - Built-in 10Gb)",
-                    "mac": "a4:fc:14:10:5b:80",
-                    "network": "Client (VLAN 20)",
-                    "ip": "10.10.20.100",
-                    "gateway": "10.10.20.1",
-                    "dns": "10.10.20.254",
-                    "connected_to": "switch-25g-letto Port 6"
-                },
-                {
-                    "interface": "wifi (en1)",
-                    "mac": "a4:fc:14:14:a0:e7",
-                    "network": "Client (VLAN 20)",
-                    "ip": "10.10.20.101",
-                    "gateway": "10.10.20.1",
-                    "dns": "10.10.20.254",
-                    "connected_to": "ap11000"
-                },
-                {
-                    "interface": "ethernet-2-letto (Emergency/Admin)",
-                    "mac": "TBD",
-                    "network": "Server (VLAN 10)",
-                    "ip": "10.10.10.99",
-                    "gateway": "none (Split-Routing)",
-                    "dns": "none",
-                    "connected_to": "switch-25g-letto Port 2",
-                    "notes": "Emergency Out-Of-Band access per gestire i server (10.10.10.x/24) indipendentemente dal routing L3 o da Internet. Gestito via dongle o porta nativa alternata."
-                }
-            ],
-            "services": [
-                {
-                    "id": "ollama",
-                    "label": "Ollama AI",
-                    "role": "Local LLM Inference",
-                    "port": 11434,
-                    "data_path": "~/.ollama/models",
-                    "config_file": "/Users/olindo/Library/LaunchAgents/homebrew.mxcl.ollama.plist",
-                    "notes": "Servizio installato localmente per inferenza AI distribuita."
-                },
-                {
-                    "id": "ollama-exporter",
-                    "label": "Ollama Metrics Exporter",
-                    "role": "Prometheus Metrics Bridge",
-                    "port": 11435,
-                    "config_file": "/Users/olindo/Library/LaunchAgents/org.norskhelsenett.ollama-metrics.plist",
-                    "notes": "Proxy trasparente (Go) per catturare metriche di inferenza (VRAM/Metal). Log: ~/Library/Logs/ollama-monitoring/"
-                },
-                {
-                    "id": "tdarr-node",
-                    "label": "Tdarr External Node",
-                    "role": "Distributed Transcoding Worker",
-                    "port": 8268,
-                    "config_file": "/Users/olindo/prj/k8s-lab/tdarr/node/start_node.sh",
-                    "notes": "Avviato come Elemento del Login con nohup + tail. Log: ~/Library/Logs/tdarr-node.log"
-                }
-
-            ]
-        },
-        {
-            "id": "pve1",
-            "label": "Proxmox Node 1",
-            "type": "Hypervisor",
-            "aliases": [
-                "pve-direct",
-                "pve1-direct"
-            ],
-            "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)",
-            "management_ip": "10.10.10.11",
-            "ports": [
-                {
-                    "id": "1",
-                    "os_name": "enp1s0f0",
-                    "speed": "10Gbs",
-                    "connected_to": "switch10g Port 3",
-                    "vlan": "10",
-                    "note": "LAN Server Bridge (vmbr0)"
-                },
-                {
-                    "id": "2",
-                    "os_name": "enp1s0f1",
-                    "speed": "10Gbs",
-                    "connected_to": "switch10g Port 5",
-                    "vlan": "20",
-                    "note": "LAN Client Bridge (vmbr20)"
-                },
-                {
-                    "id": "3",
-                    "os_name": "nic0",
-                    "speed": "2.5Gbs",
-                    "connected_to": "Direct Access",
-                    "ip": "192.168.100.11",
-                    "note": "Service Port (VLAN 1 Admin Subnet - No Gateway)"
-                }
-            ],
-            "disks": [
-                {
-                    "name": "nvme0n1",
-                    "size": "931.5G",
-                    "model": "CT1000P3PSSD8",
-                    "serial": "2422491F3C19",
-                    "type": "disk"
-                },
-                {
-                    "pci_id": "0000:03:00",
-                    "note": "Passthrough to VM 1100 (TrueNAS)",
-                    "type": "pci_passthrough"
-                },
-                {
-                    "pci_id": "0000:04:00",
-                    "note": "Passthrough to VM 1100 (TrueNAS)",
-                    "type": "pci_passthrough"
-                },
-                {
-                    "pci_id": "0000:05:00.0",
-                    "note": "Passthrough to VM 1100 (TrueNAS) - Likely 2x 4TB HDDs",
-                    "type": "pci_passthrough"
-                }
-            ]
-        },
-        {
-            "id": "pve2",
-            "label": "Proxmox Node 2",
-            "type": "Hypervisor",
-            "aliases": [
-                "pve2-direct"
-            ],
-            "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)",
-            "hardware": "64GB RAM, 2TB NVMe",
-            "management_ip": "10.10.10.21",
-            "status": "OFFLINE (Hardware Maintenance)",
-            "notes": "PVE2 is currently powered off and waiting for hardware maintenance. Hosts critical nodes like talos-cp-02.",
-            "ports": [
-                {
-                    "id": "1",
-                    "os_name": "enp1s0f0np0",
-                    "speed": "2.5Gbs",
-                    "connected_to": "switch-25g-server",
-                    "vlan": "10",
-                    "note": "LAN Server Bridge (vmbr10)"
-                },
-                {
-                    "id": "2",
-                    "os_name": "enp1s0f1np1",
-                    "speed": "2.5Gbs",
-                    "connected_to": "switch-25g-server",
-                    "vlan": "20",
-                    "note": "LAN Client Bridge (vmbr20)"
-                },
-                {
-                    "id": "nic0",
-                    "os_name": "nic0",
-                    "connected_to": "Direct Access",
-                    "ip": "192.168.100.200",
-                    "note": "Service Port (No Gateway)"
-                }
-            ],
-            "disks": [
-                {
-                    "name": "nvme0n1",
-                    "size": "476.9G",
-                    "model": "SSDPEMKF512G8 NVMe INTEL 512GB",
-                    "serial": "BTHP95240V0D512C",
-                    "type": "disk"
-                },
-                {
-                    "name": "nvme1n1",
-                    "size": "1.8T",
-                    "model": "Acer SSD N7000 2TB",
-                    "serial": "ASBK53470103815",
-                    "type": "disk"
-                }
-            ]
-        },
-        {
-            "id": "pve3",
-            "label": "Proxmox Node 3",
-            "type": "Hypervisor",
-            "aliases": [
-                "pve3-direct"
-            ],
-            "version": "Proxmox VE 9.1",
-            "OS": "Debian 13 (Trixie)",
-            "hardware": "64GB RAM, 1TB NVMe",
-            "management_ip": "10.10.10.31",
-            "gateway": "10.10.10.1",
-            "dns": "10.10.10.254",
-            "ports": [
-                {
-                    "id": "1",
-                    "os_name": "dac1",
-                    "speed": "10Gbs",
-                    "connected_to": "switch10g",
-                    "vlan": "10",
-                    "note": "LAN Server Bridge (vmbr10) - Future 10G"
-                },
-                {
-                    "id": "2",
-                    "os_name": "dac2",
-                    "speed": "10Gbs",
-                    "connected_to": "switch10g",
-                    "vlan": "20",
-                    "note": "LAN Client Bridge (vmbr20) - Future 10G"
-                },
-                {
-                    "id": "3",
-                    "os_name": "nic0",
-                    "speed": "2.5Gbs",
-                    "connected_to": "switch-25g-server",
-                    "ip": "192.168.100.31",
-                    "note": "Service Port (VLAN 99 OOB - No Gateway)"
-                }
-            ],
-            "disks": [
-                {
-                    "name": "nvme0n1",
-                    "size": "931.5G",
-                    "model": "CT1000P3PSSD8",
-                    "serial": "25074E23D6AE",
-                    "type": "disk"
-                }
-            ]
-        },
-        {
-            "id": "ap11000",
-            "label": "Access Point (Cudy)",
-            "brand": "Cudy",
-            "model": "AP11000",
-            "mac": "80:af:ca:c0:2e:5a",
-            "type": "Network Device",
-            "role": "Access Point",
-            "aliases": [
-                "cudy",
-                "wifi"
-            ],
-            "management_ip": "10.10.20.103",
-            "gateway": "10.10.20.1",
-            "dns": "10.10.20.254",
-            "ports": [
-                {
-                    "id": "1",
-                    "role": "Uplink to switch-25g-letto Port 4",
-                    "mode": "Trunk",
-                    "speed": "2.5Gbs",
-                    "native_vlan": "20",
-                    "allowed_vlans": [
-                        "20",
-                        "30"
-                    ]
-                }
-            ],
-            "wifi_networks": [
-                {
-                    "ssid": "Eternal",
-                    "band": "5GHz + 6GHz",
-                    "security": "WPA3-SAE",
-                    "vlan": "20 (Native)",
-                    "note": "Main Network for high-performance devices"
-                },
-                {
-                    "ssid": "Iot",
-                    "band": "2.4GHz",
-                    "security": "WPA2-PSK",
-                    "vlan": "30 (Tagged)",
-                    "isolation": "Enabled",
-                    "note": "Legacy/IoT Network (Isolated)"
-                }
-            ]
-        },
-        {
-            "id": "printer",
-            "label": "Network Printer",
-            "type": "Printer",
-            "brand": "Brother",
-            "model": "HL-L2400DWE",
-            "mac": "d8:b3:2f:1e:0f:1c",
-            "ip": "10.10.20.127",
-            "network": "Client (VLAN 20)",
-            "notes": "Static DHCP reservation on VLAN 20 (Temporary placement due to Trunk issues). mDNS repeater removed as no longer needed for intra-VLAN discovery."
-        },
-        {
-            "id": "ipad",
-            "label": "iPad Pro",
-            "type": "Tablet",
-            "brand": "Apple",
-            "model": "ipad pro 12.9 m2",
-            "mac": "4e:55:65:8b:8d:e6",
-            "ip": "10.10.20.205",
-            "network": "Client (VLAN 20)",
-            "notes": "Static DHCP reservation."
-        },
-        {
-            "id": "xray",
-            "label": "OCI Proxy Server",
-            "type": "Cloud Instance",
-            "provider": "Oracle Cloud (OCI)",
-            "region": "Milan",
-            "shape": "VM.Standard.E2.1.Micro (Always Free)",
-            "os": "Ubuntu 22.04 LTS (x86_64)",
-            "ip": "79.72.44.199",
-            "ip_type": "Ephemeral Public IP",
-            "role": "VLESS-Reality Proxy",
-            "local_client_config": "~/devices-backup/xray_vless.txt",
-            "notes": "External exit node. Secrets (UUID/Keys) stored in Ansible Vault."
-        },
-        {
-            "id": "talos-cp-01",
-            "label": "Talos Control Plane 01",
-            "type": "VM",
-            "host_node": "pve",
-            "vm_id": "1300",
-            "ip": "10.10.20.141",
-            "mac": "bc:24:11:81:6a:19",
-            "aliases": [
-                "k1"
-            ],
-            "vip": "10.10.20.55",
-            "role": "Kubernetes Control Plane",
-            "os": "Talos Linux 1.12.0",
-            "network": "VLAN 20 (vmbr20)",
-            "host_node_sticky": true
-        },
-        {
-            "id": "talos-cp-02",
-            "label": "Talos Control Plane 02",
-            "type": "VM",
-            "host_node": "pve2",
-            "vm_id": "2300",
-            "ip": "10.10.20.142",
-            "mac": "bc:24:11:77:40:fc",
-            "aliases": [
-                "k2"
-            ],
-            "vip": "10.10.20.55",
-            "role": "Kubernetes Control Plane",
-            "os": "Talos Linux 1.12.0",
-            "network": "VLAN 20 (vmbr20)",
-            "host_node_sticky": true,
-            "status": "OFFLINE (Hardware Maintenance)",
-            "notes": "CRITICAL: This node is hosted on PVE2 which is currently completely powered off for maintenance. This node provides Local Storage for the 'postgres-main' cluster (CloudNativePG). PostgreSQL cannot start until this node is restored because the DB disks are physically bound to it."
-        },
-        {
-            "id": "talos-cp-03",
-            "label": "Talos Control Plane 03",
-            "type": "VM",
-            "host_node": "pve3",
-            "vm_id": "3200",
-            "ip": "10.10.20.143",
-            "mac": "bc:24:11:0b:e0:61",
-            "aliases": [
-                "k3"
-            ],
-            "vip": "10.10.20.55",
-            "role": "Kubernetes Control Plane",
-            "os": "Talos Linux 1.12.0",
-            "network": "VLAN 20 (vmbr20)",
-            "host_node_sticky": true
-        },
-        {
-            "id": "jellyfin-srv",
-            "label": "Jellyfin Media Server",
-            "type": "LXC",
-            "vm_id": "2200",
-            "host_node": "pve3",
-            "ip": "10.10.20.32",
-            "role": "Media Server",
-            "os": "Debian",
-            "network": "VLAN 20 (vmbr20)",
-            "notes": "Consumes media from TrueNAS via NFS. Protected by wait-for-truenas hook."
-        },
-        {
-            "id": "traefik-lb",
-            "label": "Traefik LoadBalancer VIP",
-            "type": "VIP",
-            "ip": "10.10.20.56",
-            "role": "Ingress Controller VIP",
-            "domain": "pindaroli.org",
-            "aliases": [
-                "auth",
-                "traefik-dash",
-                "radarr",
-                "lidarr",
-                "lidarr-classic",
-                "tdarr-internal",
-                "prowlarr",
-                "qbittorrent",
-                "jellyfin",
-                "jellyfin-classic",
-                "home",
-                "minio",
-                "nas",
-                "n8n",
-                "grafana",
-                "ap",
-                "kasmweb",
-                "prefect",
-                "tdarr",
-                "calibre-web",
-                "firewall",
-                "pve"
-            ],
-            "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
-        },
-        {
-            "id": "postgres-lb",
-            "label": "PostgreSQL LoadBalancer VIP",
-            "type": "VIP",
-            "ip": "10.10.20.57",
-            "role": "Database LoadBalancer",
-            "domain": "pindaroli.org",
-            "aliases": [
-                "postgres",
-                "db"
-            ],
-            "notes": "MetalLB Layer 2 VIP. External access for DBeaver/LAN."
-        },
-        {
-            "id": "tdarr-api",
-            "label": "Tdarr API Service",
-            "ip": "10.10.20.61",
-            "hostname": "tdarr-api",
-            "domain": "pindaroli.org",
-            "services": [
-                {
-                    "id": "tdarr-api",
-                    "port": 8266,
-                    "protocol": "HTTP"
-                }
-            ],
-            "notes": "Direct access to Tdarr API via MetalLB VIP (10.10.20.61:8266). Bypasses Traefik."
-        },
-        {
-            "id": "qbittorrent-lb",
-            "label": "qBittorrent P2P LoadBalancer VIP",
-            "type": "VIP",
-            "ip": "10.10.20.60",
-            "role": "P2P Traffic Gateway",
-            "notes": "MetalLB Layer 2 VIP. Dedicated IP for qBittorrent without Xray proxy. Zero Trust Port Forwarding on OPNsense."
-        },
-        {
-            "id": "pbs",
-            "label": "Proxmox Backup Server",
-            "type": "LXC",
-            "vm_id": "1400",
-            "host_node": "pve",
-            "ip": "10.10.10.100",
-            "role": "Backup Server",
-            "os": "Debian 13 (Trixie)",
-            "network": "VLAN 10 (vmbr0)",
-            "storage": "NFS (/mnt/pbs-store)",
-            "aliases": [
-                "backup"
-            ]
-        }
-    ],
-    "applicazioni": [
-        {
-            "id": "n8n",
-            "label": "n8n Workflow Automation",
-            "version": "1.40.0",
-            "deployment": "Kubernetes (n8n namespace)",
-            "database": {
-                "cluster": "postgres-main",
-                "namespace": "cnpg-system",
-                "user": "n8n",
-                "host": "postgres-main-rw.cnpg-system.svc.cluster.local"
-            },
-            "status": "Migrated to postgres-main (Fresh Start)"
-        },
-        {
-            "id": "prefect",
-            "label": "Prefect Orchestrator",
-            "version": "3.6.28",
-            "deployment": "Kubernetes (prefect namespace)",
-            "port": 4200,
-            "database": {
-                "cluster": "postgres-main",
-                "namespace": "cnpg-system",
-                "user": "prefect",
-                "host": "10.10.20.57",
-                "note": "Temporaneamente su LoadBalancer IP per bypassare problemi overlay (Nodo k2 offline)"
-            },
-            "status": "Active"
-        }
-    ],
-    "opnsense": {
-        "outbound": {
-            "blocked-domain": [
-                "google-analytics.com",
-                "googletagmanager.com",
-                "googlesyndication.com",
-                "doubleclick.net",
-                "facebook.net",
-                "vortex.data.microsoft.com",
-                "settings-win.data.microsoft.com",
-                "telemetry.microsoft.com",
-                "scorecardresearch.com",
-                "quantserve.com",
-                "advertising.com",
-                "adnxs.com",
-                "rubiconproject.com",
-                "taboola.com",
-                "criteo.com",
-                "outbrain.com"
-            ]
-        }
+  "description": "Configurazione home lab networks",
+  "VLAN": [
+    {
+      "id": "10",
+      "description": "VLAN dei Server Interni",
+      "subnet": "10.10.10.0/24"
+    },
+    {
+      "id": "20",
+      "description": "VLAN dei Client",
+      "subnet": "10.10.20.0/24"
+    },
+    {
+      "id": "30",
+      "description": "VLAN IoT (Isolation, Internet Only) - DEPRECATED / UNUSED",
+      "subnet": "10.10.30.0/24"
     }
+  ],
+  "nodi": [
+    {
+      "id": "truenas",
+      "label": "TrueNAS Scale",
+      "type": "VM",
+      "vm_id": "1100",
+      "role": "NAS",
+      "hostname": "truenas",
+      "domain": "pindaroli.org",
+      "aliases": [
+        "s3",
+        "nas-direct"
+      ],
+      "management_ip": "10.10.10.50",
+      "default_gateway": "10.10.10.1",
+      "dns": "192.168.2.254, 1.1.1.1",
+      "notes": "Single homing on VLAN 10. L3 Switch handles routing from VLAN 20 symmetrically."
+    },
+    {
+      "id": "switch10g",
+      "label": "Switch Managed (ONTi)",
+      "model": "ONT-S508cl-8S",
+      "alias-model": "XikeStor SKS8300-8X",
+      "vendor": "ONTi",
+      "type": "L3 Switch",
+      "ip": "192.168.2.1",
+      "ports": [
+        {
+          "id": "1",
+          "role": "Uplink to switch-25g-server Port 6",
+          "mode": "Trunk",
+          "speed": "10Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
+        },
+        {
+          "id": "2",
+          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 10
+        },
+        {
+          "id": "3",
+          "role": "LAN Server (VLAN 10) - PVE1 Port 1 (enp1s0f0)",
+          "mode": "ACCESS",
+          "pvid": 10
+        },
+        {
+          "id": "4",
+          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 10
+        },
+        {
+          "id": "5",
+          "role": "PVE3 Port 1 (enp101s0f0) Trunk",
+          "mode": "Trunk",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "10",
+            "20",
+            "30"
+          ]
+        },
+        {
+          "id": "6",
+          "role": "LAN Client (VLAN 20) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 20
+        },
+        {
+          "id": "7",
+          "role": "LAN Client (VLAN 20) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 20
+        },
+        {
+          "id": "8",
+          "role": "Uplink to switch-25g-letto Port 5",
+          "mode": "Trunk",
+          "speed": "10Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "switch-25g-letto",
+      "description": "Switch managed with 4 porte 2.5G e 2 10G SFP+ ports",
+      "model": "GT-ST024M",
+      "vendor": "GoodTop",
+      "location": "stanza da letto",
+      "aliases": [
+        "goodtop"
+      ],
+      "ports": [
+        {
+          "id": "2",
+          "role": "Server Access / Free",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 10
+        },
+        {
+          "id": "1",
+          "role": "Free / Unused",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 1
+        },
+        {
+          "id": "3",
+          "role": "Mac Studio OOB USB adapter (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99
+        },
+        {
+          "id": "4",
+          "role": "Trunk to ap11000",
+          "mode": "Trunk (Currently in Access 20 workaround)",
+          "speed": "2.5Gbs",
+          "native_vlan": "20",
+          "allowed_vlans": [
+            "20",
+            "30"
+          ],
+          "note": "WARNING: Trunk mode with Native VLAN 20 and Tagged 30 currently fails to pass traffic correctly on this port. Using Access VLAN 20 as a temporary fix."
+        },
+        {
+          "id": "5",
+          "role": "Uplink to switch10g Port 7",
+          "mode": "Trunk",
+          "speed": "10Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
+        },
+        {
+          "id": "6",
+          "role": "Mac Studio Client (en0)",
+          "mode": "ACCESS",
+          "speed": "10Gbs",
+          "pvid": 20
+        }
+      ],
+      "management_ip": "192.168.2.2"
+    },
+    {
+      "id": "switch-25g-server",
+      "description": "Switch managed with 5 porte 2.5G e 1 10G SFP+ ports",
+      "model": "LG-SG5T1",
+      "vendor": "LIAGUO",
+      "support": "www.sodola-network.com",
+      "location": "Sala Server",
+      "ports": [
+        {
+          "id": "1",
+          "role": "PVE2 OOB Service Port (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99
+        },
+        {
+          "id": "2",
+          "role": "PVE1 OOB Service Port (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99
+        },
+        {
+          "id": "3",
+          "role": "PVE3 OOB Service Port (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99,
+          "os_name": "nic0"
+        },
+        {
+          "id": "4",
+          "role": "OPNsense igc3 OOB (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99,
+          "connected_to": "opnsense igc3"
+        },
+        {
+          "id": "5",
+          "role": "Uplink to opnSense igc1 (LAN Trunk)",
+          "mode": "Trunk",
+          "speed": "2.5Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "10",
+            "20",
+            "30"
+          ]
+        },
+        {
+          "id": "6",
+          "role": "Downlink to switch10g Port 1",
+          "mode": "Trunk",
+          "speed": "10Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
+        }
+      ],
+      "management_ip": "192.168.2.3"
+    },
+    {
+      "id": "opnsense",
+      "label": "OPNsense Firewall",
+      "type": "Firewall/Router",
+      "model": "Mini PC (4x 2.5GbE)",
+      "management_ip": "10.10.20.254",
+      "aliases": [
+        "opnsense",
+        "firewall-direct"
+      ],
+      "configuration_notes": [
+        "Kea DHCP is the active DHCP server. Ansible playbooks manage static DHCP reservations via the Kea API.",
+        "Ensure 'Static route filtering' is DISABLED (Firewall > Settings > Advanced) to maintain stateful symmetry with the L3 Switch.",
+        "Ensure Unbound DNS is listening on TRANSIT interface (192.168.2.254) to allow infrastructure DNS resolution.",
+        "Ensure Unbound DNS is NOT listening on WAN interface to prevent external DNS amplification attacks."
+      ],
+      "ports": [
+        {
+          "id": "igc0",
+          "role": "Direct WAN (Modem)",
+          "speed": "2.5Gbs",
+          "note": "Direct physical connection to Modem (No VLAN)"
+        },
+        {
+          "id": "igc1",
+          "role": "Trunk LAN Master",
+          "speed": "2.5Gbs",
+          "mode": "Trunk",
+          "connected_to": "switch-25g-server Porta 5",
+          "allowed_vlans": [
+            "10",
+            "20",
+            "30"
+          ],
+          "logical_interfaces": [
+            {
+              "name": "gw-vlan20",
+              "interface": "opt2",
+              "vlan_tag": "20",
+              "ip": "10.10.20.254",
+              "subnet": "10.10.20.0/24",
+              "dhcp": "enabled",
+              "dns": "10.10.20.254",
+              "firewall_policy": "Allow All"
+            },
+            {
+              "name": "gw-vlan30",
+              "interface": "opt3",
+              "vlan_tag": "30",
+              "ip": "10.10.30.1",
+              "subnet": "10.10.30.0/24",
+              "dhcp": "enabled",
+              "dns": "1.1.1.1, 8.8.8.8",
+              "firewall_policy": "Allow Internet (Careful with RFC1918 blocks on Transit!)"
+            },
+            {
+              "name": "gw-vlan10",
+              "interface": "opt1",
+              "vlan_tag": "10",
+              "ip": "10.10.10.254",
+              "subnet": "10.10.10.0/24",
+              "dhcp": "static_only",
+              "dns": "10.10.10.254",
+              "firewall_policy": "Allow Internet, Allow from LAN_CLIENT"
+            },
+            {
+              "name": "gw-transit",
+              "interface": "opt4",
+              "vlan_tag": "Native (Untagged)",
+              "ip": "192.168.2.254",
+              "subnet": "192.168.2.0/24",
+              "gateway": "192.168.2.1 (Switch L3)",
+              "dhcp": "disabled",
+              "firewall_policy": "Allow All / Transit"
+            }
+          ]
+        },
+        {
+          "id": "igc2",
+          "role": "Unused/Spare",
+          "speed": "2.5Gbs"
+        },
+        {
+          "id": "igc3",
+          "role": "ADMIN_LAN",
+          "speed": "2.5Gbs",
+          "description": "OOB Management Port - Collegata a switch-25g-server Porta 4 (Access VLAN 99)",
+          "connected_to": "switch-25g-server Porta 4",
+          "logical_interfaces": [
+            {
+              "name": "gw-admin",
+              "interface": "lan",
+              "ip": "192.168.100.1",
+              "subnet": "192.168.100.0/24",
+              "dhcp": "disabled (DHCP disabilitato - IP statici su VLAN 99)",
+              "firewall_policy": "Allow All",
+              "note": "IP OOB del firewall. Accesso fisico diretto e out-of-band alla gestione OPNsense."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mac studio",
+      "label": "Mac Studio M2 Ultra",
+      "hostname": "olindo-macstudio",
+      "aliases": [
+        "olindo-macstudio"
+      ],
+      "domain": "pindaroli.org",
+      "ip": "10.10.20.100",
+      "interfaces": [
+        {
+          "interface": "en0 (Ethernet - Built-in 10Gb)",
+          "mac": "a4:fc:14:10:5b:80",
+          "network": "Client (VLAN 20)",
+          "ip": "10.10.20.100",
+          "gateway": "10.10.20.1",
+          "dns": "10.10.20.254",
+          "connected_to": "switch-25g-letto Port 6",
+          "notes": "Trunk port carrying Untagged VLAN 20 (Production) and Tagged VLAN 99 (OOB Management)."
+        },
+        {
+          "interface": "wifi (en1)",
+          "mac": "a4:fc:14:14:a0:e7",
+          "network": "Client (VLAN 20)",
+          "ip": "10.10.20.101",
+          "gateway": "10.10.20.1",
+          "dns": "10.10.20.254",
+          "connected_to": "ap11000"
+        },
+        {
+          "interface": "vlan0 (Virtual Interface on en0)",
+          "mac": "a4:fc:14:10:5b:80",
+          "network": "Management OOB (VLAN 99)",
+          "ip": "192.168.100.99",
+          "gateway": "none (Split-Routing)",
+          "dns": "none",
+          "connected_to": "switch-25g-letto Port 6",
+          "notes": "Interfaccia virtuale taggata VLAN 99 per amministrazione protetta e out-of-band dell'infrastruttura Proxmox. Prestazioni 10G native."
+        }
+      ],
+      "services": [
+        {
+          "id": "ollama",
+          "label": "Ollama AI",
+          "role": "Local LLM Inference",
+          "port": 11434,
+          "data_path": "~/.ollama/models",
+          "config_file": "/Users/olindo/Library/LaunchAgents/homebrew.mxcl.ollama.plist",
+          "notes": "Servizio installato localmente per inferenza AI distribuita."
+        },
+        {
+          "id": "ollama-exporter",
+          "label": "Ollama Metrics Exporter",
+          "role": "Prometheus Metrics Bridge",
+          "port": 11435,
+          "config_file": "/Users/olindo/Library/LaunchAgents/org.norskhelsenett.ollama-metrics.plist",
+          "notes": "Proxy trasparente (Go) per catturare metriche di inferenza (VRAM/Metal). Log: ~/Library/Logs/ollama-monitoring/"
+        },
+        {
+          "id": "tdarr-node",
+          "label": "Tdarr External Node",
+          "role": "Distributed Transcoding Worker",
+          "port": 8268,
+          "config_file": "/Users/olindo/prj/k8s-lab/tdarr/node/start_node.sh",
+          "notes": "Avviato come Elemento del Login con nohup + tail. Log: ~/Library/Logs/tdarr-node.log"
+        }
+      ]
+    },
+    {
+      "id": "pve1",
+      "label": "Proxmox Node 1",
+      "type": "Hypervisor",
+      "aliases": [
+        "pve-direct",
+        "pve1-direct"
+      ],
+      "version": "Proxmox VE 9.1",
+      "OS": "Debian 13 (Trixie)",
+      "management_ip": "10.10.10.11",
+      "ports": [
+        {
+          "id": "1",
+          "os_name": "enp1s0f0",
+          "speed": "10Gbs",
+          "connected_to": "switch10g Port 3",
+          "vlan": "10",
+          "note": "LAN Server Bridge (vmbr0)"
+        },
+        {
+          "id": "2",
+          "os_name": "enp1s0f1",
+          "speed": "10Gbs",
+          "connected_to": "switch10g Port 5",
+          "vlan": "20",
+          "note": "LAN Client Bridge (vmbr20)"
+        },
+        {
+          "id": "3",
+          "os_name": "nic0",
+          "speed": "2.5Gbs",
+          "connected_to": "switch-25g-server Port 1",
+          "ip": "192.168.100.11",
+          "note": "Service Port (VLAN 99 OOB - No Gateway)"
+        }
+      ],
+      "disks": [
+        {
+          "name": "nvme0n1",
+          "size": "931.5G",
+          "model": "CT1000P3PSSD8",
+          "serial": "2422491F3C19",
+          "type": "disk"
+        },
+        {
+          "pci_id": "0000:03:00",
+          "note": "Passthrough to VM 1100 (TrueNAS)",
+          "type": "pci_passthrough"
+        },
+        {
+          "pci_id": "0000:04:00",
+          "note": "Passthrough to VM 1100 (TrueNAS)",
+          "type": "pci_passthrough"
+        },
+        {
+          "pci_id": "0000:05:00.0",
+          "note": "Passthrough to VM 1100 (TrueNAS) - Likely 2x 4TB HDDs",
+          "type": "pci_passthrough"
+        }
+      ]
+    },
+    {
+      "id": "pve2",
+      "label": "Proxmox Node 2",
+      "type": "Hypervisor",
+      "aliases": [
+        "pve2-direct"
+      ],
+      "version": "Proxmox VE 9.1",
+      "OS": "Debian 13 (Trixie)",
+      "hardware": "64GB RAM, 2TB NVMe",
+      "management_ip": "10.10.10.21",
+      "status": "OFFLINE (Hardware Maintenance)",
+      "notes": "PVE2 is currently powered off and waiting for hardware maintenance. Hosts critical nodes like talos-cp-02.",
+      "ports": [
+        {
+          "id": "1",
+          "os_name": "enp1s0f0np0",
+          "speed": "2.5Gbs",
+          "connected_to": "switch-25g-server",
+          "vlan": "10",
+          "note": "LAN Server Bridge (vmbr10)"
+        },
+        {
+          "id": "2",
+          "os_name": "enp1s0f1np1",
+          "speed": "2.5Gbs",
+          "connected_to": "switch-25g-server",
+          "vlan": "20",
+          "note": "LAN Client Bridge (vmbr20)"
+        },
+        {
+          "id": "nic0",
+          "os_name": "nic0",
+          "connected_to": "Direct Access",
+          "ip": "192.168.100.200",
+          "note": "Service Port (No Gateway)"
+        }
+      ],
+      "disks": [
+        {
+          "name": "nvme0n1",
+          "size": "476.9G",
+          "model": "SSDPEMKF512G8 NVMe INTEL 512GB",
+          "serial": "BTHP95240V0D512C",
+          "type": "disk"
+        },
+        {
+          "name": "nvme1n1",
+          "size": "1.8T",
+          "model": "Acer SSD N7000 2TB",
+          "serial": "ASBK53470103815",
+          "type": "disk"
+        }
+      ]
+    },
+    {
+      "id": "pve3",
+      "label": "Proxmox Node 3",
+      "type": "Hypervisor",
+      "aliases": [
+        "pve3-direct"
+      ],
+      "version": "Proxmox VE 9.1",
+      "OS": "Debian 13 (Trixie)",
+      "hardware": "64GB RAM, 1TB NVMe (Micron 2550), AMD Ryzen AI (Strix)",
+      "nic_card": "HP CN1200E Emulex OneConnect Skyhawk (2x 10G SFP+) via OCuLink PCIe x8",
+      "management_ip": "10.10.10.31",
+      "gateway": "10.10.10.1",
+      "dns": "10.10.10.254",
+      "ports": [
+        {
+          "id": "1",
+          "os_name": "enp101s0f0",
+          "pci": "65:00.0",
+          "mac": "70:10:6f:ef:59:20",
+          "driver": "be2net",
+          "speed": "10Gbs",
+          "bridge": "vmbr10, vmbr20",
+          "connected_to": "switch10g",
+          "vlan": "10, 20 (Trunk)",
+          "status": "UP",
+          "note": "HP CN1200E Port 1 → DAC → ONTi. 10G Trunk for VLAN 10 (Server) and VLAN 20 (Client)."
+        },
+        {
+          "id": "2",
+          "os_name": "enp101s0f1",
+          "pci": "65:00.1",
+          "mac": "70:10:6f:ef:59:28",
+          "driver": "be2net",
+          "speed": "10Gbs",
+          "status": "NO-CARRIER - cavo DAC mancante",
+          "note": "HP CN1200E Port 2 - Unused/Uncabled."
+        },
+        {
+          "id": "3",
+          "os_name": "nic0",
+          "pci": "63:00.0",
+          "mac": "c8:ff:bf:05:50:24",
+          "driver": "igc",
+          "speed": "2.5Gbs",
+          "connected_to": "switch-25g-server Porta 3",
+          "ip": "192.168.100.31/24",
+          "vlan": "99",
+          "status": "UP",
+          "note": "OOB Service Port (VLAN 99 - No Gateway)"
+        }
+      ],
+      "disks": [
+        {
+          "name": "nvme0n1",
+          "size": "931.5G",
+          "model": "CT1000P3PSSD8",
+          "serial": "25074E23D6AE",
+          "type": "disk"
+        }
+      ]
+    },
+    {
+      "id": "ap11000",
+      "label": "Access Point (Cudy)",
+      "brand": "Cudy",
+      "model": "AP11000",
+      "mac": "80:af:ca:c0:2e:5a",
+      "type": "Network Device",
+      "role": "Access Point",
+      "aliases": [
+        "cudy",
+        "wifi"
+      ],
+      "management_ip": "10.10.20.103",
+      "gateway": "10.10.20.1",
+      "dns": "10.10.20.254",
+      "ports": [
+        {
+          "id": "1",
+          "role": "Uplink to switch-25g-letto Port 4",
+          "mode": "Trunk",
+          "speed": "2.5Gbs",
+          "native_vlan": "20",
+          "allowed_vlans": [
+            "20",
+            "30"
+          ]
+        }
+      ],
+      "wifi_networks": [
+        {
+          "ssid": "Eternal",
+          "band": "5GHz + 6GHz",
+          "security": "WPA3-SAE",
+          "vlan": "20 (Native)",
+          "note": "Main Network for high-performance devices"
+        },
+        {
+          "ssid": "Iot",
+          "band": "2.4GHz",
+          "security": "WPA2-PSK",
+          "vlan": "30 (Tagged)",
+          "isolation": "Enabled",
+          "note": "Legacy/IoT Network (Isolated)"
+        }
+      ]
+    },
+    {
+      "id": "printer",
+      "label": "Network Printer",
+      "type": "Printer",
+      "brand": "Brother",
+      "model": "HL-L2400DWE",
+      "mac": "d8:b3:2f:1e:0f:1c",
+      "ip": "10.10.20.127",
+      "network": "Client (VLAN 20)",
+      "notes": "Static DHCP reservation on VLAN 20 (Temporary placement due to Trunk issues). mDNS repeater removed as no longer needed for intra-VLAN discovery."
+    },
+    {
+      "id": "ipad",
+      "label": "iPad Pro",
+      "type": "Tablet",
+      "brand": "Apple",
+      "model": "ipad pro 12.9 m2",
+      "mac": "4e:55:65:8b:8d:e6",
+      "ip": "10.10.20.205",
+      "network": "Client (VLAN 20)",
+      "notes": "Static DHCP reservation."
+    },
+    {
+      "id": "xray",
+      "label": "OCI Proxy Server",
+      "type": "Cloud Instance",
+      "provider": "Oracle Cloud (OCI)",
+      "region": "Milan",
+      "shape": "VM.Standard.E2.1.Micro (Always Free)",
+      "os": "Ubuntu 22.04 LTS (x86_64)",
+      "ip": "79.72.44.199",
+      "ip_type": "Ephemeral Public IP",
+      "role": "VLESS-Reality Proxy",
+      "local_client_config": "~/devices-backup/xray_vless.txt",
+      "notes": "External exit node. Secrets (UUID/Keys) stored in Ansible Vault."
+    },
+    {
+      "id": "talos-cp-01",
+      "label": "Talos Control Plane 01",
+      "type": "VM",
+      "host_node": "pve",
+      "vm_id": "1300",
+      "ip": "10.10.20.141",
+      "mac": "bc:24:11:81:6a:19",
+      "aliases": [
+        "k1"
+      ],
+      "vip": "10.10.20.55",
+      "role": "Kubernetes Control Plane",
+      "os": "Talos Linux 1.12.0",
+      "network": "VLAN 20 (vmbr20)",
+      "host_node_sticky": true
+    },
+    {
+      "id": "talos-cp-02",
+      "label": "Talos Control Plane 02",
+      "type": "VM",
+      "host_node": "pve2",
+      "vm_id": "2300",
+      "ip": "10.10.20.142",
+      "mac": "bc:24:11:77:40:fc",
+      "aliases": [
+        "k2"
+      ],
+      "vip": "10.10.20.55",
+      "role": "Kubernetes Control Plane",
+      "os": "Talos Linux 1.12.0",
+      "network": "VLAN 20 (vmbr20)",
+      "host_node_sticky": true,
+      "status": "OFFLINE (Hardware Maintenance)",
+      "notes": "CRITICAL: This node is hosted on PVE2 which is currently completely powered off for maintenance. This node provides Local Storage for the 'postgres-main' cluster (CloudNativePG). PostgreSQL cannot start until this node is restored because the DB disks are physically bound to it."
+    },
+    {
+      "id": "talos-cp-03",
+      "label": "Talos Control Plane 03",
+      "type": "VM",
+      "host_node": "pve3",
+      "vm_id": "3200",
+      "ip": "10.10.20.143",
+      "mac": "bc:24:11:0b:e0:61",
+      "aliases": [
+        "k3"
+      ],
+      "vip": "10.10.20.55",
+      "role": "Kubernetes Control Plane",
+      "os": "Talos Linux 1.12.0",
+      "network": "VLAN 20 (vmbr20)",
+      "host_node_sticky": true
+    },
+    {
+      "id": "jellyfin-srv",
+      "label": "Jellyfin Media Server",
+      "type": "LXC",
+      "vm_id": "2200",
+      "host_node": "pve3",
+      "ip": "10.10.20.32",
+      "role": "Media Server",
+      "os": "Debian",
+      "network": "VLAN 20 (vmbr20)",
+      "notes": "Consumes media from TrueNAS via NFS. Protected by wait-for-truenas hook."
+    },
+    {
+      "id": "traefik-lb",
+      "label": "Traefik LoadBalancer VIP",
+      "type": "VIP",
+      "ip": "10.10.20.56",
+      "role": "Ingress Controller VIP",
+      "domain": "pindaroli.org",
+      "aliases": [
+        "auth",
+        "traefik-dash",
+        "radarr",
+        "lidarr",
+        "lidarr-classic",
+        "tdarr-internal",
+        "prowlarr",
+        "qbittorrent",
+        "jellyfin",
+        "jellyfin-classic",
+        "home",
+        "minio",
+        "nas",
+        "n8n",
+        "grafana",
+        "ap",
+        "kasmweb",
+        "prefect",
+        "tdarr",
+        "calibre-web",
+        "firewall",
+        "pve"
+      ],
+      "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
+    },
+    {
+      "id": "postgres-lb",
+      "label": "PostgreSQL LoadBalancer VIP",
+      "type": "VIP",
+      "ip": "10.10.20.57",
+      "role": "Database LoadBalancer",
+      "domain": "pindaroli.org",
+      "aliases": [
+        "postgres",
+        "db"
+      ],
+      "notes": "MetalLB Layer 2 VIP. External access for DBeaver/LAN."
+    },
+    {
+      "id": "tdarr-api",
+      "label": "Tdarr API Service",
+      "ip": "10.10.20.61",
+      "hostname": "tdarr-api",
+      "domain": "pindaroli.org",
+      "services": [
+        {
+          "id": "tdarr-api",
+          "port": 8266,
+          "protocol": "HTTP"
+        }
+      ],
+      "notes": "Direct access to Tdarr API via MetalLB VIP (10.10.20.61:8266). Bypasses Traefik."
+    },
+    {
+      "id": "qbittorrent-lb",
+      "label": "qBittorrent P2P LoadBalancer VIP",
+      "type": "VIP",
+      "ip": "10.10.20.60",
+      "role": "P2P Traffic Gateway",
+      "notes": "MetalLB Layer 2 VIP. Dedicated IP for qBittorrent without Xray proxy. Zero Trust Port Forwarding on OPNsense."
+    },
+    {
+      "id": "pbs",
+      "label": "Proxmox Backup Server",
+      "type": "LXC",
+      "vm_id": "1400",
+      "host_node": "pve",
+      "ip": "10.10.10.100",
+      "role": "Backup Server",
+      "os": "Debian 13 (Trixie)",
+      "network": "VLAN 10 (vmbr0)",
+      "storage": "NFS (/mnt/pbs-store)",
+      "aliases": [
+        "backup"
+      ]
+    },
+    {
+      "id": "kvm-extender",
+      "label": "KVM over IP Extender",
+      "type": "Network Device",
+      "role": "Out-of-Band KVM Management",
+      "status": "Da acquistare",
+      "network": "VLAN 99 (OOB)",
+      "ip": "TBD",
+      "connected_to": "TBD - porta non ancora assegnata",
+      "notes": "KVM over IP per accesso console fisico ai nodi. Porta di connessione da definire al momento dell'acquisto."
+    }
+  ],
+  "applicazioni": [
+    {
+      "id": "n8n",
+      "label": "n8n Workflow Automation",
+      "version": "1.40.0",
+      "deployment": "Kubernetes (n8n namespace)",
+      "database": {
+        "cluster": "postgres-main",
+        "namespace": "cnpg-system",
+        "user": "n8n",
+        "host": "postgres-main-rw.cnpg-system.svc.cluster.local"
+      },
+      "status": "Migrated to postgres-main (Fresh Start)"
+    },
+    {
+      "id": "prefect",
+      "label": "Prefect Orchestrator",
+      "version": "3.6.28",
+      "deployment": "Kubernetes (prefect namespace)",
+      "port": 4200,
+      "database": {
+        "cluster": "postgres-main",
+        "namespace": "cnpg-system",
+        "user": "prefect",
+        "host": "10.10.20.57",
+        "note": "Temporaneamente su LoadBalancer IP per bypassare problemi overlay (Nodo k2 offline)"
+      },
+      "status": "Active"
+    }
+  ],
+  "opnsense": {
+    "outbound": {
+      "blocked-domain": [
+        "google-analytics.com",
+        "googletagmanager.com",
+        "googlesyndication.com",
+        "doubleclick.net",
+        "facebook.net",
+        "vortex.data.microsoft.com",
+        "settings-win.data.microsoft.com",
+        "telemetry.microsoft.com",
+        "scorecardresearch.com",
+        "quantserve.com",
+        "advertising.com",
+        "adnxs.com",
+        "rubiconproject.com",
+        "taboola.com",
+        "criteo.com",
+        "outbrain.com"
+      ]
+    }
+  }
 }

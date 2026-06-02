@@ -22,12 +22,12 @@ Adottiamo quindi un approccio **semplice e robusto**, basato su due soli pilastr
 *   **Assenza di Race Condition**: Essendo la VLAN 99 priva di server DHCP ed essendo tutti gli endpoint configurati con IP statico, il rischio di instabilità o conflitti di indirizzamento IP è **totalmente azzerato**.
 
 ### B. Split-Routing Fisico su macOS (Darwin)
-*   **Longest Prefix Match**: L'adattatore USB Ethernet da 1G del Mac Studio viene configurato con IP statico `192.168.100.99/24` lasciando i campi **default gateway (Router)** e **DNS** completamente vuoti.
+*   **Longest Prefix Match**: L'interfaccia VLAN virtuale `vlan99` (legata a `en0` su Tag 99) del Mac Studio viene configurata con IP statico `192.168.100.99/24` lasciando i campi **default gateway (Router)** e **DNS** completamente vuoti.
 *   La tabella di routing di macOS (verificabile con `netstat -rn`) presenterà:
     1.  La rotta di default (`default` o `0.0.0.0/0`) associata a `en0` per tutto il traffico internet e inter-VLAN.
-    2.  La rotta locale (`192.168.100.0/24`) associata all'interfaccia dell'adattatore USB.
-*   Il kernel Darwin, applicando il principio del **Longest Prefix Match**, instraderà in modo deterministico e automatico tutte le richieste destinate a `192.168.100.x` tramite l'adattatore USB, aumentando la stabilità rispetto a comandi manuali persistenti.
-*   **Zero Leak di Broadcast**: Il kernel Darwin elabora e termina i pacchetti di broadcast internamente a livello di stack IP dell'interfaccia ricevente, **senza eseguire il bridging dei pacchetti** tra le due schede (in assenza di configurazioni esplicite di IP Forwarding o Internet Sharing).
+    2.  La rotta locale (`192.168.100.0/24`) associata all'interfaccia virtuale `vlan99`.
+*   Il kernel Darwin, applicando il principio del **Longest Prefix Match**, instraderà in modo deterministico e automatico tutte le richieste destinate a `192.168.100.x` tramite l'interfaccia virtuale `vlan99`, garantendo prestazioni 10G native e stabilità assoluta.
+*   **Zero Leak di Broadcast**: Il kernel Darwin elabora e termina i pacchetti di broadcast internamente a livello di stack IP dell'interfaccia virtuale ricevente, **senza eseguire il bridging dei pacchetti** tra le due interfacce (in assenza di configurazioni esplicite di IP Forwarding o Internet Sharing).
 
 ---
 
@@ -35,7 +35,7 @@ Adottiamo quindi un approccio **semplice e robusto**, basato su due soli pilastr
 
 ```text
   [Mac Studio (Camera)]
-         │ (USB Ethernet Dongle - IP 192.168.100.99 - Access VLAN 99)
+         │ (Cavo Rame 10G - en0: IP 10.10.20.100 Untagged | vlan99: IP 192.168.100.99 Tagged 99)
          ▼
  ┌──────────────────────┐
  │   switch-25g-letto   │ (Camera da Letto)
@@ -51,11 +51,11 @@ Adottiamo quindi un approccio **semplice e robusto**, basato su due soli pilastr
             ▼
  ┌──────────────────────┐
  │  switch-25g-server   │ (LIAGUO - Sala Server)
- └─────┬──────────┬─────┘
-       │          │ (Access VLAN 99 - Cavi da collegare in questo piano!)
-       ▼          ▼
-   [PVE1 OOB]  [PVE2 OOB]  [PVE3 OOB]
-  (100.11)     (100.200)    (100.31)
+ └──┬───┬───┬───┬───────┘
+    │   │   │   │  (Access VLAN 99)
+    ▼   ▼   ▼   ▼
+  [PVE1][PVE2][PVE3][OPNsense igc3]
+ (100.11)(100.200)(100.31)(100.1)
 ```
 
 ---
@@ -66,11 +66,18 @@ Per garantire il corretto funzionamento ed impedire vulnerabilità latenti, gli 
 
 1.  **Dichiarazione Statica della VLAN**: La VLAN 99 deve essere creata esplicitamente nel database VLAN di tutti e tre gli switch (`switch10g`, `switch-25g-letto`, `switch-25g-server`). Non affidarsi a meccanismi di propagazione dinamica.
 2.  **Configurazione Rigida dei Trunk (802.1Q)**: Sui link inter-switch, la VLAN 99 deve essere aggiunta esplicitamente come **Tagged (Allowed)**. Lasciamo la VLAN 1 nativa untagged per il traffico di gestione standard degli switch, mantenendo la VLAN 99 isolata ed etichettata per prevenire attacchi di *Double Tagging*.
-3.  **Configurazione Rigida delle Porte di Accesso (PVID 99)**: Le porte collegate alle interfacce OOB dei tre nodi Proxmox e alla scheda USB del Mac Studio devono essere configurate staticamente in modalità **Access VLAN 99** (o PVID 99).
-4.  **Disabilitazione del Dynamic Trunking (DTP)**: Assicurarsi che le porte di accesso non tentino di negoziare dinamicamente i trunk (disabilitare opzioni come "Auto-Trunking" o "Dynamic Port"), forzando lo stato di "Access" puro.
+3.  **Configurazione Rigida delle Porte di Accesso e Trunk degli Endpoint**: Le porte collegate alle interfacce OOB dei tre nodi Proxmox devono essere configurate staticamente in modalità **Access VLAN 99** (o PVID 99), mentre la porta del Mac Studio deve essere configurata come **Trunk** (Native 20, Tagged 99).
+4.  **Disabilitazione del Dynamic Trunking (DTP)**: Assicurarsi che le porte di accesso non tentino di negoziare dinamicamente i trunk (disabilitare opzioni come "Auto-Trunking" o "Dynamic Port"), forzando lo stato di "Access" puro o "Trunk" statico.
 5.  **Isolamento IP degli Switch (NO SVI su VLAN 99 - CRITICO!)**:
     > [!IMPORTANT]
     > **Nessuno dei tre switch deve avere un indirizzo IP logico (SVI / VLAN Interface) configurato sulla VLAN 99**. La gestione degli switch deve rimanere legata ai loro IP attuali sulla VLAN 1 (`192.168.2.x`). Questo garantisce che, anche in caso di teorica compromissione del piano OOB, gli switch non siano in alcun modo attaccabili direttamente su quel segmento.
+
+6.  **Disabilitazione DHCP su OPNsense `igc3` (CRITICO!)**:
+    > [!IMPORTANT]
+    > L'interfaccia `igc3` (`lan`) di OPNsense ha DHCP abilitato di default sulla subnet `192.168.100.0/24`.
+    > **Prima del cablaggio fisico**, disabilitare il servizio DHCP su questa interfaccia dalla Web GUI OPNsense
+    > (`Services → Kea DHCP → Interfaces`). Tutti gli endpoint OOB usano IP statici: il DHCP su VLAN 99
+    > è indesiderato e potrebbe causare conflitti.
 
 ---
 

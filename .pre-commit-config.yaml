@@ -9,6 +9,7 @@ repos:
         args: [--allow-multiple-documents]
         exclude: ^helm-charts/.*$|^.*/templates/.*$
       - id: check-added-large-files
+        exclude: ^wiki/raw/
 
   - repo: local
     hooks:

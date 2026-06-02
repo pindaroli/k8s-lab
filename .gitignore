@@ -41,7 +41,7 @@ __pycache__/
 downloads/plugins
 # Tdarr
 tdarr/node/
-tdarr/logs/Tdarr_Node_Log.txt
+tdarr/logs/
 
 # Security: Google OAuth2 Secrets
 client_secret_*.json

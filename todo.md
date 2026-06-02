@@ -166,22 +166,50 @@
     - [x] Ridurre `initialDelaySeconds` della Readiness Probe.
 
 ## 🖥️ Connettività OOB e Migrazione 10G PVE3
-- [ ] **Fase 1: Configurazione Canale di Servizio Fisico (OOB)** [[plan-out-of-band-service-access]]
-    - [ ] Creare VLAN 99 sui tre switch e taggarla sui link di Uplink
-    - [ ] Configurare le porte OOB dei nodi Proxmox e dell'adattatore USB Mac Studio in Access VLAN 99
-    - [ ] Configurare lo split-routing fisso sull'adattatore USB Ethernet del Mac Studio (`192.168.100.99`, no gateway)
-    - [ ] Validare la connettività OOB ed isolamento IP degli switch (No-SVI su VLAN 99)
+- [x] **Fase 1: Configurazione Canale di Servizio Fisico (OOB)** [[plan-out-of-band-service-access]] (COMPLETED 2026-05-31)
+    - [x] Creare VLAN 99 sui tre switch e taggarla sui link di Uplink (COMPLETED 2026-05-30)
+    - [x] Configurare le porte OOB dei nodi Proxmox e della scheda 10G del Mac Studio (Trunk Native 20 / Tagged 99) (COMPLETED 2026-05-31)
+    - [x] Configurare lo split-routing fisso sulla VLAN virtuale `vlan0` del Mac Studio (`192.168.100.99`, no gateway) (COMPLETED 2026-05-31)
+    - [x] Investigare e risolvere l'irraggiungibilità della porta di servizio OOB di PVE1 (192.168.100.11 non risponde al ping dal Mac Studio, ARP incompleto) (COMPLETED 2026-05-31 - Risolto con allineamento database globale VLAN degli switch Realtek)
+    - [x] Validare la connettività OOB ed isolamento IP degli switch (No-SVI su VLAN 99) (COMPLETED 2026-05-31)
 - [ ] **Fase 2: Test Isolato a Freddo di PVE2** [[plan-out-of-band-service-access]]
     - [ ] Collegare la porta di servizio di PVE2 al switch camera ed accenderlo
     - [ ] Eseguire il ping a `192.168.100.200` ed entrare nella GUI Proxmox per convalidare l'hardware
+    - [ ] **Riallineamento IP OOB PVE2**: Cambiare l'IP di servizio OOB di PVE2 da `192.168.100.200` a `192.168.100.21` (in `/etc/network/interfaces` e `rete.json`) per allinearlo al pattern di PVE1 (`100.11`) e PVE3 (`100.31`).
     - [ ] Spegnere PVE2 e riposizionarlo nel rack definitivo in sala server
-- [ ] **Fase 3: Migrazione Fisica 10G PVE3 e DR del Cluster** [[pve3-10g-migration-recovery]]
+
+- [x] **Fase 3: Upgrade PVE3 a Proxmox VE 9.2 e Re-join Cluster (PRIORITY 0)** [[pve3-reinstallation-ve9.2]] (COMPLETED 2026-06-02)
+    - [x] Predisporre i backup e le configurazioni necessarie. (COMPLETED 2026-06-02)
+    - [x] Eseguire l'upgrade o reinstallazione pulita di PVE3 a VE 9.2. (COMPLETED 2026-06-02)
+    - [x] Configurare rete 10G appena allestita e reinserire il nodo nel cluster con PVE1. (COMPLETED 2026-06-02)
+
+- [ ] **Fase 3.5: Upgrade PVE1 a Proxmox VE 9.2** [[pve1-upgrade-ve9.2]]
+    - [ ] Spegnimento ordinato delle VM/LXC su PVE1 (talos-cp-01, TrueNAS, PBS)
+    - [ ] Esecuzione upgrade `apt update && apt dist-upgrade`
+    - [ ] Reboot di PVE1 e verifica dell'avvio su systemd-boot
+    - [ ] Ripristino VM/LXC in sequenza (TrueNAS prima, PBS, talos-cp-01)
+    - [ ] Verifica del quorum corosync (`pvecm status`) e salute Kubernetes
+
+- [ ] **Fase 4A: Reinstallazione PVE2 e Migrazione Dati** [[pve2-reinstallation-migration]]
+    - [ ] Fase 0: Dump configurazioni e backup forzato PBS da oldPVE2 (con PVE2 acceso)
+    - [ ] Fase 1: Installazione Proxmox VE 9.2 su newPVE2 (nvme0n1 Intel 512GB) da USB
+    - [ ] Fase 2: Configurazione rete, hosts, repo su newPVE2
+    - [ ] Fase 3: Re-join al cluster Proxmox (pvecm add)
+    - [ ] Fase 4: Ripristino VM/LXC da PBS (incluso VM 2300 talos-cp-02, stopped)
+    - [ ] Fase 6: Aggiornamento rete.json e istruzioni/interfaces_pve2.txt (OOB IP → .21)
+- [ ] **Fase 3B: Migrazione Fisica 10G PVE3 e DR del Cluster** [[pve3-10g-migration-recovery]]
     - [ ] Forzare i backup manuali su Proxmox Backup Server (PBS) ed eseguire lo shutdown ordinato del rack
-    - [ ] Spostare fisicamente PVE3 sul core switch 10G (`switch10g`) e configurare Access VLAN 10/20 su ONTi
-    - [ ] Avviare PVE3 in OOB, rilevare i nuovi nomi delle schede 10G ed aggiornare `/etc/network/interfaces`
+    - [x] Configurare Trunk VLAN 10/20 su ONTi e migrare rete PVE3 a 10G via OOB
+    - [x] Rilevare la scheda 10G ed aggiornare e testare `/etc/network/interfaces` in OOB
     - [ ] Riavviare l'Homelab in sequenza ordinata (PVE1/TrueNAS prima, satelliti poi) ed allineare hosts e Corosync
-    - [ ] Reinstallare da zero `talos-cp-02` (VM 2300) applicando la configurazione controlplane per rientrare in etcd
-    - [ ] Rimuovere il fencing su CNPG e riscalare `postgres-main` a 3 repliche per forzare il riallineamento locale
+- [ ] **Fase 3C: Ripristino Cluster Kubernetes Talos (ULTIMO STEP)** [[talos-k8s-cluster-restoration]]
+    - [ ] Verificare Proxmox 3 nodi in quorum stabile
+    - [ ] Avviare talos-cp-02 (VM 2300) su PVE2 e verificare boot Talos
+    - [ ] Re-apply `controlplane-cp-02.yaml` se necessario per reintegrazione etcd
+    - [ ] Verificare 3 nodi K8s Ready e 3 membri etcd Healthy
+    - [ ] Rimuovere fencing e verificare ripristino automatico `postgres-main` (3/3 repliche)
+    - [ ] Verificare tutti i servizi applicativi (n8n, Prefect, Lidarr, etc.)
+
 
 
 ## Future Integrations (n8n & Prefect)

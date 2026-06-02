@@ -2,38 +2,41 @@ auto lo
 iface lo inet loopback
 
 # -----------------------------------------------------------
-# INTERFACCE LOGICHE FITTIZIE (PLACEHOLDER MIGRAZIONE 10G)
-# -----------------------------------------------------------
-iface dac1 inet manual
-# Future Port 1 (VLAN 10 - Server)
-
-iface dac2 inet manual
-# Future Port 2 (VLAN 20 - Client)
-
-# -----------------------------------------------------------
-# PORTA DI SERVIZIO OUT-OF-BAND (VLAN 99) - PORTA FISICA 2.5G
+# PORTA DI SERVIZIO OOB (VLAN 99 Access dal LIAGUO)
 # -----------------------------------------------------------
 auto nic0
 iface nic0 inet static
     address 192.168.100.31/24
-    # NESSUN GATEWAY. Collega allo switch LIAGUO in Access VLAN 99
+    # Nessun gateway qui, il routing OOB è gestito diversamente
 
 # -----------------------------------------------------------
-# BRIDGE MANAGEMENT & SERVER (VLAN 10)
+# LINK ATTIVO 10G (Trunk Fisico - Nessun IP sulla radice)
 # -----------------------------------------------------------
+auto enp101s0f0
+iface enp101s0f0 inet manual
+
+# -----------------------------------------------------------
+# VLAN 10 (Server/Mgmt PVE3)
+# -----------------------------------------------------------
+auto enp101s0f0.10
+iface enp101s0f0.10 inet manual
+
 auto vmbr10
 iface vmbr10 inet static
     address 10.10.10.31/24
     gateway 10.10.10.1
-    bridge-ports dac1
+    bridge-ports enp101s0f0.10
     bridge-stp off
     bridge-fd 0
 
 # -----------------------------------------------------------
-# BRIDGE CLIENT (VLAN 20)
+# VLAN 20 (Client VM)
 # -----------------------------------------------------------
+auto enp101s0f0.20
+iface enp101s0f0.20 inet manual
+
 auto vmbr20
 iface vmbr20 inet manual
-    bridge-ports dac2
+    bridge-ports enp101s0f0.20
     bridge-stp off
     bridge-fd 0

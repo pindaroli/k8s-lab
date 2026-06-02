@@ -56,15 +56,38 @@ L'intervento è stato eseguito in modalità a caldo senza interrompere i servizi
 
 Per garantire che l'infrastruttura dichiarativa rimanga allineata allo stato reale, sono stati modificati i seguenti file sorgente:
 
-1.  **`rete.json`**: Modificato `"os_name"` di PVE1 Port 3 da `"eno3"` a `"nic0"`.
-2.  **`wiki/plans/plan-out-of-band-service-access.md`**: Aggiornati tutti i riferimenti descrittivi del cablaggio e della tabella IP di PVE1 da `eno3` a `nic0`.
-3.  **`wiki/plans/oob-hardening-validation.md`**: Allineata la topologia fisica a `nic0`.
+1.  **`rete.json`**: Modificato `"os_name"` di PVE1 Port 3 da `"eno3"` a `"nic0"`, aggiornata la connessione di PVE1 OOB alla **Porta 1** dello switch LIAGUO, e definita la nuova interfaccia virtuale **`vlan0`** su `en0` per il Mac Studio.
+2.  **`wiki/plans/plan-out-of-band-service-access.md`**: Aggiornato con la nuova architettura Trunk su singolo cavo 10G rame e la creazione della VLAN virtuale su macOS Sequoia.
+3.  **`wiki/plans/oob-hardening-validation.md`**: Allineata la topologia fisica alla rotta nativa `en0` taggata.
 
-L'infrastruttura OOB di PVE1 è ora **configurata, persistente al boot e testata live con successo**!
+L'infrastruttura OOB di PVE1 è ora **configurata, persistente al boot e testata live con successo al 100%!**
+
+---
+
+## 🏁 Risoluzione Finale dell'Incidente (31 Maggio 2026)
+
+L'irraggiungibilità della subnet `192.168.100.x` è stata brillantemente risolta affrontando e risolvendo due problemi logici e fisici:
+
+### A. Allineamento Database VLAN degli Switch Realtek (Risoluzione L2)
+Sui chipset Realtek managed (GoodTop, ONTi, LIAGUO), le tabelle di inoltro L2 e le porte logiche sono disaccoppiate. Abbiamo risolto l'isolamento hardware creando esplicitamente la **VLAN 99** a livello globale nella sezione **802.1Q VLAN** di tutti e tre gli switch, ed associando le porte come **Tagged (T)** sui Trunk inter-switch e **Untagged (U)** sulle porte Access degli host, allineando infine i valori dei **PVID a 99**. Questo ha sbloccato immediatamente l'apprendimento delle tabelle ARP.
+
+### B. Mismatch Fisico Porta PVE1 (LIAGUO)
+Attraverso la telemetria dello switch LIAGUO, abbiamo rilevato che il cavo della porta di servizio `nic0` di PVE1 non era collegato alla Porta 2, bensì alla **Porta 1** (che negoziava regolarmente a 2.5 Gbps). La configurazione dello switch è stata allineata per impostare la Porta 1 in Access VLAN 99.
+
+### C. Consolidamento Architetturale: 10G Native Trunking su Mac Studio
+Per eliminare la precarietà di un adattatore di rete USB-Ethernet soggetto a surriscaldamento ed instabilità dei driver su macOS Sequoia, abbiamo rivoluzionato l'architettura collegando il Mac Studio tramite il suo cavo in rame **10Gb integrato (en0)**.
+* La **Porta 6 dello switch Letto** è stata configurata come **Trunk (Native 20, Tagged 99)**.
+* Su macOS, è stata creata l'interfaccia virtuale **`vlan0`** legata a `en0` con Tag 99, con IP statico `192.168.100.99/24` (split-routing).
+* Questo permette di convogliare sia la produzione (VLAN 20 untagged) sia il management (VLAN 99 tagged) sullo stesso eccezionale cavo 10G fisico.
+
+### D. Test di Convalida Realizzato con Successo:
+* `ping -c 5 192.168.100.11` ➜ **0.0% packet loss**, latenza RTT media **0.699 ms**!
+
+L'incidente è ufficialmente **CHIUSO** e l'infrastruttura OOB è in stato **OPERATIVO**.
 
 ---
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: OOB Switch & Hypervisor Configuration (Phase 5)
-- **Ultima Azione Completata**: Modifica e attivazione di `nic0` su PVE1, e allineamento completo dei file descrittivi del repository.
-- **Prossimo Passo Operativo**: Eseguire il cablaggio fisico del cavo OOB tra PVE1 e lo switch `LIAGUO` (Porte Access VLAN 99), e successivamente investigare lo stato del nodo PVE3.
-- **Blocchi/Decisioni Pendenti**: Attesa del collegamento fisico dei cavi OOB e accensione/connessione di PVE3.
+- **Fase Attiva**: OOB Switch & Hypervisor Configuration Completed (Phase 5)
+- **Ultima Azione Completata**: Risoluzione definitiva dell'irraggiungibilità OOB, migrazione al Trunk nativo 10G su macOS Sequoia, e allineamento completo dei file descrittivi del repository (`rete.json`, `todo.md` e piani Wiki).
+- **Prossimo Passo Operativo**: Passare al test isolato a freddo di PVE2 (Fase 2 del piano OOB).
+- **Blocchi/Decisioni Pendenti**: Nessuno. PVE1 OOB stabile ed operativo al 100%.
