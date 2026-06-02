@@ -427,7 +427,7 @@
         "pve-direct",
         "pve1-direct"
       ],
-      "version": "Proxmox VE 9.1",
+      "version": "Proxmox VE 9.2",
       "OS": "Debian 13 (Trixie)",
       "management_ip": "10.10.10.11",
       "ports": [
@@ -543,7 +543,7 @@
       "aliases": [
         "pve3-direct"
       ],
-      "version": "Proxmox VE 9.1",
+      "version": "Proxmox VE 9.2",
       "OS": "Debian 13 (Trixie)",
       "hardware": "64GB RAM, 1TB NVMe (Micron 2550), AMD Ryzen AI (Strix)",
       "nic_card": "HP CN1200E Emulex OneConnect Skyhawk (2x 10G SFP+) via OCuLink PCIe x8",
