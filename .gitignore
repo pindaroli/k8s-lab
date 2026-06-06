@@ -59,3 +59,7 @@ import_music/*.log
 
 # Beets local virtual environment
 import_music/import_classical/venv/
+
+# Local scratch and temp folders
+scratch/
+.ansible_tmp_dir/

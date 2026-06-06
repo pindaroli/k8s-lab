@@ -1,6 +1,6 @@
 ---
 title: "Storage Registry (storage.json)"
-last_updated: "2026-05-24"
+last_updated: "2026-06-06"
 confidence: "High"
 tags:
   - "#storage"
@@ -24,9 +24,9 @@ Ci sono due pool principali:
 - **`stripe`**: Pool NVMe ad alte prestazioni. Usato per cache K8s, transcodifica temporanea di [[Tdarr]] (`k8s-arr/tdarr-cache`), storage temporaneo qBittorrent (`qb_temp`), PVC NFS per la suite n8n (`k8s-n8n`) e libreria Steam/Games (`games`).
   - **Ottimizzazione qB Temp**: Dataset `stripe/qb_temp` configurato con **Recordsize: 16k** e **Sync: Disabled** per gestire burst di IOPS a 20 MB/s.
 
-> [!CRITICAL]
-> **Database e Local Storage**: Il database `postgres-main` (CloudNativePG) NON usa NFS di TrueNAS, ma utilizza **Local Storage** (`rancher.io/local-path`) per massimizzare le performance IOPS. Questo introduce un **Single Point of Failure (SPOF) a livello di nodo fisico**: i dischi del database sono vincolati ai nodi specifici (es. `talos-cp-02`).
-> **STATO ATTUALE (2026-05-11)**: Il sistema è in stato **DEGRADED (Missing Nodes)**. I dati di `postgres-main-2` sono inaccessibili poiché il nodo `talos-cp-02` è ospitato su PVE2 (attualmente offline). Il cluster DB non può avviarsi correttamente fino al ripristino dell'hardware. I dettagli sono in `storage.json` alla voce `nas.local.postgres_disk`.
+> [!NOTE]
+> **Database e Local Storage**: Il database `postgres-main` (CloudNativePG) NON usa NFS di TrueNAS, ma utilizza **Local Storage** (`rancher.io/local-path`) per massimizzare le performance IOPS. Questo introduce un **Single Point of Failure (SPOF) a livello di nodo fisico**: i dischi del database sono vincolati ai nodi specifici (es. `talos-cp-02` e `talos-cp-01`).
+> **STATO ATTUALE (2026-06-06)**: Il sistema è stato completamente ripristinato. PVE2 e il nodo `talos-cp-02` sono tornati online, e la replica del database è stata risincronizzata ed è in esecuzione con successo.
 
 ## 2. Integrazione Kubernetes
 Il [[Talos_Cluster]] accede allo storage tramite il CSI Driver NFS (Local Path Provisioner customizzato o mount diretti nei container).

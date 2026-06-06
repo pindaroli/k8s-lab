@@ -1,6 +1,6 @@
 ---
 title: "Talos Cluster (Kubernetes Control Plane)"
-last_updated: "2026-05-03"
+last_updated: "2026-06-06"
 confidence: "High"
 tags:
   - "#compute"
@@ -37,14 +37,11 @@ La configurazione base è `talos-config/controlplane.yaml`.
 
 | Nodo | IP | Ruolo | Stato |
 | :--- | :--- | :--- | :--- |
-| **talos-cp-01** | `10.10.20.141` | Leader / Etcd | **NotReady** |
-| **talos-cp-02** | `10.10.20.142` | Member | **OFFLINE** (PVE2 in manutenzione) |
-| **talos-cp-03** | `10.10.20.143` | Member | **NotReady** |
+| **talos-cp-01** | `10.10.20.141` | Leader / Etcd | **Ready** |
+| **talos-cp-02** | `10.10.20.142` | Member | **Ready** |
+| **talos-cp-03** | `10.10.20.143` | Member | **Ready** |
 | **talos-7ke-08g** | `...` | Nuovi Nodi | **Ready** |
 | **talos-ate-kwz** | `...` | Nuovi Nodi | **Ready** |
-
-> [!CRITICAL]
-> **Dipendenza Storage Locale**: Il nodo `talos-cp-02` è ospitato fisicamente sull'hypervisor **PVE2**. Poiché PVE2 è completamente spento per manutenzione hardware, `talos-cp-02` è irraggiungibile. Questo nodo è **fondamentale** perché ospita i dischi di **Local Storage** per il cluster di database `postgres-main` (CloudNativePG). Fino a quando PVE2/talos-cp-02 non tornerà online, il database PostgreSQL non potrà essere schedulato e tutti i servizi dipendenti (es. Lidarr) andranno in CrashLoopBackOff ("Connection Refused").
 
 - **Virtual IP (VIP)**: `10.10.20.55` (Punto di ingresso per `kubectl`).
 

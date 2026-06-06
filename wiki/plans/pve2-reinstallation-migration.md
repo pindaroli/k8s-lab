@@ -212,14 +212,41 @@ apt-get update && apt-get dist-upgrade -y
 "
 ```
 
-### Step 2.5: Ripristino Parametri Kernel (da oldPVE2 se custom)
+### Step 2.5: Ripristino Selettivo delle Configurazioni da Backup ("Diff & Port")
 
 ```bash
-# Confronta GRUB di newPVE2 con quello estratto da oldPVE2 nel Step 0.1
-ssh root@10.10.10.21 "cat /etc/default/grub"
+# 1. Copia ed estrazione del dump di configurazione temporaneo su newPVE2
+scp ~/Desktop/pve2-config-backup-*.tar.gz root@10.10.10.21:/tmp/pve2-config-dump.tar.gz
+ssh root@10.10.10.21 "mkdir -p /tmp/old-pve2-config && tar -xzf /tmp/pve2-config-dump.tar.gz -C /tmp/old-pve2-config/"
 
-# Se necessario, applica parametri custom (es. intel_iommu=on)
-# Decidi dopo aver confrontato i dump
+# 2. Ispezione dei vecchi parametri del kernel in GRUB
+ssh root@10.10.10.21 "cat /tmp/old-pve2-config/etc/default/grub | grep GRUB_CMDLINE_LINUX_DEFAULT"
+
+# 3. Confronto e ripristino di eventuali driver custom in /etc/modprobe.d/
+ssh root@10.10.10.21 "ls -la /tmp/old-pve2-config/etc/modprobe.d/"
+# Se ci sono file custom (es. vfio.conf), copiarli manualmente:
+# ssh root@10.10.10.21 "cp /tmp/old-pve2-config/etc/modprobe.d/NOMEFILE.conf /etc/modprobe.d/"
+
+# 4. Configurazione Esplicita di "nomodeset" (e altri parametri IOMMU)
+# UEFI usa systemd-boot: i parametri vanno scritti come unica riga in /etc/kernel/cmdline
+# Leggi l'attuale riga di comando:
+ssh root@10.10.10.21 "cat /etc/kernel/cmdline"
+
+# Aggiungi esplicitamente "nomodeset" per prevenire hang grafici della GPU integrata
+# Esegui l'append sicuro (aggiunge nomodeset in fondo se non già presente):
+ssh root@10.10.10.21 "grep -q 'nomodeset' /etc/kernel/cmdline || sed -i 's/$/ nomodeset/' /etc/kernel/cmdline"
+
+# Se necessario, aggiungi "intel_iommu=on" (o altri parametri estratti dal vecchio GRUB al punto 2):
+# ssh root@10.10.10.21 "sed -i 's/$/ intel_iommu=on/' /etc/kernel/cmdline"
+
+# Verifica il contenuto finale di /etc/kernel/cmdline:
+ssh root@10.10.10.21 "cat /etc/kernel/cmdline"
+
+# Rigenera il bootloader (OBBLIGATORIO dopo ogni modifica a /etc/kernel/cmdline):
+ssh root@10.10.10.21 "proxmox-boot-tool refresh"
+
+# 5. Append dei nodi del cluster a /etc/hosts (senza sovrascrivere il resto)
+ssh root@10.10.10.21 "cat /tmp/old-pve2-config/etc/hosts | grep -E 'pve|pve3' >> /etc/hosts"
 ```
 
 ---
@@ -267,6 +294,46 @@ ssh root@10.10.10.21 "journalctl -u corosync --since '5 minutes ago' | tail -20"
 ssh root@10.10.10.21 "cat /etc/pve/corosync.conf | grep -A5 'pve2'"
 ```
 
+### Step 3.5: Pulizia ed Inizializzazione del Disco da 2 TB (nvme1n1)
+
+```bash
+# 1. Verifica identificativi del disco per non sbagliare target
+ssh root@10.10.10.21 "lsblk -o NAME,SIZE,MODEL,SERIAL"
+# target: nvme1n1 (Acer SSD N7000 2TB, serial ASBK53470103815)
+
+# 2. Pulizia radicale delle vecchie partizioni e tabelle dei dischi
+ssh root@10.10.10.21 "sgdisk --zap-all /dev/nvme1n1"
+ssh root@10.10.10.21 "wipefs -a /dev/nvme1n1"
+
+# 3. Creazione del Volume Group LVM 'pve-2tb'
+ssh root@10.10.10.21 "pvcreate /dev/nvme1n1"
+ssh root@10.10.10.21 "vgcreate pve-2tb /dev/nvme1n1"
+
+# 4. Creazione del thin pool 'data'
+ssh root@10.10.10.21 "lvcreate -l 100%FREE --thinpool data pve-2tb"
+```
+
+**CHECK**:
+```bash
+ssh root@10.10.10.21 "lvs && vgs"
+```
+
+### Step 3.6: Registrazione dello Storage LVM-Thin nel Cluster
+
+```bash
+# Aggiunta dello storage nel file condiviso /etc/pve/storage.cfg limitandolo a PVE2
+ssh root@10.10.10.21 "pvesm add lvmthin local-lvm-2tb \
+  --vgname pve-2tb \
+  --thinpool data \
+  --content images,rootdir \
+  --nodes pve2"
+```
+
+**CHECK**:
+```bash
+ssh root@10.10.10.21 "pvesm status | grep local-lvm-2tb"
+```
+
 ---
 
 ## Fase 4: Ripristino VM e LXC da PBS
@@ -280,10 +347,9 @@ ssh root@10.10.10.21 "cat /etc/pve/corosync.conf | grep -A5 'pve2'"
 ssh root@10.10.10.21 "pvesm status"
 ```
 
-Se PBS non è presente come storage:
+Se PBS non è presente come storage (dovrebbe esserlo in automatico ereditato dal cluster):
 ```bash
-# Aggiungi PBS dalla GUI di PVE2 (Datacenter → Storage → Add → Proxmox Backup Server)
-# Oppure via CLI:
+# Se mancante, aggiungilo:
 ssh root@10.10.10.21 "pvesm add pbs pbs \
   --server 10.10.10.100 \
   --datastore main \
@@ -291,27 +357,22 @@ ssh root@10.10.10.21 "pvesm add pbs pbs \
   --content backup"
 ```
 
-**CHECK**:
-```bash
-ssh root@10.10.10.21 "pvesm status | grep pbs"
-```
-
 ### Step 4.2: Lista Backup Disponibili
 
 ```bash
-# Lista backup su PBS via GUI o CLI
+# Lista backup su PBS
 ssh root@10.10.10.21 "pvesm list pbs"
 ```
 
 ### Step 4.3: Ripristino di talos-cp-02 (VM 2300) — CRITICA
 
 > [!IMPORTANT]
-> VM 2300 ha `host_node_sticky: true` — deve essere ripristinata **su PVE2**.
+> VM 2300 ha `host_node_sticky: true` — deve essere ripristinata **su PVE2** e **sullo storage local-lvm-2tb**.
+> Se la configurazione orfana (zombie) della VM 2300 è già visibile sulla GUI dopo il join, si deve usare `--force` per sovrascriverla.
 
 ```bash
-# Dalla GUI di PVE2: Storage → pbs → seleziona backup VM 2300 → Restore
-# Oppure via CLI (sostituisci TIMESTAMP con il backup recente):
-ssh root@10.10.10.21 "qmrestore pbs:backup/vm/2300/TIMESTAMP --storage local-lvm --unique 0"
+# Ripristino da CLI (sostituisci TIMESTAMP con il timestamp reale del backup ottenuto dallo step 4.2)
+ssh root@10.10.10.21 "qmrestore pbs:backup/vm/2300/TIMESTAMP 2300 --storage local-lvm-2tb --unique 0 --force"
 ```
 
 **CHECK**:
@@ -319,12 +380,15 @@ ssh root@10.10.10.21 "qmrestore pbs:backup/vm/2300/TIMESTAMP --storage local-lvm
 ssh root@10.10.10.21 "qm list"
 ```
 
-### Step 4.4: Ripristino Eventuali Altri LXC/VM
+### Step 4.4: Ripristino Eventuali Altri LXC/VM su local-lvm-2tb
 
-Per ogni altra macchina presente su oldPVE2 (verificate nel Step 0.1):
+Per ogni altra macchina presente precedentemente su oldPVE2:
 ```bash
-# VM: qmrestore pbs:backup/vm/<VMID>/<TIMESTAMP> --storage local-lvm
-# LXC: pct restore <CTID> pbs:backup/ct/<CTID>/<TIMESTAMP> --storage local-lvm
+# Per le VM:
+# ssh root@10.10.10.21 "qmrestore pbs:backup/vm/<VMID>/<TIMESTAMP> <VMID> --storage local-lvm-2tb --unique 0 --force"
+
+# Per i Container LXC:
+# ssh root@10.10.10.21 "pct restore <CTID> pbs:backup/ct/<CTID>/<TIMESTAMP> --storage local-lvm-2tb --force"
 ```
 
 ---

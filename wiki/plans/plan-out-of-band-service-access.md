@@ -1,5 +1,9 @@
 # Piano Preliminare Semplificato: Accesso Out-of-Band (OOB) ed Isolamento di Rete (Pragmatic Homelab)
 
+> [!NOTE]
+> **Stato**: 🟢 **COMPLETATO (2026-06-06)**
+> Questo piano è stato interamente eseguito, testato e validato dal Mac Studio. La parte relativa al KVM Extender e re-routing LAN OPNsense è stata dichiarata obsoleta e rimossa.
+
 Questo piano preliminare ha l'obiettivo di configurare la tua rete locale e gli switch per darti un **accesso fisico, diretto e permanente** alle **Porte di Servizio (Out-of-Band - OOB)** di tutti i nodi Proxmox (subnet `192.168.100.0/24`).
 
 **Allineamento Topologia Fisica Reale**:
@@ -143,7 +147,10 @@ Esegui questi ping veloci dal Mac Studio (in Camera) per confermare il funzionam
 
 ---
 
-## 5. Migrazione OPNsense igc1 su ONTi (PLANNED) + Aggiunta KVM Extender
+## 5. Migrazione OPNsense igc1 su ONTi (OBSOLETO / DEPRECATO) + Aggiunta KVM Extender
+
+> [!WARNING]
+> **Stato**: **OBSOLETO** (Dichiarato obsoleto il 2026-06-06 su richiesta dell'utente). Questa integrazione infrastrutturale non è più pianificata per il setup finale.
 
 Per poter collegare il KVM Extender alla Porta 5 del LIAGUO, è necessario prima spostare il trunk LAN
 di OPNsense (`igc1`) dalla Porta 5 del LIAGUO alla **Porta 4 di switch10g (ONTi)**.

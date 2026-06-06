@@ -1,5 +1,41 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## [ ] Post-Incident: Flannel DNS Cascading Failure (2026-06-03)
+> **Ref**: [[2026-06-03-flannel-restart-dns-cascading-failure]]
+
+### [ ] 5.1 Post-Maintenance Checklist (Procedura Operativa)
+- [ ] Aggiungere alla procedura di manutenzione standard il controllo obbligatorio post-riavvio:
+  ```bash
+  kubectl get pods -A | grep -v -E "Running|Completed"
+  ```
+  Documentare nel workflow [[Node_Maintenance]] la regola: se ci sono pod in `CrashLoopBackOff` e il problema sottostante è risolto, effettuare `kubectl rollout restart` / `kubectl delete pod` immediatamente.
+
+### [ ] 5.2 CoreDNS Hard Anti-Affinity (Spread tra i Nodi)
+- [ ] Patchare il deployment di CoreDNS per aggiungere una regola di anti-affinità **required** che impedisca a due repliche di stare sullo stesso nodo:
+  ```bash
+  kubectl edit deployment -n kube-system coredns
+  ```
+  Aggiungere sotto `spec.template.spec`:
+  ```yaml
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              k8s-app: kube-dns
+          topologyKey: kubernetes.io/hostname
+  ```
+
+### [ ] 5.3 Alert CrashLoopBackOff > 15m (VictoriaMetrics)
+- [ ] Aggiungere una `PrometheusRule` nel namespace `monitoring` che faccia scattare un alert se un pod è in `CrashLoopBackOff` per più di 15 minuti. Configurare la notifica su Alertmanager (o n8n come dispatcher).
+
+### [ ] 5.4 Tdarr Server Image Hardening
+- [ ] Investigare il problema strutturale: `tdarr-server` scarica `jellyfin-ffmpeg` da GitHub ad ogni avvio del pod (nel container entrypoint). Questo crea una dipendenza dalla risoluzione DNS esterna al boot. Valutare:
+  - Pre-bakare il binario nell'immagine Docker custom.
+  - Oppure aggiungere un `initContainer` con retry intelligente.
+
+---
+
 ## [x] Ottimizzazione Diagnostica Avvio Tdarr Node (COMPLETED 2026-05-23)
 > **Ref**: [[tdarr-startup-diagnostics-optimization]]
 - [x] Modificare `start_node.sh` per aggiungere il controllo preventivo TCP verso il Tdarr Server (`tdarr-api.pindaroli.org:8266`). (COMPLETED 2026-05-23)
@@ -172,11 +208,11 @@
     - [x] Configurare lo split-routing fisso sulla VLAN virtuale `vlan0` del Mac Studio (`192.168.100.99`, no gateway) (COMPLETED 2026-05-31)
     - [x] Investigare e risolvere l'irraggiungibilità della porta di servizio OOB di PVE1 (192.168.100.11 non risponde al ping dal Mac Studio, ARP incompleto) (COMPLETED 2026-05-31 - Risolto con allineamento database globale VLAN degli switch Realtek)
     - [x] Validare la connettività OOB ed isolamento IP degli switch (No-SVI su VLAN 99) (COMPLETED 2026-05-31)
-- [ ] **Fase 2: Test Isolato a Freddo di PVE2** [[plan-out-of-band-service-access]]
-    - [ ] Collegare la porta di servizio di PVE2 al switch camera ed accenderlo
-    - [ ] Eseguire il ping a `192.168.100.21` ed entrare nella GUI Proxmox per convalidare l'hardware
+- [x] **Fase 2: Test Isolato a Freddo di PVE2** [[plan-out-of-band-service-access]] (COMPLETED 2026-06-06)
+    - [x] Collegare la porta di servizio di PVE2 al switch camera ed accenderlo
+    - [x] Eseguire il ping a `192.168.100.21` ed entrare nella GUI Proxmox per convalidare l'hardware
     - [x] **Riallineamento IP OOB PVE2**: Cambiare l'IP di servizio OOB di PVE2 da `192.168.100.200` a `192.168.100.21` (in `/etc/network/interfaces` e `rete.json`) per allinearlo al pattern di PVE1 (`100.11`) e PVE3 (`100.31`). (COMPLETED 2026-06-02)
-    - [ ] Spegnere PVE2 e riposizionarlo nel rack definitivo in sala server
+    - [x] Spegnere PVE2 e riposizionarlo nel rack definitivo in sala server
 
 - [x] **Fase 3: Upgrade PVE3 a Proxmox VE 9.2 e Re-join Cluster (PRIORITY 0)** [[pve3-reinstallation-ve9.2]] (COMPLETED 2026-06-02)
     - [x] Predisporre i backup e le configurazioni necessarie. (COMPLETED 2026-06-02)
@@ -190,25 +226,25 @@
     - [ ] Ripristino VM/LXC in sequenza (TrueNAS prima, PBS, talos-cp-01)
     - [ ] Verifica del quorum corosync (`pvecm status`) e salute Kubernetes
 
-- [ ] **Fase 4A: Reinstallazione PVE2 e Migrazione Dati** [[pve2-reinstallation-migration]]
-    - [ ] Fase 0: Dump configurazioni e backup forzato PBS da oldPVE2 (con PVE2 acceso)
-    - [ ] Fase 1: Installazione Proxmox VE 9.2 su newPVE2 (nvme0n1 Intel 512GB) da USB
-    - [ ] Fase 2: Configurazione rete, hosts, repo su newPVE2
-    - [ ] Fase 3: Re-join al cluster Proxmox (pvecm add)
-    - [ ] Fase 4: Ripristino VM/LXC da PBS (incluso VM 2300 talos-cp-02, stopped)
-    - [ ] Fase 6: Aggiornamento rete.json e istruzioni/interfaces_pve2.txt (OOB IP → .21)
-- [ ] **Fase 3B: Migrazione Fisica 10G PVE3 e DR del Cluster** [[pve3-10g-migration-recovery]]
-    - [ ] Forzare i backup manuali su Proxmox Backup Server (PBS) ed eseguire lo shutdown ordinato del rack
+- [x] **Fase 4A: Reinstallazione PVE2 e Migrazione Dati** [[pve2-reinstallation-migration]] (COMPLETED 2026-06-06)
+    - [x] Fase 0: Dump configurazioni e backup forzato PBS da oldPVE2 (con PVE2 acceso)
+    - [x] Fase 1: Installazione Proxmox VE 9.2 su newPVE2 (nvme0n1 Intel 512GB) da USB
+    - [x] Fase 2: Configurazione rete, hosts, repo su newPVE2
+    - [x] Fase 3: Re-join al cluster Proxmox (pvecm add)
+    - [x] Fase 4: Ripristino VM/LXC da PBS (incluso VM 2300 talos-cp-02, stopped)
+    - [x] Fase 6: Aggiornamento rete.json e istruzioni/interfaces_pve2.txt (OOB IP → .21)
+- [x] **Fase 3B: Migrazione Fisica 10G PVE3 e DR del Cluster** [[pve3-10g-migration-recovery]] (COMPLETED 2026-06-06)
+    - [x] Forzare i backup manuali su Proxmox Backup Server (PBS) ed eseguire lo shutdown ordinato del rack
     - [x] Configurare Trunk VLAN 10/20 su ONTi e migrare rete PVE3 a 10G via OOB
     - [x] Rilevare la scheda 10G ed aggiornare e testare `/etc/network/interfaces` in OOB
-    - [ ] Riavviare l'Homelab in sequenza ordinata (PVE1/TrueNAS prima, satelliti poi) ed allineare hosts e Corosync
-- [ ] **Fase 3C: Ripristino Cluster Kubernetes Talos (ULTIMO STEP)** [[talos-k8s-cluster-restoration]]
-    - [ ] Verificare Proxmox 3 nodi in quorum stabile
-    - [ ] Avviare talos-cp-02 (VM 2300) su PVE2 e verificare boot Talos
-    - [ ] Re-apply `controlplane-cp-02.yaml` se necessario per reintegrazione etcd
-    - [ ] Verificare 3 nodi K8s Ready e 3 membri etcd Healthy
-    - [ ] Rimuovere fencing e verificare ripristino automatico `postgres-main` (3/3 repliche)
-    - [ ] Verificare tutti i servizi applicativi (n8n, Prefect, Lidarr, etc.)
+    - [x] Riavviare l'Homelab in sequenza ordinata (PVE1/TrueNAS prima, satelliti poi) ed allineare hosts e Corosync
+- [x] **Fase 3C: Ripristino Cluster Kubernetes Talos (ULTIMO STEP)** [[talos-k8s-cluster-restoration]] (COMPLETED 2026-06-06)
+    - [x] Verificare Proxmox 3 nodi in quorum stabile
+    - [x] Avviare talos-cp-02 (VM 2300) su PVE2 e verificare boot Talos
+    - [x] Re-apply `controlplane-cp-02.yaml` se necessario per reintegrazione etcd
+    - [x] Verificare 3 nodi K8s Ready e 3 membri etcd Healthy
+    - [x] Rimuovere fencing e verificare ripristino automatico `postgres-main` (3/3 repliche)
+    - [x] Verificare tutti i servizi applicativi (n8n, Prefect, Lidarr, etc.)
 
 
 
@@ -265,6 +301,10 @@ The disk `/var/mnt/postgres` was recently at 100%. Ensure the usage stays below 
 Estendere la durata della sessione di login per evitare disconnessioni frequenti.
 - Configurazione in `monitoring/vm-stack-values.yaml` (sezione `grafana.ini`).
 - Parametri: `login_maximum_inactive_lifetime_duration` e `login_maximum_lifetime_duration`.
+
+### [ ] Analizzare e ottimizzare lo stato di HA (High Availability) su Proxmox VE
+- [ ] Analizzare il comportamento del cluster HA in caso di nodo offline e configurare al meglio le politiche di fencing/watchdog per evitare che le risorse (VM 2300, etc.) rimangano bloccate in stato 'error'.
+
 
 ## Log Management (Future Phase)
 

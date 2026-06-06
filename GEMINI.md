@@ -80,4 +80,4 @@ Per garantire la coerenza della conoscenza e la tracciabilità delle azioni:
 
    ```
 
-> **EXECUTION PROTOCOL (HARD ENFORCEMENT)**: È assolutamente vietato eseguire comandi di modifica (bash, replace_file_content) senza aver prima concluso il messaggio precedente con la stringa esatta: **[ATTENDO AUTORIZZAZIONE]**. Nessuna eccezione, nemmeno per emergenze o per fermare script in corso.
+> **EXECUTION PROTOCOL (HARD ENFORCEMENT)**: È assolutamente vietato eseguire comandi di modifica (bash, replace_file_content) senza aver prima concluso il messaggio precedente con la stringa esatta: **go**. Nessuna eccezione, nemmeno per emergenze o per fermare script in corso.
