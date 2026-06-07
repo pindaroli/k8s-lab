@@ -63,3 +63,6 @@ import_music/import_classical/venv/
 # Local scratch and temp folders
 scratch/
 .ansible_tmp_dir/
+
+# Generated files (do not commit)
+wiki/wiki_context.md

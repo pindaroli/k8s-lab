@@ -102,3 +102,21 @@ Per garantire la stabilità del cluster homelab ed evitare disastri derivanti da
 1.  **Test Ad Ogni Passo**: Ogni singolo comando di modifica (Ansible, kubectl, modifiche file, script, comandi ZFS) deve essere seguito da un'operazione di verifica esplicita (es. query SQL, log audit, test di porta, curl, df, mount inspection) per validare l'esito reale.
 2.  **Documentazione nel Piano**: Ogni piano di migrazione o manutenzione in `wiki/plans/` deve includere esplicitamente i comandi di test e verifica a corredo di ciascun comando operativo, in modo che l'operatore e l'AI possano validare lo stato passo dopo passo.
 3.  **No Assunzioni**: È vietato passare al comando successivo se il test del passo corrente non ha restituito esito positivo al 100%.
+
+## 13. Wiki Context Refresh (LLM Sync Protocol)
+
+> [!IMPORTANT]
+> **OBBLIGO DI RIGENERAZIONE**: Ogni volta che un agente (AI o umano) modifica, crea o elimina un file all'interno di `wiki/` (entità, piani, workflow, istruzioni), è **obbligatorio** eseguire lo script di rigenerazione del contesto **al termine della sessione di editing**:
+>
+> ```bash
+> python3 scripts/build_wiki_context.py
+> ```
+>
+> Questo script produce `wiki/wiki_context.md`, il file di contesto unificato usato dai notebook LLM per avere una visione completa e aggiornata dell'infrastruttura.
+
+**Regole operative**:
+1. **Quando eseguirlo**: Dopo qualsiasi modifica a file `.md` in `wiki/`, inclusi aggiornamenti di status, nuovi piani, nuove entità o modifica di workflow.
+2. **Non committare senza aggiornare**: `wiki_context.md` deve sempre essere in sync con l'ultimo stato della wiki. Se si fa `git commit` di file wiki, includere anche il `wiki_context.md` aggiornato.
+3. **Piani Conclusi**: Lo script esclude automaticamente i piani con `status: "Concluso"` o `"Completato"`. Aggiornare lo status del piano nel frontmatter prima di rigenerare.
+4. **Incidents**: Lo script esclude sempre la cartella `incidents/`. Non è necessario fare nulla di speciale per i nuovi incident report.
+5. **File generato**: `wiki/wiki_context.md` è un file **generato automaticamente**. Non modificarlo a mano: le modifiche verranno sovrascritte alla prossima esecuzione.
