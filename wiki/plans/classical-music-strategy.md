@@ -1,7 +1,7 @@
 # Piano: Strategia di Ingestione e Bonifica per la Musica Classica
 
-**Stato**: 🟢 Operativo — Pipeline migrata con successo su Python 3.12 isolato
-**Data**: 2026-05-17
+**Stato**: 🟢 Operativo — Pipeline migrata con successo su Python 3.12 isolato | 🏗️ Estensione K8s & Prefect in corso
+**Data**: 2026-06-07
 **Obiettivo**: Segregazione fisica e logica della musica classica dal raggio d'azione di Lidarr, con una pipeline batch autonoma che preserva l'ontologia classica (Compositore → Opera → Direttore/Orchestra → Movimenti).
 
 > [!NOTE]
@@ -27,8 +27,8 @@ Il modello "Artista-Album-Traccia" di Lidarr è incompatibile con la musica clas
 | Dataset / Mount Point | Recordsize | Compressione | Snapshot | Accesso K8s | Ruolo |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `.../music/pop_rock` | `1M` | `lz4` | Giornaliera | Lidarr (RW) | Pipeline standard automatizzata |
-| `/Volumes/classical/library` | `1M` | `lz4` | Oraria (in import) | Jellyfin/Navidrome (RO) | **Destinazione finale classica** |
-| `/Volumes/classical/staging` | `1M` | `lz4` | Nessuna | Solo Mac Studio | Area transazionale temporanea |
+| `/mnt/oliraid/arrdata/classical/library` (o `/Volumes/classical/library`) | `1M` | `lz4` | Oraria (in import) | Jellyfin-Classic/Navidrome (RO) + Prefect Worker (RW) | **Destinazione finale classica** |
+| `/mnt/oliraid/arrdata/classical/staging` (o `/Volumes/classical/staging`) | `1M` | `lz4` | Nessuna | qBittorrent/Lidarr-Classic/Prefect Worker (RW) | Area transazionale temporanea |
 
 > [!IMPORTANT]
 > Lidarr NON ha mount su `.../music/classical`. Il dataset classico è invisibile al daemon Lidarr.
@@ -184,9 +184,9 @@ cd /Users/olindo/prj/k8s-lab/import_music/import_classical
 
 ---
 
-## 8. Fase 3: Kubernetes — Mount del Dataset Classico (TODO)
+## 8. Fase 3: Kubernetes — Mount del Dataset Classico
 
-Una volta completato l'import, aggiornare i manifest Helm per esporre la libreria classica ai client di streaming:
+Una volta completato l'import, aggiornare i manifest Helm per esporre la libreria classica a Jellyfin-Classic e Navidrome in modalità di sola lettura:
 
 ```yaml
 # In arr-values.yaml — Jellyfin e Navidrome
@@ -201,7 +201,8 @@ additionalMounts:
     readOnly: true
 ```
 
-In Jellyfin: creare una libreria dedicata "Musica Classica" che punta a `/media/music/classical`, con preferenza per i tag interni (no scraping esterno).
+* **Jellyfin-Classic**: Creare una libreria dedicata "Musica Classica" che punta a `/media/music/classical`, con preferenza per i tag interni (no scraping esterno).
+* **Navidrome**: Configurare una library dedicata puntando allo stesso path `/media/music/classical` montato in sola lettura.
 
 ---
 
@@ -250,5 +251,30 @@ Nel corso dell'esecuzione delle altre pipeline, possono essere intercettati fals
 
 ---
 
-*Piano redatto da Antigravity AI Engineering — 2026-05-17*
+## 11. Evoluzione Architetturale: Orchestrazione Stateless con Prefect & Dual Media Server
+
+Per estendere l'automazione ed eliminare la dipendenza dall'esecuzione locale sul Mac Studio, l'architettura evolve verso una gestione dichiarativa e stateless su Kubernetes orchestrata da **Prefect**.
+
+### Componenti e Topologia dello Storage
+* **Media Storage (File Audio):** Ospitato su TrueNAS via NFS. I download completati da qBittorrent atterrano in `/mnt/oliraid/arrdata/classical/staging`.
+* **Database di Stato (Beets DB):** Il database SQLite `classical_musiclibrary.db` è archiviato in modo persistente su **MinIO (S3)** ospitato da TrueNAS.
+* **Media Servers (Presentazione):**
+  * `jellyfin-classic`: Pod K8s con PVC in **sola lettura** su `/media/music/classical`.
+  * `navidrome`: Pod K8s in esecuzione in parallelo, che monta lo **stesso identico PVC** in **sola lettura** puntando al medesimo dataset ZFS della libreria classica.
+* **Motore di Esecuzione:** Worker **Prefect** (`prefect-kubernetes`) per l'esecuzione di Job effimeri.
+
+### Il Ciclo di Vita dell'Elaborazione (Workflow)
+1. **Fase 1 (Ingestione):** `lidarr-classic` invia il torrent a qBittorrent (categoria `lidarr-classic`). I file atterrano in staging. La gestione automatica di Lidarr rimane disabilitata.
+2. **Fase 2 (Innesco):** A download ultimato, qBittorrent usa un webhook per inserire il percorso del file nella **Work Queue di Prefect**. La coda ha un limite di concorrenza = 1 per evitare *rate limiting* e corruzioni di stato.
+3. **Fase 3 (Esecuzione Stateless su K8s via Prefect):**
+  * **Pull (initContainer):** Scarica il DB SQLite da MinIO e lo posiziona in un volume iper-veloce `emptyDir` del nodo K8s.
+  * **Execute (Main Container):** Prefect lancia Beets import in modalità silenziosa per processare il percorso. Beets copia fisicamente i file nella libreria NFS (`/media/music/classical`).
+  * **Post-Import (Main Container):** Istruzioni REST API inviate a `lidarr-classic` per rimuovere il monitoraggio sull'album (silenzio). Trigger HTTP di refresh inviati contemporaneamente a `jellyfin-classic` (Jellyfin REST) e `navidrome` (Subsonic `/rest/startScan.view`).
+  * **Push (Finally Block):** Salva lo stato del database di Beets ricaricandolo su MinIO S3, assicurando che lo stato persista anche se l'import di una cartella specifica fallisce, per tracciare il resume e i successivi checkpoint.
+
+Vedi anche il piano di refactoring dettagliato: [[prefect-beets-adaptation]].
+
+---
+
+*Piano redatto da Antigravity AI Engineering — 2026-06-07*
 *Ref: [[beets-music-rescue-pipeline]] per la pipeline pop/rock standard*

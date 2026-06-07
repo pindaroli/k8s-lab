@@ -92,9 +92,9 @@ def collect_files() -> dict[str, list[Path]]:
     """Raccoglie i file .md suddivisi per sezione, applicando i filtri."""
     sections: dict[str, list[Path]] = {k: [] for k, _ in SECTION_ORDER}
 
-    # Root files (purpose.md, SCHEMA.md, ecc.)
+    # Root files (purpose.md, SCHEMA.md, ecc.) — escludi il file generato
     for f in sorted(WIKI_DIR.glob("*.md")):
-        if f.name.startswith("."):
+        if f.name.startswith(".") or f.name == "wiki_context.md":
             continue
         sections["root"].append(f)
 
@@ -371,12 +371,21 @@ def main():
     lines.append("> *Fine documento — generato da `scripts/build_wiki_context.py`*\n")
 
     # -----------------------------------------------------------------------
-    # Scrittura output
+    # Scrittura output (trailing whitespace stripped per pre-commit hooks)
     # -----------------------------------------------------------------------
-    output = "".join(lines)
+    raw_output = "".join(lines)
+    # Rimuovi trailing whitespace da ogni riga, mantieni newline finale
+    clean_lines = [line.rstrip() for line in raw_output.splitlines()]
+    output = "\n".join(clean_lines).rstrip("\n") + "\n"
+    # Se esiste già, rimuovi temporaneamente il read-only per sovrascrivere
+    if OUTPUT_FILE.exists():
+        OUTPUT_FILE.chmod(0o644)
     OUTPUT_FILE.write_text(output, encoding="utf-8")
+    # Rendi il file read-only per evitare modifiche manuali accidentali
+    OUTPUT_FILE.chmod(0o444)
     size_kb = OUTPUT_FILE.stat().st_size / 1024
     print(f"✅ Output scritto: {OUTPUT_FILE.relative_to(PROJECT_ROOT)} ({size_kb:.1f} KB, {len(output.splitlines())} righe)")
+    print(f"🔒 File impostato in sola lettura (chmod 444)")
 
 
 if __name__ == "__main__":
