@@ -14,12 +14,11 @@ provenance:
   - "wiki/plans/classical-ingestion-routing.md"
 ---
 
-# Wiki Plan: Adattamento Routine Beets per Orchestrazione Prefect
+# Wiki Plan: Adattamento Routine Beets per Orchestrazione Prefect (Standalone)
 
 > [!NOTE]
-> **Status**: 🟡 **PIANIFICATO**
-> **Obiettivo**: Ristrutturare gli attuali script Python isolati di Beets in Flussi e Task di Prefect,
-> testandoli localmente (fuori dal cluster) prima di iniettarli nel worker `prefect-kubernetes`.
+> **Stato**: 🟡 **PIANIFICATO**
+> **Obiettivo**: Ristrutturare gli attuali script Python isolati di Beets in Flussi e Task di Prefect pacchettizzati in container, testandoli localmente (fuori dal cluster) prima di iniettarli nel worker `prefect-kubernetes` per un'esecuzione stateless.
 >
 > ### 🔗 Relazioni & Tracciabilità
 > - Dipende da: [[classical-music-strategy]] (pipeline attuale, ambiente Python 3.12)
@@ -41,17 +40,24 @@ Questo piano implementa il **Ciclo di Vita Stateless** definito nel Piano Archit
         │
         ├── initContainer: pull_state_from_s3  ← MinIO: scarica classical_musiclibrary.db
         │
-        ├── Main Container: run_beets_import   ← Beets tagger + copy to library
+        ├── Main Container: run_beets_import   ← Beets tagger + copia fisica su Library (NFS)
         │
-        ├── Main Container: sync_media_servers ← Lidarr silence + Jellyfin + Navidrome rescan
+        ├── Main Container: sync_media_servers ← Lidarr silence (singolo album) + Jellyfin + Navidrome rescan
         │
         └── finally: push_state_to_s3          ← MinIO: ricarica DB (anche in caso di errore)
 ```
 
 **Storage per lo stato (DB Beets):**
-- Il file `classical_musiclibrary.db` è archiviato su **MinIO (S3)** su TrueNAS.
-- Durante l'esecuzione, viene copiato in un volume `emptyDir` K8s (iper-veloce, sul nodo).
+- Il file `classical_musiclibrary.db` è archiviato su **MinIO (S3)** su TrueNAS. L'approccio Cloud-Native garantisce salvataggi atomici e il **versioning nativo**, fondamentale per rollback istantanei in caso di corruzione dell'ontologia.
+- Durante l'esecuzione, viene copiato in un volume `emptyDir` K8s (su RAM/NVMe locale del nodo). Beets lavora *solo* su questo volume per operare alla massima velocità ed evitare i crash per lock di rete (`SQLITE_BUSY`) tipici di NFS.
 - Il Pod muore al termine — nessuno stato locale persiste nel cluster.
+
+**Media Servers (Dual-Stack):**
+- **Jellyfin-Classic** e **Navidrome** opereranno in parallelo. Entrambi monteranno lo **stesso identico PVC** in **sola lettura** puntando alla libreria classica finale su NFS.
+
+**Modello Monorepo:**
+- Codice Python e Dockerfile in: `k8s-lab/automation/prefect-workers/classical-beets/`
+- Manifest infrastrutturali in: `k8s-lab/kubernetes/arr/prefect/`
 
 ---
 
@@ -115,7 +121,9 @@ def run_beets_import(staging_path: str, db_path: str) -> dict:
 @task(name="sync_media_servers", retries=2)
 def sync_media_servers(beets_result: dict):
     """
-    1. Silenzia l'album su lidarr-classic (rimuove il monitoring).
+    1. Rimuove la proprietà 'monitored' ESCLUSIVAMENTE dal singolo album appena elaborato
+       su lidarr-classic. Questo rimuove l'album dalla lista 'Wanted' evitando loop infiniti
+       di download (Lidarr è 'cieco' e non vede la libreria finale).
     2. Forza il rescan della libreria su jellyfin-classic.
     3. Forza il rescan della libreria su Navidrome (API Subsonic-compatibile).
     """
@@ -301,12 +309,12 @@ prefect work-queue create classical-ingestion --concurrency-limit 1
 
 | Componente | Tipo | Note |
 |---|---|---|
-| `classical_musiclibrary.db` | Storage (MinIO) | Stato persistente della pipeline |
+| `classical_musiclibrary.db` | Storage (MinIO) | Stato persistente della pipeline (versionato) |
 | `beets_classical_config.yaml` | ConfigMap K8s | Mountato nel Pod |
 | `minio-creds` | Secret K8s | Credenziali S3 per pull/push DB |
-| `jellyfin-classic` | Workload K8s | Rescan via API REST |
-| `navidrome` | Workload K8s | Rescan via Subsonic API `/rest/startScan` |
-| `lidarr-classic` | Workload K8s | Silenzio album via API REST |
+| `jellyfin-classic` | Workload K8s | Rescan via API REST (Dual-Stack) |
+| `navidrome` | Workload K8s | Rescan via Subsonic API `/rest/startScan` (Dual-Stack) |
+| `lidarr-classic` | Workload K8s | Rimozione monitored dal **singolo album** appena elaborato |
 | `prefect-kubernetes` | Worker Pool | Esecuzione effimera dei Job |
 
 ---
@@ -314,10 +322,10 @@ prefect work-queue create classical-ingestion --concurrency-limit 1
 ## 💾 Stato di Ripristino (AI Save-State)
 
 - **Fase Attiva**: Fase 1 — Refactoring del Codice (Task Prefect)
-- **Ultima Azione Completata**: Piano documentato e struttura task definita
-- **Prossimo Passo Operativo**: Scrivere il codice Python dei 4 task (`pull_state_from_s3`, `run_beets_import`, `sync_media_servers`, `push_state_to_s3`) in un file `classical_ingestion_flow.py`
+- **Ultima Azione Completata**: Piano integrato con decisioni architetturali definitive (Dual-Stack, MinIO versioning, Monorepo, logica Lidarr per singolo album)
+- **Prossimo Passo Operativo**: Avviare la stesura del codice Python per i 4 task (`pull_state_from_s3`, `run_beets_import`, `sync_media_servers`, `push_state_to_s3`) in `k8s-lab/automation/prefect-workers/classical-beets/classical_ingestion_flow.py`
 - **Blocchi/Decisioni Pendenti**:
-  - Percorso del file di flow nel repo (sotto `import_music/import_classical/` o directory Prefect dedicata?)
+  - ✅ ~~Percorso del file di flow nel repo~~ → `k8s-lab/automation/prefect-workers/classical-beets/`
   - Conferma endpoint e credenziali Navidrome per l'API Subsonic
 
 ---

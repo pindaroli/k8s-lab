@@ -17,10 +17,9 @@ Questo piano preliminare ha l'obiettivo di configurare la tua rete locale e gli 
 ## 1. Architettura OOB Semplificata
 
 1.  **VLAN 99 Isolata (OOB-Management)**: La subnet `192.168.100.0/24` risiede sulla VLAN 99. Questo isolamento L2 è essenziale per evitare conflitti di broadcast ed evitare che i client DHCP ordinari ricevano risposte o interferenze dalla rete di produzione.
-2.  **No SVI su VLAN 99 (Sicurezza degli Switch)**: **Nessuno degli switch deve avere un indirizzo IP logico (SVI / VLAN Interface) configurato sulla VLAN 99**. La gestione degli switch deve rimanere legata ai loro IP attuali sulla VLAN 1 (`192.168.2.x`). Questo garantisce che gli switch non siano in alcun modo attaccabili direttamente su quel segmento.
-3.  **Uplink Trunk Semplici**: La VLAN 99 viene aggiunta come taggata (`802.1Q`) sui cavi di uplink che collegano i tre switch. Non modificheremo la VLAN nativa (lasciamo la default VLAN 1).
-4.  **Mac Studio Single Link Trunk**: Il Mac Studio (in camera) si connette alla VLAN 99 tramite la sua interfaccia fisica nativa 10G **en0**. A livello di switch, la porta è configurata come Trunk (Native 20, Tagged 99). A livello di macOS, viene creata un'interfaccia VLAN virtuale associata a `en0`.
-5.  **Split-Routing macOS su VLAN Virtuale**: L'interfaccia virtuale `vlan99` (legata a `en0` su Tag 99) ha IP statico `192.168.100.99/24` **senza default gateway e senza DNS**. macOS instraderà il traffico `192.168.100.x` su questa scheda virtuale, mentre internet e tutto il resto passeranno sull'interfaccia fisica principale `en0` (VLAN 20 Untagged).
+2.  **Uplink Trunk Semplici**: La VLAN 99 e la VLAN 1 vengono propagate come taggate (`802.1Q`) sui cavi di uplink che collegano i tre switch.
+3.  **Mac Studio Single Link Trunk**: Il Mac Studio (in camera) si connette alla VLAN 99 e alla VLAN 1 tramite la sua interfaccia fisica nativa 10G **en0**. A livello di switch, la porta è configurata come Trunk (Native 20, Tagged 1, 99). A livello di macOS, vengono create due interfacce VLAN virtuali associate a `en0` (`vlan0` per la VLAN 99 e `vlan1` per la VLAN 1).
+4.  **Split-Routing macOS su VLAN Virtuali**: Le interfacce virtuali `vlan0` (VLAN 99, IP `192.168.100.99/24`) e `vlan1` (VLAN 1, IP `192.168.2.99/24`) hanno IP statici **senza default gateway e senza DNS**. macOS instraderà il traffico locale rispettivamente su queste schede virtuali, mentre internet e tutto il resto passeranno sull'interfaccia fisica principale `en0` (VLAN 20 Untagged).
 
 ---
 
@@ -28,7 +27,7 @@ Questo piano preliminare ha l'obiettivo di configurare la tua rete locale e gli 
 
 ```text
   [Mac Studio (Camera)]
-         │ (Cavo Rame 10G - en0: IP 10.10.20.100 Untagged | vlan99: IP 192.168.100.99 Tagged 99)
+         │ (Cavo Rame 10G - en0: IP 10.10.20.100 Untagged | vlan99: IP 192.168.100.99 Tagged 99 | vlan1: IP 192.168.2.99 Tagged 1)
          ▼
  ┌──────────────────────┐
  │   switch-25g-letto   │ (Camera da Letto)
@@ -55,9 +54,9 @@ Questo piano preliminare ha l'obiettivo di configurare la tua rete locale e gli 
     └───► [OPNsense igc1 via SFP+ transceiver - PLANNED]
 ```
 
-| Dispositivo | Interfaccia Fisica | IP Statico OOB | Connessione Switch | Configurazione Porta Switch |
+| Dispositivo | Interfaccia Fisica | IP Statico / Tag | Connessione Switch | Configurazione Porta Switch |
 | :--- | :--- | :--- | :--- | :--- |
-| **Mac Studio** (Camera) | en0 (Virtual interface `vlan99`) | `192.168.100.99/24` | **switch-25g-letto** Porta 6 | **Trunk (Native 20, Tagged 99)** |
+| **Mac Studio** (Camera) | en0 (Virtual interfaces `vlan99`, `vlan1`) | `192.168.100.99/24` (Tag 99)<br>`192.168.2.99/24` (Tag 1) | **switch-25g-letto** Porta 6 | **Trunk (Native 20, Tagged 1, 99)** |
 | **PVE1** (Sala Server) | Port 3 (`nic0`) | `192.168.100.11/24` | **switch-25g-server** Porta 1 | **Access VLAN 99** (PVID 99) |
 | **PVE2** (Sala Server) | Port 3 (`nic0`) | `192.168.100.21/24` | **switch-25g-server** Porta 2 | **Access VLAN 99** (PVID 99) |
 | **PVE3** (Sala Server) | Port 3 (`nic0`) | `192.168.100.31/24` | **switch-25g-server** Porta 3 | **Access VLAN 99** (PVID 99) |
@@ -101,15 +100,17 @@ Ora procediamo a stendere i cavi fisici per connettere le porte di servizio:
 
 ---
 
-### Step 3: Configurazione della VLAN su Mac Studio e Convalida
-1.  Sul Mac Studio, configuriamo la VLAN virtuale `vlan99` legata all'interfaccia fisica `en0` con Tag 99.
+### Step 3: Configurazione delle VLAN su Mac Studio e Convalida
+1.  Sul Mac Studio, configuriamo le VLAN virtuali legati all'interfaccia fisica `en0` (Tag 99 per OOB, Tag 1 per gestione switch).
 2.  Apri il terminale del Mac Studio ed esegui i comandi di creazione:
     ```bash
-    # 1. Crea l'interfaccia virtuale vlan99 legata a en0 con tag 99
+    # 1. Crea l'interfaccia virtuale vlan99 legata a en0 con tag 99 (servizio: vlan99 Configuration)
     sudo networksetup -createVLAN vlan99 en0 99
+    sudo networksetup -setmanual "vlan99 Configuration" 192.168.100.99 255.255.255.0 ""
 
-    # 2. Imposta l'IP statico (senza gateway e senza DNS per mantenere lo split-routing)
-    sudo networksetup -setmanual vlan99 192.168.100.99 255.255.255.0 ""
+    # 2. Crea l'interfaccia virtuale vlan1 legata a en0 con tag 1 (servizio: vlan1 Configuration)
+    sudo networksetup -createVLAN vlan1 en0 1
+    sudo networksetup -setmanual "vlan1 Configuration" 192.168.2.99 255.255.255.0 ""
     ```
 3.  **Audit e Verifica Ingegneristica (dal Mac Studio in Camera)**:
     *   **Verifica dello Split-Routing**:

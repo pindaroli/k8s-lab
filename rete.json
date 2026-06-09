@@ -72,9 +72,16 @@
         },
         {
           "id": "4",
-          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
-          "mode": "ACCESS",
-          "pvid": 10
+          "role": "Downlink to switch-25g-server Port 5",
+          "mode": "Trunk",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
         },
         {
           "id": "5",
@@ -174,10 +181,16 @@
         },
         {
           "id": "6",
-          "role": "Mac Studio Client (en0)",
-          "mode": "ACCESS",
+          "role": "Mac Studio Client (en0) Trunk",
+          "mode": "Trunk",
           "speed": "10Gbs",
-          "pvid": 20
+          "native_vlan": "20",
+          "allowed_vlans": [
+            "1",
+            "20",
+            "99"
+          ],
+          "notes": "Trunk port carrying Untagged VLAN 20 (Production), Tagged VLAN 99 (OOB Management) and Tagged VLAN 1 (Transit/Switch Management)."
         }
       ],
       "management_ip": "192.168.2.2"
@@ -222,14 +235,15 @@
         },
         {
           "id": "5",
-          "role": "Uplink to opnSense igc1 (LAN Trunk)",
+          "role": "Uplink to switch10g Port 4",
           "mode": "Trunk",
           "speed": "2.5Gbs",
           "native_vlan": "1",
           "allowed_vlans": [
             "10",
             "20",
-            "30"
+            "30",
+            "99"
           ]
         },
         {
@@ -369,7 +383,7 @@
           "gateway": "10.10.20.1",
           "dns": "10.10.20.254",
           "connected_to": "switch-25g-letto Port 6",
-          "notes": "Trunk port carrying Untagged VLAN 20 (Production) and Tagged VLAN 99 (OOB Management)."
+          "notes": "Trunk port carrying Untagged VLAN 20 (Production), Tagged VLAN 99 (OOB Management) and Tagged VLAN 1 (Transit/Switch Management)."
         },
         {
           "interface": "wifi (en1)",
@@ -389,6 +403,16 @@
           "dns": "none",
           "connected_to": "switch-25g-letto Port 6",
           "notes": "Interfaccia virtuale taggata VLAN 99 per amministrazione protetta e out-of-band dell'infrastruttura Proxmox. Prestazioni 10G native."
+        },
+        {
+          "interface": "vlan1 (Virtual Interface on en0)",
+          "mac": "a4:fc:14:10:5b:80",
+          "network": "Transit / Switch Management (VLAN 1)",
+          "ip": "192.168.2.99",
+          "gateway": "none (Split-Routing)",
+          "dns": "none",
+          "connected_to": "switch-25g-letto Port 6",
+          "notes": "Interfaccia virtuale taggata VLAN 1 per il transito e la gestione diretta degli switch managed. Prestazioni 10G native."
         }
       ],
       "services": [

@@ -1,6 +1,6 @@
 ---
 title: "Storage Registry (storage.json)"
-last_updated: "2026-06-06"
+last_updated: "2026-06-07"
 confidence: "High"
 tags:
   - "#storage"
@@ -23,6 +23,7 @@ Ci sono due pool principali:
 - **`oliraid`**: Pool HDD primario, alta capacità. Usato per i media (`arrdata`), backup, musica classica e documenti a lungo termine.
 - **`stripe`**: Pool NVMe ad alte prestazioni. Usato per cache K8s, transcodifica temporanea di [[Tdarr]] (`k8s-arr/tdarr-cache`), storage temporaneo qBittorrent (`qb_temp`), PVC NFS per la suite n8n (`k8s-n8n`) e libreria Steam/Games (`games`).
   - **Ottimizzazione qB Temp**: Dataset `stripe/qb_temp` configurato con **Recordsize: 16k** e **Sync: Disabled** per gestire burst di IOPS a 20 MB/s.
+- **MinIO (S3-compatibile)** su TrueNAS: Usato come storage persistente e versionato per il database SQLite della pipeline classica (`classical_musiclibrary.db`). Il DB viene scaricato in `emptyDir` K8s durante l'esecuzione e ri-caricato atomicamente al termine del flow Prefect (sempre, anche in caso di errore). Il versioning nativo di MinIO permette rollback istantanei in caso di corruzione dell'ontologia.
 
 > [!NOTE]
 > **Database e Local Storage**: Il database `postgres-main` (CloudNativePG) NON usa NFS di TrueNAS, ma utilizza **Local Storage** (`rancher.io/local-path`) per massimizzare le performance IOPS. Questo introduce un **Single Point of Failure (SPOF) a livello di nodo fisico**: i dischi del database sono vincolati ai nodi specifici (es. `talos-cp-02` e `talos-cp-01`).
@@ -36,3 +37,4 @@ I PersistentVolume (PV) e PersistentVolumeClaim (PVC) che richiedono grandi capa
 - Governa: `storage.json`
 - Fornito da: [[TrueNAS]]
 - Utilizzato da: [[Talos_Cluster]], [[Tdarr]], Servarr Stack.
+- DB Pipeline Classica: MinIO → [[prefect-beets-adaptation]].

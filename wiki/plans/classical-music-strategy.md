@@ -27,7 +27,7 @@ Il modello "Artista-Album-Traccia" di Lidarr è incompatibile con la musica clas
 | Dataset / Mount Point | Recordsize | Compressione | Snapshot | Accesso K8s | Ruolo |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `.../music/pop_rock` | `1M` | `lz4` | Giornaliera | Lidarr (RW) | Pipeline standard automatizzata |
-| `/mnt/oliraid/arrdata/classical/library` (o `/Volumes/classical/library`) | `1M` | `lz4` | Oraria (in import) | Jellyfin-Classic/Navidrome (RO) + Prefect Worker (RW) | **Destinazione finale classica** |
+| `/mnt/oliraid/arrdata/classical/library` (o `/Volumes/classical/library`) | `1M` | `lz4` | Oraria (in import) | Jellyfin-Classic/Navidrome (RO, Dual-Stack) + Prefect Worker (RW) | **Destinazione finale classica** |
 | `/mnt/oliraid/arrdata/classical/staging` (o `/Volumes/classical/staging`) | `1M` | `lz4` | Nessuna | qBittorrent/Lidarr-Classic/Prefect Worker (RW) | Area transazionale temporanea |
 
 > [!IMPORTANT]
@@ -258,9 +258,9 @@ Per estendere l'automazione ed eliminare la dipendenza dall'esecuzione locale su
 ### Componenti e Topologia dello Storage
 * **Media Storage (File Audio):** Ospitato su TrueNAS via NFS. I download completati da qBittorrent atterrano in `/mnt/oliraid/arrdata/classical/staging`.
 * **Database di Stato (Beets DB):** Il database SQLite `classical_musiclibrary.db` è archiviato in modo persistente su **MinIO (S3)** ospitato da TrueNAS.
-* **Media Servers (Presentazione):**
-  * `jellyfin-classic`: Pod K8s con PVC in **sola lettura** su `/media/music/classical`.
-  * `navidrome`: Pod K8s in esecuzione in parallelo, che monta lo **stesso identico PVC** in **sola lettura** puntando al medesimo dataset ZFS della libreria classica.
+* **Media Servers (Presentazione) — Dual-Stack:**
+  * `jellyfin-classic`: Pod K8s con PVC in **sola lettura** su `/media/music/classical`. Scraper disabilitati, usa esclusivamente i metadati Beets embedded.
+  * `navidrome`: Pod K8s in esecuzione in parallelo, che monta lo **stesso identico PVC** in **sola lettura** puntando al medesimo dataset ZFS. Funge da server Subsonic per client mobili.
 * **Motore di Esecuzione:** Worker **Prefect** (`prefect-kubernetes`) per l'esecuzione di Job effimeri.
 
 ### Il Ciclo di Vita dell'Elaborazione (Workflow)
@@ -272,7 +272,7 @@ Per estendere l'automazione ed eliminare la dipendenza dall'esecuzione locale su
   * **Post-Import (Main Container):** Istruzioni REST API inviate a `lidarr-classic` per rimuovere il monitoraggio sull'album (silenzio). Trigger HTTP di refresh inviati contemporaneamente a `jellyfin-classic` (Jellyfin REST) e `navidrome` (Subsonic `/rest/startScan.view`).
   * **Push (Finally Block):** Salva lo stato del database di Beets ricaricandolo su MinIO S3, assicurando che lo stato persista anche se l'import di una cartella specifica fallisce, per tracciare il resume e i successivi checkpoint.
 
-Vedi anche il piano di refactoring dettagliato: [[prefect-beets-adaptation]].
+Vedi anche il piano di refactoring dettagliato (codice, Dockerfile, template K8s, Monorepo): [[prefect-beets-adaptation]].
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "Music Library Governance"
-last_updated: "2026-05-19"
+last_updated: "2026-06-07"
 confidence: "High"
 tags:
   - "#core"
@@ -10,6 +10,7 @@ provenance:
   - "beets-music-rescue-pipeline.md"
   - "album-directory-standardization.md"
   - "classical-music-standardization.md"
+  - "prefect-beets-adaptation.md"
 ---
 
 # Music Library Governance
@@ -165,9 +166,17 @@ Per importare grosse librerie frammentate (Fase di Migrazione), utilizziamo uno 
 4. **Anomalie**: Le cartelle sotto l'83% (o che violano regole come bootleg/promozionali) vengono saltate e loggate in `import_anomalies.log` assieme ai punteggi esatti (Distance) e al comando CLI preimpostato (`CMD: beet import -i ...`) per la risoluzione manuale.
 
 ### Ciclo Dual-Pipeline & API Loopback (Classica)
-La pipeline classica opera secondo un modello disaccoppiato ("Blackhole"):
-1. L'istanza K8s `lidarr-classical` inoltra i download a qBittorrent con la categoria `music-classical`.
-2. Una volta completati in `/staging/classical`, `lidarr-classical` NON esegue l'importazione (Completed Download Handling disabilitato).
-3. Beets processa lo staging ed esporta la traccia pulita eseguendo una copia fisica nel dataset ZFS classico (`/media/music/classical`). L'area di staging può essere svuotata liberamente al termine del seeding senza intaccare la libreria.
-4. Uno script di unmonitoring API (`segregate_classical.py` richiamato come hook post-import) interroga `lidarr-classical` via REST e spegne il monitoraggio dell'album per evitare loop di download infiniti.
-5. Jellyfin monta il dataset classico in **Sola Lettura** e con tutti gli **scraper disabilitati** (via ConfigMap `options.xml`), forzando l'utilizzo esclusivo dei metadati embedded di Beets.
+La pipeline classica opera secondo un modello disaccoppiato ("Blackhole") orchestrato da **Prefect** su Kubernetes:
+1. L'istanza K8s `lidarr-classic` inoltra i download a qBittorrent (categoria `lidarr-classic`). I file atterrano in staging. La gestione automatica di Lidarr rimane disabilitata.
+2. A download ultimato, qBittorrent usa un webhook per inserire il percorso nella **Work Queue di Prefect** (concorrenza = 1 per evitare rate limiting MusicBrainz e race conditions sul DB).
+3. Il worker Prefect (`prefect-kubernetes`) lancia un Job K8s effimero:
+   - **Pull (initContainer):** Scarica `classical_musiclibrary.db` da **MinIO (S3)** in un volume `emptyDir` locale al nodo (veloce, no lock NFS).
+   - **Execute:** Beets importa lo staging ed esegue una copia fisica del materiale nella libreria NFS (`/media/music/classical`), con metadati ID3/Vorbis ottimizzati per la tassonomia Compositore → Opera.
+   - **Post-Import:** Il Task `sync_media_servers` invia via REST API:
+     - A `lidarr-classic`: rimozione di `monitored` **esclusivamente sul singolo album appena elaborato** (non su tutta la discografia), evitando loop infiniti di download.
+     - A `jellyfin-classic`: trigger refresh libreria (REST Jellyfin).
+     - A `navidrome`: trigger refresh libreria (Subsonic API `/rest/startScan.view`).
+   - **Push (Finally):** Lo stato del DB Beets viene ricaricato atomicamente su MinIO, garantendo persistenza anche in caso di errore parziale.
+4. **Dual-Stack (Jellyfin + Navidrome):** Entrambi i media server montano il **medesimo PVC in sola lettura** sul dataset ZFS classico. Jellyfin opera con tutti gli scraper disabilitati (metadati embedded da Beets). Navidrome funge da server Subsonic per client mobili.
+
+Vedi il piano di refactoring dettagliato: [[prefect-beets-adaptation]].

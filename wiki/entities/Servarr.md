@@ -1,6 +1,6 @@
 ---
 title: "Servarr Stack & qBittorrent"
-last_updated: "2026-05-03"
+last_updated: "2026-06-07"
 confidence: "High"
 tags:
   - "#app"
@@ -43,7 +43,7 @@ Per gestire l'incompatibilità intrinseca tra la tassonomia standard di Lidarr e
 - **Ingestione**: Decoppiata. Completed Download Handling **disabilitato** (Genera warning in UI, ignorabile).
 - **Volume Staging (RW)**: `/media` (punta a `staging` della share NFS).
 - **Categoria qBittorrent**: `lidarr-classic` (mappato fisicamente alla share NFS `/mnt/oliraid/arrdata/classical/staging`).
-- **Sincronizzazione API**: Lo stato dei download viene chiuso spegnendo la proprietà `monitored` dell'album via API POST/PUT dopo l'importazione operata esternamente da Beets.
+- **Sincronizzazione API**: Lo stato dei download viene chiuso spegnendo la proprietà `monitored` **esclusivamente sul singolo album appena elaborato** (`PUT /api/v1/album/{id}` con `monitored=false`) via chiamata REST dal **Task 3 (`sync_media_servers`) del flow Prefect**, non da uno script standalone. Questo evita loop di download infiniti (Lidarr è cieco sulla libreria finale).
 
 ### C. Prowlarr Indexer Tags
 Per evitare conflitti di scaricamento tra le due istanze:
@@ -56,4 +56,5 @@ Per evitare conflitti di scaricamento tra le due istanze:
 - Storage: [[TrueNAS]] (`oliraid/arrdata/media/music`).
 - Transcodifica: Inviata a [[Tdarr]].
 - Strategia Classica: [[classical-music-strategy]].
+- Orchestrazione Classica (Prefect): [[prefect-beets-adaptation]].
 - Bonifica Modern: [[beets-music-rescue-pipeline]].
