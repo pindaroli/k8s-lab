@@ -22,11 +22,12 @@ Adottiamo quindi un approccio **semplice e robusto**, basato su due soli pilastr
 *   **Assenza di Race Condition**: Essendo la VLAN 99 priva di server DHCP ed essendo tutti gli endpoint configurati con IP statico, il rischio di instabilità o conflitti di indirizzamento IP è **totalmente azzerato**.
 
 ### B. Split-Routing Fisico su macOS (Darwin)
-*   **Longest Prefix Match**: L'interfaccia VLAN virtuale `vlan99` (legata a `en0` su Tag 99) del Mac Studio viene configurata con IP statico `192.168.100.99/24` lasciando i campi **default gateway (Router)** e **DNS** completamente vuoti.
+*   **Longest Prefix Match**: Le interfacce VLAN virtuali `vlan0` (VLAN 99) e `vlan1` (VLAN 1) del Mac Studio vengono configurate con IP statici rispettivamente `192.168.100.99/24` e `192.168.2.99/24` lasciando i campi **default gateway (Router)** e **DNS** completamente vuoti.
 *   La tabella di routing di macOS (verificabile con `netstat -rn`) presenterà:
     1.  La rotta di default (`default` o `0.0.0.0/0`) associata a `en0` per tutto il traffico internet e inter-VLAN.
-    2.  La rotta locale (`192.168.100.0/24`) associata all'interfaccia virtuale `vlan99`.
-*   Il kernel Darwin, applicando il principio del **Longest Prefix Match**, instraderà in modo deterministico e automatico tutte le richieste destinate a `192.168.100.x` tramite l'interfaccia virtuale `vlan99`, garantendo prestazioni 10G native e stabilità assoluta.
+    2.  La rotta locale (`192.168.100.0/24`) associata all'interfaccia virtuale `vlan0`.
+    3.  La rotta locale (`192.168.2.0/24`) associata all'interfaccia virtuale `vlan1`.
+*   Il kernel Darwin, applicando il principio del **Longest Prefix Match**, instraderà in modo deterministico e automatico tutte le richieste destinate a `192.168.100.x` e `192.168.2.x` tramite le interfacce virtuali dedicate, garantendo prestazioni 10G native e stabilità assoluta.
 *   **Zero Leak di Broadcast**: Il kernel Darwin elabora e termina i pacchetti di broadcast internamente a livello di stack IP dell'interfaccia virtuale ricevente, **senza eseguire il bridging dei pacchetti** tra le due interfacce (in assenza di configurazioni esplicite di IP Forwarding o Internet Sharing).
 
 ---
@@ -35,7 +36,7 @@ Adottiamo quindi un approccio **semplice e robusto**, basato su due soli pilastr
 
 ```text
   [Mac Studio (Camera)]
-         │ (Cavo Rame 10G - en0: IP 10.10.20.100 Untagged | vlan99: IP 192.168.100.99 Tagged 99)
+         │ (Cavo Rame 10G - en0: IP 10.10.20.100 Untagged | vlan99: IP 192.168.100.99 Tagged 99 | vlan1: IP 192.168.2.99 Tagged 1)
          ▼
  ┌──────────────────────┐
  │   switch-25g-letto   │ (Camera da Letto)
@@ -66,7 +67,7 @@ Per garantire il corretto funzionamento ed impedire vulnerabilità latenti, gli 
 
 1.  **Dichiarazione Statica della VLAN**: La VLAN 99 deve essere creata esplicitamente nel database VLAN di tutti e tre gli switch (`switch10g`, `switch-25g-letto`, `switch-25g-server`). Non affidarsi a meccanismi di propagazione dinamica.
 2.  **Configurazione Rigida dei Trunk (802.1Q)**: Sui link inter-switch, la VLAN 99 deve essere aggiunta esplicitamente come **Tagged (Allowed)**. Lasciamo la VLAN 1 nativa untagged per il traffico di gestione standard degli switch, mantenendo la VLAN 99 isolata ed etichettata per prevenire attacchi di *Double Tagging*.
-3.  **Configurazione Rigida delle Porte di Accesso e Trunk degli Endpoint**: Le porte collegate alle interfacce OOB dei tre nodi Proxmox devono essere configurate staticamente in modalità **Access VLAN 99** (o PVID 99), mentre la porta del Mac Studio deve essere configurata come **Trunk** (Native 20, Tagged 99).
+3.  **Configurazione Rigida delle Porte di Accesso e Trunk degli Endpoint**: Le porte collegate alle interfacce OOB dei tre nodi Proxmox devono essere configurate staticamente in modalità **Access VLAN 99** (o PVID 99), mentre la porta del Mac Studio deve essere configurata come **Trunk** (Native 20, Tagged 1, 99).
 4.  **Disabilitazione del Dynamic Trunking (DTP)**: Assicurarsi che le porte di accesso non tentino di negoziare dinamicamente i trunk (disabilitare opzioni come "Auto-Trunking" o "Dynamic Port"), forzando lo stato di "Access" puro o "Trunk" statico.
 5.  **Isolamento IP degli Switch (NO SVI su VLAN 99 - CRITICO!)**:
     > [!IMPORTANT]

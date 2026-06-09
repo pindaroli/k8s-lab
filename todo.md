@@ -1,5 +1,34 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## [ ] OPNsense Recovery & Post-Restore GUI Alignment Tasks [[opnsense-recovery-and-temporary-routing]]
+- [ ] **Ripristinare OPNsense** tramite chiavetta USB e caricamento del backup `config-OPNsense.internal-prima-di-migrazione 20260318235902.xml` (dopo l'installazione del nuovo SSD).
+- [ ] **Riapplicare configurazioni mancanti via GUI**:
+  - [ ] **ACL Unbound per Kubernetes**:
+    - Andare in `Services -> Unbound DNS -> Access Control`.
+    - Modificare l'ACL `VLANs_Allow` (o crearne una nuova) ed aggiungere la subnet dei Pod `10.244.0.0/16` nei network consentiti (con azione `Allow`).
+    - *Nota*: Questo è fondamentale per la risoluzione DNS interna dei Pod del cluster Talos (Rif: [[2026-05-03-dns-split-horizon-conflict]]).
+  - [ ] **Alternate Hostnames**:
+    - Andare in `System -> Settings -> Administration`.
+    - Inserire `firewall-direct.pindaroli.org` nel campo `Alternate Hostnames` (in aggiunta a `opnsense.pindaroli.org` e `pippo.pindaroli.org`).
+    - *Nota*: Evita errori di DNS Rebinding accedendo all'interfaccia di amministrazione via FQDN.
+- [ ] **Verifiche Post-Recovery**:
+  - Eseguire ping test dal Mac Studio verso gli IP di OPNsense (`192.168.100.1` OOB e `192.168.2.254` Transit).
+  - Eseguire `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml` per risincronizzare gli host override.
+
+## [ ] Ripristino della Rete Originale (DA FARE dopo il ripristino di OPNsense) [[opnsense-recovery-and-temporary-routing]]
+- [ ] **Ripristinare i Collegamenti Fisici**:
+  - Scollegare il cavo WAN dal Cudy AP11000 e ricollegarlo alla porta `igc0` di OPNsense.
+  - Collegare la porta LAN/Trunk di OPNsense a `igc1`.
+  - Collegare la porta OOB di OPNsense a `igc3`.
+  - Sullo switch **GoodTop**, ricollegare la porta 4 alla porta LAN normale del Cudy.
+- [ ] **Riconfigurazione Logica**:
+  - Accedere all'AP11000 (`http://10.10.20.103`) e ripristinare la modalità **Access Point** (o caricare la config AP dal backup).
+  - Ripristinare la porta 4 dello switch **ONTi** (rimuovere VLAN 30 Access).
+  - Ripristinare la porta 4 dello switch **GoodTop** (rimuovere VLAN 30 Access, impostarla nuovamente come Trunk Native 20, Tagged 1, 99).
+- [ ] **Accensione Infrastruttura & Mac Studio**:
+  - Riattivare la rete cablata del Mac Studio e verificare che navighi regolarmente via cavo.
+  - Procedere con l'avvio ordinato dei nodi Proxmox e TrueNAS (Vedi [[Power_Sequence]]).
+
 ## [ ] Post-Incident: Flannel DNS Cascading Failure (2026-06-03)
 > **Ref**: [[2026-06-03-flannel-restart-dns-cascading-failure]]
 
@@ -206,6 +235,7 @@
     - [x] Creare VLAN 99 sui tre switch e taggarla sui link di Uplink (COMPLETED 2026-05-30)
     - [x] Configurare le porte OOB dei nodi Proxmox e della scheda 10G del Mac Studio (Trunk Native 20 / Tagged 99) (COMPLETED 2026-05-31)
     - [x] Configurare lo split-routing fisso sulla VLAN virtuale `vlan0` del Mac Studio (`192.168.100.99`, no gateway) (COMPLETED 2026-05-31)
+    - [x] Configurare l'interfaccia VLAN virtuale `vlan1` (VLAN 1) sul Mac Studio (`192.168.2.99`, no gateway) per la gestione diretta degli switch managed (COMPLETED 2026-06-09)
     - [x] Investigare e risolvere l'irraggiungibilità della porta di servizio OOB di PVE1 (192.168.100.11 non risponde al ping dal Mac Studio, ARP incompleto) (COMPLETED 2026-05-31 - Risolto con allineamento database globale VLAN degli switch Realtek)
     - [x] Validare la connettività OOB ed isolamento IP degli switch (No-SVI su VLAN 99) (COMPLETED 2026-05-31)
 - [x] **Fase 2: Test Isolato a Freddo di PVE2** [[plan-out-of-band-service-access]] (COMPLETED 2026-06-06)

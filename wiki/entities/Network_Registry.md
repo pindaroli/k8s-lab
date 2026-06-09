@@ -37,6 +37,30 @@ Il Network Registry contiene anche la lista centralizzata dei domini di tracciam
 - **Percorso**: `opnsense.outbound.blocked-domain`
 - **Gestione**: I domini vengono applicati tramite il playbook `ansible/playbooks/opnsense_adblock_automation.yml`.
 
+## 4. Procedure di Backup Configurazione Dispositivi
+
+Per garantire la resilienza e facilitare il disaster recovery, le configurazioni dei dispositivi di rete gestiti devono essere salvate prima di ogni manutenzione fisica in `/Users/olindo/devices-backup/`.
+
+### A. Switch Managed ONTi (XikeStor SKS8300-8X)
+*   **IP Gestione**: `192.168.2.1` (VLAN 1)
+*   **Procedura Web GUI**:
+    1. Andare in `System Config` -> `Management Config` -> `HTTP`.
+    2. Impostare `Operation Type` su **`Download`**.
+    3. Impostare `File Type` su **`Running Configuration`**.
+    4. Cliccare su **`Apply`** per scaricare il file di configurazione.
+
+### B. Switch Managed GoodTop (GT-ST024M) e LIAGUO (LG-SG5T1)
+*   **IP Gestione**: `192.168.2.2` (GoodTop Letto) e `192.168.2.3` (LIAGUO Server) (VLAN 1)
+*   **Procedura Web GUI**:
+    1. Andare in `System Tools` -> `Backup/Restore Configuration`.
+    2. Cliccare su **`Backup`** per scaricare il file di configurazione `.bin`.
+
+### C. Access Point Cudy AP11000
+*   **IP Gestione**: `10.10.20.103` (VLAN 20)
+*   **Procedura Web GUI**:
+    1. Andare in `System` (o `System Tools`) -> `Backup & Restore`.
+    2. Cliccare su **`Backup`** per scaricare la configurazione.
+
 ## Relazioni
 - Governa: `rete.json`
 - Letto da: Automazioni Ansible.

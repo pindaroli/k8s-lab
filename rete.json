@@ -72,16 +72,9 @@
         },
         {
           "id": "4",
-          "role": "Downlink to switch-25g-server Port 5",
-          "mode": "Trunk",
-          "native_vlan": "1",
-          "allowed_vlans": [
-            "1",
-            "10",
-            "20",
-            "30",
-            "99"
-          ]
+          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 10
         },
         {
           "id": "5",
@@ -235,7 +228,7 @@
         },
         {
           "id": "5",
-          "role": "Uplink to switch10g Port 4",
+          "role": "Uplink to opnSense igc1 (LAN Trunk)",
           "mode": "Trunk",
           "speed": "2.5Gbs",
           "native_vlan": "1",
