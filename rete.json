@@ -195,6 +195,7 @@
       "vendor": "LIAGUO",
       "support": "www.sodola-network.com",
       "location": "Sala Server",
+      "status": "non operativo",
       "ports": [
         {
           "id": "1",
@@ -241,6 +242,94 @@
         },
         {
           "id": "6",
+          "role": "Downlink to switch10g Port 1",
+          "mode": "Trunk",
+          "speed": "10Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
+        }
+      ],
+      "management_ip": "192.168.2.4"
+    },
+    {
+      "id": "switch-25g-studio",
+      "description": "Switch managed with 8 porte 2.5G e 1 10G SFP+ ports",
+      "model": "HC-SWTGW218ASHC",
+      "vendor": "Horaco",
+      "location": "Studio",
+      "ports": [
+        {
+          "id": "1",
+          "role": "PVE2 OOB Service Port (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99
+        },
+        {
+          "id": "2",
+          "role": "PVE1 OOB Service Port (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99
+        },
+        {
+          "id": "3",
+          "role": "PVE3 OOB Service Port (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99,
+          "os_name": "nic0"
+        },
+        {
+          "id": "4",
+          "role": "OPNsense igc3 OOB (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99,
+          "connected_to": "opnsense igc3"
+        },
+        {
+          "id": "5",
+          "role": "Free OOB Port (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99
+        },
+        {
+          "id": "6",
+          "role": "Uplink to opnSense igc1 (LAN Trunk)",
+          "mode": "Trunk",
+          "speed": "2.5Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
+        },
+        {
+          "id": "7",
+          "role": "Free / Unused",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 1
+        },
+        {
+          "id": "8",
+          "role": "Free / Unused",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 1
+        },
+        {
+          "id": "9",
           "role": "Downlink to switch10g Port 1",
           "mode": "Trunk",
           "speed": "10Gbs",

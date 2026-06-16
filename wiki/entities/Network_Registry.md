@@ -49,8 +49,8 @@ Per garantire la resilienza e facilitare il disaster recovery, le configurazioni
     3. Impostare `File Type` su **`Running Configuration`**.
     4. Cliccare su **`Apply`** per scaricare il file di configurazione.
 
-### B. Switch Managed GoodTop (GT-ST024M) e LIAGUO (LG-SG5T1)
-*   **IP Gestione**: `192.168.2.2` (GoodTop Letto) e `192.168.2.3` (LIAGUO Server) (VLAN 1)
+### B. Switch Managed GoodTop (GT-ST024M), LIAGUO (LG-SG5T1) e Horaco (HC-SWTGW218ASHC)
+*   **IP Gestione**: `192.168.2.2` (GoodTop Letto), `192.168.2.3` (Horaco Studio) e `192.168.2.4` (LIAGUO Server - NON OPERATIVO) (VLAN 1)
 *   **Procedura Web GUI**:
     1. Andare in `System Tools` -> `Backup/Restore Configuration`.
     2. Cliccare su **`Backup`** per scaricare il file di configurazione `.bin`.

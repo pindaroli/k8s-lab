@@ -217,7 +217,7 @@ data:
             icon: mdi-switch
         - Server Switch:
             href: https://sw-server.pindaroli.org
-            description: Switch 2.5G (Server)
+            description: Switch 2.5G (Server) - NON OPERATIVO
             icon: mdi-switch
         - Access Point:
             href: https://ap.pindaroli.org
@@ -713,7 +713,7 @@ spec:
   tls:
     secretName: pindaroli-wildcard-tls
 ---
-# Server Switch su 192.168.2.3
+# Server Switch su 192.168.2.4 (NON OPERATIVO)
 apiVersion: v1
 kind: Service
 metadata:
@@ -735,7 +735,7 @@ ports:
     protocol: TCP
 endpoints:
   - addresses:
-      - "192.168.2.3"
+      - "192.168.2.4"
     conditions:
       ready: true
 ---

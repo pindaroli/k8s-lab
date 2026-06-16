@@ -71,7 +71,7 @@ Questo piano preliminare ha l'obiettivo di configurare la tua rete locale e gli 
 1.  Entra nella Web GUI dei tuoi tre switch:
     *   `switch10g (ONTi)` -> `http://192.168.2.1` **[x] (VLAN 99 & TRUNK COMPLETATI - 2026-05-30)**
     *   `switch-25g-letto (GoodTop)` -> `http://192.168.2.2` **[x] (VLAN 99 & TRUNK COMPLETATI - 2026-05-30)**
-    *   `switch-25g-server (LIAGUO)` -> `http://192.168.2.3` **[x] (VLAN 99 & TRUNK COMPLETATI - 2026-05-30)**
+    *   `switch-25g-server (LIAGUO)` -> `http://192.168.2.4` **[x] (VLAN 99 & TRUNK COMPLETATI - 2026-05-30 - IP modificato a .4 e NON OPERATIVO)**
 2.  Crea la **VLAN 99** (Nome: `OOB`) su tutti e tre gli switch.
 3.  **Configura i Trunk**:
     *   Aggiungi **VLAN 99** come **VLAN taggata (Tagged)** sui link trunk di interconnessione:

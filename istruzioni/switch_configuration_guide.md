@@ -117,3 +117,27 @@ Create VLANs: `1`, `10`, `20`, `30`.
 > [!IMPORTANT]
 > **OPNsense Connection** (Port 5):
 > Updated to carry **VLAN 10, 20, 30** so OPNsense can serve as Gateway for all of them.
+
+---
+
+## 🟧 Switch 4: switch25gStudio (Studio)
+**Role**: Layer 2 Access + Aggregation for OPNsense (Active)
+**Model**: Horaco HC-SWTGW218ASHC
+**Management IP**: `192.168.2.3` / `255.255.255.0`
+**Gateway**: `192.168.2.1`
+
+### 1. VLAN Settings
+Create VLANs: `1`, `10`, `20`, `30`, `99`.
+
+### 2. Port Configuration
+| Port | Mode | PVID | Tagged VLANs | Untagged VLANs | Notes |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **1** | Access | 99 | - | `99` | **PVE2** OOB Service Port |
+| **2** | Access | 99 | - | `99` | **PVE1** OOB Service Port |
+| **3** | Access | 99 | - | `99` | **PVE3** OOB Service Port |
+| **4** | Access | 99 | - | `99` | **OPNsense** igc3 OOB |
+| **5** | Access | 99 | - | `99` | **Free OOB Port** (e.g. KVM Extender) |
+| **6** | Trunk | 1 | `10, 20, 30, 99` | `1` | Uplink to **OPNsense** igc1 (LAN Trunk) |
+| **7** | Access | 1 | - | `1` | Free / Unused |
+| **8** | Access | 1 | - | `1` | Free / Unused |
+| **9** | Trunk | 1 | `1, 10, 20, 30, 99` | `1` | Downlink to **switch10g** Port 1 |
