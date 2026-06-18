@@ -303,16 +303,11 @@
         },
         {
           "id": "6",
-          "role": "Uplink to opnSense igc1 (LAN Trunk)",
-          "mode": "Trunk",
+          "role": "Free / Unused",
+          "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "native_vlan": "1",
-          "allowed_vlans": [
-            "10",
-            "20",
-            "30",
-            "99"
-          ]
+          "pvid": 1,
+          "note": "Was OPNsense igc1 uplink - cable moved to Port 8 on 2026-06-18"
         },
         {
           "id": "7",
@@ -323,10 +318,18 @@
         },
         {
           "id": "8",
-          "role": "Free / Unused",
-          "mode": "ACCESS",
+          "role": "Uplink to OPNsense igc1 (LAN Trunk)",
+          "mode": "Trunk",
           "speed": "2.5Gbs",
-          "pvid": 1
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ],
+          "connected_to": "opnsense igc1"
         },
         {
           "id": "9",
@@ -373,11 +376,13 @@
           "role": "Trunk LAN Master",
           "speed": "2.5Gbs",
           "mode": "Trunk",
-          "connected_to": "switch-25g-server Porta 5",
+          "connected_to": "switch-25g-studio Porta 8",
           "allowed_vlans": [
+            "1",
             "10",
             "20",
-            "30"
+            "30",
+            "99"
           ],
           "logical_interfaces": [
             {
@@ -431,8 +436,8 @@
           "id": "igc3",
           "role": "ADMIN_LAN",
           "speed": "2.5Gbs",
-          "description": "OOB Management Port - Collegata a switch-25g-server Porta 4 (Access VLAN 99)",
-          "connected_to": "switch-25g-server Porta 4",
+          "description": "OOB Management Port - Collegata a switch-25g-studio Porta 4 (Access VLAN 99)",
+          "connected_to": "switch-25g-studio Porta 4",
           "logical_interfaces": [
             {
               "name": "gw-admin",
@@ -462,10 +467,11 @@
           "mac": "a4:fc:14:10:5b:80",
           "network": "Client (VLAN 20)",
           "ip": "10.10.20.100",
+          "ip_assignment": "DHCP reservation (MAC: a4:fc:14:10:5b:80)",
           "gateway": "10.10.20.1",
           "dns": "10.10.20.254",
           "connected_to": "switch-25g-letto Port 6",
-          "notes": "Trunk port carrying Untagged VLAN 20 (Production), Tagged VLAN 99 (OOB Management) and Tagged VLAN 1 (Transit/Switch Management)."
+          "notes": "Trunk port carrying Untagged VLAN 20 (Production), Tagged VLAN 99 (OOB Management) and Tagged VLAN 1 (Transit/Switch Management). IP reserved via DHCP static mapping on OPNsense."
         },
         {
           "interface": "wifi (en1)",
