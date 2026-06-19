@@ -90,17 +90,22 @@ def sync_subnet_options(base_url, auth_header, ctx, subnet_options, subnets):
             print(f"  [SKIP] Subnet {cidr} non trovata su OPNsense Kea.")
             continue
 
+        gateway = opts.get('gateway', '')
+        dns     = opts.get('dns', '').split(',')[0].strip()  # primo DNS
+        domain  = opts.get('domain', '')
+
+        # Il formato corretto per setSubnet usa valori stringa semplici in option_data
         payload = {
-            "subnet": {
-                "option_data_quantities": {
-                    "routers":             opts.get('gateway', ''),
-                    "domain-name-servers": opts.get('dns', '').replace(', ', ','),
-                    "domain-name":         opts.get('domain', ''),
+            'subnet4': {
+                'option_data': {
+                    'routers':             gateway,
+                    'domain_name_servers': dns,
+                    'domain_name':         domain,
                 }
             }
         }
 
-        print(f"  Aggiorno subnet {cidr} (UUID: {uuid}) → gateway={opts.get('gateway')}, dns={opts.get('dns')}")
+        print(f"  Aggiorno subnet {cidr} (UUID: {uuid}) → routers={gateway}, domain_name_servers={dns}, domain={domain}")
         try:
             result = _post(f"{base_url}/api/kea/dhcpv4/setSubnet/{uuid}", payload, auth_header, ctx)
             if result.get('result') == 'saved':
