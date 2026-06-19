@@ -15,6 +15,7 @@ pindaroli-wildcard.crt
 ansible/vars/secrets.yml
 ansible/vars/proxmox_secrets.yml
 ansible/group_vars/all/secrets.yml
+ansible/OPNsense.internal_root_apikey.txt
 *.tfvars
 
 # Local Environment & Secrets

@@ -25,7 +25,7 @@
   - Eseguire `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml` per risincronizzare gli host override.
 
 ## [ ] Ripristino della Rete Originale (DA FARE dopo il ripristino di OPNsense) [[opnsense-recovery-and-temporary-routing]]
-- [ ] **Ripristinare i Collegamenti Fisici**:
+- [x] **Ripristinare i Collegamenti Fisici** (Eseguito):
   - Scollegare il cavo WAN dal Cudy AP11000 e ricollegarlo alla porta `igc0` di OPNsense.
   - Collegare la porta LAN/Trunk di OPNsense a `igc1`.
   - Collegare la porta OOB di OPNsense a `igc3`.

@@ -196,93 +196,27 @@
     },
     {
       "id": "switch-25g-server",
-      "description": "Switch managed with 5 porte 2.5G e 1 10G SFP+ ports",
-      "model": "LG-SG5T1",
-      "vendor": "LIAGUO",
-      "support": "www.sodola-network.com",
-      "location": "Sala Server",
-      "status": "non operativo",
-      "ports": [
-        {
-          "id": "1",
-          "role": "PVE2 OOB Service Port (VLAN 99)",
-          "mode": "ACCESS",
-          "speed": "2.5Gbs",
-          "pvid": 99
-        },
-        {
-          "id": "2",
-          "role": "PVE1 OOB Service Port (VLAN 99)",
-          "mode": "ACCESS",
-          "speed": "2.5Gbs",
-          "pvid": 99
-        },
-        {
-          "id": "3",
-          "role": "PVE3 OOB Service Port (VLAN 99)",
-          "mode": "ACCESS",
-          "speed": "2.5Gbs",
-          "pvid": 99,
-          "os_name": "nic0"
-        },
-        {
-          "id": "4",
-          "role": "OPNsense igc3 OOB (VLAN 99)",
-          "mode": "ACCESS",
-          "speed": "2.5Gbs",
-          "pvid": 99,
-          "connected_to": "opnsense igc3"
-        },
-        {
-          "id": "5",
-          "role": "Uplink to opnSense igc1 (LAN Trunk)",
-          "mode": "Trunk",
-          "speed": "2.5Gbs",
-          "native_vlan": "1",
-          "allowed_vlans": [
-            "10",
-            "20",
-            "30",
-            "99"
-          ]
-        },
-        {
-          "id": "6",
-          "role": "Downlink to switch10g Port 1",
-          "mode": "Trunk",
-          "speed": "10Gbs",
-          "native_vlan": "1",
-          "allowed_vlans": [
-            "1",
-            "10",
-            "20",
-            "30",
-            "99"
-          ]
-        }
-      ],
-      "management_ip": "192.168.2.4"
-    },
-    {
-      "id": "switch-25g-studio",
       "description": "Switch managed with 8 porte 2.5G e 1 10G SFP+ ports",
       "model": "HC-SWTGW218ASHC",
       "vendor": "Horaco",
-      "location": "Studio",
+      "location": "Sala Server",
+      "status": "operativo",
       "ports": [
         {
           "id": "1",
-          "role": "PVE2 OOB Service Port (VLAN 99)",
-          "mode": "ACCESS",
-          "speed": "2.5Gbs",
-          "pvid": 99
-        },
-        {
-          "id": "2",
           "role": "PVE1 OOB Service Port (VLAN 99)",
           "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "pvid": 99
+          "pvid": 99,
+          "connected_to": "pve1 nic0"
+        },
+        {
+          "id": "2",
+          "role": "PVE2 OOB Service Port (VLAN 99)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 99,
+          "connected_to": "pve2 nic0"
         },
         {
           "id": "3",
@@ -290,7 +224,7 @@
           "mode": "ACCESS",
           "speed": "2.5Gbs",
           "pvid": 99,
-          "os_name": "nic0"
+          "connected_to": "pve3 nic0"
         },
         {
           "id": "4",
@@ -302,18 +236,17 @@
         },
         {
           "id": "5",
-          "role": "Free OOB Port (VLAN 99)",
+          "role": "Free / Unused",
           "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "pvid": 99
+          "pvid": 1
         },
         {
           "id": "6",
           "role": "Free / Unused",
           "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "pvid": 1,
-          "note": "Was OPNsense igc1 uplink - cable moved to Port 8 on 2026-06-18"
+          "pvid": 1
         },
         {
           "id": "7",
@@ -382,7 +315,7 @@
           "role": "Trunk LAN Master",
           "speed": "2.5Gbs",
           "mode": "Trunk",
-          "connected_to": "switch-25g-studio Porta 8",
+          "connected_to": "switch-25g-server Port 8",
           "allowed_vlans": [
             "1",
             "10",
@@ -442,8 +375,8 @@
           "id": "igc3",
           "role": "ADMIN_LAN",
           "speed": "2.5Gbs",
-          "description": "OOB Management Port - Collegata a switch-25g-studio Porta 4 (Access VLAN 99)",
-          "connected_to": "switch-25g-studio Porta 4",
+          "description": "OOB Management Port - Collegata a switch-25g-server Porta 4 (Access VLAN 99)",
+          "connected_to": "switch-25g-server Port 4",
           "logical_interfaces": [
             {
               "name": "gw-admin",
@@ -628,7 +561,7 @@
         {
           "id": "nic0",
           "os_name": "nic0",
-          "connected_to": "Direct Access",
+          "connected_to": "switch-25g-server Port 2",
           "ip": "192.168.100.21",
           "note": "Service Port (No Gateway)"
         }
@@ -693,7 +626,7 @@
           "mac": "c8:ff:bf:05:50:24",
           "driver": "igc",
           "speed": "2.5Gbs",
-          "connected_to": "switch-25g-server Porta 3",
+          "connected_to": "switch-25g-server Port 3",
           "ip": "192.168.100.31/24",
           "vlan": "99",
           "status": "UP",

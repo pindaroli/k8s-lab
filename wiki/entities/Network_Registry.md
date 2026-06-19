@@ -49,8 +49,9 @@ Per garantire la resilienza e facilitare il disaster recovery, le configurazioni
     3. Impostare `File Type` su **`Running Configuration`**.
     4. Cliccare su **`Apply`** per scaricare il file di configurazione.
 
-### B. Switch Managed GoodTop (GT-ST024M), LIAGUO (LG-SG5T1) e Horaco (HC-SWTGW218ASHC)
-*   **IP Gestione**: `192.168.2.2` (GoodTop Letto), `192.168.2.3` (Horaco Studio) e `192.168.2.4` (LIAGUO Server - NON OPERATIVO) (VLAN 1)
+### B. Switch Managed GoodTop (GT-ST024M) e Horaco (HC-SWTGW218ASHC)
+*   **IP Gestione**: `192.168.2.2` (GoodTop Letto) e `192.168.2.3` (Horaco Server - Sala Server) (VLAN 1).
+    *   *Nota*: Lo switch LIAGUO (`192.168.2.4`) è stato dismesso, spento e rimosso dalla rete. Lo switch Horaco a `192.168.2.3` (ex Studio) è stato spostato in Sala Server come switch principale per le interfacce OOB e il Trunk LAN.
 *   **Nota Software**: Lo switch Horaco (`192.168.2.3`) utilizza attualmente il **firmware di default (OEM)**. Le specifiche dettagliate, la compilazione del firmware open-source alternativo `RTLPlayground` e le metriche di telemetria avanzate sono documentate esclusivamente in `wiki/raw/Specifiche Tecniche HC-SWTGW218AS.md`.
 *   **Procedura Web GUI**:
     1. Andare in `System Tools` -> `Backup/Restore Configuration`.
