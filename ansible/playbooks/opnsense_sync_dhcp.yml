@@ -1,5 +1,18 @@
 ---
-- name: Sync DHCP Reservations from rete.json to OPNsense
+# opnsense_sync_dhcp.yml
+# Sincronizza Kea DHCP su OPNsense partendo da rete.json come Source of Truth.
+#
+# Fasi:
+#   1. Estrae subnet_options (opzioni globali per VLAN) e reservations (per-host) da rete.json.
+#   2. Invoca push_kea_dhcp_to_opnsense.py che esegue:
+#      - Phase A: aggiorna le opzioni globali della subnet (gateway, dns, domain) via setSubnet
+#      - Phase B: sincronizza le reservation (check-before-write: add/update/skip)
+#      - Reconfigure Kea al termine.
+#
+# Uso:
+#   ansible-playbook ansible/playbooks/opnsense_sync_dhcp.yml
+#
+- name: Sync Kea DHCP (Subnet Options + Reservations) from rete.json to OPNsense
   hosts: localhost
   connection: local
   gather_facts: false
@@ -7,38 +20,53 @@
     - "../vars/opnsense_secrets.yml"
 
   vars:
-    opnsense_url: "https://192.168.2.254"
-    opnsense_api_key: "{{ api_key }}"
+    opnsense_url:       "https://192.168.2.254"
+    opnsense_api_key:   "{{ api_key }}"
     opnsense_api_secret: "{{ api_secret }}"
-    rete_json_path: "{{ playbook_dir }}/../../rete.json"
-    extract_script: "{{ playbook_dir }}/scripts/extract_dhcp_from_rete_json.py"
+    rete_json_path:     "{{ playbook_dir }}/../../rete.json"
+    extract_script:     "{{ playbook_dir }}/scripts/extract_dhcp_from_rete_json.py"
+    push_script:        "{{ playbook_dir }}/scripts/push_kea_dhcp_to_opnsense.py"
 
   tasks:
-    - name: Extract DHCP reservations from rete.json
-      command: python3 "{{ extract_script }}" --file "{{ rete_json_path }}"
-      register: dhcp_json
+    - name: "Step 1 — Estrai subnet_options e reservations da rete.json"
+      command: >
+        python3 "{{ extract_script }}" --file "{{ rete_json_path }}"
+      register: dhcp_json_raw
       changed_when: false
 
-    - name: Parse reservations
+    - name: "Step 1 — Parse output JSON"
       set_fact:
-        reservations: "{{ dhcp_json.stdout | from_json }}"
+        dhcp_data: "{{ dhcp_json_raw.stdout | from_json }}"
 
-    - name: Show reservations to apply
+    - name: "Step 1 — Mostra subnet_options estratte"
       debug:
-        msg: "{{ item.hostname }} → {{ item.ip }} ({{ item.mac }}) on {{ item.interface }}"
-      loop: "{{ reservations }}"
+        msg: "Subnet options: {{ dhcp_data.subnet_options }}"
 
-    - name: Apply DHCP static mappings to OPNsense
-      ansibleguy.opnsense.dhcp_reservation:
-        firewall: "192.168.100.1"
-        api_key: "{{ opnsense_api_key }}"
-        api_secret: "{{ opnsense_api_secret }}"
-        ssl_verify: false
-        subnet: "10.10.20.0/24"
-        mac: "{{ item.mac }}"
-        ip: "{{ item.ip }}"
-        hostname: "{{ item.hostname }}"
-        description: "{{ item.descr | truncate(255, True, '') }}"
-        state: present
-      loop: "{{ reservations | selectattr('interface', 'equalto', 'opt2') | list }}"
+    - name: "Step 1 — Mostra reservation estratte (VLAN 20 / opt2)"
+      debug:
+        msg: "{{ item.hostname }} → {{ item.ip }} ({{ item.mac }}) su {{ item.interface }}"
+      loop: "{{ dhcp_data.reservations | selectattr('interface', 'equalto', 'opt2') | list }}"
+
+    - name: "Step 2 — Salva payload combinato su file temporaneo"
+      copy:
+        content: "{{ dhcp_data | to_nice_json }}"
+        dest:    "/tmp/dhcp_payload.json"
+
+    - name: "Step 3 — Esegui sync Kea (Phase A: subnet globale + Phase B: reservations)"
+      command: >
+        python3 "{{ push_script }}"
+        --url "{{ opnsense_url }}"
+        --api-key "{{ opnsense_api_key }}"
+        --api-secret "{{ opnsense_api_secret }}"
+        --file /tmp/dhcp_payload.json
+      register: push_result
       no_log: true
+
+    - name: "Step 3 — Output sync Kea"
+      debug:
+        msg: "{{ push_result.stdout_lines }}"
+
+    - name: "Step 4 — Cleanup file temporaneo"
+      file:
+        path: /tmp/dhcp_payload.json
+        state: absent

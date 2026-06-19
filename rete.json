@@ -9,7 +9,13 @@
     {
       "id": "20",
       "description": "VLAN dei Client",
-      "subnet": "10.10.20.0/24"
+      "subnet": "10.10.20.0/24",
+      "dhcp": {
+        "gateway": "10.10.20.1",
+        "dns": "10.10.20.254",
+        "domain": "pindaroli.org",
+        "note": "Gateway = Switch L3 (Symmetric Routing). DNS = OPNsense Unbound (Split-Horizon)."
+      }
     },
     {
       "id": "30",
@@ -468,19 +474,16 @@
           "network": "Client (VLAN 20)",
           "ip": "10.10.20.100",
           "ip_assignment": "DHCP reservation (MAC: a4:fc:14:10:5b:80)",
-          "gateway": "10.10.20.1",
-          "dns": "10.10.20.254",
           "connected_to": "switch-25g-letto Port 6",
-          "notes": "Trunk port carrying Untagged VLAN 20 (Production), Tagged VLAN 99 (OOB Management) and Tagged VLAN 1 (Transit/Switch Management). IP reserved via DHCP static mapping on OPNsense."
+          "notes": "Trunk port carrying Untagged VLAN 20 (Production), Tagged VLAN 99 (OOB Management) and Tagged VLAN 1 (Transit/Switch Management). IP reserved via DHCP static mapping on OPNsense. Gateway e DNS ereditati dalla subnet globale VLAN 20."
         },
         {
           "interface": "wifi (en1)",
           "mac": "a4:fc:14:14:a0:e7",
           "network": "Client (VLAN 20)",
           "ip": "10.10.20.101",
-          "gateway": "10.10.20.1",
-          "dns": "10.10.20.254",
-          "connected_to": "ap11000"
+          "connected_to": "ap11000",
+          "notes": "Gateway e DNS ereditati dalla subnet globale VLAN 20."
         },
         {
           "interface": "vlan0 (Virtual Interface on en0)",
@@ -659,8 +662,6 @@
       "hardware": "64GB RAM, 1TB NVMe (Micron 2550), AMD Ryzen AI (Strix)",
       "nic_card": "HP CN1200E Emulex OneConnect Skyhawk (2x 10G SFP+) via OCuLink PCIe x8",
       "management_ip": "10.10.10.31",
-      "gateway": "10.10.10.1",
-      "dns": "10.10.10.254",
       "ports": [
         {
           "id": "1",
@@ -722,8 +723,6 @@
         "wifi"
       ],
       "management_ip": "10.10.20.103",
-      "gateway": "10.10.20.1",
-      "dns": "10.10.20.254",
       "ports": [
         {
           "id": "1",

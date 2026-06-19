@@ -5,121 +5,265 @@ import urllib.error
 import sys
 import argparse
 import base64
+import ipaddress
 
-def get_kea_subnets(url, auth_header, ctx):
-    endpoint = f"{url}/api/kea/dhcpv4/searchSubnet"
-    try:
-        req = urllib.request.Request(endpoint, headers={'Authorization': auth_header})
-        with urllib.request.urlopen(req, context=ctx) as response:
-            data = json.loads(response.read().decode('utf-8'))
-            return data.get('rows', [])
-    except Exception as e:
-        print(f"Error fetching Kea subnets: {e}")
-        return []
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-def push_kea_dhcp_reservations(url, api_key, api_secret, reservations):
-    api_key = api_key.strip().strip("'").strip('"')
-    api_secret = api_secret.strip().strip("'").strip('"')
-
-    credentials = f"{api_key}:{api_secret}"
-    auth_header = "Basic " + base64.b64encode(credentials.encode()).decode()
-
+def _make_ctx():
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
+    return ctx
 
-    print("Fetching active Kea Subnets to map reservations...")
-    subnets = get_kea_subnets(url, auth_header, ctx)
-    if not subnets:
-        print("No Kea subnets found or API error. Cannot map reservations without a Subnet UUID.")
-        sys.exit(1)
+def _auth_header(api_key, api_secret):
+    credentials = f"{api_key.strip()}:{api_secret.strip()}"
+    return "Basic " + base64.b64encode(credentials.encode()).decode()
 
-    print(f"Applying {len(reservations)} DHCP Reservations via Kea API...")
+def _post(url, payload, auth_header, ctx):
+    req = urllib.request.Request(
+        url, method='POST',
+        data=json.dumps(payload).encode('utf-8'),
+        headers={'Content-Type': 'application/json', 'Authorization': auth_header},
+    )
+    with urllib.request.urlopen(req, context=ctx) as resp:
+        return json.loads(resp.read().decode('utf-8'))
 
-    for item in reservations:
-        # Kea DHCPv4 needs the subnet uuid. We map it by checking if the IP fits in the subnet
-        # For our simple homelab, we just fetch the subnet by interface or rough match
-        # The user has subnet "10.10.20.0/24" for opt2. We'll string match the first 3 octets
-        ip_prefix = ".".join(item['ip'].split('.')[:3])
-        target_subnet_uuid = None
+def _get(url, auth_header, ctx):
+    req = urllib.request.Request(url, headers={'Authorization': auth_header})
+    with urllib.request.urlopen(req, context=ctx) as resp:
+        return json.loads(resp.read().decode('utf-8'))
 
+# ---------------------------------------------------------------------------
+# Kea Subnets (discovery)
+# ---------------------------------------------------------------------------
+
+def get_kea_subnets(base_url, auth_header, ctx):
+    try:
+        data = _get(f"{base_url}/api/kea/dhcpv4/searchSubnet", auth_header, ctx)
+        return data.get('rows', [])
+    except Exception as e:
+        print(f"[ERROR] Fetching Kea subnets: {e}")
+        return []
+
+def _find_subnet_uuid(subnets, ip_str):
+    """Trova l'UUID della subnet Kea che contiene l'IP specificato."""
+    try:
+        ip = ipaddress.ip_address(ip_str.split('/')[0])
+    except ValueError:
+        return None
+    for sub in subnets:
+        try:
+            network = ipaddress.ip_network(sub['subnet'], strict=False)
+            if ip in network:
+                return sub['uuid']
+        except Exception:
+            continue
+    return None
+
+# ---------------------------------------------------------------------------
+# Phase A: Sync Subnet Global Options
+# ---------------------------------------------------------------------------
+
+def sync_subnet_options(base_url, auth_header, ctx, subnet_options, subnets):
+    """
+    Per ogni subnet in subnet_options (letta da rete.json → sezione VLAN),
+    trova il UUID corrispondente su OPNsense e aggiorna le opzioni globali
+    (gateway, dns, domain) tramite setSubnet.
+    Idempotente: l'API setSubnet sovrascrive sempre il valore corrente.
+    """
+    print("\n=== Phase A: Sync Subnet Global Options ===")
+    if not subnet_options:
+        print("  Nessuna subnet_option trovata — step saltato.")
+        return
+
+    for cidr, opts in subnet_options.items():
+        # Trova UUID matching
+        uuid = None
         for sub in subnets:
-            if sub['subnet'].startswith(ip_prefix):
-                 target_subnet_uuid = sub['uuid']
-                 break
+            if sub.get('subnet') == cidr:
+                uuid = sub['uuid']
+                break
 
-        if not target_subnet_uuid:
-             print(f"  -> ERROR: Could not find a Kea Subnet UUID matching IP {item['ip']} for hostname {item['hostname']}")
-             continue
-
-        endpoint = f"{url}/api/kea/dhcpv4/addReservation"
-        print(f"Applying: {item['hostname']} ({item['ip']} / {item['mac']}) -> Subnet UUID: {target_subnet_uuid}")
+        if not uuid:
+            print(f"  [SKIP] Subnet {cidr} non trovata su OPNsense Kea.")
+            continue
 
         payload = {
-            "reservation": {
-                "hw_address": item['mac'],
-                "ip_address": item['ip'],
-                "hostname": item['hostname'],
-                "description": item['descr'],
-                "subnet": target_subnet_uuid
+            "subnet": {
+                "option_data_quantities": {
+                    "routers":             opts.get('gateway', ''),
+                    "domain-name-servers": opts.get('dns', '').replace(', ', ','),
+                    "domain-name":         opts.get('domain', ''),
+                }
             }
         }
 
+        print(f"  Aggiorno subnet {cidr} (UUID: {uuid}) → gateway={opts.get('gateway')}, dns={opts.get('dns')}")
         try:
-            req = urllib.request.Request(endpoint, method='POST', data=json.dumps(payload).encode('utf-8'), headers={
-                'Content-Type': 'application/json',
-                'Authorization': auth_header
-            })
-            with urllib.request.urlopen(req, context=ctx) as response:
-                result = json.loads(response.read().decode('utf-8'))
-                if result.get('result') != 'saved':
-                    print(f"  -> WARNING/INFO: {result}")
-                else:
-                    print(f"  -> ✅ SUCCESS")
-        except urllib.error.HTTPError as e:
-            print(f"  -> Error applying {item['hostname']}: {e.code} - {e.reason}")
-            try:
-                print(e.read().decode())
-            except:
-                pass
+            result = _post(f"{base_url}/api/kea/dhcpv4/setSubnet/{uuid}", payload, auth_header, ctx)
+            if result.get('result') == 'saved':
+                print(f"  ✅ UPDATED")
+            else:
+                print(f"  ⚠️  WARNING: {result}")
         except Exception as e:
-            print(f"  -> Error applying {item['hostname']}: {e}")
+            print(f"  [ERROR] setSubnet {cidr}: {e}")
 
-    # Reconfigure KEA
-    print("\nApplying Kea Configuration...")
+# ---------------------------------------------------------------------------
+# Phase B: Sync Reservations (check-before-write)
+# ---------------------------------------------------------------------------
+
+def _search_reservation_by_mac(base_url, auth_header, ctx, mac):
+    """Cerca una reservation esistente per MAC address. Restituisce (uuid, data) o (None, None)."""
     try:
-        req = urllib.request.Request(f"{url}/api/kea/service/reconfigure", method='POST', data=b'{}', headers={
-            'Content-Type': 'application/json',
-            'Authorization': auth_header
-        })
-        with urllib.request.urlopen(req, context=ctx) as response:
-            result = json.loads(response.read().decode('utf-8'))
-            print("✅ Kea DHCP Reconfigured.")
+        data = _get(
+            f"{base_url}/api/kea/dhcpv4/searchReservation?searchPhrase={mac}",
+            auth_header, ctx,
+        )
+        rows = data.get('rows', [])
+        for row in rows:
+            if row.get('hw_address', '').lower() == mac.lower():
+                return row.get('uuid'), row
     except Exception as e:
-         print(f"Error reconfiguring Kea: {e}")
+        print(f"    [WARN] searchReservation per {mac}: {e}")
+    return None, None
+
+def sync_reservations(base_url, auth_header, ctx, reservations, subnets):
+    """
+    Sincronizza le reservation per-host. Per ogni entry:
+      1. Cerca la reservation per MAC su OPNsense.
+      2. Se NON esiste → addReservation.
+      3. Se esiste e i dati sono diversi → setReservation/<uuid> (update).
+      4. Se esiste e i dati sono identici → SKIP (già aggiornato).
+    Idempotente per tutti e tre i casi.
+    """
+    print("\n=== Phase B: Sync Reservations (check-before-write) ===")
+    print(f"  Elaboro {len(reservations)} reservation da rete.json...")
+
+    for item in reservations:
+        hostname = item['hostname']
+        ip       = item['ip'].split('/')[0]  # rimuove eventuale CIDR suffix
+        mac      = item['mac']
+        descr    = item.get('descr', '')
+
+        subnet_uuid = _find_subnet_uuid(subnets, ip)
+        if not subnet_uuid:
+            print(f"  [SKIP] {hostname} ({ip}): nessuna subnet Kea trovata.")
+            continue
+
+        payload = {
+            "reservation": {
+                "hw_address":  mac,
+                "ip_address":  ip,
+                "hostname":    hostname,
+                "description": descr,
+                "subnet":      subnet_uuid,
+            }
+        }
+
+        # Check-before-write
+        existing_uuid, existing = _search_reservation_by_mac(base_url, auth_header, ctx, mac)
+
+        if existing_uuid is None:
+            # Caso 1: Non esiste → ADD
+            print(f"  [ADD] {hostname} ({ip} / {mac})")
+            try:
+                result = _post(f"{base_url}/api/kea/dhcpv4/addReservation", payload, auth_header, ctx)
+                if result.get('result') == 'saved':
+                    print(f"    ✅ ADDED")
+                else:
+                    print(f"    ⚠️  {result}")
+            except urllib.error.HTTPError as e:
+                body = e.read().decode() if hasattr(e, 'read') else ''
+                print(f"    [ERROR] {e.code} {e.reason}: {body}")
+            except Exception as e:
+                print(f"    [ERROR] {e}")
+        else:
+            # Casi 2/3: Esiste → verifica se aggiornamento necessario
+            needs_update = (
+                existing.get('ip_address') != ip
+                or existing.get('hostname') != hostname
+                or existing.get('description') != descr
+            )
+            if not needs_update:
+                print(f"  [SKIP] {hostname} ({ip} / {mac}) — già aggiornato")
+                continue
+
+            # Caso 2: Esiste ma diverso → UPDATE
+            print(f"  [UPDATE] {hostname} ({ip} / {mac}) — UUID: {existing_uuid}")
+            try:
+                result = _post(f"{base_url}/api/kea/dhcpv4/setReservation/{existing_uuid}", payload, auth_header, ctx)
+                if result.get('result') == 'saved':
+                    print(f"    ✅ UPDATED")
+                else:
+                    print(f"    ⚠️  {result}")
+            except Exception as e:
+                print(f"    [ERROR] setReservation: {e}")
+
+# ---------------------------------------------------------------------------
+# Reconfigure Kea
+# ---------------------------------------------------------------------------
+
+def reconfigure_kea(base_url, auth_header, ctx):
+    print("\n=== Reconfigure Kea ===")
+    try:
+        result = _post(f"{base_url}/api/kea/service/reconfigure", {}, auth_header, ctx)
+        print("✅ Kea DHCP Reconfigured.")
+    except Exception as e:
+        print(f"[ERROR] Reconfigure Kea: {e}")
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--api-key', required=True)
+    parser = argparse.ArgumentParser(
+        description="Sincronizza Kea DHCP su OPNsense: subnet globali + reservation per-host da rete.json."
+    )
+    parser.add_argument('--api-key',    required=True)
     parser.add_argument('--api-secret', required=True)
-    parser.add_argument('--url', default="https://192.168.2.254")
-    parser.add_argument('--file', help='JSON file containing reservations', default='-')
+    parser.add_argument('--url',        default="https://192.168.2.254")
+    parser.add_argument('--file',       help='JSON prodotto da extract_dhcp_from_rete_json.py', default='-')
 
     args = parser.parse_args()
 
     if args.file == '-':
-        data = sys.stdin.read()
+        raw = sys.stdin.read()
     else:
         with open(args.file, 'r') as f:
-            data = f.read()
+            raw = f.read()
 
     try:
-        reservations = json.loads(data)
+        data = json.loads(raw)
     except Exception as e:
-        print(f"Error parsing JSON reservations: {e}")
+        print(f"[ERROR] Parsing JSON input: {e}")
         sys.exit(1)
 
-    push_kea_dhcp_reservations(args.url, args.api_key, args.api_secret, reservations)
+    subnet_options = data.get('subnet_options', {})
+    reservations   = data.get('reservations', [])
+
+    api_key    = args.api_key.strip().strip("'\"")
+    api_secret = args.api_secret.strip().strip("'\"")
+    auth       = _auth_header(api_key, api_secret)
+    ctx        = _make_ctx()
+    base_url   = args.url.rstrip('/')
+
+    print(f"Connessione a OPNsense: {base_url}")
+    subnets = get_kea_subnets(base_url, auth, ctx)
+    if not subnets:
+        print("[ERROR] Nessuna subnet Kea trovata — impossibile procedere.")
+        sys.exit(1)
+    print(f"  Trovate {len(subnets)} subnet Kea: {[s['subnet'] for s in subnets]}")
+
+    # Fase A: opzioni globali subnet
+    sync_subnet_options(base_url, auth, ctx, subnet_options, subnets)
+
+    # Fase B: reservation per-host
+    sync_reservations(base_url, auth, ctx, reservations, subnets)
+
+    # Applica configurazione
+    reconfigure_kea(base_url, auth, ctx)
 
 if __name__ == "__main__":
     main()

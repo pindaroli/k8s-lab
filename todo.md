@@ -1,5 +1,14 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## [ ] 🔴 ALTA PRIORITÀ: Chiarificazione Configurazione TrueNAS in `rete.json`
+> **Contesto**: Il nodo `truenas` in `rete.json` ha `"dns": "192.168.2.254, 1.1.1.1"` (IP OPNsense su rete Transit) invece del canonico `10.10.10.254` (OPNsense su VLAN 10). Non è chiaro se sia la configurazione reale del sistema o un errore documentale.
+> **Impatto**: Nessuno sull'automazione DHCP (TrueNAS usa IP statico, non DHCP), ma la SSoT (`rete.json`) potrebbe essere inaccurata.
+- [ ] Al ripristino dell'infrastruttura, accedere alla GUI TrueNAS (`https://10.10.10.50`) → **System → General → Name Servers** e verificare il DNS configurato realmente.
+- [ ] Allineare `rete.json`: se è `192.168.2.254`, aggiungere una `note` che spiega la scelta; se è `10.10.10.254`, correggere il campo `dns`.
+- [ ] Valutare se correggere la configurazione TrueNAS per allinearla all'architettura (DNS su VLAN 10 = `10.10.10.254`).
+
+
+
 ## [ ] OPNsense Recovery & Post-Restore GUI Alignment Tasks [[opnsense-recovery-and-temporary-routing]]
 - [ ] **Ripristinare OPNsense** tramite chiavetta USB e caricamento del backup `config-OPNsense.internal-prima-di-migrazione 20260318235902.xml` (dopo l'installazione del nuovo SSD).
 - [ ] **Riapplicare configurazioni mancanti via GUI**:
