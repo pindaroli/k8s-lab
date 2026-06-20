@@ -107,3 +107,27 @@ def check_ping(host):
         return res.returncode == 0
     except:
         return False
+
+def get_opnsense_oob_ip():
+    rete_path = os.path.join(PROJECT_ROOT, 'rete.json')
+    try:
+        with open(rete_path, 'r') as f:
+            data = json.load(f)
+        opnsense_node = next((n for n in data.get('nodi', []) if n.get('id') == 'opnsense'), None)
+        if opnsense_node:
+            return opnsense_node.get('management_ip')
+    except Exception as e:
+        pass
+    return "192.168.100.1" # Fallback statico sicuro
+
+def get_transit_dns_ip():
+    rete_path = os.path.join(PROJECT_ROOT, 'rete.json')
+    try:
+        with open(rete_path, 'r') as f:
+            data = json.load(f)
+        switch_node = next((n for n in data.get('nodi', []) if n.get('id') == 'switch10g'), None)
+        if switch_node:
+            return switch_node.get('dns_server')
+    except Exception as e:
+        pass
+    return "192.168.2.254" # Fallback statico sicuro

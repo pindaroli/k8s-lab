@@ -1,5 +1,32 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## [ ] 🔴 ALTA PRIORITÀ: Allineamento Coerenza Rete (Symmetric Routing)
+- [x] **Sorgente di Verità & Configurazione Logica**:
+  - [x] Aggiornare `rete.json` con `management_ip` di OPNsense a `192.168.100.1` (OOB) e impostare gli IP delle interfacce logiche `gw-vlan10` e `gw-vlan20` su `"None"`.
+  - [x] Aggiungere `"dns_server": "192.168.2.254"` sotto `switch10g` in `rete.json`.
+- [ ] **Aggiornamento Cluster Kubernetes (Talos)**:
+  - [x] Modificare i file manifest `controlplane*.yaml` e `controlplane.yaml` in `talos-config/` per puntare il DNS a `192.168.2.254`.
+  - [ ] Applicare la configurazione a `talos-cp-01` (`10.10.20.141`):
+    `talosctl apply-config -n 10.10.20.141 -f talos-config/controlplane-cp-01.yaml`
+  - [ ] Verificare la corretta applicazione e risoluzione DNS su `talos-cp-01` (es. `talosctl read /etc/resolv.conf -n 10.10.20.141`).
+  - [ ] Applicare la configurazione a `talos-cp-02` (`10.10.20.142`):
+    `talosctl apply-config -n 10.10.20.142 -f talos-config/controlplane-cp-02.yaml`
+  - [ ] Verificare la risoluzione DNS su `talos-cp-02`.
+  - [ ] Applicare la configurazione a `talos-cp-03` (`10.10.20.143`):
+    `talosctl apply-config -n 10.10.20.143 -f talos-config/controlplane-cp-03.yaml`
+  - [ ] Verificare la risoluzione DNS su `talos-cp-03`.
+- [ ] **Aggiornamento Endpoint e Servizi Kubernetes**:
+  - [ ] Modificare `homepage/homepage.yaml` allineando l'EndpointSlice `opnsense-external-1` all'IP OOB `192.168.100.1`.
+  - [ ] Applicare il manifest aggiornato al cluster:
+    `kubectl apply -f homepage/homepage.yaml`
+  - [ ] Verificare che il pod Homepage si riavvii con successo.
+  - [ ] Testare l'accesso Web da esterno a `https://firewall.pindaroli.org` per verificare il corretto instradamento tramite Traefik.
+- [x] **Allineamento Script e Playbook**:
+  - [x] Aggiornare `scripts/check_lab.py`, `scripts/test_dhcp.sh`, `scripts/test_dns.sh`, `scripts/test_internet.sh`.
+  - [x] Aggiornare playbook Ansible `opnsense_sync_dhcp.yml`, `opnsense_sync_dns.yml`, `opnsense_adblock_automation.yml` e script `diag_opnsense_api.py`.
+- [ ] **Allineamento Wiki Entities**:
+  - [ ] Aggiornare `Network_Registry.md`, `OPNsense.md`, `Talos_Cluster.md` con i nuovi IP e ruoli.
+
 ## [ ] 🔴 ALTA PRIORITÀ: Chiarificazione Configurazione TrueNAS in `rete.json`
 > **Contesto**: Il nodo `truenas` in `rete.json` ha `"dns": "192.168.2.254, 1.1.1.1"` (IP OPNsense su rete Transit) invece del canonico `10.10.10.254` (OPNsense su VLAN 10). Non è chiaro se sia la configurazione reale del sistema o un errore documentale.
 > **Impatto**: Nessuno sull'automazione DHCP (TrueNAS usa IP statico, non DHCP), ma la SSoT (`rete.json`) potrebbe essere inaccurata.

@@ -17,11 +17,15 @@
 set -euo pipefail
 
 # --- Configurazione ---
-export OPNSENSE_URL="https://10.10.20.254"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
 export APIKEY_FILE="${ROOT_DIR}/ansible/OPNsense.internal_root_apikey.txt"
 RETE_JSON="${ROOT_DIR}/rete.json"
+
+if [ -z "${OPNSENSE_URL:-}" ]; then
+  OPNSENSE_IP=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='opnsense')['management_ip'])")
+  export OPNSENSE_URL="https://${OPNSENSE_IP}"
+fi
 
 # Leggi credenziali dal file
 API_KEY=$(grep '^key=' "${APIKEY_FILE}" | cut -d'=' -f2-)
@@ -176,7 +180,6 @@ EXPECTED = [
     ("talos-cp-01", "10.10.20.141", "bc:24:11:81:6a:19"),
     ("talos-cp-02", "10.10.20.142", "bc:24:11:77:40:fc"),
     ("talos-cp-03", "10.10.20.143", "bc:24:11:0b:e0:61"),
-    ("jellyfin-srv", "10.10.20.32",  None),
     ("mac-studio",   "10.10.20.100", "a4:fc:14:10:5b:80"),
     ("ap11000",      "10.10.20.103", "80:af:ca:c0:2e:5a"),
     ("printer",      "10.10.20.127", "d8:b3:2f:1e:0f:1c"),
@@ -229,20 +232,11 @@ EOF
 echo ""
 echo -e "${BOLD}[4] Ping — Verifica raggiungibilità host noti${RESET}"
 
-declare -A HOSTS=(
-  ["talos-cp-01"]="10.10.20.141"
-  ["talos-cp-02"]="10.10.20.142"
-  ["talos-cp-03"]="10.10.20.143"
-  ["mac-studio"]="10.10.20.100"
-  ["ap11000"]="10.10.20.103"
-  ["jellyfin-srv"]="10.10.20.32"
-  ["pve1"]="10.10.10.11"
-  ["pve3"]="10.10.10.31"
-  ["truenas"]="10.10.10.50"
-)
+HOSTS="talos-cp-01:10.10.20.141 talos-cp-02:10.10.20.142 talos-cp-03:10.10.20.143 mac-studio:10.10.20.100 ap11000:10.10.20.103 jellyfin-srv:10.10.20.32 pve1:10.10.10.11 pve3:10.10.10.31 truenas:10.10.10.50"
 
-for hostname in "${!HOSTS[@]}"; do
-  ip="${HOSTS[$hostname]}"
+for item in ${HOSTS}; do
+  hostname="${item%%:*}"
+  ip="${item#*:}"
   if ping -c 1 -W 1 -q "${ip}" &>/dev/null; then
     ok "${hostname} (${ip}) risponde al ping"
   else
@@ -261,25 +255,12 @@ for ip in 10.10.20.141 10.10.20.142 10.10.20.143 10.10.20.100 10.10.20.103; do
   ping -c 1 -W 1 -q "${ip}" &>/dev/null || true
 done
 
-declare -A EXPECTED_MACS=(
-  ["10.10.20.141"]="bc:24:11:81:6a:19"  # talos-cp-01
-  ["10.10.20.142"]="bc:24:11:77:40:fc"  # talos-cp-02
-  ["10.10.20.143"]="bc:24:11:0b:e0:61"  # talos-cp-03
-  ["10.10.20.100"]="a4:fc:14:10:5b:80"  # mac-studio
-  ["10.10.20.103"]="80:af:ca:c0:2e:5a"  # ap11000
-)
+MACS_CHECK="10.10.20.141:bc:24:11:81:6a:19:talos-cp-01 10.10.20.142:bc:24:11:77:40:fc:talos-cp-02 10.10.20.143:bc:24:11:0b:e0:61:talos-cp-03 10.10.20.100:a4:fc:14:10:5b:80:mac-studio 10.10.20.103:80:af:ca:c0:2e:5a:ap11000"
 
-declare -A LABELS=(
-  ["10.10.20.141"]="talos-cp-01"
-  ["10.10.20.142"]="talos-cp-02"
-  ["10.10.20.143"]="talos-cp-03"
-  ["10.10.20.100"]="mac-studio"
-  ["10.10.20.103"]="ap11000"
-)
-
-for ip in "${!EXPECTED_MACS[@]}"; do
-  expected_mac="${EXPECTED_MACS[$ip]}"
-  label="${LABELS[$ip]}"
+for item in ${MACS_CHECK}; do
+  ip=$(echo "${item}" | cut -d':' -f1)
+  expected_mac=$(echo "${item}" | cut -d':' -f2-7)
+  label=$(echo "${item}" | cut -d':' -f8)
 
   # macOS: arp -n <ip>
   arp_output=$(arp -n "${ip}" 2>/dev/null || echo "")

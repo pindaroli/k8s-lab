@@ -8,7 +8,7 @@
     # Defaults (override via extra-vars or secrets.yml)
     api_key: "{{ opnsense_api_key | default('') }}"
     api_secret: "{{ opnsense_api_secret | default('') }}"
-    opnsense_url: "https://10.10.20.254" # IP dalla Wiki
+    opnsense_url: "https://192.168.100.1" # OOB IP
 
 
 
@@ -30,7 +30,7 @@
 
     - name: Verification Test (Dig)
       command:
-        cmd: "dig @10.10.20.254 google-analytics.com +short"
+        cmd: "dig @192.168.2.254 google-analytics.com +short"
       register: dig_test
       failed_when: dig_test.stdout != "0.0.0.0"
       changed_when: false

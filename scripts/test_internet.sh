@@ -7,6 +7,13 @@
 
 set -uo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RETE_JSON="${SCRIPT_DIR}/../rete.json"
+
+# Estrai gli IP dinamicamente da rete.json
+OPNSENSE_OOB_IP=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='opnsense')['management_ip'])")
+OPNSENSE_TRANSIT_DNS=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='switch10g')['dns_server'])")
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -64,9 +71,8 @@ check_ping() {
 }
 
 check_ping "10.10.20.1" "Switch L3 (Gateway VLAN 20)"
-check_ping "10.10.20.254" "OPNsense LAN / DNS Resolver"
-check_ping "192.168.2.254" "OPNsense Transit IP"
-check_ping "192.168.100.1" "OPNsense OOB IP (VLAN 99)"
+check_ping "${OPNSENSE_TRANSIT_DNS}" "OPNsense Transit IP / DNS"
+check_ping "${OPNSENSE_OOB_IP}" "OPNsense OOB IP (VLAN 99)"
 
 echo ""
 
@@ -80,12 +86,12 @@ echo ""
 # [5] RISOLUZIONE DNS (NOMI)
 echo -e "${BOLD}[5] Risoluzione DNS dei nomi esterni${RESET}"
 
-# Test via OPNsense Unbound
-dns_local=$(dig @10.10.20.254 +short +time=2 google.com 2>/dev/null | head -1 || true)
+# Test via OPNsense Unbound (Transit DNS)
+dns_local=$(dig @"${OPNSENSE_TRANSIT_DNS}" +short +time=2 google.com 2>/dev/null | head -1 || true)
 if [[ -n "${dns_local}" ]]; then
-  echo -e "  ${GREEN}✓${RESET} google.com via OPNsense (10.10.20.254) → ${GREEN}${dns_local}${RESET}"
+  echo -e "  ${GREEN}✓${RESET} google.com via OPNsense Transit (${OPNSENSE_TRANSIT_DNS}) → ${GREEN}${dns_local}${RESET}"
 else
-  echo -e "  ${RED}✗${RESET} google.com via OPNsense (10.10.20.254) → ${RED}TIMEOUT/ERRORE${RESET}"
+  echo -e "  ${RED}✗${RESET} google.com via OPNsense Transit (${OPNSENSE_TRANSIT_DNS}) → ${RED}TIMEOUT/ERRORE${RESET}"
 fi
 
 # Test via DNS pubblico diretto

@@ -63,11 +63,12 @@ def check_duplicates(file_path, mode='validate'):
                 log_name = log_iface.get('name', '')
                 if log_name and 'ip' in log_iface:
                     log_ip = log_iface['ip']
-                    records.append({
-                        'hostname': f"{node.get('id')}-{log_name}",
-                        'ip': log_ip,
-                        'source': f"Logical Interface of {node.get('id')}"
-                    })
+                    if log_ip and log_ip.lower() != 'none':
+                        records.append({
+                            'hostname': f"{node.get('id')}-{log_name}",
+                            'ip': log_ip,
+                            'source': f"Logical Interface of {node.get('id')}"
+                        })
 
     # 2. Analyze or Output
     if mode == 'json':

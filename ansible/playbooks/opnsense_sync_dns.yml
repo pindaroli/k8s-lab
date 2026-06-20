@@ -7,7 +7,7 @@
     # Credentials (passed via extra-vars is safer, e.g. -e "api_key=... api_secret=...")
     api_key: "{{ opnsense_api_key | default('') }}"
     api_secret: "{{ opnsense_api_secret | default('') }}"
-    opnsense_url: "https://192.168.2.254"
+    opnsense_url: "https://192.168.100.1"
     domain: "pindaroli.org"
 
   vars_files:

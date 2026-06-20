@@ -7,7 +7,10 @@
 
 set -euo pipefail
 
-RESOLVER="10.10.20.254"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RETE_JSON="${SCRIPT_DIR}/../rete.json"
+
+RESOLVER=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='switch10g')['dns_server'])")
 DOMAIN="pindaroli.org"
 TRAEFIK_VIP="10.10.20.56"
 

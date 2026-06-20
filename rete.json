@@ -12,7 +12,7 @@
       "subnet": "10.10.20.0/24",
       "dhcp": {
         "gateway": "10.10.20.1",
-        "dns": "10.10.20.254",
+        "dns": "192.168.2.254",
         "domain": "pindaroli.org",
         "note": "Gateway = Switch L3 (Symmetric Routing). DNS = OPNsense Unbound (Split-Horizon)."
       }
@@ -49,6 +49,8 @@
       "vendor": "ONTi",
       "type": "L3 Switch",
       "ip": "192.168.2.1",
+      "dns_server": "192.168.2.254",
+      "notes": "Porta 23 Telnet aperta.",
       "ports": [
         {
           "id": "1",
@@ -154,15 +156,10 @@
         },
         {
           "id": "4",
-          "role": "Trunk to ap11000",
-          "mode": "Trunk (Currently in Access 20 workaround)",
+          "role": "Access to ap11000",
+          "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "native_vlan": "20",
-          "allowed_vlans": [
-            "20",
-            "30"
-          ],
-          "note": "WARNING: Trunk mode with Native VLAN 20 and Tagged 30 currently fails to pass traffic correctly on this port. Using Access VLAN 20 as a temporary fix."
+          "pvid": 20
         },
         {
           "id": "5",
@@ -292,7 +289,7 @@
       "label": "OPNsense Firewall",
       "type": "Firewall/Router",
       "model": "Mini PC (4x 2.5GbE)",
-      "management_ip": "10.10.20.254",
+      "management_ip": "192.168.100.1",
       "aliases": [
         "opnsense",
         "firewall-direct"
@@ -328,10 +325,10 @@
               "name": "gw-vlan20",
               "interface": "opt2",
               "vlan_tag": "20",
-              "ip": "10.10.20.254",
+              "ip": "None",
               "subnet": "10.10.20.0/24",
               "dhcp": "enabled",
-              "dns": "10.10.20.254",
+              "dns": "192.168.2.254",
               "firewall_policy": "Allow All"
             },
             {
@@ -348,10 +345,10 @@
               "name": "gw-vlan10",
               "interface": "opt1",
               "vlan_tag": "10",
-              "ip": "10.10.10.254",
+              "ip": "None",
               "subnet": "10.10.10.0/24",
               "dhcp": "static_only",
-              "dns": "10.10.10.254",
+              "dns": "192.168.2.254",
               "firewall_policy": "Allow Internet, Allow from LAN_CLIENT"
             },
             {
@@ -660,13 +657,9 @@
         {
           "id": "1",
           "role": "Uplink to switch-25g-letto Port 4",
-          "mode": "Trunk",
+          "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "native_vlan": "20",
-          "allowed_vlans": [
-            "20",
-            "30"
-          ]
+          "pvid": 20
         }
       ],
       "wifi_networks": [
@@ -676,14 +669,6 @@
           "security": "WPA3-SAE",
           "vlan": "20 (Native)",
           "note": "Main Network for high-performance devices"
-        },
-        {
-          "ssid": "Iot",
-          "band": "2.4GHz",
-          "security": "WPA2-PSK",
-          "vlan": "30 (Tagged)",
-          "isolation": "Enabled",
-          "note": "Legacy/IoT Network (Isolated)"
         }
       ]
     },

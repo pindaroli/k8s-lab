@@ -17,7 +17,8 @@ sys.path.insert(0, os.path.join(_base, "scripts"))
 import utils.common as common
 from utils.common import (
     Colors, PROJECT_ROOT, log_ok, log_warn, log_err,
-    log_info, log_info_end, print_section, run_cmd, check_ping
+    log_info, log_info_end, print_section, run_cmd, check_ping,
+    get_opnsense_oob_ip, get_transit_dns_ip
 )
 
 SSH_USER = "root"
@@ -26,9 +27,10 @@ SSH_USER = "root"
 PVE_NODES = {"pve1/pve": "10.10.10.11", "pve2": "10.10.10.21", "pve3": "10.10.10.31"}
 TALOS_IPS = {"CP 01": "10.10.20.141", "CP 02": "10.10.20.142", "CP 03": "10.10.20.143"}
 GATEWAYS = {
-    "OPNsense VLAN 10 (Server)": "10.10.10.254",
-    "OPNsense VLAN 20 (Client)": "10.10.20.254",
-    "Switch Transit (192.168.2.1)": "192.168.2.1",
+    "OPNsense OOB / API (VLAN 99)": get_opnsense_oob_ip(),
+    "OPNsense Transit / DNS": get_transit_dns_ip(),
+    "L3 Switch VLAN 10 (Server)": "10.10.10.1",
+    "L3 Switch VLAN 20 (Client)": "10.10.20.1",
     "MetalLB Traefik VIP": "10.10.20.56",
     "MetalLB Postgres VIP": "10.10.20.57"
 }
