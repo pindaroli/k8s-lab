@@ -25,15 +25,46 @@ class TestNetworkConfigs(unittest.TestCase):
         self.assertIsNotNone(switch_node, "Nodo switch10g non trovato in rete.json")
         self.assertEqual(switch_node.get('dns_server'), '192.168.2.254', "switch10g dns_server non è 192.168.2.254")
 
-    def test_logical_interfaces_clean(self):
-        # Verifica che le interfacce gw-vlan10 e gw-vlan20 abbiano IP impostato a "None"
+    def test_vlan20_interface_has_ip(self):
+        """gw-vlan20 deve avere un IP valido nella subnet 10.10.20.0/24."""
         opnsense_node = next((n for n in self.rete_data.get('nodi', []) if n.get('id') == 'opnsense'), None)
         self.assertIsNotNone(opnsense_node)
-
+        found = False
         for port in opnsense_node.get('ports', []):
-            for log_iface in port.get('logical_interfaces', []):
-                if log_iface.get('name') in ['gw-vlan10', 'gw-vlan20']:
-                    self.assertEqual(log_iface.get('ip'), 'None', f"L'IP dell'interfaccia {log_iface.get('name')} non è 'None'")
+            for li in port.get('logical_interfaces', []):
+                if li.get('name') == 'gw-vlan20':
+                    found = True
+                    ip = li.get('ip', '')
+                    self.assertTrue(
+                        ip.startswith('10.10.20.'),
+                        f"gw-vlan20 deve avere IP in 10.10.20.0/24, trovato: {ip}"
+                    )
+        self.assertTrue(found, "Interfaccia gw-vlan20 non trovata")
+
+    def test_vlan10_interface_is_none(self):
+        """gw-vlan10 deve rimanere senza IP (static_only, non modificata)."""
+        opnsense_node = next((n for n in self.rete_data.get('nodi', []) if n.get('id') == 'opnsense'), None)
+        self.assertIsNotNone(opnsense_node)
+        found = False
+        for port in opnsense_node.get('ports', []):
+            for li in port.get('logical_interfaces', []):
+                if li.get('name') == 'gw-vlan10':
+                    found = True
+                    self.assertEqual(li.get('ip'), 'None',
+                        "gw-vlan10 deve rimanere None (VLAN 10 = static only)")
+        self.assertTrue(found, "Interfaccia gw-vlan10 non trovata")
+
+    def test_vlan20_dhcp_fields_complete(self):
+        """VLAN 20 dhcp block deve avere tutti i campi richiesti dalla pipeline."""
+        vlan20 = next((v for v in self.rete_data.get('VLAN', []) if v.get('id') == '20'), None)
+        self.assertIsNotNone(vlan20, "VLAN 20 non trovata")
+        dhcp = vlan20.get('dhcp', {})
+        required = ['gateway', 'dns', 'domain', 'mode', 'opnsense_ip', 'pool_start', 'pool_end']
+        for field in required:
+            self.assertIn(field, dhcp, f"Campo DHCP mancante in VLAN 20: {field}")
+        self.assertEqual(dhcp['gateway'], '10.10.20.1',
+            "Il gateway DHCP di VLAN 20 deve essere il L3 Switch, non OPNsense")
+        self.assertEqual(dhcp['mode'], 'direct')
 
 if __name__ == '__main__':
     unittest.main()

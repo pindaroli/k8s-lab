@@ -105,7 +105,14 @@ def sync_subnet_options(base_url, auth_header, ctx, subnet_options, subnets):
             }
         }
 
-        print(f"  Aggiorno subnet {cidr} (UUID: {uuid}) → routers={gateway}, domain_name_servers={dns}, domain={domain}")
+        # Aggiunge il pool di indirizzi dinamici se definito in rete.json
+        pool_start = opts.get('pool_start')
+        pool_end   = opts.get('pool_end')
+        if pool_start and pool_end:
+            payload['subnet4']['pools'] = f"{pool_start}-{pool_end}"
+            print(f"  Aggiorno subnet {cidr} (UUID: {uuid}) → routers={gateway}, domain_name_servers={dns}, domain={domain}, pool={pool_start}-{pool_end}")
+        else:
+            print(f"  Aggiorno subnet {cidr} (UUID: {uuid}) → routers={gateway}, domain_name_servers={dns}, domain={domain}")
         try:
             result = _post(f"{base_url}/api/kea/dhcpv4/setSubnet/{uuid}", payload, auth_header, ctx)
             if result.get('result') == 'saved':

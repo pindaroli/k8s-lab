@@ -1,34 +1,43 @@
 # Incident: DHCP Relay Outage in Symmetric Routing
 **Date**: 2026-06-20
-**Status**: UNRESOLVED (DHCP propagation fails, client falls back to APIPA)
-**Severity**: High (Clients on VLAN 20 cannot acquire IP addresses dynamically)
+**Status**: RESOLVED (DHCP transitioned to direct mode on OPNsense, Relay disabled on L3 Switch)
+**Severity**: High (Clients on VLAN 20 were unable to acquire IP addresses dynamically)
 
 ## 🔍 Diagnosis
-During the alignment of the network to a **Symmetric Routing** architecture, OPNsense interface IPs on VLAN 10 and VLAN 20 were set to `None`. IP routing and DHCP requests on VLAN 20 are intended to be managed via L3 Switch Relay to the OPNsense Transit IP (`192.168.2.254`).
+During the transition of the homelab network to a **Symmetric Routing** architecture, DHCP propagation on VLAN 20 failed. Initially, the L3 Switch SVI for VLAN 20 was configured to relay DHCP requests to the OPNsense Transit IP (`192.168.2.254`).
 
-However, clients on VLAN 20 (such as the Mac Studio M2 Ultra on `en0`) fail to acquire an IP address and fall back to self-assigned IP addresses (`169.254.x.x`).
+However, several issues blocked this setup:
+1. **ONTi Firmware Limitations**: Attempting to delete or modify the incorrect helper address (`10.10.20.254`) on the active port via CLI resulted in errors: `failed to delete helper address on active port 67`. The switch firmware does not allow proper control over global DHCP Relay status via command line.
+2. **Kea DHCP Interface Bindings**: OPNsense Kea DHCP was globally configured to listen *only* on the `TRANSIT` interface (`opt4`), completely ignoring any incoming DHCP requests on the `LAN_CLIENT` (`opt2` / VLAN 20) interface.
 
-### Findings
-1. **Relay simulation test**: Running a manual python script mimicking the relay packet (`giaddr = 10.10.20.1`, `chaddr = Mac MAC`) directly to `192.168.2.254:67` works successfully. OPNsense Kea DHCP receives it, allocates `10.10.20.100` and responds.
-2. **Switch CLI configuration**:
-   * Inspecting `show running-config` via Telnet (Port 23) revealed that the switch was originally configured with `ip helper-address 10.10.20.254` (the old OPNsense IP on VLAN 20).
-   * The L3 Switch configuration was manually corrected via Telnet CLI to:
-     ```text
-     interface Vlan20
-      ip helper-address 192.168.2.254
-     ```
-3. **Current issue**: Despite the helper IP correction on the switch SVI `Vlan20`, native DHCP broadcast requests from clients on VLAN 20 are still not reaching OPNsense or the offers are not successfully propagated back to the clients.
+## 🛠️ Actions Taken & Resolution
 
-## 🛠️ Actions Taken
-* Verified switch port configuration and VLAN tagging between `switch-25g-letto` and `switch10g` (Core).
-* Discovered and documented that the switch Telnet port (23) is open.
-* Updated `rete.json` to document Telnet port 23 availability on the core switch.
-* Switched the `ip helper-address` on `Vlan20` from `10.10.20.254` to `192.168.2.254` via switch CLI.
+### 1. Shift to Direct DHCP on VLAN 20
+To bypass the buggy DHCP Relay firmware behavior of the ONTi switch, we transitioned the network design to **Direct DHCP** for VLAN 20:
+* **OPNsense IP SVI**: Configured the log interface `gw-vlan20` (`opt2`) with static IP **`10.10.20.254/24`** on OPNsense.
+* **Firewall Rules**: Confirmed that the "Block private networks" option was disabled on `opt2` and added a `Pass Any` rule from the `10.10.20.0/24` subnet.
 
-## 🛡️ Next Steps / Recommendations for Next Session
-* Run packet captures on the switch interfaces to see if the client's DHCP Discover broadcast is intercepted by the L3 SVI.
-* Inspect if Option 82 inserts or DHCP Snooping configurations on the Layer 2 switch (`switch-25g-letto`) are dropping DHCP packets.
-* Verify if firewall rules on OPNsense Transit interface (`opt4`) are blocking the UDP 67/68 relay traffic from the switch IP `192.168.2.1`.
+### 2. Switch Clean Up (WebGUI)
+* **DHCP Relay Disabled**: Accessed the WebGUI of the ONTi Switch (`http://192.168.2.1`) and toggled **`DHCP Relay Forwarding`** to **`Off`**. This stopped the switch from intercepting port 67 packets, allowing DHCP broadcast traffic to travel natively at Layer 2 to OPNsense.
+
+### 3. Kea DHCP Subnet & Listen Interfaces Configuration
+* **Gateway Hijack (Symmetric Routing)**: Created a Kea subnet for `10.10.20.0/24` on OPNsense. Critically, we set the **`Router (option 3)`** parameter to **`10.10.20.1`** (the L3 Switch SVI) rather than OPNsense's interface IP. This preserves symmetric routing since client exit traffic is still sent to the L3 Switch.
+* **DNS Settings**: Injected `192.168.2.254` as the primary DNS server.
+* **Listen Interfaces**: Enabled Kea DHCP to listen on both **`LAN_CLIENT`** and **`TRANSIT`** interfaces, resolving the binding issue.
+
+### 4. Code & Configuration Synchronization
+* **`rete.json`**: Updated the VLAN 20 definition to map `mode: "direct"`, the correct DHCP IP pool (`10.10.20.201-253`), and OPNsense logical interface IP `10.10.20.254`.
+* **Automation Scripts**: Patched `extract_dhcp_from_rete_json.py` and `push_kea_dhcp_to_opnsense.py` to extract and sync the `pools` field directly to OPNsense via API.
+* **Unit Tests**: Updated `test_network_configs.py` to assert the presence of OPNsense SVI IP and correct DHCP configurations, confirming that the new schema passes all CI validation rules.
+
+## 🧪 Verification Results
+* **DHCP Lease**: The Mac Studio immediately renewed its IP and received exactly **`10.10.20.100`** via Kea static mapping.
+* **Gateway & DNS Options**: Verified that the default gateway is indeed **`10.10.20.1`** (L3 Switch) and DNS is **`192.168.2.254`** (OPNsense).
+* **Routing Path**: A traceroute to `8.8.8.8` confirmed the correct routing hops:
+  1. `* * *` (L3 Switch SVI - ICMP TTL Exceeded disabled by policy)
+  2. `192.168.2.254` (OPNsense Transit interface)
+  3. ISP Public Gateway
+* **Internet**: Ping to `8.8.8.8` and name resolution for external/internal hosts function perfectly with 0% packet loss.
 
 ## 🔗 References
 * [[OPNsense]]

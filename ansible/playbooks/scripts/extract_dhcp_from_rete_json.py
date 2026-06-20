@@ -23,9 +23,13 @@ def extract_subnet_options(data):
         dhcp = vlan.get('dhcp')
         if subnet and dhcp:
             options[subnet] = {
-                'gateway': dhcp.get('gateway'),
-                'dns':     dhcp.get('dns'),
-                'domain':  dhcp.get('domain', ''),
+                'mode':        dhcp.get('mode', 'relay'),
+                'opnsense_ip': dhcp.get('opnsense_ip'),
+                'pool_start':  dhcp.get('pool_start'),
+                'pool_end':    dhcp.get('pool_end'),
+                'gateway':     dhcp.get('gateway'),
+                'dns':         dhcp.get('dns'),
+                'domain':      dhcp.get('domain', ''),
             }
     return options
 

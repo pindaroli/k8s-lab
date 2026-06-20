@@ -43,7 +43,23 @@ Per garantire la resilienza e facilitare il disaster recovery, le configurazioni
 
 ### A. Switch Managed ONTi (XikeStor SKS8300-8X)
 *   **IP Gestione**: `192.168.2.1` (VLAN 1)
-*   **Procedura Web GUI**:
+*   **Accesso CLI**: Telnet porta `23` → `telnet 192.168.2.1`
+
+> [!WARNING]
+> **CLI Gotcha**: Il firmware ONTi/Realtek NON accetta `configure terminal` (sintassi Cisco standard).
+> Il comando corretto per entrare in modalità configurazione è **`config`** (abbreviato).
+> ```
+> enable
+> config          ← corretto
+> # configure terminal  ← NON funziona su questo firmware
+> ```
+
+> [!IMPORTANT]
+> **DHCP Relay & WebGUI Gotchas**:
+> * Il comando CLI `no ip helper-address` fallisce con l'errore `failed to delete helper address on active port 67` se il relay è in esecuzione.
+> * Per disattivare il DHCP Relay, accedere alla WebGUI (`http://192.168.2.1`), andare in **L3 Features ➔ DHCP Relay ➔ DHCP Relay Config** e impostare **`DHCP Relay Forwarding`** su **`Off`** (Apply). Questo permette ai broadcast DHCP di fluire liberamente a livello L2 verso il DHCP server di OPNsense.
+
+*   **Procedura Web GUI (Config Backup)**:
     1. Andare in `System Config` -> `Management Config` -> `HTTP`.
     2. Impostare `Operation Type` su **`Download`**.
     3. Impostare `File Type` su **`Running Configuration`**.

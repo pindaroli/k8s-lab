@@ -11,10 +11,14 @@
       "description": "VLAN dei Client",
       "subnet": "10.10.20.0/24",
       "dhcp": {
+        "mode": "direct",
+        "opnsense_ip": "10.10.20.254",
+        "pool_start": "10.10.20.201",
+        "pool_end": "10.10.20.253",
         "gateway": "10.10.20.1",
         "dns": "192.168.2.254",
         "domain": "pindaroli.org",
-        "note": "Gateway = Switch L3 (Symmetric Routing). DNS = OPNsense Unbound (Split-Horizon)."
+        "note": "OPNsense serve DHCP direttamente. Gateway = Switch L3 SVI (10.10.20.1)."
       }
     },
     {
@@ -325,9 +329,9 @@
               "name": "gw-vlan20",
               "interface": "opt2",
               "vlan_tag": "20",
-              "ip": "None",
+              "ip": "10.10.20.254",
               "subnet": "10.10.20.0/24",
-              "dhcp": "enabled",
+              "dhcp": "direct",
               "dns": "192.168.2.254",
               "firewall_policy": "Allow All"
             },
