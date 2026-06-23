@@ -478,31 +478,43 @@
       ],
       "version": "Proxmox VE 9.2",
       "OS": "Debian 13 (Trixie)",
+      "nic_card": "Intel X710 for 10GbE SFP+ (dual port) - PCI 01:00.0/01:00.1 - driver i40e",
       "management_ip": "10.10.10.11",
       "ports": [
         {
           "id": "1",
-          "os_name": "enp1s0f0",
+          "os_name": "enp1s0f0np0",
+          "pci": "01:00.0",
+          "mac": "8c:fd:18:f7:f5:92",
+          "driver": "i40e",
           "speed": "10Gbs",
           "connected_to": "switch10g Port 3",
           "vlan": "10",
-          "note": "LAN Server Bridge (vmbr0)"
+          "bridge": "vmbr10",
+          "note": "LAN Server Bridge (vmbr10) - Intel X710 Port 0"
         },
         {
           "id": "2",
-          "os_name": "enp1s0f1",
+          "os_name": "enp1s0f1np1",
+          "pci": "01:00.1",
+          "mac": "8c:fd:18:f7:f5:93",
+          "driver": "i40e",
           "speed": "10Gbs",
           "connected_to": "switch10g Port 5",
           "vlan": "20",
-          "note": "LAN Client Bridge (vmbr20)"
+          "bridge": "vmbr20",
+          "note": "LAN Client Bridge (vmbr20) - Intel X710 Port 1"
         },
         {
           "id": "3",
           "os_name": "nic0",
+          "pci": "07:00.0",
+          "mac": "58:47:ca:7b:d9:3d",
+          "driver": "r8169",
           "speed": "2.5Gbs",
           "connected_to": "switch-25g-server Port 1",
           "ip": "192.168.100.11",
-          "note": "Service Port (VLAN 99 OOB - No Gateway)"
+          "note": "Service Port (VLAN 99 OOB - No Gateway) - Realtek RTL8125"
         }
       ],
       "disks": [

@@ -36,33 +36,33 @@
 
 
 
-## [ ] OPNsense Recovery & Post-Restore GUI Alignment Tasks [[opnsense-recovery-and-temporary-routing]]
-- [ ] **Ripristinare OPNsense** tramite chiavetta USB e caricamento del backup `config-OPNsense.internal-prima-di-migrazione 20260318235902.xml` (dopo l'installazione del nuovo SSD).
-- [ ] **Riapplicare configurazioni mancanti via GUI**:
-  - [ ] **ACL Unbound per Kubernetes**:
+## [x] OPNsense Recovery & Post-Restore GUI Alignment Tasks [[opnsense-recovery-and-temporary-routing]] (COMPLETED 2026-06-20)
+- [x] **Ripristinare OPNsense** tramite chiavetta USB e caricamento del backup `config-OPNsense.internal-prima-di-migrazione 20260318235902.xml` (dopo l'installazione del nuovo SSD). Allineato a versione `26.1.6.2`.
+- [x] **Riapplicare configurazioni mancanti via GUI**:
+  - [x] **ACL Unbound per Kubernetes**:
     - Andare in `Services -> Unbound DNS -> Access Control`.
     - Modificare l'ACL `VLANs_Allow` (o crearne una nuova) ed aggiungere la subnet dei Pod `10.244.0.0/16` nei network consentiti (con azione `Allow`).
     - *Nota*: Questo è fondamentale per la risoluzione DNS interna dei Pod del cluster Talos (Rif: [[2026-05-03-dns-split-horizon-conflict]]).
-  - [ ] **Alternate Hostnames**:
+  - [x] **Alternate Hostnames**:
     - Andare in `System -> Settings -> Administration`.
     - Inserire `firewall-direct.pindaroli.org` nel campo `Alternate Hostnames` (in aggiunta a `opnsense.pindaroli.org` e `pippo.pindaroli.org`).
     - *Nota*: Evita errori di DNS Rebinding accedendo all'interfaccia di amministrazione via FQDN.
-- [ ] **Verifiche Post-Recovery**:
+- [x] **Verifiche Post-Recovery**:
   - Eseguire ping test dal Mac Studio verso gli IP di OPNsense (`192.168.100.1` OOB e `192.168.2.254` Transit).
   - Eseguire `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml` per risincronizzare gli host override.
 
-## [ ] Ripristino della Rete Originale (DA FARE dopo il ripristino di OPNsense) [[opnsense-recovery-and-temporary-routing]]
+## [x] Ripristino della Rete Originale (DA FARE dopo il ripristino di OPNsense) [[opnsense-recovery-and-temporary-routing]] (COMPLETED 2026-06-20)
 - [x] **Ripristinare i Collegamenti Fisici** (Eseguito):
   - Scollegare il cavo WAN dal Cudy AP11000 e ricollegarlo alla porta `igc0` di OPNsense.
   - Collegare la porta LAN/Trunk di OPNsense a `igc1`.
   - Collegare la porta OOB di OPNsense a `igc3`.
   - Sullo switch **GoodTop**, ricollegare la porta 4 alla porta LAN normale del Cudy.
-- [ ] **Riconfigurazione Logica**:
+- [x] **Riconfigurazione Logica**:
   - Accedere all'AP11000 (`http://10.10.20.103`) e ripristinare la modalità **Access Point** (o caricare la config AP dal backup).
   - Ripristinare la porta 4 dello switch **ONTi** (rimuovere VLAN 30 Access).
   - Ripristinare la porta 4 dello switch **GoodTop** (rimuovere VLAN 30 Access, impostarla nuovamente come Trunk Native 20, Tagged 1, 99).
-- [ ] **Accensione Infrastruttura & Mac Studio**:
-  - Riattivare la rete cablata del Mac Studio e verificare che navighi regolarmente via cavo.
+- [x] **Accensione Infrastruttura & Mac Studio**:
+  - Riattivare la rete cablata del Mac Studio e verificarne la navigazione regolare via cavo.
   - Procedere con l'avvio ordinato dei nodi Proxmox e TrueNAS (Vedi [[Power_Sequence]]).
 
 ## [ ] Post-Incident: Flannel DNS Cascading Failure (2026-06-03)
@@ -285,12 +285,40 @@
     - [x] Eseguire l'upgrade o reinstallazione pulita di PVE3 a VE 9.2. (COMPLETED 2026-06-02)
     - [x] Configurare rete 10G appena allestita e reinserire il nodo nel cluster con PVE1. (COMPLETED 2026-06-02)
 
-- [ ] **Fase 3.5: Upgrade PVE1 a Proxmox VE 9.2** [[pve1-upgrade-ve9.2]]
-    - [ ] Spegnimento ordinato delle VM/LXC su PVE1 (talos-cp-01, TrueNAS, PBS)
-    - [ ] Esecuzione upgrade `apt update && apt dist-upgrade`
-    - [ ] Reboot di PVE1 e verifica dell'avvio su systemd-boot
-    - [ ] Ripristino VM/LXC in sequenza (TrueNAS prima, PBS, talos-cp-01)
-    - [ ] Verifica del quorum corosync (`pvecm status`) e salute Kubernetes
+- [x] **Fase 3.5: Upgrade PVE1 a Proxmox VE 9.2** [[pve1-upgrade-ve9.2]] (COMPLETED 2026-06-22)
+    - [x] Spegnimento ordinato delle VM/LXC su PVE1 (talos-cp-01, TrueNAS, PBS)
+    - [x] Esecuzione upgrade `apt update && apt dist-upgrade`
+    - [x] Reboot di PVE1 e verifica dell'avvio su systemd-boot
+    - [ ] Ripristino VM/LXC in sequenza (TrueNAS prima, PBS, talos-cp-01) -> *Posticipato al ripristino globale del cluster*
+    - [ ] Verifica del quorum corosync (`pvecm status`) e salute Kubernetes -> *Posticipato al ripristino globale del cluster*
+
+- [ ] **Fase 3.5a: Upgrade PVE2 a Proxmox VE 9.2**
+    - Da fare prima del ripristino del cluster PVE e del rename del nodo `pve` in `pve1`.
+- [ ] **Fase 3.5b: Upgrade PVE3 a Proxmox VE 9.2**
+    - Da fare prima del ripristino del cluster PVE e del rename del nodo `pve` in `pve1`.
+
+
+- [ ] **Fase 3.7: Rinomina Hostname Nodo PVE1 (`pve` → `pve1`)** [[pve1-hostname-rename]]
+  > ⏳ **BLOCCATO** — Prerequisito: tutti e 3 i nodi online e `pvecm status` → `Quorate: Yes, Nodes: 3`.
+  > Da eseguire **dopo** il completamento della Fase 3.5 (upgrade VE 9.2) e il rientro in servizio di PVE2 e PVE3.
+    - [ ] Verifica prerequisito: `pvecm status` → 3 nodi, Quorate: Yes
+    - [ ] FASE 0: Backup `/etc/hostname`, `/etc/hosts`, `corosync.conf`, `storage.cfg`
+    - [ ] FASE 1: Spegnimento ordinato VM critiche (1300 talos-cp-01, 1100 truenas, 1400 pbs)
+    - [ ] FASE 2: Stop cluster services → `pmxcfs -l` → modifica `corosync.conf` (`name: pve1`, `config_version: 13`) → rinomina `/etc/pve/nodes/pve/` → `/etc/pve/nodes/pve1/` → restart servizi
+    - [ ] FASE 3: Aggiornamento `storage.cfg` (`nodes pve` → `nodes pve1`)
+    - [ ] FASE 4: Aggiornamento `rete.json` (`host_node: pve` → `pve1`) + `ansible-playbook opnsense_sync_dns.yml`
+    - [ ] FASE 5: Riavvio VM in sequenza e verifica finale (`pvecm nodes`, `kubectl get nodes`, GUI Proxmox)
+
+- [x] **Fase 3.6: Upgrade TrueNAS SCALE a 25.10.4** [[truenas-scale-upgrade-25.10.4]] (COMPLETED 2026-06-21)
+    - [x] Backup della configurazione di TrueNAS SCALE ed esportazione chiavi ZFS
+    - [x] Spegnimento controllato del cluster Kubernetes Talos (drenaggio e shutdown worker + VM 1300 talos-cp-01)
+    - [x] Backup della VM 1100 (TrueNAS) su PBS in modalità Stop
+    - [x] Configurazione PCI Passthrough (`rombar=0`) su PVE1 per i tre controller LSI
+    - [x] Iniezione preventiva del parametro kernel `modules_load=virtio-scsi` su TrueNAS
+    - [x] Esecuzione aggiornamento TrueNAS a 25.10.4 via Web GUI
+    - [x] Validazione post-upgrade (pool ZFS, ens18/ens19, servizi SMB/NFS)
+    - [ ] Avvio ordinato di Talos VM 1300 e nodi worker (Deferito a piano specifico Talos)
+
 
 - [x] **Fase 4A: Reinstallazione PVE2 e Migrazione Dati** [[pve2-reinstallation-migration]] (COMPLETED 2026-06-06)
     - [x] Fase 0: Dump configurazioni e backup forzato PBS da oldPVE2 (con PVE2 acceso)
@@ -370,6 +398,12 @@ Estendere la durata della sessione di login per evitare disconnessioni frequenti
 
 ### [ ] Analizzare e ottimizzare lo stato di HA (High Availability) su Proxmox VE
 - [ ] Analizzare il comportamento del cluster HA in caso di nodo offline e configurare al meglio le politiche di fencing/watchdog per evitare che le risorse (VM 2300, etc.) rimangano bloccate in stato 'error'.
+
+### [ ] Configurazione UPS Technoware Exa 1000 con PVE1 Master e TrueNAS Client [[setup-ups-nut-orchestration]]
+- [ ] Creazione del playbook Ansible `setup_ups.yml`
+- [ ] Configurazione NUT su PVE1 (Master, driver `usbhid-ups`, script di spegnimento sequenziale)
+- [ ] Configurazione TrueNAS (Client) tramite middleware API
+- [ ] Verifica connettività e test di lettura dell'UPS
 
 
 ## Log Management (Future Phase)

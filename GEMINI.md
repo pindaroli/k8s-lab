@@ -15,7 +15,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Workloads**: [[Servarr]], [[Tdarr]], [[Xray]].
 - **Data & Registry**: [[Network_Registry]], [[Storage_Registry]], [[Secret_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]].
-- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam), [[beets-music-rescue-pipeline]] (Bonifica Libreria Musicale), [[dual-pipeline-gitops-integration]] (Integrazione GitOps Duale Classica), [[album-directory-standardization]] (Standardizzazione Cartelle Album), [[plan-out-of-band-service-access]] (Accesso Fisico OOB), [[pve3-10g-migration-recovery]] (Migrazione 10G PVE3 & Ripristino), [[oob-hardening-validation]] (Validazione e Hardening OOB), [[pve1-upgrade-ve9.2]] (Upgrade PVE1 e Spegnimento Safe), [[opnsense-recovery-and-temporary-routing]] (Ripristino OPNsense & Rete Temporanea).
+- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam), [[beets-music-rescue-pipeline]] (Bonifica Libreria Musicale), [[dual-pipeline-gitops-integration]] (Integrazione GitOps Duale Classica), [[album-directory-standardization]] (Standardizzazione Cartelle Album), [[plan-out-of-band-service-access]] (Accesso Fisico OOB), [[pve3-10g-migration-recovery]] (Migrazione 10G PVE3 & Ripristino), [[oob-hardening-validation]] (Validazione e Hardening OOB), [[pve1-upgrade-ve9.2]] (Upgrade PVE1 e Spegnimento Safe), [[pve1-hostname-rename]] (Rinomina Hostname PVE1: pve → pve1), [[opnsense-recovery-and-temporary-routing]] (Ripristino OPNsense & Rete Temporanea).
 - **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]], [[2026-05-06-google-oauth2-credential-leak]], [[2026-05-08-qbittorrent-port-forward-outage]], [[2026-05-16-dnsbl-automation-payload-mismatch]], [[2026-06-02-pve3-kernel-hang-nomodeset]], [[2026-06-03-flannel-restart-dns-cascading-failure]], [[2026-06-20-dhcp-relay-outage-symmetric-routing]].
 
 - **Grafi**: [Core Wiki k8s-lab](obsidian://graph?vault=k8s-lab&filter=path:wiki)
@@ -26,7 +26,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 ## 2. Status & Active Goals
 - **Current Status**: **RECYCLARR AUTOMATION OPERATIONAL** (Anti-spam synced).
 - **Active Goal**: Ingress & External Access (Phase 5).
-- **PVE2 Status**: **OFFLINE** (Hardware Pending) - `postgres-main-2` is currently fenced.
+- **PVE2 Status**: **ONLINE**
 
 ---
 
