@@ -15,8 +15,8 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Workloads**: [[Servarr]], [[Tdarr]], [[Xray]].
 - **Data & Registry**: [[Network_Registry]], [[Storage_Registry]], [[Secret_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]].
-- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam), [[beets-music-rescue-pipeline]] (Bonifica Libreria Musicale), [[dual-pipeline-gitops-integration]] (Integrazione GitOps Duale Classica), [[album-directory-standardization]] (Standardizzazione Cartelle Album), [[plan-out-of-band-service-access]] (Accesso Fisico OOB), [[pve3-10g-migration-recovery]] (Migrazione 10G PVE3 & Ripristino), [[oob-hardening-validation]] (Validazione e Hardening OOB), [[pve1-upgrade-ve9.2]] (Upgrade PVE1 e Spegnimento Safe), [[pve1-hostname-rename]] (Rinomina Hostname PVE1: pve → pve1), [[opnsense-recovery-and-temporary-routing]] (Ripristino OPNsense & Rete Temporanea).
-- **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]], [[2026-05-06-google-oauth2-credential-leak]], [[2026-05-08-qbittorrent-port-forward-outage]], [[2026-05-16-dnsbl-automation-payload-mismatch]], [[2026-06-02-pve3-kernel-hang-nomodeset]], [[2026-06-03-flannel-restart-dns-cascading-failure]], [[2026-06-20-dhcp-relay-outage-symmetric-routing]].
+- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam), [[beets-music-rescue-pipeline]] (Bonifica Libreria Musicale), [[dual-pipeline-gitops-integration]] (Integrazione GitOps Duale Classica), [[album-directory-standardization]] (Standardizzazione Cartelle Album), [[plan-out-of-band-service-access]] (Accesso Fisico OOB), [[pve3-10g-migration-recovery]] (Migrazione 10G PVE3 & Ripristino), [[oob-hardening-validation]] (Validazione e Hardening OOB), [[pve1-upgrade-ve9.2]] (Upgrade PVE1 e Spegnimento Safe), [[pve1-hostname-rename]] (Rinomina Hostname PVE1: pve → pve1), [[opnsense-recovery-and-temporary-routing]] (Ripristino OPNsense & Rete Temporanea), [[special-vdev-optimization]] (Ottimizzazione Special VDEV oliraid: 1M → 64K), [[oliraid-expansion-special-vdev-evacuation]] (Espansione oliraid e Evacuazione Special VDEV).
+- **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]], [[2026-05-06-google-oauth2-credential-leak]], [[2026-05-08-qbittorrent-port-forward-outage]], [[2026-05-16-dnsbl-automation-payload-mismatch]], [[2026-06-02-pve3-kernel-hang-nomodeset]], [[2026-06-03-flannel-restart-dns-cascading-failure]], [[2026-06-20-dhcp-relay-outage-symmetric-routing]], [[2026-06-24-special-mirror-degraded-replaced-disk]].
 
 - **Grafi**: [Core Wiki k8s-lab](obsidian://graph?vault=k8s-lab&filter=path:wiki)
 
@@ -27,6 +27,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Current Status**: **RECYCLARR AUTOMATION OPERATIONAL** (Anti-spam synced).
 - **Active Goal**: Ingress & External Access (Phase 5).
 - **PVE2 Status**: **ONLINE**
+- **Storage Maintenance**: Piano [[oliraid-expansion-special-vdev-evacuation]] IN ATTESA DI APPROVAZIONE — (Incident [[2026-06-24-special-mirror-degraded-replaced-disk]] risolto con successo ✅, resilver mirror special completato al 100% con successo ✅).
 
 ---
 
@@ -43,6 +44,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 > **PLANNING**: È tassativamente proibito pianificare o eseguire azioni basate su assunzioni non verificate. Ogni azione deve essere preceduta da una fase di raccolta dati e analisi che ne confermi la necessità.
 > **MASS DATA MODIFICATION (ANTI-DISASTER)**: È PERENTORIAMENTE VIETATO eseguire comandi di modifica massiva (es. `beet modify`, `sed`, `find -exec rm`) usando query lasche o basate su testo libero. Prima di OGNI modifica di massa, l'agente DEVE obbligatoriamente eseguire un "dry-run" o un comando di query/listing (es. `beet ls`) per validare il perimetro ESATTO d'azione. Qualsiasi bulk edit non testato preventivamente sul set di dati è una violazione gravissima dei protocolli di sicurezza.
 > **NO UNAUTHORIZED EXTERNAL LIBRARY MODIFICATIONS**: È tassativamente proibito all'AI modificare o alterare il codice di librerie esterne o pacchetti installati nel sistema (es. in `.local/pipx/` o in `/usr/`), A MENO CHE l'utente non lo richieda o lo autorizzi espressamente per risolvere bug bloccanti. Qualsiasi altra modifica o fix deve essere implementato esclusivamente all'interno del repository del progetto.
+> **COMMAND DELIVERY**: Fornisci sempre i comandi da eseguire all'utente in blocchi di codice (markdown) separati e singolarmente copiabili, comando per comando. Non raggruppare mai comandi multipli nello stesso blocco per facilitare il copia-incolla ed evitare disastri.
 
 ## Future Integrations (n8n & Prefect)
 ### [ ] Transizione a Metodo B (Helm Secrets)

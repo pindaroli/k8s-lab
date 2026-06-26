@@ -36,7 +36,7 @@ graph TD
 1. **Talos Kubernetes Cluster**: Comandi `qm shutdown` sulle VM `1300` (su PVE1), `2300` (su PVE2) e `3200` (su PVE3). Le VM Talos supportano lo spegnimento pulito tramite ACPI.
 2. **Servizi Dipendenti**: Spegnimento dei container e servizi LXC, inclusi PBS (LXC 1400 su PVE1) e Jellyfin (LXC 2200 su PVE2/PVE3).
 3. **TrueNAS (Storage)**: Spegnimento della VM `1100` su PVE1. TrueNAS deve essere spento *dopo* i suoi client per evitare che il network storage NFS scompaia all'improvviso causando blocchi irreversibili e corruzione file.
-4. **Nodi Proxmox Satelliti**: Spegnimento fisico di PVE2 (`10.10.10.21`) e PVE3 (`10.10.10.31`) inviando il comando `poweroff` via SSH (i comandi ignorano gli errori in caso i nodi siano offline o in manutenzione).
+4. **Nodi Proxmox Satelliti**: Spegnimento fisico di PVE2 (`192.168.100.21`) e PVE3 (`192.168.100.31`) inviando il comando `poweroff` via SSH (i comandi ignorano gli errori in caso i nodi siano offline o in manutenzione).
 5. **Host Master (PVE1)**: Spegnimento locale di `pve1` e comando di spegnimento finale (powerdown) all'UPS.
 
 ---

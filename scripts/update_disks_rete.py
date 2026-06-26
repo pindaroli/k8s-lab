@@ -82,7 +82,7 @@ def update_disks():
                     for pci in pci_devs:
                         note = "Passthrough to VM 1100 (TrueNAS)"
                         if "05:00.0" in pci:
-                            note += " - Likely 2x 4TB HDDs"
+                            note += " - LSI SAS2308 (Special SSD sdg + HDDs)"
                         disks_info.append({
                             "pci_id": pci,
                             "note": note,

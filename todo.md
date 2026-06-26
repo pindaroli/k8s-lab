@@ -1,5 +1,29 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## [ ] 🔴 ALTA PRIORITÀ: Espansione Geometrica oliraid ed Evacuazione Special VDEV [[oliraid-expansion-special-vdev-evacuation]]
+- [ ] **Fase Preliminare: Isolamento Totale del Sistema e Messa in Sicurezza**
+  - [ ] Accedere alla WebUI di TrueNAS, disattivare l'avvio automatico e arrestare i servizi SMB, NFS e iSCSI.
+  - [ ] Arrestare lo stack dei container: `systemctl stop docker`
+  - [ ] Verificare che nessun processo acceda al pool: `lsof /mnt/oliraid` (deve essere vuoto).
+- [ ] **Sotto-piano A: Espansione del RAID-Z2 da 4 a 5 Dischi**
+  - [ ] Verificare lo stato del pool `zpool status oliraid` (deve essere ONLINE, no resilver/scan attivo, CKSUM a 0).
+  - [ ] Preparare `/dev/sdi` (wipefs, parted mklabel gpt, parted mkpart).
+  - [ ] Verificare allineamento `parted /dev/sdi align-check optimal 1` (deve restituire `1 aligned`).
+  - [ ] Ottenere il `NEW_PARTUUID` con blkid.
+  - [ ] Avviare l'espansione: `zpool attach oliraid raidz2-0 /dev/disk/by-partuuid/${NEW_PARTUUID}`.
+  - [ ] Monitorare in tmux: `watch -n 10 "zpool status oliraid | grep -A 8 -i 'expand'"` fino al completamento.
+  - [ ] Verificare aumento capacità `zpool list -v oliraid`.
+- [ ] **Sotto-piano B: Evacuazione dello Special VDEV e Ribilanciamento Parità**
+  - [ ] Applicare policy 64K: `zfs set special_small_blocks=64K oliraid/arrdata`.
+  - [ ] Verificare l'ereditarietà: `zfs get -r special_small_blocks oliraid/arrdata`.
+  - [ ] Eliminare ricorsivamente tutte le snapshot: `zfs destroy -r oliraid/arrdata@%`.
+  - [ ] Verificare assenza snapshot: `zfs list -t snapshot -r oliraid/arrdata` (deve restituire `no datasets available`).
+  - [ ] Avviare la riscrittura ricorsiva in tmux: `zfs rewrite -rvx /mnt/oliraid/arrdata`.
+  - [ ] Monitorare lo spostamento fisico dei blocchi e la liberazione dello Special VDEV `watch -n 10 "zpool list -v oliraid"`.
+  - [ ] Eseguire scrub completo: `zpool scrub oliraid` e verificarlo.
+  - [ ] Riattivare lo stack applicativo: `systemctl start docker`.
+  - [ ] Riattivare SMB, NFS e iSCSI da WebUI.
+
 ## [ ] 🔴 ALTA PRIORITÀ: Allineamento Coerenza Rete (Symmetric Routing)
 - [x] **Sorgente di Verità & Configurazione Logica**:
   - [x] Aggiornare `rete.json` con `management_ip` di OPNsense a `192.168.100.1` (OOB) e impostare gli IP delle interfacce logiche `gw-vlan10` e `gw-vlan20` su `"None"`.
@@ -294,6 +318,10 @@
 
 - [ ] **Fase 3.5a: Upgrade PVE2 a Proxmox VE 9.2**
     - Da fare prima del ripristino del cluster PVE e del rename del nodo `pve` in `pve1`.
+    - [x] Disarmo HA manager (`pve-ha-lrm`, `pve-ha-crm`) su PVE2 in stato isolato.
+    - [x] Spegnimento VM Talos (2300) per evitare fencing/reboot forzati.
+    - [x] Backup locale configurazioni `/etc/` in `/root/`.
+    - [ ] Aggiornamento pacchetti (`apt-get dist-upgrade`) e riavvio host.
 - [ ] **Fase 3.5b: Upgrade PVE3 a Proxmox VE 9.2**
     - Da fare prima del ripristino del cluster PVE e del rename del nodo `pve` in `pve1`.
 
@@ -383,6 +411,11 @@
 
 ## Maintenance & Monitoring
 
+### [ ] Ripristino Globale Cluster Kubernetes Talos (Post-Manutenzione PVE)
+- [ ] Avviare VM 2300 (`talos-cp-02`) su PVE2.
+- [ ] Verificare stato del boot di Talos ed integrazione in etcd.
+- [ ] Sincronizzare e stabilizzare l'intero cluster Talos (nodi CP1, CP2, CP3 e Worker).
+
 ### [ ] Monitor Disk Usage on talos-cp-01
 The disk `/var/mnt/postgres` was recently at 100%. Ensure the usage stays below 80%.
 - Command: `talosctl -n 10.10.20.141 usage /var/mnt/postgres`
@@ -405,6 +438,13 @@ Estendere la durata della sessione di login per evitare disconnessioni frequenti
 - [ ] Configurazione TrueNAS (Client) tramite middleware API
 - [ ] Verifica connettività e test di lettura dell'UPS
 
+### [ ] Aggiornamento TrueNAS MinIO (Post Espansione RAID Z2)
+- [ ] **Aggiornamento App MinIO su TrueNAS**:
+  - Salto versione del template TrueNAS da `1.3.16` a `1.4.7` (App Version rimane identica: `RELEASE.2025-09-07T16-13-09Z`).
+  - **Precauzioni prima dell'update**:
+    - Assicurarsi che non ci siano backup massivi o trasferimenti S3 attivi verso MinIO (l'applicazione si riavvierà).
+  - **Verifica post-update**:
+    - Controllare i log nella scheda Workloads per confermare che i permessi del container (UID/GID `473` visualizzati nel metadata dell'app) siano ereditati correttamente.
 
 ## Log Management (Future Phase)
 
@@ -442,3 +482,6 @@ Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttam
 ## 🛠️ Automazione Declarativa Storage (TrueNAS GitOps)
 - [ ] **Configurazione Automatica TrueNAS**: Progettare ed implementare un meccanismo (es. playbook Ansible o script basato sulle API di TrueNAS SCALE) per allineare ed applicare dichiarativamente i dataset ZFS e le esportazioni NFS/SMB definiti nel file `storage.json` direttamente su TrueNAS.
 - [ ] **Re-ingegnerizzazione Sincronizzazione via Ansible**: Re-ingegnerizzare le procedure di sincronizzazione dello storage (attualmente basate su `sync_storage.py` ed expect script) all'interno di playbook Ansible per garantire idempotenza ed una gestione unificata e dichiarativa degli share NFS e dei mountpoint Proxmox/K8s.
+
+## 🔧 Manutenzione Hardware & Hypervisor
+- [ ] **PVE3: Migrazione da PCIe Passthrough a USB Device Passthrough**: Sostituire il passthrough intero del controller USB (PCI Device) con il passthrough di singole porte/dispositivi (USB Device) per le VM su PVE3. Questo permette a Proxmox di mantenere il controllo del controller madre, mantenendo attiva la tastiera locale ed evitando freeze in console locale durante l'autostart delle macchine virtuali.

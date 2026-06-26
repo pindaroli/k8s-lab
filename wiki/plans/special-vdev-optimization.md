@@ -17,19 +17,19 @@ Questo piano descrive le azioni operative per ridurre la proprietà `special_sma
 | **PASSO 2f** | Ricreazione replica `backup-stripe` | ✅ COMPLETATO | Task di replication riabilitato e avviato al PASSO 5. |
 | **INCIDENT** | Mirror special DEGRADED | ✅ RISOLTO | Resilver completato al 100% con successo e 0 errori il 24/06/2026. Vedi [[2026-06-24-special-mirror-degraded-replaced-disk]] |
 | **PASSO 3** | Migrazione `pbs-store` (297G) | ✅ COMPLETATO | Swap del dataset completato con successo. `pbs-store` a 64K attivo e montato. |
-| **PASSO 4** | Verifica obiettivo (SSD < 40%) | ✅ COMPLETATO | Spazio Special VDEV sceso a 652G (73.4%). Ulteriore bonifica passiva in corso. |
+| **PASSO 4** | Verifica obiettivo (SSD < 40%) | 🔄 SUPERATO | Spazio Special VDEV a 652G (73.4%). La bonifica di `arrdata` viene eseguita attivamente tramite riscrittura nel piano [[oliraid-expansion-special-vdev-evacuation]]. |
 | **PASSO 5** | Ripristino ambiente | ✅ COMPLETATO | NFS/SMB attivi, LXC PBS avviato, Backup Job abilitato, backup di test superato. |
 
 ### Dati SSD Special (Baseline vs Attuale)
 
 | Metrica | Baseline (23/06) | Dopo PASSO 2 | Attuale (25/06) | Obiettivo finale |
 | :--- | :--- | :--- | :--- | :--- |
-| **ALLOC** | 668G | 658G | 652G | ~250-350G (rotazione passiva) |
-| **CAP%** | 75.2% | 74.1% | 73.4% | < 40% (rotazione passiva) |
+| **ALLOC** | 668G | 658G | 652G | ~250-350G (attraverso evacuazione attiva) |
+| **CAP%** | 75.2% | 74.1% | 73.4% | < 40% (attraverso evacuazione attiva) |
 | **HEALTH** | ONLINE | DEGRADED (resilver) | ONLINE | ONLINE |
 
 ### Prossima azione
-Nessuna. L'ottimizzazione del vdev special si completerà passivamente nei prossimi mesi con la naturale rotazione dei file media su `arrdata`.
+La bonifica passiva di `arrdata` è stata superata dal nuovo piano di evacuazione attiva ed espansione pool: [[oliraid-expansion-special-vdev-evacuation]].
 
 ---
 
@@ -142,15 +142,11 @@ sudo zfs set special_small_blocks=64K oliraid
 
 ---
 
-### PASSO 4 — Verifica Obiettivo
+### PASSO 4 — Verifica Obiettivo (Aggiornato)
 
-```bash
-sudo zpool list -v oliraid
-sudo zpool status oliraid
-```
-
-**Obiettivo**: Vdev `mirror-2` (special) con `CAP%` < 40% (baseline: 75.2%).
-**Evoluzione passiva**: `arrdata` (9.51 TB) si bonifica passivamente con la normale rotazione dei file media da parte di Sonarr/Radarr/Lidarr. Nessun intervento necessario.
+> [!NOTE]
+> L'evoluzione passiva inizialmente prevista per il dataset `arrdata` (9.51 TB) è stata sostituita da una procedura di evacuazione attiva tramite `zfs rewrite` in combinazione con l'espansione geometrica del pool a 5 dischi.
+> Vedi il nuovo piano: [[oliraid-expansion-special-vdev-evacuation]].
 
 ---
 

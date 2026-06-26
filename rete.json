@@ -601,31 +601,34 @@
       "version": "Proxmox VE 9.2",
       "OS": "Debian 13 (Trixie)",
       "hardware": "64GB RAM, 1TB NVMe (Micron 2550), AMD Ryzen AI (Strix)",
-      "nic_card": "HP CN1200E Emulex OneConnect Skyhawk (2x 10G SFP+) via OCuLink PCIe x8",
+      "nic_card": "Intel Corporation 82599ES (Intel X520) (2x 10G SFP+) via OCuLink PCIe x8",
       "management_ip": "10.10.10.31",
       "ports": [
         {
           "id": "1",
           "os_name": "enp101s0f0",
           "pci": "65:00.0",
-          "mac": "70:10:6f:ef:59:20",
-          "driver": "be2net",
+          "mac": "f4:4c:7f:1d:a2:68",
+          "driver": "ixgbe",
           "speed": "10Gbs",
-          "bridge": "vmbr10, vmbr20",
+          "bridge": "vmbr10",
           "connected_to": "switch10g",
-          "vlan": "10, 20 (Trunk)",
+          "vlan": "10",
           "status": "UP",
-          "note": "HP CN1200E Port 1 → DAC → ONTi. 10G Trunk for VLAN 10 (Server) and VLAN 20 (Client)."
+          "note": "Intel X520 Port 1 → DAC → ONTi. 10G Access for VLAN 10 (Server)."
         },
         {
           "id": "2",
           "os_name": "enp101s0f1",
           "pci": "65:00.1",
-          "mac": "70:10:6f:ef:59:28",
-          "driver": "be2net",
+          "mac": "f4:4c:7f:1d:a2:69",
+          "driver": "ixgbe",
           "speed": "10Gbs",
-          "status": "NO-CARRIER - cavo DAC mancante",
-          "note": "HP CN1200E Port 2 - Unused/Uncabled."
+          "bridge": "vmbr20",
+          "connected_to": "switch10g",
+          "vlan": "20",
+          "status": "UP",
+          "note": "Intel X520 Port 2 → DAC → ONTi. 10G Access for VLAN 20 (Client)."
         },
         {
           "id": "3",

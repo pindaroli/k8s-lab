@@ -1,14 +1,15 @@
 ---
 title: "Rinomina Hostname Nodo PVE1: pve → pve1"
 created: "2026-06-22"
-status: "WAITING — Prerequisito: cluster quorate (3/3 nodi online)"
+status: "BLOCKED — In attesa termine espansione ZFS RAIDZ2 su TrueNAS"
 tags:
   - "#proxmox"
   - "#infrastructure"
   - "#maintenance"
 depends_on:
   - "[[pve1-upgrade-ve9.2]]"
-  - "PVE2 e PVE3 online e in quorum"
+  - "PVE2 e PVE3 online e in quorum (Soddisfatto 2026-06-26)"
+  - "[[oliraid-expansion-special-vdev-evacuation]] (Completamento espansione disco)"
 ---
 
 # Rinomina Hostname Nodo PVE1: `pve` → `pve1`
@@ -31,7 +32,9 @@ Il nodo Proxmox principale ha hostname `pve` (legacy, da installazione iniziale)
 > La modifica del nodename viene propagata agli altri nodi **solo se il cluster ha quorum**.
 > Eseguire la rinomina con PVE2/PVE3 offline crea un conflitto di `config_version` al loro rientro → potenziale split-brain difficile da risolvere.
 >
-> ⏳ **Stato (2026-06-22)**: PVE2 e PVE3 in manutenzione. Esecuzione rimandata.
+> ⏳ **Stato (2026-06-26)**: Prerequisito Quorum SODDISFATTO (3/3 nodi online).
+> 🛑 **BLOCCO ATTUALE**: TrueNAS (VM 1100 su PVE1) sta eseguendo un'espansione attiva del pool RAIDZ2. È **ASSOLUTAMENTE VIETATO** spegnere TrueNAS o interrompere il demone cluster Corosync su PVE1 finché l'espansione non è terminata (previsto fine resilver).
+> ⚠️ **Nota su Talos/K8s**: Durante questa operazione, le VM Talos (1200, 1300, 2100, 2300, 3200) devono essere escluse dall'attività e non verranno avviate, riavviate o modificate, come richiesto in data odierna.
 
 ---
 
@@ -113,11 +116,13 @@ cp /etc/pve/storage.cfg /root/storage.cfg.bak-$(date +%Y%m%d-%H%M%S)
 
 ### FASE 1 — Spegnimento VM critiche
 
+> **Nota**: Talos è escluso da questa fase. Le VM Talos su PVE1 sono già spente (o comunque non verranno avviate/modificate). `jellyfin-srv` su PVE3 deve essere spento prima di `truenas` per evitare hang sul mount NFS.
+
 ```bash
-qm shutdown 1300   # talos-cp-01
-qm shutdown 1100   # truenas
-pct shutdown 1400  # pbs LXC
-qm list            # verifica: tutti stopped
+pct shutdown 2200  # jellyfin-srv (su PVE3, fermarlo per primo)
+qm shutdown 1100   # truenas (su PVE1)
+pct shutdown 1400  # pbs LXC (su PVE1)
+qm list            # verifica su PVE1
 ```
 
 ### FASE 2 — Stop cluster, modifica Corosync e rinomina directory

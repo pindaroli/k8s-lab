@@ -37,3 +37,8 @@ Lo storage è collegato al cluster tramite il driver NFS CSI. I pod richiedono s
 ## Relazioni
 - Fornitore di storage per: [[Talos_Cluster]] e [[Tdarr]].
 - Backup gestiti tramite: Velero e PBS.
+
+## Note Operative: Vdev `special` di `oliraid`
+- **Configurazione attuale**: `special_small_blocks=64K` — ridotta da 1M a 64K per prevenire la saturazione futura.
+- **Azione in corso**: [[oliraid-expansion-special-vdev-evacuation]] — espansione geometrica del pool a 5 dischi ed evacuazione attiva dello Special VDEV tramite riscrittura globale di `arrdata`.
+- **Struttura vdev special**: mirror SSD da 888 GiB (`/dev/sdf` Intel D3-S4510 960GB + `/dev/sdh` Crucial MX500 2TB con partizione da 892 GiB).

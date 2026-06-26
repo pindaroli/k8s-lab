@@ -10,7 +10,7 @@ Questo piano dettagliato descrive le fasi per la migrazione fisica di PVE3 al co
 ## 1. Stato Attuale e Obiettivi
 
 1.  **PVE2**: Hardware ripristinato e testato con successo nello Studio (tramite porta di servizio OOB). Posizionato nel rack definitivo e connesso allo switch core **switch10g (ONTi)** in Access VLAN 99.
-2.  **PVE3**: **[COMPLETATO]** Riconfigurazione di rete Trunk 10G effettuata con successo via OOB (`nic0`) e testata. Server ora pienamente operativo sul link `enp101s0f0` a 10G.
+2.  **PVE3**: **[COMPLETATO]** Riconfigurazione di rete 10G effettuata con successo via OOB (`nic0`) e testata. Server ora pienamente operativo sui link `enp101s0f0` e `enp101s0f1` a 10G tramite nuova scheda Intel X520.
 3.  **Obiettivi di questa fase**:
     *   Effettuare il backup manuale dello stato del cluster Proxmox.
     *   Spegnere in sicurezza l'intera infrastruttura.
@@ -103,7 +103,7 @@ Ora che tutto è spento, procediamo alle modifiche fisiche.
     *   Collega le nuove porte 10G SFP+ di PVE3 a due porte libere sullo switch **switch10g** (ad esempio, porta 2 e porta 7).
 3.  **Configurazione delle porte VLAN su switch10g**:
     *   Accendi solo lo switch `switch10g` (se spento) ed entra nella Web GUI all'indirizzo `http://192.168.2.1`.
-    *   Associa la singola porta dello switch collegata alla **Porta 1 (Attiva) di PVE3** in modalità **TRUNK**, impostando come Allowed VLANs sia la **10** che la **20** (e opzionalmente la native VLAN 1).
+    *   Associa la porta dello switch collegata alla **Porta 1 di PVE3** in modalità **ACCESS VLAN 10** e la porta collegata alla **Porta 2 di PVE3** in modalità **ACCESS VLAN 20**.
 
 ---
 
@@ -123,7 +123,7 @@ Dobbiamo scoprire come Linux chiama la tua nuova porta 10G attiva.
    ```bash
    ip -c link
    ```
-2. Cerca l'interfaccia che si trova in stato **UP** o **LOWER_UP** (ovvero che rileva il link fisico del cavo collegato). Annota il suo nome esatto (es. `enp3s0f0` o `enp101s0f0`). Questa sarà la singola porta Trunk dedicata a trasportare sia la **VLAN 10** che la **VLAN 20**.
+2. Cerca le interfacce che si trovano in stato **UP** o **LOWER_UP** (ovvero che rilevano il link fisico dei cavi collegati). Annota i loro nomi esatti (es. `enp101s0f0` e `enp101s0f1`). Queste saranno le due porte dedicate rispettivamente alla **VLAN 10** e alla **VLAN 20** in modalità Access.
 
 ### Step 4.3: Aggiornamento di `/etc/network/interfaces`
 1. **FONDAMENTALE: Fai un backup del file originale prima di modificarlo**:
@@ -134,7 +134,7 @@ Dobbiamo scoprire come Linux chiama la tua nuova porta 10G attiva.
    ```bash
    nano /etc/network/interfaces
    ```
-3. Modifica il file inserendo il nome della singola scheda 10G attiva identificata al punto precedente. Il file deve avere questa struttura (sostituisci `enp101s0f0` con il tuo nome reale). In questo modo creeremo un Trunk che trasporta entrambe le VLAN sulla singola porta funzionante:
+3. Modifica il file inserendo i nomi delle schede 10G attive (Intel X520) identificate al punto precedente. In questo modo assegneremo ogni porta fisica alla rispettiva VLAN (modalità Access), eliminando la necessità di sub-interfacce VLAN a livello OS:
 
    ```text
    auto lo
@@ -148,34 +148,28 @@ Dobbiamo scoprire come Linux chiama la tua nuova porta 10G attiva.
        address 192.168.100.31/24
 
    # -----------------------------------------------------------
-   # LINK ATTIVO 10G (Trunk Fisico - Nessun IP sulla radice)
+   # VLAN 10 (Server/Mgmt PVE3) - Porta 1 10G Access
    # -----------------------------------------------------------
    auto enp101s0f0
    iface enp101s0f0 inet manual
-
-   # -----------------------------------------------------------
-   # VLAN 10 (Server/Mgmt PVE3)
-   # -----------------------------------------------------------
-   auto enp101s0f0.10
-   iface enp101s0f0.10 inet manual
 
    auto vmbr10
    iface vmbr10 inet static
        address 10.10.10.31/24
        gateway 10.10.10.1
-       bridge-ports enp101s0f0.10
+       bridge-ports enp101s0f0
        bridge-stp off
        bridge-fd 0
 
    # -----------------------------------------------------------
-   # VLAN 20 (Client VM)
+   # VLAN 20 (Client VM) - Porta 2 10G Access
    # -----------------------------------------------------------
-   auto enp101s0f0.20
-   iface enp101s0f0.20 inet manual
+   auto enp101s0f1
+   iface enp101s0f1 inet manual
 
    auto vmbr20
    iface vmbr20 inet manual
-       bridge-ports enp101s0f0.20
+       bridge-ports enp101s0f1
        bridge-stp off
        bridge-fd 0
    ```

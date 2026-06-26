@@ -151,15 +151,33 @@
 
           # 1. Spegnimento nodi Talos (Kubernetes) su tutto il cluster
           echo "Spegnimento Talos Control Plane..."
-          ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.10.10.21 "qm shutdown 2300" || true
-          ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.10.10.31 "qm shutdown 3200" || true
+          if ping -c 1 -W 1 192.168.100.21 >/dev/null 2>&1; then
+              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.21 "qm shutdown 2300" || true
+          else
+              echo "PVE2 (192.168.100.21) è offline, salto spegnimento VM 2300."
+          fi
+
+          if ping -c 1 -W 1 192.168.100.31 >/dev/null 2>&1; then
+              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.31 "qm shutdown 3200" || true
+          else
+              echo "PVE3 (192.168.100.31) è offline, salto spegnimento VM 3200."
+          fi
           qm shutdown 1300 || true
           sleep 30
 
           # 2. Altri Servizi (Jellyfin LXC e Proxmox Backup Server)
           echo "Spegnimento servizi dipendenti..."
-          ssh -o ConnectTimeout=3 -o StrictKeyChecking=no root@10.10.10.21 "pct shutdown 2200" || true
-          ssh -o ConnectTimeout=3 -o StrictKeyChecking=no root@10.10.10.31 "pct shutdown 2200" || true
+          if ping -c 1 -W 1 192.168.100.21 >/dev/null 2>&1; then
+              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.21 "pct shutdown 2200" || true
+          else
+              echo "PVE2 (192.168.100.21) è offline, salto spegnimento LXC Jellyfin."
+          fi
+
+          if ping -c 1 -W 1 192.168.100.31 >/dev/null 2>&1; then
+              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.31 "pct shutdown 2200" || true
+          else
+              echo "PVE3 (192.168.100.31) è offline, salto spegnimento LXC Jellyfin."
+          fi
           pct shutdown 1400 || true
           sleep 20
 
@@ -170,8 +188,17 @@
 
           # 4. Spegnimento nodi PVE fisici satelliti
           echo "Spegnimento nodi PVE satelliti..."
-          ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.10.10.31 "poweroff" || true
-          ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.10.10.21 "poweroff" || true
+          if ping -c 1 -W 1 192.168.100.31 >/dev/null 2>&1; then
+              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.31 "poweroff" || true
+          else
+              echo "PVE3 (192.168.100.31) è già offline."
+          fi
+
+          if ping -c 1 -W 1 192.168.100.21 >/dev/null 2>&1; then
+              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.21 "poweroff" || true
+          else
+              echo "PVE2 (192.168.100.21) è già offline."
+          fi
           sleep 10
 
           notify_telegram "⚫ *Homelab Spegnimento Finale* - PVE1 va offline ora. Addio! 🌙"

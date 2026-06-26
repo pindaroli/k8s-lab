@@ -66,6 +66,15 @@ scan: resilver repaired XGB in HH:MM:SS with 0 errors
 2. **Sostituzione dischi su TrueNAS**: Usare **sempre** la procedura di sostituzione dalla UI di TrueNAS (Storage → Disks → Replace) che gestisce correttamente `zpool replace` + `zpool.cache`. Mai fare swap fisico senza eseguire `zpool replace`.
 3. **Monitoraggio post-sostituzione**: Dopo ogni `zpool replace`, verificare che il resilver si completi (`zpool status` fino a `state: ONLINE`) prima di considerare l'operazione conclusa.
 4. **Alert TrueNAS**: Configurare alert email/notifica per stato DEGRADED del pool — avrebbe rilevato il problema da aprile.
+5. **Path Persistenti**: Mai usare path crudi come `/dev/sdg` nei comandi manuali di sostituzione (`zpool replace`), ma passare sempre il `PARTUUID` (es. `/dev/disk/by-partuuid/...`). L'uso del raw device impedisce a ZFS di creare una tabella GPT e causa la perdita del nome persistente.
+
+## ⚠️ Aggiornamento 26/06/2026: ZFS Fault e Risoluzione Strutturale
+Durante un intervento fisico (26 giugno) per rimuovere l'Intel guasto, l'SSD Intel sano è stato inavvertitamente scollegato, lasciando ZFS senza una fonte di metadati aggiornata (portando il pool in `FAULTED`).
+Una volta ricollegato l'Intel sano, il pool è regolarmente ripartito.
+Si è colta l'occasione per **sanare il debito tecnico** del path `/dev/sdg`:
+1. Messo in `OFFLINE` logico il raw disk (`sdg`).
+2. Bonificato (`wipefs`) e ripartizionato con `parted` (GPT standard).
+3. Eseguito un resilvering "in-place" forzando l'uso della cartella `by-partuuid`.
 
 ## 🔗 References
 - [[TrueNAS]]
