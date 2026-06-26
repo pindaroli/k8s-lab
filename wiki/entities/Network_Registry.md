@@ -1,6 +1,6 @@
 ---
 title: "Network Registry (rete.json)"
-last_updated: "2026-05-03"
+last_updated: "2026-06-26"
 confidence: "High"
 tags:
   - "#network"

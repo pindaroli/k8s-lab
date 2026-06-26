@@ -41,12 +41,14 @@ Create these VLANs in the **802.1Q VLAN** menu:
 ### 2. Port Configuration
 | Port | Mode | PVID | Tagged VLANs | Untagged VLANs | Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1** | Trunk | 1 | `10, 20, 30` | `1` | Uplink to **Switch Server** |
-| **8** | Trunk | 1 | `10, 20, 30` | `1` | Uplink to **Switch Letto** |
+| **1** | Trunk | 1 | `10, 20, 30, 99` | `1` | Uplink to **Switch Server** (Horaco) |
+| **2** | Access | 10 | - | `10` | LAN Server (VLAN 10) - PVE DAC uplink |
 | **3** | Access | 10 | - | `10` | Connects to **PVE Node 1** (Port 1) |
-| **4** | Access | 1 | - | `1` | **Reserved / Free** (Use for Emergency Mgmt) |
+| **4** | Access | 10 | - | `10` | LAN Server (VLAN 10) - PVE DAC uplink |
 | **5** | Access | 20 | - | `20` | Connects to **PVE Node 1** (Port 2) |
-| *Others* | Access | 1 | - | `1` | Unused |
+| **6** | Access | 20 | - | `20` | LAN Client (VLAN 20) - PVE DAC uplink |
+| **7** | Access | 20 | - | `20` | LAN Client (VLAN 20) - PVE DAC uplink |
+| **8** | Trunk | 1 | `10, 20, 30, 99` | `1` | Uplink to **Switch Letto** (GoodTop) |
 
 > [!TIP]
 > **Ingress Check**: If you see an option called "Ingress Filtering" or "Ingress Check":

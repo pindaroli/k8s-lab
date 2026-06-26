@@ -90,14 +90,9 @@
         },
         {
           "id": "5",
-          "role": "PVE3 Port 1 (enp101s0f0) Trunk",
-          "mode": "Trunk",
-          "native_vlan": "1",
-          "allowed_vlans": [
-            "10",
-            "20",
-            "30"
-          ]
+          "role": "LAN Client (VLAN 20) - PVE1 Port 2 (enp1s0f1np1)",
+          "mode": "ACCESS",
+          "pvid": 20
         },
         {
           "id": "6",
@@ -537,7 +532,7 @@
         },
         {
           "pci_id": "0000:05:00.0",
-          "note": "Passthrough to VM 1100 (TrueNAS) - Likely 2x 4TB HDDs",
+          "note": "Passthrough to VM 1100 (TrueNAS) - LSI SAS2308 (Special SSD sdg + HDDs)",
           "type": "pci_passthrough"
         }
       ]
