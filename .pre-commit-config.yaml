@@ -4,7 +4,9 @@ repos:
     rev: v4.4.0
     hooks:
       - id: trailing-whitespace
+        exclude: \.md$
       - id: end-of-file-fixer
+        exclude: \.md$
       - id: check-yaml
         args: [--allow-multiple-documents]
         exclude: ^helm-charts/.*$|^.*/templates/.*$
