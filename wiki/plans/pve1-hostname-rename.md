@@ -1,15 +1,9 @@
 ---
 title: "Rinomina Hostname Nodo PVE1: pve → pve1"
-created: "2026-06-22"
-status: "BLOCKED — In attesa termine espansione ZFS RAIDZ2 su TrueNAS"
-tags:
-  - "#proxmox"
-  - "#infrastructure"
-  - "#maintenance"
-depends_on:
-  - "[[pve1-upgrade-ve9.2]]"
-  - "PVE2 e PVE3 online e in quorum (Soddisfatto 2026-06-26)"
-  - "[[oliraid-expansion-special-vdev-evacuation]] (Completamento espansione disco)"
+type: plan
+status: draft
+certified_for_ai: true
+created_at: 2026-06-27
 ---
 
 # Rinomina Hostname Nodo PVE1: `pve` → `pve1`

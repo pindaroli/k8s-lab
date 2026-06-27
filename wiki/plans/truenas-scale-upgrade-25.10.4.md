@@ -1,3 +1,17 @@
+---
+title: "Piano di Aggiornamento TrueNAS SCALE a 25.10.4"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#storage"
+  - "#proxmox"
+  - "#talos"
+---
+
 # Piano di Aggiornamento TrueNAS SCALE a 25.10.4
 
 Questo piano descrive i passaggi operativi per aggiornare l'appliance di storage **TrueNAS SCALE** (VMID 1100 su PVE1) dalla versione **25.10.3.1 (Goldeye)** alla versione **25.10.4**, gestendo in sicurezza le dipendenze hardware (PCI passthrough) e applicative (cluster Kubernetes/Talos Linux).

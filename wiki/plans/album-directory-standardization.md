@@ -1,11 +1,10 @@
 ---
 title: "Piano: Standardizzazione Nomi Directory Album"
-status: "Completato (2026-05-19)"
-priority: "Medium"
-tags:
-  - "#beets"
-  - "#music"
-  - "#standardization"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
 ---
 
 # Piano di Standardizzazione: Formato Directory Album `[Anno] Titolo`

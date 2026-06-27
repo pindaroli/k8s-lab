@@ -3,7 +3,7 @@
 Questo documento definisce le regole strutturali che l'agente (IA) e l'utente devono rispettare per mantenere l'integrità del Wiki.
 
 ## 1. Frontmatter Obbligatorio (YAML)
-Ogni file all'interno di `wiki/entities/`, `wiki/workflows/` e `wiki/incidents/` **DEVE** iniziare con il seguente blocco YAML:
+Ogni file all'interno di `wiki/entities/` e `wiki/workflows/` **DEVE** iniziare con il seguente blocco YAML:
 
 ```yaml
 ---
@@ -18,9 +18,38 @@ provenance: # Riferimenti ai file RAW o incidenti originali
 ---
 ```
 
-Per i piani in `wiki/plans/`, è obbligatorio definire anche lo stato di avanzamento nel blocco frontmatter o all'inizio del file per tracciare il ciclo di vita del piano:
+### Piani (`wiki/plans/`)
+Ogni piano **DEVE** includere il seguente frontmatter YAML strutturato:
 ```yaml
-status: "In fase di elaborazione" | "In corso" | "Concluso"
+---
+title: "Nome del Piano"
+type: plan
+status: active | archived | draft          # active: in vigore; archived: concluso/superato; draft: in fase di stesura
+certified_for_ai: true | false           # true solo se active o draft pronto all'uso
+created_at: YYYY-MM-DD
+archived_at: YYYY-MM-DD                  # Presente solo se status è archived
+superseded_by: [[nome-piano-successivo]]  # Link al piano che sostituisce il corrente (opzionale)
+tags:
+  - "#tag1"
+---
+```
+
+### Incidenti (`wiki/incidents/`)
+Ogni incidente **DEVE** includere il seguente frontmatter YAML strutturato:
+```yaml
+---
+title: "INC-YYYY-MM-DD: Descrizione"
+type: incident
+status: active | archived                # active: in corso (ongoing); archived: risolto e chiuso
+certified_for_ai: true | false           # true solo se status è active
+date: YYYY-MM-DD
+severity: P1 | P2 | P3 | P4
+resolved: true | false
+resolved_at: YYYY-MM-DDTHH:MM:SSZ        # Timestamp ISO (se risolto)
+post_mortem: [[post-mortem-file]]        # Link all'analisi dell'incidente o post-mortem (opzionale)
+tags:
+  - "#tag1"
+---
 ```
 
 ## 2. Sintassi di Collegamento (Wikilinks)

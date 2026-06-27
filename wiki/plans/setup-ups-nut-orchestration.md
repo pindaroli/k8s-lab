@@ -1,12 +1,10 @@
 ---
 title: "Configurazione e Orchestrazione UPS Technoware Exa 1000"
-created: "2026-06-23"
-status: "IN_PROGRESS"
-tags:
-  - "#proxmox"
-  - "#infrastructure"
-  - "#ups"
-  - "#nut"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
 ---
 
 # Configurazione e Orchestrazione UPS Technoware Exa 1000

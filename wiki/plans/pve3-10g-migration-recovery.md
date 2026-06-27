@@ -1,3 +1,18 @@
+---
+title: "Piano di Manutenzione Hardware: Migrazione PVE3 (10G) e Ripristino Cluster (Fase Principale)"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#network"
+  - "#storage"
+  - "#proxmox"
+  - "#talos"
+---
+
 # Piano di Manutenzione Hardware: Migrazione PVE3 (10G) e Ripristino Cluster (Fase Principale)
 
 Questo piano dettagliato descrive le fasi per la migrazione fisica di PVE3 al core switch 10G, la sua riconfigurazione di rete, e il successivo ripristino ordinato dei cluster Proxmox e Kubernetes (inclusa la reinstallazione di `talos-cp-02`).
@@ -199,23 +214,23 @@ Ora che la parte hardware e di rete è completata, riavviamo l'intero Homelab se
 4.  Gli hook di Proxmox ("Wait-for-TrueNAS") ritarderanno l'avvio delle VM fin a quando gli share NFS non saranno attivi.
 
 ### Step 5.2: Correzione dei File `/etc/hosts` (Risoluzione Nomi)
-Verifichiamo che tutti i nodi abbiano gli IP aggiornati della VLAN 10.
+Verifichiamo che tutti i nodi abbiano gli IP aggiornati della VLAN 10 e gli hostname allineati.
 > [!WARNING]
-> Ricorda che gli IP corretti reali e definitivi sono:
-> *   **PVE1**: `10.10.10.11`
-> *   **PVE2**: `10.10.10.21`
-> *   **PVE3**: `10.10.10.31`
+> Ricorda che gli IP e hostname corretti reali e definitivi sono:
+> *   **PVE1**: `10.10.10.11` -> hostname `pve1`
+> *   **PVE2**: `10.10.10.21` -> hostname `pve2`
+> *   **PVE3**: `10.10.10.31` -> hostname `pve3`
 
-Su **tutti e tre i nodi** (`pve`, `pve2`, `pve3`), apri `/etc/hosts` e assicurati che le righe relative al cluster Proxmox siano esattamente le seguenti:
+Su **tutti e tre i nodi** (`pve1`, `pve2`, `pve3`), apri `/etc/hosts` e assicurati che le righe relative all'infrastruttura Proxmox siano esattamente le seguenti (correggendo eventuali riferimenti al vecchio nome `pve` in `pve1`):
 ```text
-10.10.10.11     pve.pindaroli.local pve
+10.10.10.11     pve1.pindaroli.local pve1
 10.10.10.21     pve2.pindaroli.local pve2
 10.10.10.31     pve3.pindaroli.local pve3
 ```
 
 ### Step 5.3: Verifica e Ripristino Corosync (Quorum)
 Con PVE2 offline per molto tempo, Corosync potrebbe aver perso la sincronizzazione.
-1. Accedi via SSH ad uno qualsiasi dei nodi (es. PVE1) ed esegui:
+1. Accedi via SSH ad uno qualsiasi dei nodi (es. `pve1`) ed esegui:
    ```bash
    pvecm status
    ```
@@ -233,67 +248,30 @@ Con PVE2 offline per molto tempo, Corosync potrebbe aver perso la sincronizzazio
 
 ---
 
-## 6. Fase 6: ➡️ Ripristino Cluster Kubernetes
+## 6. Fase 6: ➡️ Ripristino Cluster Kubernetes (Talos)
 
 > [!IMPORTANT]
-> **Il ripristino completo del cluster Kubernetes (talos-cp-02, etcd, CloudNativePG) è documentato nel piano dedicato:**
+> Il ripristino completo del cluster Kubernetes (talos-cp-02, etcd, CloudNativePG) è documentato ed eseguito interamente tramite il piano dedicato:
 > ### [[talos-k8s-cluster-restoration]]
 >
 > Questo piano va eseguito come **ultimo step**, dopo che:
 > - L'intero piano `[[pve2-reinstallation-migration]]` è completato (PVE2 online, VM 2300 ripristinata da PBS).
 > - L'intero piano `[[pve3-10g-migration-recovery]]` (questo documento) è completato fino alla Fase 5.
-> - Il cluster Proxmox ha **3 nodi in quorum stabile**.
+> - Il cluster Proxmox ha **3 nodi in quorum stabile** (`pve1`, `pve2`, `pve3`).
 
-### Contesto (cosa è successo a talos-cp-02)
+## Dipendenze tra Piani
 
-`talos-cp-02` (IP `10.10.20.142`) è stato **rimosso formalmente dal quorum etcd** il 2026-05-01 (vedi [[2026-05-01-network-asymmetry-incident]]).
-La strategia di ripristino scelta è **re-apply config da `controlplane-cp-02.yaml`** (non reinstallazione da ISO).
-Il piano dedicato gestisce entrambi gli scenari (auto-reintegrazione da backup PBS o re-apply manuale).
-
-### Step 6.1: Preparazione della VM su PVE2
-1. Accedi alla GUI di Proxmox su **PVE2** (`https://10.10.10.21:8006`).
-2. Individua la VM `talos-cp-02` (VM ID `2300`).
-3. Per una reinstallazione pulita ed evitare conflitti con vecchi database etcd corrotti:
-   *   Monta l'ISO di installazione di Talos Linux (`talos-amd64.iso`) sul lettore CD virtuale della VM.
-   *   Avvia la VM in console. Talos si avvierà in modalità installatore "insecure" in RAM e si metterà in ascolto sulla rete con IP `10.10.20.142`.
-
-### Step 6.2: Applicazione della Configurazione a talos-cp-02
-Ora, dal tuo Mac Studio, useremo la configurazione dichiarativa pronta per reinserire il nodo.
-
-1. Ripristina il record IP `10.10.20.142` all'interno del tuo file `talos-config/talosconfig` se era stato rimosso o commentato.
-2. Invia la configurazione specifica di CP02 al nodo tramite l'interfaccia insecure (porta 50001):
-   ```bash
-   talosctl apply-config -n 10.10.20.142 --file talos-config/controlplane-cp-02.yaml --insecure
-   ```
-3. La VM applicherà la configurazione sul suo disco locale, si riavvierà ed eseguirà il bootstrap iniziale di Talos.
-4. L'**Etcd Manager** di Talos in esecuzione sui nodi attivi (`talos-cp-01` e `talos-cp-03`) riconoscerà il nuovo nodo e lo accetterà automaticamente all'interno del quorum etcd.
-
-### Step 6.3: Verifica della Salute di Kubernetes
-1. Controlla lo stato dei membri etcd dal tuo Mac Studio:
-   ```bash
-   talosctl -n 10.10.20.141 etcd members
-   ```
-   *Dovresti vedere tutti e tre i membri (`talos-cp-01`, `talos-cp-02`, `talos-cp-03`) attivi, sincronizzati e con stato Healthy.*
-2. Verifica che il nodo sia pronto in Kubernetes:
-   ```bash
-   kubectl get nodes -o wide
-   ```
-   *`talos-cp-02` deve apparire in stato `Ready`.*
-
-### Step 6.4: Ripristino Database CloudNativePG (Postgres)
-Ora che il nodo `talos-cp-02` è tornato online ed è stabile, possiamo ripristinare la replica del database su di esso.
-
-1. Controlla lo stato del cluster CNPG:
-   ```bash
-   kubectl get cluster postgres-main -n cnpg-system
-   kubectl get pods -n cnpg-system -o wide
-   ```
-2. Rimuovi il "fencing" per consentire al database di essere rischedulato su CP02 se era stato bloccato.
-3. Ri-scala il database a 3 istanze modificando il file `postgres/cluster.yaml` (impostando `instances: 3`) oppure direttamente tramite comando:
-   ```bash
-   kubectl scale cluster postgres-main -n cnpg-system --replicas=3
-   ```
-4. L'operatore CloudNativePG rileverà la richiesta, creerà un nuovo PVC su `talos-cp-02` (tramite la StorageClass `local-postgres`) e avvierà il pod replica `postgres-main-2` (o 3), sincronizzando automaticamente tutti i dati dal nodo Master attivo.
+```
+[[plan-out-of-band-service-access]]   → Infrastruttura OOB (COMPLETATO)
+        ↓
+[[pve2-reinstallation-migration]]     → PVE2 nuovo SSD, ripristino VM talos-cp-02
+        ↓
+[[pve3-10g-migration-recovery]]       → PVE3 migrazione 10G
+        ↓
+[[pve1-hostname-rename]]              → Rinomina Hostname PVE1 (pve → pve1)
+        ↓
+[[talos-k8s-cluster-restoration]]     ← QUESTO PIANO (eseguire per ultimo)
+```
 
 ---
 
@@ -306,7 +284,7 @@ Una volta terminata la procedura, esegui questi controlli per confermare che l'i
 *   [ ] Esegui il check DNS dei servizi interni: `nslookup prowlarr.internal.pindaroli.org`.
 
 ### Verifiche dei Cluster
-*   [ ] Controlla lo stato di Proxmox: tutti i nodi verdi e senza errori di corosync in `/var/log/corosync/corosync.log`.
+*   [ ] Controlla lo stato dei nodi Proxmox: verifica l'accesso individuale alle Web GUI di `pve1`, `pve2` e `pve3` e che gli hypervisor rispondano correttamente.
 *   [ ] Controlla lo stato di Talos: `talosctl containers -n 10.10.20.142` per assicurarti che tutti i servizi di sistema siano up.
 *   [ ] Controlla Kubernetes: `kubectl get pods -A | grep -v Running` (non devono esserci pod in CrashLoopBackOff a regime).
 

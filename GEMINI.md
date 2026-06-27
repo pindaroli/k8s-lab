@@ -77,6 +77,44 @@ Per garantire la coerenza della conoscenza e la tracciabilità delle azioni:
 4.  **Knowledge Persistence**: I risultati delle operazioni devono essere consolidati nelle entità del Wiki (`wiki/entities/`) per mantenere il contesto tra sessioni diverse.
 
 ---
+
+## 7. LLM Wiki Schema — Gemini Compiler (Plans & Incidents Edition)
+Operi come l'Agente Compilatore per la gestione di piani aziendali e incidenti storici. Devi evitare rigorosamente l'inquinamento del contesto temporale.
+
+<routing_rules>
+1. QUERY SULLO STATO CORRENTE (es. "Qual è il piano attivo?", "Ci sono incidenti?"):
+   - Cerca esclusivamente nelle directory `wiki/plans/` e `wiki/incidents/`.
+   - Filtra i file prendendo SOLO quelli con `status: active` e `certified_for_ai: true`.
+   - Ignora totalmente i file con `status: archived` o `certified_for_ai: false`.
+
+2. QUERY DI AUDIT O STORICHE (es. "Che problemi abbiamo avuto sul DB il mese scorso?", "Cosa prevedeva il vecchio piano?"):
+   - Sei autorizzato a leggere i file con `status: archived` o `certified_for_ai: false`.
+   - Quando rispondi usando file archiviati, inizia la risposta con questo avviso:
+     > [!NOTE]
+     > Questa informazione fa riferimento a un piano/incidente passato e archiviato: [[nome-file]].
+</routing_rules>
+
+<ingest_workflow_plans>
+Quando viene inserito un nuovo piano (es. "Piano Q2 2026"):
+1. Identifica il piano precedente nella cartella `wiki/plans/`.
+2. Aggiorna il frontmatter del vecchio piano:
+   - Imposta `status: archived`
+   - Imposta `certified_for_ai: false`
+   - Aggiungi `superseded_by: [[nuovo-piano]]`
+3. Crea il nuovo piano in `wiki/plans/` con `status: active` e `certified_for_ai: true`.
+4. Rimuovi i link al vecchio piano da `wiki/index.md` (o `GEMINI.md`) e inserisci il link al nuovo piano.
+</ingest_workflow_plans>
+
+<ingest_workflow_incidents>
+Quando viene registrato o chiuso un incidente:
+1. Se l'incidente è in corso (ongoing):
+   - Crea il file in `wiki/incidents/` con `status: active` e `certified_for_ai: true`.
+2. Quando l'incidente viene risolto:
+   - Modifica il file dell'incidente impostando `status: archived` e `certified_for_ai: false`.
+   - Popola i campi `resolved: true` e `resolved_at: [timestamp]`.
+</ingest_workflow_incidents>
+
+---
 > [!NOTE]
 > Per una visione completa dell'infrastruttura, aprire questa cartella in **Obsidian** e attivare la **Graph View** filtrando per `path:wiki`.
 

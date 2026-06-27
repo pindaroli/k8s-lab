@@ -1,3 +1,20 @@
+---
+title: "2026-05-03 - CNPG Database Logical Deadlock & Recovery"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-05-03
+severity: P2
+resolved: true
+resolved_at: 2026-05-03T23:59:59Z
+tags:
+  - "#incident"
+  - "#database"
+  - "#storage"
+  - "#proxmox"
+  - "#talos"
+---
+
 # Incident Report: 2026-05-03 - CNPG Database Logical Deadlock & Recovery
 
 **Status**: ✅ RESOLVED

@@ -1,3 +1,18 @@
+---
+title: "Spegnimento Lab, Rete Temporanea (AP11000 Router) e Ripristino OPNsense"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#network"
+  - "#network"
+  - "#proxmox"
+  - "#opnsense"
+---
+
 # Spegnimento Lab, Rete Temporanea (AP11000 Router) e Ripristino OPNsense
 
 Questo piano descrive la gestione dell'emergenza legata al guasto del disco di OPNsense. È diviso in due parti: la configurazione della rete temporanea (già eseguita) e la procedura di ripristino e rientro alla topologia finale (da eseguire all'arrivo del ricambio).

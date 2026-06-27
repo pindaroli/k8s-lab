@@ -1,3 +1,17 @@
+---
+title: "Validazione Ingegneristica e Design del Piano di Accesso Out-of-Band (OOB) (Pragmatic Homelab)"
+type: plan
+status: active
+certified_for_ai: true
+created_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#network"
+  - "#network"
+  - "#proxmox"
+  - "#opnsense"
+---
+
 # Validazione Ingegneristica e Design del Piano di Accesso Out-of-Band (OOB) (Pragmatic Homelab)
 
 > [!IMPORTANT]

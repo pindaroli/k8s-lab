@@ -1,3 +1,17 @@
+---
+title: "Homepage Dashboard API Error"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-01-10
+severity: P2
+resolved: true
+resolved_at: 2026-01-10T23:59:59Z
+tags:
+  - "#incident"
+  - "#talos"
+---
+
 # Incident Report: Homepage Dashboard API Error
 
 **Date:** 2026-01-10

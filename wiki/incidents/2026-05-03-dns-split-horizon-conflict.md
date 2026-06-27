@@ -1,14 +1,12 @@
 ---
 title: "Incidente: DNS Split-Horizon Resolution Failure"
-date: "2026-05-03"
-status: "RESOLVED"
-severity: "High"
-tags:
-  - "#incident"
-  - "#networking"
-entities:
-  - "[[OPNsense]]"
-  - "[[Talos_Cluster]]"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-05-03
+severity: High
+resolved: true
+resolved_at: 2026-05-03T23:59:59Z
 ---
 
 # Incident Report: DNS Split-Horizon Resolution Failure

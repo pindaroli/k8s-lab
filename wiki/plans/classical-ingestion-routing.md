@@ -1,3 +1,16 @@
+---
+title: "Wiki Plan: Classical Ingestion Routing & qBittorrent Category Integration"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#music"
+  - "#storage"
+---
+
 # Wiki Plan: Classical Ingestion Routing & qBittorrent Category Integration
 
 > [!IMPORTANT]

@@ -1,12 +1,12 @@
 ---
 title: "Incident: Talos Reinstallation, Hostname Loss & Local Storage Affinity"
-date: "2026-05-03"
-status: "Resolved"
-tags:
-  - "#incident"
-  - "#talos"
-  - "#storage"
-  - "#postgresql"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-05-03
+severity: P2
+resolved: true
+resolved_at: 2026-05-03T23:59:59Z
 ---
 
 # Incident: Talos Hostname Loss & Local Storage Affinity Block

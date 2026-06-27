@@ -1,3 +1,16 @@
+---
+title: "Piano: Beets Music Rescue Pipeline (Phase 1 of 3 — Modern Music)"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#music"
+  - "#storage"
+---
+
 # Piano: Beets Music Rescue Pipeline (Phase 1 of 3 — Modern Music)
 
 **Target**: Mac Studio (Host) · **Data**: 2026-05-11 · **Aggiornato**: 2026-05-17

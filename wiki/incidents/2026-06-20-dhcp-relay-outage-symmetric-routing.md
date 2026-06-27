@@ -1,3 +1,21 @@
+---
+title: "DHCP Relay Outage in Symmetric Routing"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-06-20
+severity: P2
+resolved: true
+resolved_at: 2026-06-20T23:59:59Z
+tags:
+  - "#incident"
+  - "#network"
+  - "#network"
+  - "#storage"
+  - "#talos"
+  - "#opnsense"
+---
+
 # Incident: DHCP Relay Outage in Symmetric Routing
 **Date**: 2026-06-20
 **Status**: RESOLVED (DHCP transitioned to direct mode on OPNsense, Relay disabled on L3 Switch)

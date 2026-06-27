@@ -1,14 +1,12 @@
 ---
 title: "Risoluzione Mismatch Interfaccia OOB su PVE1"
-last_updated: "2026-05-30"
-confidence: "High"
-tags:
-  - "#network"
-  - "#proxmox"
-  - "#active"
-provenance:
-  - "interfaces_pve.txt"
-  - "plan-out-of-band-service-access.md"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-05-30
+severity: P2
+resolved: true
+resolved_at: 2026-05-30T23:59:59Z
 ---
 
 # Risoluzione Mismatch Interfaccia OOB su PVE1

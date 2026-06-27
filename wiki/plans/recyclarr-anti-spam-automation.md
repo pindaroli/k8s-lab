@@ -1,14 +1,10 @@
 ---
 title: "Wiki Plan: Recyclarr Anti-Spam Automation"
-last_updated: "2026-05-24"
-confidence: "High"
-status: "Concluso"
-tags:
-  - "#app"
-  - "#recyclarr"
-  - "#helm"
-provenance:
-  - "pindaroli-arr-helm"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
 ---
 
 # Wiki Plan: Recyclarr Anti-Spam Automation

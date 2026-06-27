@@ -1,11 +1,10 @@
 ---
 title: "Piano: Migrazione qBittorrent Incomplete su NVMe"
-status: "Concluso"
-priority: "High"
-tags:
-  - "#storage"
-  - "#qbittorrent"
-  - "#truenas"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
 ---
 
 # Piano di Migrazione: qBittorrent Temporary Storage (HDD -> NVMe)

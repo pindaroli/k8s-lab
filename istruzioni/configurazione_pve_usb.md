@@ -69,9 +69,9 @@ Affinché i nodi del cluster si parlino correttamente via nome (essenziale per l
     127.0.0.1       localhost
 
     # Cluster Nodes (VLAN 10 - Server/Mgmt)
-    10.10.10.11     pve.pindaroli.local pve
-    10.10.10.12     pve2.pindaroli.local pve2
-    10.10.10.13     pve3.pindaroli.local pve3
+    10.10.10.11     pve1.pindaroli.local pve1
+    10.10.10.21     pve2.pindaroli.local pve2
+    10.10.10.31     pve3.pindaroli.local pve3
 
     # ... altre entries ...
     ```

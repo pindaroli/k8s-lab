@@ -1,3 +1,16 @@
+---
+title: "Upgrade PVE3 a Proxmox VE 9.2 & Cluster Re-join"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#storage"
+  - "#proxmox"
+---
+
 # Upgrade PVE3 a Proxmox VE 9.2 & Cluster Re-join
 
 Questo piano descrive i passaggi per aggiornare **PVE3** a Proxmox VE 9.2 tramite un in-place upgrade (molto più semplice e pulito di una formattazione) e, in una fase separata, il ripristino del nodo all'interno del cluster.

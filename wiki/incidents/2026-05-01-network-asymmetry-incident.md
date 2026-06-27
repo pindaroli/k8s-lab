@@ -1,16 +1,12 @@
 ---
 title: "Incidente: Network Asymmetry & Service Discovery Failure"
-date: "2026-05-01"
-status: "RESOLVED"
-severity: "High"
-tags:
-  - "#incident"
-  - "#networking"
-  - "#traefik"
-entities:
-  - "[[Traefik]]"
-  - "[[Talos_Cluster]]"
-  - "[[OPNsense]]"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-05-01
+severity: High
+resolved: true
+resolved_at: 2026-05-01T23:59:59Z
 ---
 
 # Incident Report: Network Asymmetry & Service Discovery Failure (2026-05-01)

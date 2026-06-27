@@ -1,3 +1,18 @@
+---
+title: "Piano: Deployment di Vaultwarden"
+type: plan
+status: draft
+certified_for_ai: true
+created_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#network"
+  - "#storage"
+  - "#talos"
+  - "#opnsense"
+  - "#security"
+---
+
 # Piano: Deployment di Vaultwarden
 
 **Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-05-08

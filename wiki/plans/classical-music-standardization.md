@@ -1,12 +1,10 @@
 ---
 title: "Piano: Standardizzazione e Bonifica della Libreria di Musica Classica"
-status: "Pianificato (Attesa Approvazione)"
-priority: "High"
-tags:
-  - "#beets"
-  - "#classical"
-  - "#standardization"
-  - "#cleanup"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
 ---
 
 # Piano: Standardizzazione e Bonifica della Libreria di Musica Classica

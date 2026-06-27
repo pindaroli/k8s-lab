@@ -1,3 +1,17 @@
+---
+title: "Special Mirror DEGRADED — Disco Sostituto Non Riconosciuto"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-06-24
+severity: P2
+resolved: true
+resolved_at: 2026-06-24T23:59:59Z
+tags:
+  - "#incident"
+  - "#storage"
+---
+
 # Incident: Special Mirror DEGRADED — Disco Sostituto Non Riconosciuto
 **Data**: 2026-06-24
 **Status**: RESOLVED (resilver avviato con successo alle 11:04 CEST)

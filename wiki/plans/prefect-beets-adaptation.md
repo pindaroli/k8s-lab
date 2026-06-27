@@ -1,17 +1,9 @@
 ---
 title: "Wiki Plan: Adattamento Routine Beets per Orchestrazione Prefect (Standalone)"
-last_updated: "2026-06-07"
-confidence: "Medium"
-status: "Pianificato"
-tags:
-  - "#app"
-  - "#beets"
-  - "#prefect"
-  - "#classica"
-  - "#k8s"
-provenance:
-  - "wiki/plans/classical-music-strategy.md"
-  - "wiki/plans/classical-ingestion-routing.md"
+type: plan
+status: draft
+certified_for_ai: true
+created_at: 2026-06-27
 ---
 
 # Wiki Plan: Adattamento Routine Beets per Orchestrazione Prefect (Standalone)

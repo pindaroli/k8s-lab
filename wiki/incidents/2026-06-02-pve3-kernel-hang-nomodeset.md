@@ -1,3 +1,20 @@
+---
+title: "PVE3 Kernel Hang on Ryzen AI (nomodeset)"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-06-02
+severity: P2
+resolved: true
+resolved_at: 2026-06-02T23:59:59Z
+tags:
+  - "#incident"
+  - "#storage"
+  - "#proxmox"
+  - "#talos"
+  - "#opnsense"
+---
+
 # Incident: PVE3 Kernel Hang on Ryzen AI (nomodeset)
 **Date**: 2026-06-02
 **Status**: RESOLVED (Boot parameter patched persistently via systemd-boot)

@@ -1,12 +1,10 @@
 ---
 title: "Piano: Ottimizzazione della Tassonomia per la Musica Classica"
-status: "Completato"
-priority: "High"
-tags:
-  - "#beets"
-  - "#classical"
-  - "#taxonomy"
-  - "#jellyfin"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
 ---
 
 # Piano: Ottimizzazione della Tassonomia per la Musica Classica

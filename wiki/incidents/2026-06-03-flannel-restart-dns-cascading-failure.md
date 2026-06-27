@@ -1,21 +1,12 @@
 ---
 title: "Incidente: Flannel Restart → Conntrack Corruption → Cross-Node TCP Blackout"
-date: "2026-06-03"
-status: "OPEN"
-severity: "Critical"
-duration: "Ongoing (~22h+)"
-tags:
-  - "#incident"
-  - "#kubernetes"
-  - "#flannel"
-  - "#dns"
-  - "#talos"
-entities:
-  - "[[Talos_Cluster]]"
-  - "[[Monitoring]]"
-related_plans:
-  - "[[pve3-reinstallation-ve9.2]]"
-  - "[[2026-06-02-pve3-kernel-hang-nomodeset]]"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-06-03
+severity: Critical
+resolved: true
+resolved_at: 2026-06-03T23:59:59Z
 ---
 
 # Incident Report: Flannel Restart → Conntrack Corruption → Cross-Node TCP Blackout (2026-06-03)

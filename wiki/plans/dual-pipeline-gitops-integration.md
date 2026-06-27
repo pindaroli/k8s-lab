@@ -1,3 +1,17 @@
+---
+title: "Wiki Plan: Classical Homelab Integration & GitOps Orchestration"
+type: plan
+status: draft
+certified_for_ai: true
+created_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#network"
+  - "#music"
+  - "#storage"
+  - "#opnsense"
+---
+
 # Wiki Plan: Classical Homelab Integration & GitOps Orchestration
 
 > [!IMPORTANT]

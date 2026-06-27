@@ -1,3 +1,16 @@
+---
+title: "Servarr VPN Routing Loop & OOM Crashes"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-01-08
+severity: P2
+resolved: true
+resolved_at: 2026-01-08T23:59:59Z
+tags:
+  - "#incident"
+---
+
 # Incident Report: Servarr VPN Routing Loop & OOM Crashes
 
 **Date:** 2026-01-08

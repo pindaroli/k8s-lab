@@ -1,3 +1,17 @@
+---
+title: "Upgrade PVE1 a Proxmox VE 9.2"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#storage"
+  - "#proxmox"
+  - "#talos"
+---
+
 # Upgrade PVE1 a Proxmox VE 9.2
 
 Questo piano descrive i passaggi per aggiornare **PVE1** (il nodo master attuale del cluster) a Proxmox VE 9.2 tramite un in-place upgrade, garantendo la continuità dei servizi critici ospitati localmente (TrueNAS, PBS e Talos Control Plane).

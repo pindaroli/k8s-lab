@@ -1,14 +1,12 @@
 ---
 title: "DNSBL Filtering Failure (AdBlock Bypass)"
-date: "2026-05-03"
-status: "Resolved"
-severity: "Medium"
-tags:
-  - "#dns"
-  - "#opnsense"
-  - "#security"
-entities:
-  - "[[OPNsense]]"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-05-03
+severity: Medium
+resolved: true
+resolved_at: 2026-05-03T23:59:59Z
 ---
 
 # Incident Report: DNSBL Filtering Failure

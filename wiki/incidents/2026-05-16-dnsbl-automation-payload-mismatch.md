@@ -1,15 +1,12 @@
 ---
 title: "DNSBL Automation Payload Mismatch & Reload Failure"
-date: "2026-05-16"
-status: "Resolved"
-severity: "Medium"
-tags:
-  - "#dns"
-  - "#opnsense"
-  - "#automation"
-  - "#ansible"
-entities:
-  - "[[OPNsense]]"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-05-16
+severity: Medium
+resolved: true
+resolved_at: 2026-05-16T23:59:59Z
 ---
 
 # Incident Report: DNSBL Automation Payload Mismatch

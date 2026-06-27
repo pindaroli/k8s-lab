@@ -1,3 +1,17 @@
+---
+title: "qBittorrent P2P Port Forwarding Outage"
+type: incident
+status: archived
+certified_for_ai: false
+date: 2026-05-08
+severity: P2
+resolved: true
+resolved_at: 2026-05-08T23:59:59Z
+tags:
+  - "#incident"
+  - "#opnsense"
+---
+
 # Incident: qBittorrent P2P Port Forwarding Outage
 **Date**: 2026-05-08
 **Status**: RESOLVED (Manual Action Applied via Browser Agent)

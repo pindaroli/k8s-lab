@@ -31,9 +31,9 @@ OUTPUT_FILE = WIKI_DIR / "wiki_context.md"
 RETE_JSON = PROJECT_ROOT / "rete.json"
 STORAGE_JSON = PROJECT_ROOT / "storage.json"
 
-# Pattern per rilevare piani conclusi nel frontmatter YAML
+# Pattern per rilevare piani conclusi nel frontmatter YAML o nel testo
 DONE_STATUS_RE = re.compile(
-    r'status\s*:\s*["\']?\s*(concluso|completato|completato\s*&\s*operativo|✅)',
+    r'status\s*:\s*["\']?\s*(concluso|completato|completato\s*&\s*operativo|✅|archived)',
     re.IGNORECASE
 )
 # Pattern wikilink: [[NomeEntità]] o [[NomeEntità|Alias]]
@@ -55,7 +55,10 @@ SECTION_ORDER = [
 # ---------------------------------------------------------------------------
 def read_file_strip_frontmatter(path: Path) -> tuple[str, dict]:
     """Restituisce (content_senza_frontmatter, meta_dict)."""
-    raw = path.read_text(encoding="utf-8", errors="replace")
+    try:
+        raw = path.read_text(encoding="utf-8", errors="replace")
+    except Exception:
+        return "", {}
     meta = {}
     m = FRONTMATTER_RE.match(raw)
     if m:
@@ -77,12 +80,23 @@ def read_file_strip_frontmatter(path: Path) -> tuple[str, dict]:
 # Helper: è un piano da saltare?
 # ---------------------------------------------------------------------------
 def is_plan_done(path: Path) -> bool:
-    """True se il piano ha status Concluso/Completato."""
+    """True se il piano ha status Concluso/Completato/Archived o certified_for_ai: false."""
     try:
-        raw = path.read_text(encoding="utf-8", errors="replace")
+        content, meta = read_file_strip_frontmatter(path)
+        # Se certified_for_ai è false, lo saltiamo
+        if meta.get("certified_for_ai") == "false":
+            return True
+        # Se lo status indica che è archiviato o concluso, lo saltiamo
+        status = meta.get("status", "").lower()
+        if any(w in status for w in ["concluso", "completato", "operativo", "✅", "archived"]):
+            return True
+        # Se non c'è frontmatter parsed, applichiamo la regex sul file completo come fallback
+        if not meta:
+            raw = path.read_text(encoding="utf-8", errors="replace")
+            return bool(DONE_STATUS_RE.search(raw))
     except Exception:
         return False
-    return bool(DONE_STATUS_RE.search(raw))
+    return False
 
 
 # ---------------------------------------------------------------------------

@@ -1,3 +1,16 @@
+---
+title: "Piano di Ottimizzazione Special VDEV (oliraid) a 64K"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#storage"
+  - "#proxmox"
+---
+
 # Piano di Ottimizzazione Special VDEV (oliraid) a 64K
 
 Questo piano descrive le azioni operative per ridurre la proprietà `special_small_blocks` del pool `oliraid` da `1M` a `64K` e avviare la bonifica dello spazio sul vdev `special` (SSD mirror da 888 GiB, attualmente al 75.2%).

@@ -1,3 +1,16 @@
+---
+title: "Piano: Strategia di Ingestione e Bonifica per la Musica Classica"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#music"
+  - "#storage"
+---
+
 # Piano: Strategia di Ingestione e Bonifica per la Musica Classica
 
 **Stato**: 🟢 Operativo — Pipeline migrata con successo su Python 3.12 isolato | 🏗️ Estensione K8s & Prefect in corso

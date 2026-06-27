@@ -1,3 +1,16 @@
+---
+title: "Piano: Sovranità dei Segreti con SOPS + Age"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#talos"
+  - "#security"
+---
+
 # Piano: Sovranità dei Segreti con SOPS + Age
 
 **Stato**: ✅ **Completato & Operativo**

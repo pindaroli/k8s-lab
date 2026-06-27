@@ -1,3 +1,18 @@
+---
+title: "Piano Preliminare Semplificato: Accesso Out-of-Band (OOB) ed Isolamento di Rete (Pragmatic Homelab)"
+type: plan
+status: archived
+certified_for_ai: true
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#network"
+  - "#network"
+  - "#proxmox"
+  - "#opnsense"
+---
+
 # Piano Preliminare Semplificato: Accesso Out-of-Band (OOB) ed Isolamento di Rete (Pragmatic Homelab)
 
 > [!NOTE]

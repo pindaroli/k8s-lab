@@ -1,16 +1,9 @@
 ---
 title: "Piano: Migrazione Storage Ibrido Jellyfin LXC"
-last_updated: "2026-05-24"
-confidence: "High"
-status: "In fase di elaborazione"
-tags:
-  - "#storage"
-  - "#jellyfin"
-  - "#proxmox"
-  - "#truenas"
-provenance:
-  - "rete.json"
-  - "storage.json"
+type: plan
+status: draft
+certified_for_ai: true
+created_at: 2026-06-27
 ---
 
 # Piano: Migrazione Storage Ibrido Jellyfin LXC (`jellyfin-srv`)

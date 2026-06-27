@@ -1,3 +1,18 @@
+---
+title: "Piano: Reinstallazione PVE2 su newPVE2 e Migrazione Dati"
+type: plan
+status: archived
+certified_for_ai: false
+created_at: 2026-06-27
+archived_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#network"
+  - "#storage"
+  - "#proxmox"
+  - "#talos"
+---
+
 # Piano: Reinstallazione PVE2 su newPVE2 e Migrazione Dati
 
 > [!IMPORTANT]
@@ -190,7 +205,7 @@ ssh root@10.10.10.21 'cat > /etc/hosts << EOF
 127.0.0.1       localhost
 127.0.1.1       pve2.pindaroli.local pve2
 
-10.10.10.11     pve.pindaroli.local pve
+10.10.10.11     pve1.pindaroli.local pve1
 10.10.10.21     pve2.pindaroli.local pve2
 10.10.10.31     pve3.pindaroli.local pve3
 EOF'
@@ -198,7 +213,7 @@ EOF'
 
 **CHECK**:
 ```bash
-ssh root@10.10.10.21 "ping -c 2 pve && ping -c 2 pve3"
+ssh root@10.10.10.21 "ping -c 2 pve1 && ping -c 2 pve3"
 ```
 
 ### Step 2.4: Configurazione Repositori (No Subscription)

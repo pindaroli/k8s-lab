@@ -1,3 +1,14 @@
+---
+title: "Piano: Risoluzione KeyError ed Errore di Rete per Import Classica (Beets)"
+type: plan
+status: draft
+certified_for_ai: true
+created_at: 2026-06-27
+tags:
+  - "#plan"
+  - "#music"
+---
+
 # Piano: Risoluzione KeyError ed Errore di Rete per Import Classica (Beets)
 
 **Stato**: 🟢 Completato (2026-05-18)
