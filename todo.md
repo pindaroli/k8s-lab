@@ -1,28 +1,29 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## [ ] 🔴 ALTA PRIORITÀ: Espansione Geometrica oliraid ed Evacuazione Special VDEV [[oliraid-expansion-special-vdev-evacuation]]
-- [ ] **Fase Preliminare: Isolamento Totale del Sistema e Messa in Sicurezza**
-  - [ ] Accedere alla WebUI di TrueNAS, disattivare l'avvio automatico e arrestare i servizi SMB, NFS e iSCSI.
-  - [ ] Arrestare lo stack dei container: `systemctl stop docker`
-  - [ ] Verificare che nessun processo acceda al pool: `lsof /mnt/oliraid` (deve essere vuoto).
-- [ ] **Sotto-piano A: Espansione del RAID-Z2 da 4 a 5 Dischi**
-  - [ ] Verificare lo stato del pool `zpool status oliraid` (deve essere ONLINE, no resilver/scan attivo, CKSUM a 0).
-  - [ ] Preparare `/dev/sdi` (wipefs, parted mklabel gpt, parted mkpart).
-  - [ ] Verificare allineamento `parted /dev/sdi align-check optimal 1` (deve restituire `1 aligned`).
-  - [ ] Ottenere il `NEW_PARTUUID` con blkid.
-  - [ ] Avviare l'espansione: `zpool attach oliraid raidz2-0 /dev/disk/by-partuuid/${NEW_PARTUUID}`.
-  - [ ] Monitorare in tmux: `watch -n 10 "zpool status oliraid | grep -A 8 -i 'expand'"` fino al completamento.
-  - [ ] Verificare aumento capacità `zpool list -v oliraid`.
-- [ ] **Sotto-piano B: Evacuazione dello Special VDEV e Ribilanciamento Parità**
-  - [ ] Applicare policy 64K: `zfs set special_small_blocks=64K oliraid/arrdata`.
-  - [ ] Verificare l'ereditarietà: `zfs get -r special_small_blocks oliraid/arrdata`.
-  - [ ] Eliminare ricorsivamente tutte le snapshot: `zfs destroy -r oliraid/arrdata@%`.
-  - [ ] Verificare assenza snapshot: `zfs list -t snapshot -r oliraid/arrdata` (deve restituire `no datasets available`).
-  - [ ] Avviare la riscrittura ricorsiva in tmux: `zfs rewrite -rvx /mnt/oliraid/arrdata`.
-  - [ ] Monitorare lo spostamento fisico dei blocchi e la liberazione dello Special VDEV `watch -n 10 "zpool list -v oliraid"`.
-  - [ ] Eseguire scrub completo: `zpool scrub oliraid` e verificarlo.
-  - [ ] Riattivare lo stack applicativo: `systemctl start docker`.
-  - [ ] Riattivare SMB, NFS e iSCSI da WebUI.
+## [x] 🟢 COMPLETATO: Espansione Geometrica oliraid ed Evacuazione Special VDEV [[oliraid-expansion-special-vdev-evacuation]]
+- [x] **Fase Preliminare: Isolamento Totale del Sistema e Messa in Sicurezza**
+  - [x] Accedere alla WebUI di TrueNAS, disattivare l'avvio automatico e arrestare i servizi SMB, NFS e iSCSI.
+  - [x] Arrestare lo stack dei container: `systemctl stop docker`
+  - [x] Verificare che nessun processo acceda al pool: `lsof /mnt/oliraid` (deve essere vuoto).
+- [x] **Sotto-piano A: Espansione del RAID-Z2 da 4 a 5 Dischi**
+  - [x] Verificare lo stato del pool `zpool status oliraid` (deve essere ONLINE, no resilver/scan attivo, CKSUM a 0).
+  - [x] Preparare `/dev/sdi` (wipefs, parted mklabel gpt, parted mkpart).
+  - [x] Verificare allineamento `parted /dev/sdi align-check optimal 1` (deve restituire `1 aligned`).
+  - [x] Ottenere il `NEW_PARTUUID` con blkid.
+  - [x] Avviare l'espansione: `zpool attach oliraid raidz2-0 /dev/disk/by-partuuid/${NEW_PARTUUID}`.
+  - [x] Monitorare in tmux: `watch -n 10 "zpool status oliraid | grep -A 8 -i 'expand'"` fino al completamento.
+  - [x] Verificare aumento capacità `zpool list -v oliraid`.
+- [x] **Sotto-piano B: Evacuazione dello Special VDEV e Ribilanciamento Parità**
+  - [x] Applicare policy 64K: `zfs set special_small_blocks=64K oliraid/arrdata`.
+  - [x] Verificare l'ereditarietà: `zfs get -r special_small_blocks oliraid/arrdata`.
+  - [x] Eliminare ricorsivamente tutte le snapshot: `zfs destroy -r oliraid/arrdata@%`.
+  - [x] Verificare assenza snapshot: `zfs list -t snapshot -r oliraid/arrdata` (deve restituire `no datasets available`).
+  - [x] Avviare la riscrittura ricorsiva in tmux: `zfs rewrite -rvx /mnt/oliraid/arrdata`.
+  - [x] Monitorare lo spostamento fisico dei blocchi e la liberazione dello Special VDEV `watch -n 10 "zpool list -v oliraid"`.
+  - [x] Eseguire scrub completo: `zpool scrub oliraid` e verificarlo.
+  - [x] Riattivare lo stack applicativo: `systemctl start docker`.
+  - [x] Riattivare SMB, NFS e iSCSI da WebUI.
+
 
 ## [ ] 🔴 ALTA PRIORITÀ: Allineamento Coerenza Rete (Symmetric Routing)
 - [x] **Sorgente di Verità & Configurazione Logica**:
@@ -313,16 +314,16 @@
     - [x] Spegnimento ordinato delle VM/LXC su PVE1 (talos-cp-01, TrueNAS, PBS)
     - [x] Esecuzione upgrade `apt update && apt dist-upgrade`
     - [x] Reboot di PVE1 e verifica dell'avvio su systemd-boot
-    - [ ] Ripristino VM/LXC in sequenza (TrueNAS prima, PBS, talos-cp-01) -> *Posticipato al ripristino globale del cluster*
-    - [ ] Verifica del quorum corosync (`pvecm status`) e salute Kubernetes -> *Posticipato al ripristino globale del cluster*
+    - [/] Ripristino VM/LXC in sequenza (TrueNAS e PBS attivi, Talos CP1 fermo per ripristino K8s)
+    - [x] Verifica del quorum corosync (`pvecm status`)
 
-- [ ] **Fase 3.5a: Upgrade PVE2 a Proxmox VE 9.2**
+- [x] **Fase 3.5a: Upgrade PVE2 a Proxmox VE 9.2** (COMPLETED 2026-06-28)
     - Da fare prima del ripristino del cluster PVE e del rename del nodo `pve` in `pve1`.
     - [x] Disarmo HA manager (`pve-ha-lrm`, `pve-ha-crm`) su PVE2 in stato isolato.
     - [x] Spegnimento VM Talos (2300) per evitare fencing/reboot forzati.
     - [x] Backup locale configurazioni `/etc/` in `/root/`.
-    - [ ] Aggiornamento pacchetti (`apt-get dist-upgrade`) e riavvio host.
-- [ ] **Fase 3.5b: Upgrade PVE3 a Proxmox VE 9.2**
+    - [x] Aggiornamento pacchetti (`apt-get dist-upgrade`) e riavvio host.
+- [x] **Fase 3.5b: Upgrade PVE3 a Proxmox VE 9.2** (COMPLETED 2026-06-28)
     - Da fare prima del ripristino del cluster PVE e del rename del nodo `pve` in `pve1`.
 
 
@@ -485,3 +486,10 @@ Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttam
 
 ## 🔧 Manutenzione Hardware & Hypervisor
 - [ ] **PVE3: Migrazione da PCIe Passthrough a USB Device Passthrough**: Sostituire il passthrough intero del controller USB (PCI Device) con il passthrough di singole porte/dispositivi (USB Device) per le VM su PVE3. Questo permette a Proxmox di mantenere il controllo del controller madre, mantenendo attiva la tastiera locale ed evitando freeze in console locale durante l'autostart delle macchine virtuali.
+- [ ] **PVE2: Configurazione VM da Gioco (Bazzite-NVIDIA)** [[pve2-gaming-vm-configuration]]
+  - [ ] Applicare parametri kernel e caricare moduli VFIO su PVE2 host.
+  - [ ] Identificare ID PCI della RTX 4060 Ti ed effettuare binding.
+  - [ ] Creare VM 2500 con CPU pinning (CCD isolation) e ballooning disattivato.
+  - [ ] Installare Bazzite (immagine `bazzite-nvidia`) via KVM over IP.
+  - [ ] Aggiornare `rete.json` con la VM gaming e l'indirizzo IP del KVM.
+  - [ ] Sincronizzare il DNS su OPNsense.

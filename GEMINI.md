@@ -27,7 +27,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Current Status**: **RECYCLARR AUTOMATION OPERATIONAL** (Anti-spam synced).
 - **Active Goal**: Ingress & External Access (Phase 5).
 - **PVE2 Status**: **ONLINE**
-- **Storage Maintenance**: Piano [[oliraid-expansion-special-vdev-evacuation]] IN ATTESA DI APPROVAZIONE — (Incident [[2026-06-24-special-mirror-degraded-replaced-disk]] risolto con successo ✅, resilver mirror special completato al 100% con successo ✅).
+- **Storage Maintenance**: Piano [[oliraid-expansion-special-vdev-evacuation]] COMPLETATO CON SUCCESSO ✅ — (Capacità espansa a 5 dischi e Special VDEV evacuato al 16% ✅).
 
 ---
 
