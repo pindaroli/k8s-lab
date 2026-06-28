@@ -2,7 +2,13 @@
 # High-Precision Validation Suite for Traefik/MetalLB Network Fix
 # Objective: Verify symmetric routing, socket stability, and service discovery coherence.
 
-export KUBECONFIG=talos-config/kubeconfig
+if [ -z "$KUBECONFIG" ]; then
+  if [ -f "talos-config/kubeconfig" ]; then
+    export KUBECONFIG="talos-config/kubeconfig"
+  else
+    export KUBECONFIG="$HOME/.kube/config"
+  fi
+fi
 VIP="10.10.20.56"
 NAMESPACE="traefik"
 

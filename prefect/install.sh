@@ -4,7 +4,7 @@ set -e
 echo "🚀 Inizio installazione di Prefect..."
 
 # Carico le configurazioni del cluster
-export KUBECONFIG=../talos-config/kubeconfig
+export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 
 echo "1. Creazione namespace 'prefect'..."
 kubectl apply -f namespace.yaml || { echo "❌ Errore nella creazione del namespace"; exit 1; }

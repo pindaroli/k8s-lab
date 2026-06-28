@@ -2,7 +2,13 @@
 # scripts/check_qbittorrent_net.sh
 # Diagnostic script for qBittorrent "firewalled" status
 
-export KUBECONFIG=talos-config/kubeconfig
+if [ -z "$KUBECONFIG" ]; then
+  if [ -f "talos-config/kubeconfig" ]; then
+    export KUBECONFIG="talos-config/kubeconfig"
+  else
+    export KUBECONFIG="$HOME/.kube/config"
+  fi
+fi
 
 echo "🔍 [1/4] Verifica Stato Pod qBittorrent..."
 POD_NAME=$(kubectl get pods -n arr -l app.kubernetes.io/name=qbittorrent -o name)

@@ -8,8 +8,13 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 # Assicurati che i path dei binari comuni siano inclusi (Homebrew, etc)
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
-# Imposta KUBECONFIG esplicitamente
-export KUBECONFIG="$PROJECT_ROOT/talos-config/kubeconfig"
+if [ -z "$KUBECONFIG" ]; then
+  if [ -f "$PROJECT_ROOT/talos-config/kubeconfig" ]; then
+    export KUBECONFIG="$PROJECT_ROOT/talos-config/kubeconfig"
+  else
+    export KUBECONFIG="$HOME/.kube/config"
+  fi
+fi
 
 # Verifica se il file esiste
 if [ ! -f "$KUBECONFIG" ]; then

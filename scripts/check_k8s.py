@@ -20,15 +20,24 @@ from utils.common import (
     log_info, log_info_end, print_section, run_cmd, run_cmd_json, check_ping
 )
 
-KUBECONFIG = os.path.join(PROJECT_ROOT, "talos-config/kubeconfig")
+KUBECONFIG = os.environ.get("KUBECONFIG")
+if not KUBECONFIG:
+    _local_path = os.path.join(PROJECT_ROOT, "talos-config/kubeconfig")
+    if os.path.exists(_local_path):
+        KUBECONFIG = _local_path
+    else:
+        KUBECONFIG = os.path.expanduser("~/.kube/config")
+
 TALOSCONFIG = os.path.join(PROJECT_ROOT, "talos-config/talosconfig")
 
 # Verifica esistenza file config
 def verify_configs():
-    for name, path in [("KUBECONFIG", KUBECONFIG), ("TALOSCONFIG", TALOSCONFIG)]:
-        if not os.path.exists(path):
-            log_err(f"File di configurazione non trovato: {path}")
-            return False
+    if not os.path.exists(KUBECONFIG):
+        log_err(f"File KUBECONFIG non trovato: {KUBECONFIG}")
+        return False
+    if not os.path.exists(TALOSCONFIG):
+        log_err(f"File TALOSCONFIG non trovato: {TALOSCONFIG}")
+        return False
     return True
 
 # Imposta anche le variabili d'ambiente per sicurezza
