@@ -1,9 +1,10 @@
 ---
 title: "Piano: Installazione Kubernetes MCP Server e Bonifica Kubeconfig"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-06-28
+completed_at: 2026-06-28
 tags:
   - "#plan"
   - "#kubernetes"
