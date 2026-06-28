@@ -478,6 +478,13 @@ Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttam
 ## 💿 Workload Futuro: Integrazione MakeMKV
 - [ ] **⚠️ B. Il Task MakeMKV**: Configurare un pod per la conversione automatizzata ISO/DVD in MKV agganciato a Tdarr o come servizio standalone.
 
+## [x] 🟢 COMPLETATO: Integrazione Google Antigravity & MCP [[truenas-master-mcp-integration]]
+- [x] **Fase 1: Installazione Prerequisiti (Rust toolchain)**: Installare `rust` via Homebrew (`brew install rust`) e verificare cargo.
+- [x] **Fase 2: Compilazione truenas-master-mcp**: Eseguire `cargo install truenas-master-mcp` e verificare il binario.
+- [x] **Fase 3: Patch Energetica Electron**: (SALTATA) Evitata per preservare l'integrità della firma digitale dell'app.
+- [x] **Fase 4: Configurazione MCP**: Creare `plugin.json` e aggiornare `mcp_config.json` con la configurazione di TrueNAS Master.
+- [x] **Fase 5: Validazione**: Verificata con successo la connettività di rete e la chiave API tramite chiamata curl diretta.
+
 ---
 
 ## 🛠️ Automazione Declarativa Storage (TrueNAS GitOps)
