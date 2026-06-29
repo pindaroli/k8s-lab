@@ -1,8 +1,9 @@
 ---
 title: "Rinomina Hostname Nodo PVE1: pve → pve1"
 type: plan
-status: draft
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+superseded_by: [[talos-k8s-cluster-restoration]]
 created_at: 2026-06-27
 ---
 

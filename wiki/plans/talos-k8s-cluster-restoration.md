@@ -1,7 +1,7 @@
 ---
 title: "Piano: Ripristino Cluster Kubernetes Talos (Post-Proxmox Recovery)"
 type: plan
-status: draft
+status: active
 certified_for_ai: true
 created_at: 2026-06-27
 tags:
@@ -356,11 +356,19 @@ curl -s -o /dev/null -w "%{http_code}" https://grafana.internal.pindaroli.org
 ```
 [[plan-out-of-band-service-access]]   → Infrastruttura OOB (COMPLETATO)
         ↓
-[[pve2-reinstallation-migration]]     → PVE2 nuovo SSD, ripristino VM talos-cp-02
+[[pve2-reinstallation-migration]]     → PVE2 nuovo SSD, ripristino VM talos-cp-02 (COMPLETATO)
         ↓
-[[pve3-10g-migration-recovery]]       → PVE3 migrazione 10G
+[[pve3-10g-migration-recovery]]       → PVE3 migrazione 10G (COMPLETATO)
         ↓
-[[pve1-hostname-rename]]              → Rinomina Hostname PVE1 (pve → pve1)
+[[pve1-hostname-rename]]              → Rinomina Hostname PVE1 (COMPLETATO)
         ↓
-[[talos-k8s-cluster-restoration]]     ← QUESTO PIANO (eseguire per ultimo)
+[[talos-k8s-cluster-restoration]]     ← QUESTO PIANO (Fase Attiva)
 ```
+
+---
+
+## 💾 Stato di Ripristino (AI Save-State)
+- **Fase Attiva**: Fase A — Verifica Pre-Kondizioni (Step A.1)
+- **Ultima Azione Completata**: Rinomina hostname PVE1 (`pve` → `pve1`) conclusa con successo; nodi Proxmox in quorum e VM residenti riattivate.
+- **Prossimo Passo Operativo**: Esecuzione del backup manuale di sicurezza del cluster Proxmox prima di toccare Talos/K8s.
+- **Blocchi/Decisioni Pendenti**: Esecuzione dei backup vzdump via PBS delle VM sensibili (es. TrueNAS).

@@ -327,16 +327,14 @@
     - Da fare prima del ripristino del cluster PVE e del rename del nodo `pve` in `pve1`.
 
 
-- [ ] **Fase 3.7: Rinomina Hostname Nodo PVE1 (`pve` → `pve1`)** [[pve1-hostname-rename]]
-  > ⏳ **BLOCCATO** — Prerequisito: tutti e 3 i nodi online e `pvecm status` → `Quorate: Yes, Nodes: 3`.
-  > Da eseguire **dopo** il completamento della Fase 3.5 (upgrade VE 9.2) e il rientro in servizio di PVE2 e PVE3.
-    - [ ] Verifica prerequisito: `pvecm status` → 3 nodi, Quorate: Yes
-    - [ ] FASE 0: Backup `/etc/hostname`, `/etc/hosts`, `corosync.conf`, `storage.cfg`
-    - [ ] FASE 1: Spegnimento ordinato VM critiche (1300 talos-cp-01, 1100 truenas, 1400 pbs)
-    - [ ] FASE 2: Stop cluster services → `pmxcfs -l` → modifica `corosync.conf` (`name: pve1`, `config_version: 13`) → rinomina `/etc/pve/nodes/pve/` → `/etc/pve/nodes/pve1/` → restart servizi
-    - [ ] FASE 3: Aggiornamento `storage.cfg` (`nodes pve` → `nodes pve1`)
-    - [ ] FASE 4: Aggiornamento `rete.json` (`host_node: pve` → `pve1`) + `ansible-playbook opnsense_sync_dns.yml`
-    - [ ] FASE 5: Riavvio VM in sequenza e verifica finale (`pvecm nodes`, `kubectl get nodes`, GUI Proxmox)
+- [x] **Fase 3.7: Rinomina Hostname Nodo PVE1 (`pve` → `pve1`)** [[pve1-hostname-rename]] (COMPLETED 2026-06-29)
+    - [x] Verifica prerequisito: `pvecm status` → 3 nodi, Quorate: Yes
+    - [x] FASE 0: Backup `/etc/hostname`, `/etc/hosts`, `corosync.conf`, `storage.cfg`
+    - [x] FASE 1: Spegnimento ordinato VM critiche (1300 talos-cp-01, 1100 truenas, 1400 pbs)
+    - [x] FASE 2: Stop cluster services → `pmxcfs -l` → modifica `corosync.conf` (`name: pve1`, `config_version: 13`) → rinomina `/etc/pve/nodes/pve/` → `/etc/pve/nodes/pve1/` → restart servizi
+    - [x] FASE 3: Aggiornamento `storage.cfg` (`nodes pve` → `nodes pve1`)
+    - [x] FASE 4: Aggiornamento `rete.json` (`host_node: pve` → `pve1`) + `ansible-playbook opnsense_sync_dns.yml`
+    - [x] FASE 5: Riavvio VM in sequenza e verifica finale (`pvecm nodes`, `kubectl get nodes`, GUI Proxmox)
 
 - [x] **Fase 3.6: Upgrade TrueNAS SCALE a 25.10.4** [[truenas-scale-upgrade-25.10.4]] (COMPLETED 2026-06-21)
     - [x] Backup della configurazione di TrueNAS SCALE ed esportazione chiavi ZFS
@@ -411,6 +409,23 @@
   - Creato `traefik/INCIDENT_REPORT_20260501.md`.
 
 ## Maintenance & Monitoring
+
+### [ ] Studio e Risoluzione Dipendenza Incrociata NFS (TrueNAS ↔ PBS/PVE1)
+  > **Contesto**: Durante lo shutdown del rack del 29/06/2026, lo spegnimento di TrueNAS (`VM 1100`) prima di PBS (`LXC 1400`) ha causato lo stato `Ds` (`rpc_wait_bit_killable`) dei processi legati a NFS (come `lxc-start` per il container 1400 e client dell'host PVE1). Questo ha reso impossibile l'arresto di PBS, mandando in timeout infinito `pct stop` per l'impossibilità del kernel di contattare il server NFS spento (con interfaccia di rete virtuale veth del container già disattivata).
+  > **Risoluzione temporanea necessaria**:
+  > 1. Avvio forzato di TrueNAS (`qm start 1100`) per rendere nuovamente disponibile il server NFS.
+  > 2. Unmount lazy (`umount -f -l`) di tutte le share NFS su PVE1 (`backup-proxmox`, `games`, `truenas-media`).
+  > 3. Sblocco automatico dei processi del kernel e completamento di `pct stop 1400`.
+  > **Obiettivo**: Studiare e implementare una soluzione strutturale per disattivare/smontare automaticamente e in modo pulito le share NFS (es. tramite script di pre-shutdown Proxmox, autofs con timeout aggressivi, o systemd mount units robuste) prima che TrueNAS venga arrestato, prevenendo hang di sistema e dipendenze bloccanti in cascata.
+
+### [ ] Configurazione Globale Ansible (ansible.cfg root)
+  > **Contesto**: L'esecuzione dei playbook Ansible dalla root del progetto fallisce se non si specificano manualmente l'inventory e il file di password del vault.
+  > **Risoluzione da applicare**: Aggiornare `ansible.cfg` nella root per mappare i percorsi di default:
+  > ```ini
+  > [defaults]
+  > inventory = ansible/inventory.ini
+  > vault_password_file = .ansible/vault_pass.txt
+  > ```
 
 ### [ ] Ripristino Globale Cluster Kubernetes Talos (Post-Manutenzione PVE)
 - [ ] Avviare VM 2300 (`talos-cp-02`) su PVE2.
