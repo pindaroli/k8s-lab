@@ -3,9 +3,9 @@
 ## [x] ✅ FATTO: Implementazione CoreDNS Hard Anti-Affinity [[coredns-hard-anti-affinity]]
 - [x] Analisi architetturale completata (Scelta strategia Disable & Replace).
 - [x] Materializzazione piano nel Wiki.
-- [ ] Aggiornamento guardia procedurale per upgrade Talos nel wiki.
-- [ ] Modifica manifesti `talos-config/controlplane-cp-0*.yaml`.
-- [ ] Validazione ed esecuzione apply-config.
+- [x] Aggiornamento guardia procedurale per upgrade Talos nel wiki.
+- [x] Modifica manifesti `talos-config/controlplane-cp-0*.yaml`.
+- [x] Validazione ed esecuzione apply-config.
 
 ## [x] 🟢 COMPLETATO: Espansione Geometrica oliraid ed Evacuazione Special VDEV [[oliraid-expansion-special-vdev-evacuation]]
 - [x] **Fase Preliminare: Isolamento Totale del Sistema e Messa in Sicurezza**
@@ -105,26 +105,10 @@
   ```
   Documentare nel workflow [[Node_Maintenance]] la regola: se ci sono pod in `CrashLoopBackOff` e il problema sottostante è risolto, effettuare `kubectl rollout restart` / `kubectl delete pod` immediatamente.
 
-### [ ] 5.2 CoreDNS Hard Anti-Affinity (Spread tra i Nodi)
-- [ ] Patchare il deployment di CoreDNS per aggiungere una regola di anti-affinità **required** che impedisca a due repliche di stare sullo stesso nodo:
-  ```bash
-  kubectl edit deployment -n kube-system coredns
-  ```
-  Aggiungere sotto `spec.template.spec`:
-  ```yaml
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchLabels:
-              k8s-app: kube-dns
-          topologyKey: kubernetes.io/hostname
-  ```
-
-### [ ] 5.3 Alert CrashLoopBackOff > 15m (VictoriaMetrics)
+### [ ] 5.2 Alert CrashLoopBackOff > 15m (VictoriaMetrics)
 - [ ] Aggiungere una `PrometheusRule` nel namespace `monitoring` che faccia scattare un alert se un pod è in `CrashLoopBackOff` per più di 15 minuti. Configurare la notifica su Alertmanager (o n8n come dispatcher).
 
-### [ ] 5.4 Tdarr Server Image Hardening
+### [ ] 5.3 Tdarr Server Image Hardening
 - [ ] Investigare il problema strutturale: `tdarr-server` scarica `jellyfin-ffmpeg` da GitHub ad ogni avvio del pod (nel container entrypoint). Questo crea una dipendenza dalla risoluzione DNS esterna al boot. Valutare:
   - Pre-bakare il binario nell'immagine Docker custom.
   - Oppure aggiungere un `initContainer` con retry intelligente.
