@@ -98,20 +98,18 @@
 ## [ ] Post-Incident: Flannel DNS Cascading Failure (2026-06-03)
 > **Ref**: [[2026-06-03-flannel-restart-dns-cascading-failure]]
 
-### [ ] 5.1 Post-Maintenance Checklist (Procedura Operativa)
-- [ ] Aggiungere alla procedura di manutenzione standard il controllo obbligatorio post-riavvio:
+### [x] 5.1 Post-Maintenance Checklist (Procedura Operativa)
+- [x] Aggiungere alla procedura di manutenzione standard il controllo obbligatorio post-riavvio:
   ```bash
   kubectl get pods -A | grep -v -E "Running|Completed"
   ```
   Documentare nel workflow [[Node_Maintenance]] la regola: se ci sono pod in `CrashLoopBackOff` e il problema sottostante è risolto, effettuare `kubectl rollout restart` / `kubectl delete pod` immediatamente.
 
-### [ ] 5.2 Alert CrashLoopBackOff > 15m (VictoriaMetrics)
-- [ ] Aggiungere una `PrometheusRule` nel namespace `monitoring` che faccia scattare un alert se un pod è in `CrashLoopBackOff` per più di 15 minuti. Configurare la notifica su Alertmanager (o n8n come dispatcher).
+### [x] 5.2 Alert CrashLoopBackOff > 15m (VictoriaMetrics)
+- [x] Aggiungere una `PrometheusRule` (VMRule) nel namespace `monitoring` che faccia scattare un alert se un pod è in `CrashLoopBackOff` per più di 15 minuti.
 
-### [ ] 5.3 Tdarr Server Image Hardening
-- [ ] Investigare il problema strutturale: `tdarr-server` scarica `jellyfin-ffmpeg` da GitHub ad ogni avvio del pod (nel container entrypoint). Questo crea una dipendenza dalla risoluzione DNS esterna al boot. Valutare:
-  - Pre-bakare il binario nell'immagine Docker custom.
-  - Oppure aggiungere un `initContainer` con retry intelligente.
+### [x] 5.3 Tdarr Server Image Hardening
+- [x] Investigare il problema strutturale: `tdarr-server` scarica `jellyfin-ffmpeg` da GitHub ad ogni avvio del pod (nel container entrypoint). Risolto implementando un `initContainer` con controllo di rete e DNS su busybox.
 
 ---
 

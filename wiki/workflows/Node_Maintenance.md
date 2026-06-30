@@ -41,6 +41,13 @@ Ora puoi spegnere l'host o la VM in sicurezza.
 Dopo aver riacceso il nodo e verificato che sia `Ready` in Kubernetes:
 1.  **Uncordon**: `kubectl uncordon <NOME_NODO>`.
 2.  **Ri-scala il database**: Riporta le istanze al numero originale (es. 3).
+3.  **Verifica Pod in Stato di Errore (Post-Maintenance Checklist)**:
+    Eseguire il controllo obbligatorio post-riavvio per identificare eventuali pod intrappolati in `CrashLoopBackOff` dovuto a micro-interruzioni di rete temporanee:
+    ```bash
+    kubectl get pods -A | grep -v -E "Running|Completed"
+    ```
+    Se vengono rilevati pod in errore o in crash loop, eseguire un restart per azzerare il backoff esponenziale e forzare la rilocazione stabile:
+    `kubectl rollout restart deployment/<NOME_DEPLOYMENT> -n <NAMESPACE>` oppure `kubectl delete pod <NOME_POD> -n <NAMESPACE>`.
 
 ---
 

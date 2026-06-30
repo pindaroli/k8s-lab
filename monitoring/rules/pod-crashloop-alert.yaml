@@ -1,0 +1,19 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: pod-crashloop-alert
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: victoria-metrics-k8s-stack
+spec:
+  groups:
+    - name: custom-pod-alerts
+      rules:
+        - alert: CustomPodCrashLooping
+          expr: kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"} == 1
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is in CrashLoopBackOff"
+            description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has been crash looping for more than 15 minutes."
