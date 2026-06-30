@@ -18,10 +18,10 @@ Questo nodo del Wiki definisce le **regole** e la **governance** dell'architettu
 > **SOURCE OF TRUTH**: I dati effettivi risiedono in `rete.json` (nella root del progetto). L'agente IA e l'utente devono modificare `rete.json` per applicare cambiamenti reali. Questo documento serve per capire *come* e *perché* quei dati sono strutturati in quel modo.
 
 ## 1. Topologia VLAN
-L'infrastruttura è segmentata tramite OPNsense e lo Switch L3 (Xikestor):
-- **VLAN 10 (Server)**: `10.10.10.0/24`. Rete di management. Ospita [[TrueNAS]] e le interfacce di gestione di Proxmox. Gateway: `10.10.10.254`.
-- **VLAN 20 (Client/K8s)**: `10.10.20.0/24`. Rete operativa. Ospita i nodi del [[Talos_Cluster]] e i dispositivi personali. Gateway: `10.10.20.1`.
-- **Transit**: `192.168.2.0/24`. Rete di interconnessione tra OPNsense e Switch L3.
+L'infrastruttura è segmentata tramite lo Switch L3 (Xikestor) e OPNsense (Symmetric Routing):
+- **VLAN 10 (Server)**: `10.10.10.0/24`. Rete di management. Ospita [[TrueNAS]] e le interfacce di gestione di Proxmox. Gateway logico L3: `10.10.10.1` (Switch L3). Il DNS di riferimento del lab è `192.168.2.254` (OPNsense Transit).
+- **VLAN 20 (Client/K8s)**: `10.10.20.0/24`. Rete operativa. Ospita i nodi del [[Talos_Cluster]] e i dispositivi personali. Gateway logico L3: `10.10.20.1` (Switch L3).
+- **Transit**: `192.168.2.0/24`. Rete di interconnessione tra OPNsense (`192.168.2.254`) e lo Switch L3 (`192.168.2.1`).
 
 ## 2. Regola d'Oro del DNS (Explicit Mapping)
 Nel paradigma GEMINI, **non utilizziamo record wildcard (`*.pindaroli.org`) per il traffico interno**.

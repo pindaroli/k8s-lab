@@ -17,9 +17,11 @@ provenance:
 Il nodo OPNsense è il cuore della sicurezza e della risoluzione DNS della rete locale.
 
 ## 1. Dettagli di Rete
-- **IP Gestione (VLAN 20)**: `10.10.20.254`
-- **Hostname Accesso Diretto**: `https://firewall-direct.pindaroli.org` (o `10.10.20.1` via Switch).
-- **Ruolo DNS**: Autorevole per il dominio interno (`pindaroli.org`). Fornisce risoluzione Split-Horizon.
+- **Interfaccia Transit IP**: `192.168.2.254` (usata come server DNS principale per il cluster e lo switch).
+- **Interfaccia OOB IP**: `192.168.100.1` (gestione diretta fuori banda).
+- **Hostname Accesso Diretto**: `https://firewall-direct.pindaroli.org` (reindirizzato su IP OOB via Traefik).
+- **Ruolo DNS**: Autorevole per il dominio interno (`pindaroli.org`). Fornisce risoluzione Split-Horizon su `192.168.2.254`.
+- **Nessun IP su VLAN 10/20**: Le interfacce gateway logiche di OPNsense su VLAN 10 (`10.10.10.254`) e VLAN 20 (`10.10.20.254`) sono state disattivate (impostate su `None`) per supportare il Symmetric Routing con lo Switch L3.
 
 ## 2. Configurazione DNS (Unbound)
 Il servizio Unbound gestisce la risoluzione interna per evitare l'uso di DNS pubblici per i record locali.
