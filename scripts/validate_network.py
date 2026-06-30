@@ -3,6 +3,10 @@ import json
 import sys
 import re
 import ipaddress
+import subprocess
+
+# Elenco dei server DNS interni legittimi e attivi nel cluster
+AUTHORIZED_INTERNAL_DNS = ['192.168.2.254', '192.168.100.1']
 
 def load_network_data(filepath):
     try:
@@ -30,6 +34,25 @@ def validate_mac(mac_str):
     if re.match(r'^([0-9a-f]{2}[:-]){5}([0-9a-f]{2})$', mac_clean):
         return mac_clean
     return None
+
+def test_dns_server(dns_ip):
+    """
+    Tenta di eseguire una query DNS di test (risoluzione di google.com)
+    verso l'IP specificato utilizzando dig per verificare se è attivo e funzionante.
+    """
+    try:
+        # Esegue dig con timeout di 1.5 secondi per non bloccare lo script
+        result = subprocess.run(
+            ['dig', f'@{dns_ip}', 'google.com', '+short', '+time=1', '+tries=1'],
+            capture_output=True,
+            text=True,
+            timeout=2.0
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return True
+    except Exception:
+        pass
+    return False
 
 def check_congruence(data):
     errors = []
@@ -128,10 +151,28 @@ def check_congruence(data):
             elif ip.startswith("10.10.20.") and "VLAN 10" in network_context:
                 errors.append(f"⚠️ Incoerenza subnet per {nodo_id} ({source}): IP {ip} associato a contesto {network_context}")
 
+        # 6. Validazione dei Server DNS locali configurati per i nodi con controllo di attività
+        dns_field = nodo.get("dns")
+        if dns_field:
+            dns_servers = [d.strip() for d in dns_field.split(",") if d.strip()]
+            for dns_ip in dns_servers:
+                ip_obj = validate_ip(dns_ip)
+                if ip_obj:
+                    # Controlla solo i DNS interni (range privato RFC 1918 o locale)
+                    if ip_obj.is_private:
+                        dns_str = str(ip_obj)
+                        if dns_str not in AUTHORIZED_INTERNAL_DNS:
+                            # Test attivo di raggiungibilità e funzionamento della porta DNS
+                            is_active = test_dns_server(dns_str)
+                            status_label = "MA FUNZIONANTE/ATTIVO IN RETE" if is_active else "E DOWN/INATTIVO"
+                            errors.append(
+                                f"❌ DNS NON AUTORIZZATO ({status_label}): Il nodo '{nodo_id}' utilizza il server DNS locale non attivo o non valido: {dns_str}. "
+                                f"I DNS autorizzati e attivi nel cluster sono: {', '.join(AUTHORIZED_INTERNAL_DNS)}."
+                            )
+
     # Analisi dei duplicati IP
     for ip, owners in ips.items():
         if len(owners) > 1:
-            # Raggruppa per verificare se sono nodi distinti
             distinct_nodes = set([o.split()[0] for o in owners])
             if len(distinct_nodes) > 1:
                 errors.append(f"❌ IP DUPLICATO: {ip} è usato da nodi differenti: {', '.join(owners)}")
@@ -157,7 +198,7 @@ def main():
             print(f"  {err}")
         sys.exit(1)
     else:
-        print("✅ Configurazione di rete congruente al 100%! Nessun IP o MAC duplicato rilevato.")
+        print("✅ Configurazione di rete congruente al 100%! Nessun IP, MAC o DNS non autorizzato rilevato.")
         sys.exit(0)
 
 if __name__ == "__main__":
