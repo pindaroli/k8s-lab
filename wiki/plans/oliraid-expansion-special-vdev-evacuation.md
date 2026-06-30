@@ -1,25 +1,24 @@
 ---
 title: "Piano di Espansione Geometrica oliraid ed Evacuazione Special VDEV in Manutenzione Isolata"
 type: plan
-status: draft
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-06-27
+completed_at: 2026-06-28
 tags:
   - "#plan"
   - "#storage"
 ---
 
----
-status: archived
-certified_for_ai: false
-completed_at: 2026-06-28
----
+> [!WARNING]
+> **PIANO OBSOLETO / SUPERATO**: Questo piano preliminare è stato superato ed è ora obsoleto. La manutenzione dello storage è stata completata con successo ed archiviata.
+
 # Piano di Espansione Geometrica oliraid ed Evacuazione Special VDEV in Manutenzione Isolata
 
 Questo piano descrive le azioni operative per espandere il vdev `raidz2-0` del pool `oliraid` da 4 a 5 dischi e procedere alla successiva evacuazione dello Special VDEV SSD (spostando i blocchi dati superiori a 64K sugli HDD e mantenendo solo i metadati).
 
 **Data creazione**: 2026-06-26
-**Stato**: ✅ COMPLETATO E ARCHIVIATO (2026-06-28)
+**Stato**: ⚠️ OBSOLETO / SUPERATO (Archiviato il 2026-06-30)
 
 ---
 
