@@ -359,7 +359,7 @@
     - [x] Configurare Trunk VLAN 10/20 su ONTi e migrare rete PVE3 a 10G via OOB
     - [x] Rilevare la scheda 10G ed aggiornare e testare `/etc/network/interfaces` in OOB
     - [x] Riavviare l'Homelab in sequenza ordinata (PVE1/TrueNAS prima, satelliti poi) ed allineare hosts e Corosync
-- [x] **Fase 3C: Ripristino Cluster Kubernetes Talos (ULTIMO STEP)** [[talos-k8s-cluster-restoration]] (COMPLETED 2026-06-06)
+- [x] **Fase 3C: Ripristino Cluster Kubernetes Talos (ULTIMO STEP)** [[talos-k8s-cluster-restoration]] (COMPLETED 2026-06-30)
     - [x] Verificare Proxmox 3 nodi in quorum stabile
     - [x] Avviare talos-cp-02 (VM 2300) su PVE2 e verificare boot Talos
     - [x] Re-apply `controlplane-cp-02.yaml` se necessario per reintegrazione etcd

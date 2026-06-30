@@ -1,8 +1,8 @@
 ---
 title: "Piano: Ripristino Cluster Kubernetes Talos (Post-Proxmox Recovery)"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-06-27
 tags:
   - "#plan"
@@ -368,7 +368,7 @@ curl -s -o /dev/null -w "%{http_code}" https://grafana.internal.pindaroli.org
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase A — Verifica Pre-Kondizioni (Step A.1)
-- **Ultima Azione Completata**: Rinomina hostname PVE1 (`pve` → `pve1`) conclusa con successo; nodi Proxmox in quorum e VM residenti riattivate.
-- **Prossimo Passo Operativo**: Esecuzione del backup manuale di sicurezza del cluster Proxmox prima di toccare Talos/K8s.
-- **Blocchi/Decisioni Pendenti**: Esecuzione dei backup vzdump via PBS delle VM sensibili (es. TrueNAS).
+- **Fase Attiva**: COMPLETATO
+- **Ultima Azione Completata**: Ripristino completo del quorum etcd, accensione nodi CP, allineamento DNS a caldo e scaling del database CNPG a 3 repliche completato con successo.
+- **Prossimo Passo Operativo**: Nessuno. Tutti gli step del piano sono stati completati con successo ed il cluster è in salute.
+- **Blocchi/Decisioni Pendenti**: Nessuno.
