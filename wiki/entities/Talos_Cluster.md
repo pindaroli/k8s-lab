@@ -53,6 +53,10 @@ I nodi sono configurati per utilizzare [[OPNsense]] (`10.10.20.254`) come resolv
 In caso di crash di un nodo (come successo con PVE2), il quorum deve essere mantenuto.
 - Se un nodo è offline per lungo tempo, va rimosso dal quorum via API Talos per permettere agli altri di operare.
 
+## 4. Guardia Procedurale (Upgrade Talos)
+> [!WARNING]
+> **BLOCCO PRE-UPGRADE (CORE-DNS OVERRIDE ATTIVO)**: Prima di aggiornare Talos OS, controllare le Release Notes di Sidero Labs. Se la nuova versione di Talos aggiorna l'immagine di CoreDNS, è **OBBLIGATORIO** aggiornare manualmente il campo `image:` all'interno del blocco `inlineManifests` nei file `talos-config/controlplane-cp-0*.yaml` e fare un `talosctl apply-config` prima di riavviare i nodi.
+
 ## Relazioni
 - Dipende da [[OPNsense]] per il DNS.
 - Utilizza [[TrueNAS]] via NFS per i Persistent Volumes (PV).

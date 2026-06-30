@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## [x] ✅ FATTO: Implementazione CoreDNS Hard Anti-Affinity [[coredns-hard-anti-affinity]]
+- [x] Analisi architetturale completata (Scelta strategia Disable & Replace).
+- [x] Materializzazione piano nel Wiki.
+- [ ] Aggiornamento guardia procedurale per upgrade Talos nel wiki.
+- [ ] Modifica manifesti `talos-config/controlplane-cp-0*.yaml`.
+- [ ] Validazione ed esecuzione apply-config.
+
 ## [x] 🟢 COMPLETATO: Espansione Geometrica oliraid ed Evacuazione Special VDEV [[oliraid-expansion-special-vdev-evacuation]]
 - [x] **Fase Preliminare: Isolamento Totale del Sistema e Messa in Sicurezza**
   - [x] Accedere alla WebUI di TrueNAS, disattivare l'avvio automatico e arrestare i servizi SMB, NFS e iSCSI.
