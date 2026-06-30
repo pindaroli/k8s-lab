@@ -135,13 +135,18 @@ Per garantire la stabilità del cluster homelab ed evitare disastri derivanti da
 ## 13. Wiki Context Refresh (LLM Sync Protocol)
 
 > [!IMPORTANT]
-> **OBBLIGO DI RIGENERAZIONE**: Ogni volta che un agente (AI o umano) modifica, crea o elimina un file all'interno di `wiki/` (entità, piani, workflow, istruzioni), è **obbligatorio** eseguire lo script di rigenerazione del contesto **al termine della sessione di editing**:
+> **OBBLIGO DI VALIDAZIONE E RIGENERAZIONE**: Ogni volta che si modifica la configurazione del network o si lavora sulla wiki, è **obbligatorio** validare la congruenza della rete ed eseguire lo script di rigenerazione del contesto **al termine della sessione**:
 >
+> 1. Validazione Rete:
+> ```bash
+> python3 scripts/validate_network.py
+> ```
+> 2. Rigenerazione Contesto:
 > ```bash
 > python3 scripts/build_wiki_context.py
 > ```
 >
-> Questo script produce `wiki/wiki_context.md`, il file di contesto unificato usato dai notebook LLM per avere una visione completa e aggiornata dell'infrastruttura.
+> Lo script di validazione garantisce che non vi siano conflitti, IP/MAC duplicati o DNS non attivi/non autorizzati in `rete.json`, mentre lo script di rigenerazione produce `wiki/wiki_context.md` per l'allineamento dei modelli LLM.
 
 **Regole operative**:
 1. **Quando eseguirlo**: Dopo qualsiasi modifica a file `.md` in `wiki/`, inclusi aggiornamenti di status, nuovi piani, nuove entità o modifica di workflow.
