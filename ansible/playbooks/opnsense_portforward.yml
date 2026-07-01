@@ -1,0 +1,81 @@
+---
+- name: Configure qBittorrent Destination NAT (Port Forward) on OPNsense
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - "../vars/opnsense_secrets.yml"
+    - "../../rete.json"
+
+  vars:
+    opnsense_url: "https://192.168.100.1"
+
+  tasks:
+    - name: Search existing Destination NAT rules
+      uri:
+        url: "{{ opnsense_url }}/api/firewall/d_nat/searchRule"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body: {}
+      check_mode: no
+      register: search_result
+
+    - name: Find qBittorrent rule if it exists
+      set_fact:
+        qbit_rule: "{{ search_result.json.rows | selectattr('descr', 'equalto', 'qBittorrent P2P Port Forwarding') | list }}"
+
+    - name: Debug rule status
+      debug:
+        msg: "Rule found: {{ qbit_rule | length > 0 }}"
+
+    - name: Add qBittorrent Port Forwarding rule
+      uri:
+        url: "{{ opnsense_url }}/api/firewall/d_nat/addRule"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          rule:
+            enabled: "1"
+            interface: "wan"
+            ipprotocol: "inet"
+            protocol: "tcp/udp"
+            source_net: "any"
+            source_port: ""
+            destination_net: "any"
+            destination_port: "30661"
+            target: "10.10.20.60"
+            local-port: "30661"
+            pass: "rule"
+            associated-rule-id: ""
+            descr: "qBittorrent P2P Port Forwarding"
+      register: create_result
+      when: qbit_rule | length == 0
+
+    - name: Apply Firewall Configuration
+      uri:
+        url: "{{ opnsense_url }}/api/firewall/filter/apply"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        status_code: 200
+      when: qbit_rule | length == 0
+
+    - name: Success message
+      debug:
+        msg: "qBittorrent Destination NAT Port Forwarding configured and applied successfully!"
+      when: qbit_rule | length == 0

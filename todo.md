@@ -1,5 +1,18 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [ ] Talos & Kubernetes Upgrade Plan [[talos-1.13.5-upgrade]]
+### [x] FASE 1: Upgrade Talos OS (v1.12.0 -> v1.13.5)
+- [x] Aggiornare client macOS (`brew upgrade siderolabs/tap/talosctl` e `kubernetes-cli`).
+- [x] Rigenerare installer image con estensione `qemu-guest-agent`.
+- [x] Eseguire pre-flight checks (salute etcd, CNPG, workload).
+- [x] Rolling upgrade nodo 1 (`talos-cp-01` - `10.10.20.141`) e validazione post-reboot.
+- [x] Rolling upgrade nodo 2 (`talos-cp-02` - `10.10.20.142`) e validazione post-reboot.
+- [x] Rolling upgrade nodo 3 (`talos-cp-03` - `10.10.20.143`) e validazione globale.
+
+### [x] FASE 2: Upgrade Kubernetes (v1.34.1 -> v1.36.2) [[kubernetes-upgrade-1.34-1.36]]
+- [x] Verificare compatibilità CNI, operatori (CNPG) e manifest inline.
+- [x] Eseguire transizione intermedia (`talosctl upgrade-k8s --to 1.35.x`).
+- [x] Eseguire transizione finale alla versione stabile (`talosctl upgrade-k8s --to 1.36.2`).
 ## [x] ✅ FATTO: Implementazione CoreDNS Hard Anti-Affinity [[coredns-hard-anti-affinity]]
 - [x] Analisi architetturale completata (Scelta strategia Disable & Replace).
 - [x] Materializzazione piano nel Wiki.
@@ -164,7 +177,7 @@
 
 ## Hardening Resilienza Bare-Metal (DeepSearch Insights)
 
-### [ ] Tuning Timeout Talos (RTO < 30s)
+### [ ] Tuning Timeout Talos (RTO < 30s) [IN ATTESA DI UPGRADE A TALOS 1.14]
 - [ ] Modificare `talos-config/controlplane*.yaml` per ridurre i timeout di Kubernetes:
   - `node-monitor-grace-period: 16s`
   - `pod-eviction-timeout: 30s`
