@@ -24,7 +24,7 @@
 
     - name: Run DNSBL Configuration Script
       command:
-        cmd: "python3 ../scripts/opnsense_dnsbl_config.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}' --file ../../../rete.json"
+        cmd: "python3 ../scripts/opnsense/opnsense_dnsbl_config.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}' --file ../../../rete.json"
       register: script_output
       changed_when: "'saved successfully' in script_output.stdout"
 

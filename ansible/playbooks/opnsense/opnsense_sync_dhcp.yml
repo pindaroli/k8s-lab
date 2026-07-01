@@ -24,8 +24,8 @@
     opnsense_api_key:   "{{ api_key }}"
     opnsense_api_secret: "{{ api_secret }}"
     rete_json_path:     "{{ playbook_dir }}/../../../rete.json"
-    extract_script:     "{{ playbook_dir }}/../scripts/extract_dhcp_from_rete_json.py"
-    push_script:        "{{ playbook_dir }}/../scripts/push_kea_dhcp_to_opnsense.py"
+    extract_script:     "{{ playbook_dir }}/../scripts/opnsense/extract_dhcp_from_rete_json.py"
+    push_script:        "{{ playbook_dir }}/../scripts/opnsense/push_kea_dhcp_to_opnsense.py"
 
   tasks:
     - name: "Step 1 — Estrai subnet_options e reservations da rete.json"
