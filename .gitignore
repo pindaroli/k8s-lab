@@ -24,6 +24,7 @@ xray_secrets.yml
 
 # Backups & Archives
 _OLD_ARCHIVE/
+*.snapshot
 *.xml
 *.exp
 *.cfg
@@ -33,7 +34,7 @@ import_music/library.db
 
 
 # Talos Secrets
-talos-config/
+talos-config
 
 # Global Secrets
 secrets/
