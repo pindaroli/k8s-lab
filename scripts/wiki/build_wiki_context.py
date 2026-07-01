@@ -25,7 +25,7 @@ from datetime import datetime
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 WIKI_DIR = PROJECT_ROOT / "wiki"
 OUTPUT_FILE = WIKI_DIR / "wiki_context.md"
 RETE_JSON = PROJECT_ROOT / "rete.json"

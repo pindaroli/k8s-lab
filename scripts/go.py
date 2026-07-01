@@ -57,31 +57,31 @@ def main():
     print(f"\n{Colors.HEADER}{Colors.BOLD}🚀 HOMELAB SCRIPT LAUNCHER 🚀{Colors.ENDC}")
     print(f"[{SCRIPT_DIR}]\n")
 
-    # Trova tutti gli script .py e .sh validi (escludendo se stesso)
+    # Trova tutti gli script .py e .sh validi (escludendo se stesso e cartelle di utility/test)
     scripts = []
     my_name = os.path.basename(__file__)
+    exclude_dirs = {"unit-test", "mac-network-fix", "utils"}
 
-    try:
-        files = sorted(os.listdir(SCRIPT_DIR))
-    except Exception as e:
-        print(f"{Colors.WARNING}Errore nella lettura della directory: {e}{Colors.ENDC}")
-        sys.exit(1)
+    for root, dirs, files in os.walk(SCRIPT_DIR):
+        # Filtra le cartelle nascoste e quelle da escludere
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in exclude_dirs]
 
-    for f in files:
-        if f == "go.py" or f == my_name or f.startswith('.'):
-            continue
-        if f.endswith('.py') or f.endswith('.sh'):
-            full_path = os.path.join(SCRIPT_DIR, f)
-            if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
-                scripts.append({
-                    'name': f,
-                    'path': full_path,
-                    'desc': get_script_description(full_path)
-                })
+        for f in files:
+            if f == "go.py" or f == my_name or f.startswith('.'):
+                continue
+            if f.endswith('.py') or f.endswith('.sh'):
+                full_path = os.path.join(root, f)
+                if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                    # Calcola il percorso relativo rispetto a SCRIPT_DIR
+                    rel_path = os.path.relpath(full_path, SCRIPT_DIR)
+                    scripts.append({
+                        'name': rel_path,
+                        'path': full_path,
+                        'desc': get_script_description(full_path)
+                    })
 
-    if not scripts:
-        print(f"{Colors.WARNING}Nessun script eseguibile (.py o .sh) trovato in {SCRIPT_DIR}{Colors.ENDC}")
-        sys.exit(0)
+    # Ordina gli script in base al percorso relativo
+    scripts.sort(key=lambda x: x['name'])
 
     # Stampa Menu
     for idx, s in enumerate(scripts, start=1):
