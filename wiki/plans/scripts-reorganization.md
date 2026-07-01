@@ -21,62 +21,79 @@ Il launcher interattivo `scripts/go.py` rimarrà nella posizione originale per p
 scripts/
 ├── go.py                       # Launcher principale (aggiornato per scansione ricorsiva)
 ├── network/                    # Script e test relativi alla rete e a rete.json
-│   ├── validate_network.py
-│   ├── analyze_ips.py
-│   ├── update_disks_rete.py
-│   ├── test_dns.sh
-│   ├── test_dhcp.sh
-│   └── verify_network_fix.sh
 ├── opnsense/                   # Diagnostica ed utility specifiche di OPNsense
-│   ├── check_opnsense_plugins.py
-│   ├── update_qbittorrent_plugins.py
-│   └── check_qbittorrent_net.sh
 ├── kubernetes/                 # Script relativi al cluster K8s/Talos
-│   ├── check_k8s.py
-│   └── update_talos_storage.py
 ├── storage/                    # Sincronizzazione ed analisi ZFS/oliraid
-│   ├── sync_storage.py
-│   └── analyze_special_frag.py
 ├── infrastructure/             # Gestione lab, backup, spegnimento e snapshot
-│   ├── check_lab.py
-│   ├── test-pve-cluster-con.sh
-│   ├── test_internet.sh
-│   ├── setup_postgres_dbs.sh
-│   ├── restore_classical_snapshot.sh
-│   ├── find_richest_snapshot.sh
-│   ├── find_max_staging_snapshot.sh
-│   ├── find_max_library_snapshot.sh
-│   └── safe_sync.sh
 ├── wiki/                       # Manutenzione della documentazione
-│   ├── build_wiki_context.py
-│   └── standardize_wiki_metadata.py
-├── security/                   # Controlli di sicurezza e SOPS
-│   └── check-sops-encrypted.sh
-└── unit-test/                  # (Rimane cartella esistente)
+└── security/                   # Controlli di sicurezza e SOPS
 ```
 
-## 🛠️ Fasi del Piano
+## 🌐 Configurazione Variabili d'Ambiente Centralizzate
 
-### Fase 1: Aggiornamento di `go.py`
-Modificheremo `scripts/go.py` per:
-1. Usare `os.walk(SCRIPT_DIR)` al posto di `os.listdir(SCRIPT_DIR)`.
-2. Trovare tutti i file `.py` e `.sh` eseguibili ricorsivamente nelle sottocartelle.
-3. Rappresentare il nome del file con il prefisso della cartella (es. `opnsense/check_opnsense_plugins.py`) per mantenere la leggibilità e l'ordine nel menu di selezione.
-4. Escludere la cartella `unit-test/` ed eventuali directory nascoste.
+Elimineremo tutti i calcoli di percorso relativi (`../` o `../../`) all'interno degli script, sostituendoli con riferimenti diretti alle seguenti variabili d'ambiente:
+*   `RETE_JSON_PATH`: Percorso assoluto del file `rete.json`.
+*   `STORAGE_JSON_PATH`: Percorso assoluto del file `storage.json`.
 
-### Fase 2: Creazione Cartelle e Spostamento degli Script
-1. Creare le cartelle `network`, `opnsense`, `kubernetes`, `storage`, `infrastructure`, `wiki`, `security` sotto `scripts/`.
-2. Spostare i rispettivi file tramite `git mv` per preservare la cronologia.
-3. Archiviare o eliminare script di test temporanei orfani se presenti.
+Le variabili verranno configurate in due posti per massima sicurezza:
+1.  **In `~/.zshrc`**: Inserimento tramite export globale per consentire l'esecuzione diretta degli script in qualsiasi terminale utente.
+2.  **In `scripts/go.py`**: Iniezione automatica nel dizionario `env` di esecuzione per garantire il funzionamento anche nei terminali non interattivi o script automatizzati che non caricano `~/.zshrc`.
 
-### Fase 3: Aggiornamento Riferimenti nel Progetto
-1. Aggiornare le regole in `.agents/AGENTS.md` se fanno riferimento a percorsi assoluti (es. `scripts/validate_network.py` diventerà `scripts/network/validate_network.py`).
-2. Aggiornare eventuali cronjob o script esterni che invocano questi strumenti.
+## 🛠️ Modifiche ai Singoli Script
+
+### 1. File del Profilo Shell
+*   **`~/.zshrc`**: Aggiunta delle righe:
+    ```bash
+    export RETE_JSON_PATH="/Users/olindo/prj/k8s-lab/rete.json"
+    export STORAGE_JSON_PATH="/Users/olindo/prj/k8s-lab/storage.json"
+    ```
+
+### 2. Modifiche a `go.py`
+*   **`scripts/go.py`**: Iniezione automatica delle variabili nell'ambiente di esecuzione:
+    ```python
+    if "RETE_JSON_PATH" not in env:
+        env["RETE_JSON_PATH"] = os.path.abspath(os.path.join(SCRIPT_DIR, '..', 'rete.json'))
+    if "STORAGE_JSON_PATH" not in env:
+        env["STORAGE_JSON_PATH"] = os.path.abspath(os.path.join(SCRIPT_DIR, '..', 'storage.json'))
+    ```
+
+### 3. Script Shell `.sh`
+Tutti gli script shell elencati leggeranno le variabili d'ambiente sollevando un errore bloccante se non sono impostate:
+*   **`scripts/network/test_dhcp.sh`**
+*   **`scripts/network/test_dns.sh`**
+*   **`scripts/infrastructure/test_internet.sh`**
+*   **`scripts/infrastructure/test-pve-cluster-con.sh`**
+*   **`scripts/infrastructure/setup_postgres_dbs.sh`**
+
+Esempio di codice sostitutivo:
+```bash
+if [ -z "${RETE_JSON_PATH:-}" ]; then
+  echo "❌ Errore: RETE_JSON_PATH non impostata nell'ambiente!" >&2
+  exit 1
+fi
+RETE_JSON="$RETE_JSON_PATH"
+```
+
+### 4. Script Python `.py`
+Tutti gli script Python leggeranno le variabili d'ambiente tramite `os.environ`:
+*   **`scripts/opnsense/check_opnsense_plugins.py`**
+*   **`scripts/kubernetes/update_talos_storage.py`**
+*   **`scripts/wiki/standardize_wiki_metadata.py`**
+*   **`scripts/wiki/build_wiki_context.py`**
+*   **`scripts/utils/common.py`** (percorso base globale)
+
+Esempio di codice sostitutivo:
+```python
+rete_path = os.environ.get("RETE_JSON_PATH")
+if not rete_path:
+    print("Error: RETE_JSON_PATH environment variable not set.")
+    sys.exit(1)
+```
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Pianificazione completata.
-- **Ultima Azione Completata**: Stesura del piano di riorganizzazione degli script.
-- **Prossimo Passo Operativo**: Ottenere l'approvazione del piano da parte dell'utente per avviare la Fase 1 (aggiornamento `go.py`) e poi la Fase 2.
-- **Blocchi/Decisioni Pendenti**: Approvazione dell'utente.
+- **Fase Attiva**: Audit e Progettazione Architettura ad Ambiente Completati.
+- **Ultima Azione Completata**: Redazione del piano di migrazione a variabili d'ambiente.
+- **Prossimo Passo Operativo**: Ottenere l'approvazione del piano da parte dell'utente.
+- **Blocchi/Decisioni Pendenti**: Attesa del via libera.
