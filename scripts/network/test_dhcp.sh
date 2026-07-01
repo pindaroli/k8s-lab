@@ -17,10 +17,12 @@
 set -euo pipefail
 
 # --- Configurazione ---
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
-export APIKEY_FILE="${ROOT_DIR}/ansible/OPNsense.internal_root_apikey.txt"
-RETE_JSON="${ROOT_DIR}/rete.json"
+if [ -z "${RETE_JSON_PATH:-}" ]; then
+  echo "❌ Errore: RETE_JSON_PATH non impostata nell'ambiente!" >&2
+  exit 1
+fi
+RETE_JSON="$RETE_JSON_PATH"
+export APIKEY_FILE="$(dirname "$RETE_JSON")/ansible/OPNsense.internal_root_apikey.txt"
 
 if [ -z "${OPNSENSE_URL:-}" ]; then
   OPNSENSE_IP=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='opnsense')['management_ip'])")

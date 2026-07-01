@@ -8,7 +8,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RETE_JSON="${SCRIPT_DIR}/../../rete.json"
+RETE_JSON="${RETE_JSON_PATH}"
 
 RESOLVER=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='switch10g')['dns_server'])")
 DOMAIN="pindaroli.org"
