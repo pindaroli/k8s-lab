@@ -1,10 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## 🚀 [x] Bonifica e Rotazione API Key OPNsense (Leakage Mitigation)
+## 🚀 [x] ✅ RISOLTO: Bonifica e Rotazione API Key OPNsense (Leakage Mitigation)
 - [x] Generare una nuova coppia di API Key su OPNsense per l'utente `root`.
 - [x] Sostituire le chiavi in `ansible/vars/opnsense_secrets.yml` e cifrare il file con Ansible Vault.
 - [x] Sostituire le chiavi nel file locale `ansible/OPNsense.internal_root_apikey.txt` (escluso da Git).
 - [x] Verificare il funzionamento delle nuove chiavi con lo script `scripts/check_opnsense_plugins.py`.
+- [x] **Leakage Risolto**: Le chiavi esposte sono state rimosse dal firewall e quelle nuove sono protette tramite cifratura con Ansible Vault.
 
 ## 🚀 [ ] Talos & Kubernetes Upgrade Plan [[talos-1.13.5-upgrade]]
 ### [x] FASE 1: Upgrade Talos OS (v1.12.0 -> v1.13.5)
