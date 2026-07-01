@@ -425,6 +425,15 @@
   > 3. Sblocco automatico dei processi del kernel e completamento di `pct stop 1400`.
   > **Obiettivo**: Studiare e implementare una soluzione strutturale per disattivare/smontare automaticamente e in modo pulito le share NFS (es. tramite script di pre-shutdown Proxmox, autofs con timeout aggressivi, o systemd mount units robuste) prima che TrueNAS venga arrestato, prevenendo hang di sistema e dipendenze bloccanti in cascata.
 
+### [ ] Risoluzione Duplicate Name `mac-studio` in Network Registry
+  > **Contesto**: Lo script di validazione della rete (`validate_network.py`) ha rilevato un **WARNING** di ambiguità critica: il nome `mac-studio` punta a più IP contemporaneamente: `10.10.20.100`, `10.10.20.101`, `192.168.100.99`, `192.168.2.99`.
+  > Questi IP corrispondono a interfacce logiche diverse dello stesso host (VLAN 20, VLAN 10, OOB VLAN 99, Transit VLAN 1), ma il nome duplicato genera ambiguità nella risoluzione DNS e nei record Unbound.
+  - [ ] Aprire `rete.json` e verificare tutte le entry che usano il nome `mac-studio`.
+  - [ ] Rinominare le interfacce secondarie con nomi univoci e descrittivi (es. `mac-studio-oob`, `mac-studio-transit`, `mac-studio-vlan10`).
+  - [ ] Eseguire la validazione: `python3 scripts/network/validate_network.py`
+  - [ ] Rigenerare il contesto wiki: `python3 scripts/wiki/build_wiki_context.py`
+  - [ ] Sincronizzare DNS OPNsense: `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml`
+
 ### [ ] Configurazione Globale Ansible (ansible.cfg root)
   > **Contesto**: L'esecuzione dei playbook Ansible dalla root del progetto fallisce se non si specificano manualmente l'inventory e il file di password del vault.
   > **Risoluzione da applicare**: Aggiornare `ansible.cfg` nella root per mappare i percorsi di default:
