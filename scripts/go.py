@@ -145,8 +145,11 @@ def main():
 
         # Esegui script
         try:
-            # Usiamo subprocess.call passando l'env robusto
-            subprocess.call([selected['path']], env=env)
+            # Se lo script è Python, lo eseguiamo con l'interprete corrente per robustezza (anche senza shebang)
+            if selected['path'].endswith('.py'):
+                subprocess.call([sys.executable, selected['path']], env=env)
+            else:
+                subprocess.call([selected['path']], env=env)
         except KeyboardInterrupt:
             print(f"\n{Colors.WARNING}Esecuzione di {selected['name']} interrotta dall'utente.{Colors.ENDC}")
         except Exception as e:
