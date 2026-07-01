@@ -8,7 +8,7 @@
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RETE_JSON="${SCRIPT_DIR}/../rete.json"
+RETE_JSON="${SCRIPT_DIR}/../../rete.json"
 
 # Estrai gli IP dinamicamente da rete.json
 OPNSENSE_OOB_IP=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='opnsense')['management_ip'])")

@@ -8,7 +8,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RETE_JSON="${SCRIPT_DIR}/../rete.json"
+RETE_JSON="${SCRIPT_DIR}/../../rete.json"
 
 # Colors
 RED='\033[0;31m'
