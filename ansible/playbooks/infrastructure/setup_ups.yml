@@ -6,7 +6,8 @@
   become: yes
 
   vars_files:
-    - ../vars/secrets.yml
+    - "../../vars/common_secrets.yml"
+    - "../../vars/system_secrets.yml"
 
   vars:
     # Usa le variabili del vault se definite, altrimenti valori di fallback predefiniti

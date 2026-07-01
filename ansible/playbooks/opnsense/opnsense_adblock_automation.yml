@@ -4,8 +4,12 @@
   connection: local
   gather_facts: false
 
+  vars_files:
+    - "../../vars/common_secrets.yml"
+    - "../../vars/opnsense_secrets.yml"
+
   vars:
-    # Defaults (override via extra-vars or secrets.yml)
+    # Defaults (override via secrets)
     api_key: "{{ opnsense_api_key | default('') }}"
     api_secret: "{{ opnsense_api_secret | default('') }}"
     opnsense_url: "https://192.168.100.1" # OOB IP
@@ -20,7 +24,7 @@
 
     - name: Run DNSBL Configuration Script
       command:
-        cmd: "python3 scripts/opnsense_dnsbl_config.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}' --file ../../rete.json"
+        cmd: "python3 ../scripts/opnsense_dnsbl_config.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}' --file ../../../rete.json"
       register: script_output
       changed_when: "'saved successfully' in script_output.stdout"
 

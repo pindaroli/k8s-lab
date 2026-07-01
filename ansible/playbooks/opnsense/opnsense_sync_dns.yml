@@ -11,8 +11,9 @@
     domain: "pindaroli.org"
 
   vars_files:
-    - "../vars/secrets.yml"
-    - "../../rete.json"
+    - "../../vars/common_secrets.yml"
+    - "../../vars/opnsense_secrets.yml"
+    - "../../../rete.json"
 
   tasks:
     - name: Fail if credentials are missing
@@ -27,7 +28,7 @@
     # ---------------------------------------------------------
     - name: Generate DNS Records from rete.json
       command:
-        cmd: "python3 scripts/validate_rete_dns.py --file ../../rete.json --json"
+        cmd: "python3 ../scripts/validate_rete_dns.py --file ../../../rete.json --json"
       register: dns_gen_result
       changed_when: false
 
@@ -41,7 +42,7 @@
 
     - name: Prune Duplicate and Conflicting DNS records
       command:
-        cmd: "python3 scripts/prune_opnsense_dns.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
+        cmd: "python3 ../scripts/prune_opnsense_dns.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
       environment:
         PRUNE_ORPHANS: "true"
       register: prune_result

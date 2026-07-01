@@ -9,7 +9,8 @@
     opnsense_url: "https://192.168.2.254"
 
   vars_files:
-    - "../vars/secrets.yml"
+    - "../../vars/common_secrets.yml"
+    - "../../vars/opnsense_secrets.yml"
 
   tasks:
     - name: Fail if credentials are missing

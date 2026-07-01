@@ -22,7 +22,8 @@
     api_secret: "{{ opnsense_api_secret | default('') }}"
 
   vars_files:
-    - "../vars/secrets.yml"
+    - "../../vars/common_secrets.yml"
+    - "../../vars/opnsense_secrets.yml"
 
   tasks:
     # ---------------------------------------------------------
