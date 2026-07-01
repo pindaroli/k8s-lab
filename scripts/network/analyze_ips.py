@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# Analizza la distribuzione e la congruenza degli indirizzi IP all'interno di rete.json.
+
 import json
 import os
 

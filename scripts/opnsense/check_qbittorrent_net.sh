@@ -1,6 +1,5 @@
 #!/bin/bash
-# scripts/check_qbittorrent_net.sh
-# Diagnostic script for qBittorrent "firewalled" status
+# Diagnostica della connettività e dello stato "firewalled" del Pod qBittorrent.
 
 if [ -z "$KUBECONFIG" ]; then
   if [ -f "talos-config/kubeconfig" ]; then

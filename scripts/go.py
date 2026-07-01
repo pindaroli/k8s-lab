@@ -20,9 +20,16 @@ SCRIPT_DIR = _base
 def get_script_description(filepath):
     """Estrae una breve descrizione dallo script guardando i primi commenti/docstring."""
     desc = "Nessuna descrizione."
+    my_basename = os.path.basename(filepath)
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            lines = [next(f) for _ in range(15)]
+            # Legge al massimo 15 righe in modo sicuro
+            lines = []
+            for _ in range(15):
+                line = f.readline()
+                if not line:
+                    break
+                lines.append(line)
 
             # Cerca docstring Python (""" o ''')
             in_docstring = False
@@ -46,7 +53,8 @@ def get_script_description(filepath):
             for line in lines:
                 if line.startswith("#") and not line.startswith("#!"):
                     text = line[1:].strip()
-                    if text:
+                    # Salta la riga se contiene solo il nome dello script stesso
+                    if text and text != my_basename:
                         return text[:60] + ("..." if len(text) > 60 else "")
     except Exception:
         pass
