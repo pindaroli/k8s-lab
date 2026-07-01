@@ -139,6 +139,10 @@ def main():
                 current_path = f"{p}:{current_path}"
         env["PATH"] = current_path
 
+        # Assicura che PYTHONPATH includa la cartella principale degli script
+        # per consentire l'importazione di moduli condivisi (come utils) da qualsiasi sottocartella
+        env["PYTHONPATH"] = f"{SCRIPT_DIR}:{env.get('PYTHONPATH', '')}".strip(':')
+
         for var in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"]:
             if var in env:
                 del env[var]
