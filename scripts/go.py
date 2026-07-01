@@ -83,11 +83,26 @@ def main():
     # Ordina gli script in base al percorso relativo
     scripts.sort(key=lambda x: x['name'])
 
-    # Stampa Menu
+    # Stampa Menu ad albero raggruppato per sottocartella
+    current_dir = None
     for idx, s in enumerate(scripts, start=1):
-        print(f"{Colors.OKGREEN}[{idx:2d}]{Colors.ENDC} {Colors.OKCYAN}{s['name']:<25}{Colors.ENDC} - {s['desc']}")
+        parts = s['name'].split(os.sep)
+        if len(parts) > 1:
+            dir_name = os.sep.join(parts[:-1])
+            file_name = parts[-1]
+        else:
+            dir_name = ""
+            file_name = s['name']
 
-    print(f"{Colors.WARNING}[ 0]{Colors.ENDC} {Colors.BOLD}Esci{Colors.ENDC}")
+        if dir_name != current_dir:
+            current_dir = dir_name
+            display_dir = current_dir if current_dir else "root"
+            print(f"\n{Colors.HEADER}📁 {display_dir}/{Colors.ENDC}")
+
+        indent = "  " if current_dir else ""
+        print(f"{indent}{Colors.OKGREEN}[{idx:2d}]{Colors.ENDC} {Colors.OKCYAN}{file_name:<30}{Colors.ENDC} - {s['desc']}")
+
+    print(f"\n{Colors.WARNING}[ 0]{Colors.ENDC} {Colors.BOLD}Esci{Colors.ENDC}")
 
     if not sys.stdin.isatty():
         print(f"\n{Colors.FAIL}ATTENZIONE: Il terminale attuale non è interattivo (forse eseguito tramite un editor o pannello di output senza input).{Colors.ENDC}")
