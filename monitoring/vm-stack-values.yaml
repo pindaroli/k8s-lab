@@ -368,6 +368,7 @@ kubeControllerManager:
   enabled: true
   endpoints:
     - 10.10.20.141  # talos-cp-01
+    - 10.10.20.142  # talos-cp-02
     - 10.10.20.143  # talos-cp-03
   service:
     enabled: true
@@ -394,6 +395,7 @@ kubeScheduler:
   enabled: true
   endpoints:
     - 10.10.20.141  # talos-cp-01
+    - 10.10.20.142  # talos-cp-02
     - 10.10.20.143  # talos-cp-03
   service:
     enabled: true

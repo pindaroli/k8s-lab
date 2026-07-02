@@ -1,8 +1,8 @@
 ---
 title: "Piano: Consolidamento Trasporto Stdio MCP"
 type: plan
-status: draft
-certified_for_ai: false
+status: active
+certified_for_ai: true
 created_at: 2026-06-28
 tags:
   - "#plan"
