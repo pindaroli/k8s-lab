@@ -33,6 +33,7 @@
         python3 "{{ extract_script }}" --file "{{ rete_json_path }}"
       register: dhcp_json_raw
       changed_when: false
+      check_mode: no
 
     - name: "Step 1 — Parse output JSON"
       set_fact:

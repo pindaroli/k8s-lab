@@ -1,7 +1,9 @@
 ---
 title: "Riorganizzazione Playbook e Segreti Ansible per Sistema"
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+resolved: true
+resolved_at: 2026-07-05
 date: 2026-07-01
 tags:
   - "#ansible"
@@ -87,7 +89,7 @@ Eseguiremo dei test in modalità dry-run (`--check`) sui principali playbook (es
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Pianificazione terminata.
-- **Ultima Azione Completata**: Analisi e decodifica di test di `secrets.yml` con successo.
-- **Prossimo Passo Operativo**: Attendere il via libera dell'utente sul piano di riorganizzazione per procedere all'esecuzione.
-- **Blocchi/Decisioni Pendenti**: Approvazione esplicita del piano da parte dell'utente.
+- **Fase Attiva**: Archiviato
+- **Ultima Azione Completata**: Riorganizzazione degli script principali e dei segreti Ansible conclusa con successo. Archiviazione documentale eseguita in data 2026-07-05.
+- **Prossimo Passo Operativo**: Nessuno.
+- **Blocchi/Decisioni Pendenti**: Nessuno.

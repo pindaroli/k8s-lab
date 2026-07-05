@@ -91,7 +91,7 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     # Go up 3 levels: scripts -> playbooks -> ansible -> repo root
     project_root = os.path.abspath(os.path.join(script_dir, '../../../'))
-    default_rete = os.path.join(project_root, 'rete.json')
+    default_rete = os.environ.get('RETE_JSON_PATH') or os.path.join(project_root, 'rete.json')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--api-key', required=True, help="OPNsense API Key")

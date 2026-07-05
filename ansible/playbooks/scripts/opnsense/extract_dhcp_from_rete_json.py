@@ -64,6 +64,8 @@ def extract_reservations(data):
         # MAC sulle interfacce
         for iface in node.get('interfaces', []):
             if 'mac' in iface:
+                if iface.get('ip_assignment') == 'static':
+                    continue
                 ip = iface.get('ip')
                 if ip:
                     descr    = (iface.get('description') or iface.get('notes')

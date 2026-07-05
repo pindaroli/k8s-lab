@@ -81,15 +81,15 @@ Trovare gli ID PCI del controller grafico e audio NVIDIA:
 
 ```bash
 lspci -nn | grep -i nvidia
-# Risultato tipico:
-# 01:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD104 [GeForce RTX 4060 Ti 16GB] [10de:2803] (rev a1)
-# 01:00.1 Audio device [0403]: NVIDIA Corporation Device [10de:22be] (rev a1)
+# Risultato reale:
+# 03:00.0 VGA compatible controller [0300]: NVIDIA Corporation AD106 [GeForce RTX 4060 Ti] [10de:2803] (rev a1)
+# 03:00.1 Audio device [0403]: NVIDIA Corporation AD106M High Definition Audio Controller [10de:22bd] (rev a1)
 ```
 
 Creare il file `/etc/modprobe.d/vfio.conf` per associare la scheda a `vfio-pci` fin dall'avvio:
 
 ```bash
-echo "options vfio-pci ids=10de:2803,10de:22be" > /etc/modprobe.d/vfio.conf
+echo "options vfio-pci ids=10de:2803,10de:22bd" > /etc/modprobe.d/vfio.conf
 ```
 
 Evitare che l'host Proxmox carichi i driver grafici standard:
@@ -144,7 +144,7 @@ Utilizzare un hookscript `/var/lib/vz/snippets/gaming-pinning.sh` per automatizz
 Configurare l'assegnazione nel file `/etc/pve/qemu-server/2500.conf`:
 
 ```text
-hostpci0: 0000:01:00,pcie=1,x-vga=1
+hostpci0: 0000:03:00,pcie=1,x-vga=1
 ```
 *(Nota: verificare l'indirizzo PCI corretto della RTX 4060 Ti con lspci).*
 

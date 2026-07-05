@@ -1,8 +1,10 @@
 ---
 title: "Piano: Consolidamento Trasporto Stdio MCP"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+resolved: true
+resolved_at: 2026-07-05
 created_at: 2026-06-28
 tags:
   - "#plan"
@@ -57,7 +59,7 @@ Il server crasha restituendo `EOF` al client per due motivi:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase Preliminare (Draft/Planning)
-- **Ultima Azione Completata**: Analisi della causa radice e scrittura del piano wiki.
-- **Prossimo Passo Operativo**: Ottenere l'approvazione del piano per procedere alle modifiche.
-- **Blocchi/Decisioni Pendenti**: In attesa di approvazione.
+- **Fase Attiva**: Archiviato
+- **Ultima Azione Completata**: Archiviazione documentale eseguita in data 2026-07-05.
+- **Prossimo Passo Operativo**: Nessuno.
+- **Blocchi/Decisioni Pendenti**: Nessuno.

@@ -1,6 +1,8 @@
 ---
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+resolved: true
+resolved_at: 2026-07-05
 ---
 # Piano: CoreDNS Hard Anti-Affinity (Disable & Replace)
 
@@ -29,7 +31,7 @@ Alla luce dei limiti architetturali di Talos sui manifesti built-in, la modifica
 - [ ] 5. Verifica Riconciliazione: `kubectl get pods -n kube-system -l k8s-app=kube-dns -o wide`.
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: 1. Aggiornamento Configurazione
-- **Ultima Azione Completata**: Materializzazione del piano nel wiki.
-- **Prossimo Passo Operativo**: Aggiornamento dei manifesti YAML in `talos-config/` e creazione della guardia nel wiki.
+- **Fase Attiva**: Archiviato
+- **Ultima Azione Completata**: Implementato CoreDNS con Hard Anti-Affinity. Archiviazione documentale eseguita in data 2026-07-05.
+- **Prossimo Passo Operativo**: Nessuno.
 - **Blocchi/Decisioni Pendenti**: Nessuna.

@@ -129,7 +129,7 @@ if __name__ == "__main__":
     import os
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(script_dir, '../../../'))
-    default_rete = os.path.join(project_root, 'rete.json')
+    default_rete = os.environ.get('RETE_JSON_PATH') or os.path.join(project_root, 'rete.json')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', default=default_rete, help='Path to rete.json')

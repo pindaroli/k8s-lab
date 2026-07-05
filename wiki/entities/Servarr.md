@@ -29,6 +29,15 @@ Per garantire la raggiungibilità dei peer, qBittorrent utilizza UPnP.
    `allow 30661-30661 10.10.20.60/32 30661-30661`
 4. **Local Traffic Policy**: Il servizio Kubernetes DEVE avere `externalTrafficPolicy: Local` per preservare l'IP sorgente necessario a UPnP.
 
+### Categorie e Percorsi di Salvataggio
+Le categorie di download sono gestite in modo dichiarativo e create automaticamente al post-deploy tramite un Job Helm. Esse risiedono nella share NFS `media` sotto la cartella `/media/downloads/`:
+* **`radarr`** (Film) -> `/media/downloads/radarr` (fisico: `/mnt/oliraid/arrdata/media/downloads/radarr`)
+* **`lidarr`** (Musica Pop/Rock) -> `/media/downloads/lidarr` (fisico: `/mnt/oliraid/arrdata/media/downloads/lidarr`)
+* **`readarr`** (Libri/Audiolibri) -> `/media/downloads/readarr` (fisico: `/mnt/oliraid/arrdata/media/downloads/readarr`)
+* **`classical`** (Musica Classica) -> `/media/downloads/classical` (fisico: `/mnt/oliraid/arrdata/media/downloads/classical`)
+
+Tutte le categorie utilizzano l'Auto Torrent Management (TMM) per gestire lo spostamento automatico dei file una volta pronti.
+
 ## 3. Multi-Instance Lidarr & Decoupled Ingestion Pattern
 Per gestire l'incompatibilità intrinseca tra la tassonomia standard di Lidarr e l'ontologia della musica classica, la suite media adotta un layout multi-istanza:
 
@@ -36,13 +45,13 @@ Per gestire l'incompatibilità intrinseca tra la tassonomia standard di Lidarr e
 - **Scopo**: Gestione automatica classica (Pop, Rock, Elettronica).
 - **Ingestione**: Automatico tramite Completed Download Handling abilitato.
 - **Volume Ingestione (RW)**: `/Volumes/arrdata/media/music/pop_rock`.
-- **Categoria qBittorrent**: `music-pop` (mappato a `/staging/pop_rock`).
+- **Categoria qBittorrent**: `lidarr` (mappato a `/media/downloads/lidarr`).
 
 ### B. `lidarr-classic` (Classical Music Search-and-Dispatch)
 - **Scopo**: Scoperta e invio download per materiale classico, senza diritti di scrittura sulla libreria finale.
 - **Ingestione**: Decoppiata. Completed Download Handling **disabilitato** (Genera warning in UI, ignorabile).
 - **Volume Staging (RW)**: `/media` (punta a `staging` della share NFS).
-- **Categoria qBittorrent**: `lidarr-classic` (mappato fisicamente alla share NFS `/mnt/oliraid/arrdata/classical/staging`).
+- **Categoria qBittorrent**: `classical` (mappato a `/media/downloads/classical`).
 - **Sincronizzazione API**: Lo stato dei download viene chiuso spegnendo la proprietà `monitored` **esclusivamente sul singolo album appena elaborato** (`PUT /api/v1/album/{id}` con `monitored=false`) via chiamata REST dal **Task 3 (`sync_media_servers`) del flow Prefect**, non da uno script standalone. Questo evita loop di download infiniti (Lidarr è cieco sulla libreria finale).
 
 ### C. Prowlarr Indexer Tags

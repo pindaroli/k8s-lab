@@ -1,7 +1,9 @@
 ---
 title: "Riorganizzazione Script Principali e Aggiornamento go.py"
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+resolved: true
+resolved_at: 2026-07-05
 date: 2026-07-01
 tags:
   - "#scripts"
@@ -93,7 +95,7 @@ if not rete_path:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Audit e Progettazione Architettura ad Ambiente Completati.
-- **Ultima Azione Completata**: Redazione del piano di migrazione a variabili d'ambiente.
-- **Prossimo Passo Operativo**: Ottenere l'approvazione del piano da parte dell'utente.
-- **Blocchi/Decisioni Pendenti**: Attesa del via libera.
+- **Fase Attiva**: Archiviato
+- **Ultima Azione Completata**: Riorganizzazione degli script principali conclusa con successo. Archiviazione eseguita in data 2026-07-05.
+- **Prossimo Passo Operativo**: Nessuno.
+- **Blocchi/Decisioni Pendenti**: Nessuno.

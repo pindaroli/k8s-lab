@@ -1,7 +1,9 @@
 ---
 title: "Automazione Port Forwarding qBittorrent su OPNsense via Ansible"
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+resolved: true
+resolved_at: 2026-07-05
 date: 2026-07-01
 tags:
   - "#opnsense"
@@ -51,7 +53,7 @@ Creeremo un playbook Ansible `ansible/playbooks/opnsense_portforward.yml` che es
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 (Verifica Endpoints API d_nat)
-- **Ultima Azione Completata**: Generazione del piano di migrazione e test preliminare delle API Key (successo su `/api/firewall/filter/searchRule`).
-- **Prossimo Passo Operativo**: Modificare ed eseguire lo script di test Python `scratch/test_opnsense_nat_api.py` per confermare gli URL esatti del modulo `d_nat`.
-- **Blocchi/Decisioni Pendenti**: Attesa del via libera dell'utente per eseguire i test API del modulo `d_nat`.
+- **Fase Attiva**: Archiviato
+- **Ultima Azione Completata**: Piano di automazione del port forwarding completato con successo. Archiviazione eseguita in data 2026-07-05.
+- **Prossimo Passo Operativo**: Nessuno.
+- **Blocchi/Decisioni Pendenti**: Nessuno.

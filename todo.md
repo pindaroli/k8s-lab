@@ -180,6 +180,49 @@
 - [ ] Verifica: curl HTTPS, login browser, browser extension, admin panel `/admin`.
 - [ ] Aggiungere widget Vaultwarden in Homepage.
 
+## Radarr Upgrade
+
+### [x] ✅ COMPLETATO: Upgrade Radarr a v6.2.1.10461 [[radarr-upgrade-6.2.1]]
+- [x] **Fase 1: Backup Preventivo**
+  - [x] Eseguire backup Velero: `velero backup create backup-pre-radarr-upgrade-$(date +%F) --include-namespaces arr --wait`
+- [x] **Fase 2: Modifica Configurazione**
+  - [x] Aggiornare `servarr/arr-values.yaml`
+- [x] **Fase 3: Deploy & Verifiche**
+  - [x] Eseguire dry-run e deploy
+  - [x] Validare pod e log
+  - [x] Controllare migrazioni database PostgreSQL
+
+## qBittorrent Categories Provisioning & jellyfin-classic Removal
+
+### [x] ✅ COMPLETATO: Provisioning Categorie qBittorrent & Rimozione jellyfin-classic [[qbittorrent-category-provisioning]]
+- [x] **Fase 1: Implementazione Helm (`pindaroli-arr-helm`)**
+  - [x] Eliminare directory `templates/jellyfin-classic`
+  - [x] Rimuovere `jellyfin-classic` da `values.yaml`
+  - [x] Creare `templates/qbittorrent/post-deploy-job.yaml`
+- [x] **Fase 2: Configurazione Cluster (`k8s-lab`)**
+  - [x] Rimuovere `jellyfin-classic` e aggiungere le categorie in `servarr/arr-values.yaml`
+- [x] **Fase 3: Deploy & Verifiche**
+  - [x] Eseguire dry-run e validazione localmente
+  - [x] Eseguire deploy e validare l'esecuzione del Job di setup categorie
+
+## MinimServer Deployment
+
+### [ ] Deployment di MinimServer nel Cluster K8s [[minimserver-deployment]]
+> **Stato**: In sospeso su richiesta dell'utente (Fase 1 approvata in data 2026-07-05).
+- [x] **Fase 1: Approvazione Piano**
+  - [x] Ottenere via libera su [[minimserver-deployment]].
+- [ ] **Fase 2: Sviluppo Helm (in pindaroli-arr-helm)**
+  - [ ] Creare i template in `charts/servarr/templates/minimserver/`.
+  - [ ] Aggiungere i default in `charts/servarr/values.yaml`.
+  - [ ] Validare localmente (`helm lint` e `helm template`).
+- [ ] **Fase 3: Configurazione K8s-Lab**
+  - [ ] Configurare l'override attivo in `servarr/arr-values.yaml`.
+  - [ ] Registrare DNS in `rete.json` ed eseguire sync DNS con Ansible.
+- [ ] **Fase 4: Deploy & Validazione**
+  - [ ] Eseguire `helm upgrade --install` di `oli-arr`.
+  - [ ] Validare pod, log, mount e discovery DLNA.
+  - [ ] Aggiungere widget MinimServer in Homepage.
+
 ---
 
 ## Hardening Resilienza Bare-Metal (DeepSearch Insights)
@@ -202,56 +245,7 @@
 
 ## Critical Actions
 
-### 🎵 Music Rescue & Ingestion Pipeline (Modern & Classical)
-- [ ] **Phase 1: Modern Music Rescue Pipeline** [[beets-music-rescue-pipeline]]
-    - [x] Automatizzare il mount NFS di /Volumes/media e /Volumes/classical in modo centralizzato tramite autofs su macOS (Script setup_autofs.sh pronto). (COMPLETED 2026-05-21)
-    - [x] Esecuzione Pilot Test su campione di 3 album. (COMPLETED)
-    - [x] Migrazione massiva con gestione Hardlinks/Seeding. (COMPLETED)
-    - [x] Case clash detection e unificazione (`Us3 vs US3`). (COMPLETED)
-    - [ ] **Fase 3 (Post-Processing & Enrichment)**:
-        - [x] Chroma Enrichment: Generazione AcoustID completata per tutte le 663 tracce anonime (`path::^_/`) + avviata risoluzione automatica via script custom `resolve_acoustids.py` in background. (COMPLETED 2026-05-19)
-        - [x] MBSync Mirato: Recupero metadati ufficiali MusicBrainz via ID. (COMPLETED 2026-05-19)
-        - [x] Mirror Clean: Bonifica speculare duplicati ad Anno 0 (DB + FS via `clean_all_zeros_duplicates.py`). (COMPLETED 2026-05-19)
-        - [x] Orphan Clean: Rimozione massiva di 1845 file audio orfani/doppi lasciati da vecchi import, liberando 60.13 GB su TrueNAS via `clean_untracked_orphans.py`. (COMPLETED 2026-05-19)
-        - [ ] Integrity Audit: Controllo file corrotti (`beet badfiles`) e tracce mancanti (`beet missing`).
-        - [x] Allineamento Path Finale: Esecuzione di `beet update`/`move` pre-swap. (COMPLETED 2026-05-19)
-    - [ ] Spostamento da `music_backup` alla Landing Zone definitiva `/Volumes/arrdata/media/music/pop_rock`.
-    - [ ] Manual Import in `lidarr-pop` e ripristino Battiato (solo FLAC).
-- [x] **Phase 2: Classical Music Segregation** [[classical-music-strategy]] (COMPLETED 2026-05-18)
-    - [x] Creare dataset ZFS dedicato `/Volumes/classical` (staging & library) su TrueNAS (recordsize=1M).
-    - [x] Eseguire `segregate_classical.py` per isolare i file classici dalle anomalie.
-    - [x] Configurare `beets_classical_config.yaml` e avviare l'import nello staging (`./run_import.sh batch <N>`).
-    - [x] Triage Picard per gli unmatched residui in `_Triage_Unmatched` (Completato via Beets con patch MusicBrainz).
-    - [x] Valutare/Applicare la logica regex dinamica per il parsing del numero disco (`disc_and_track`) in `beets_classical_config.yaml` in caso di importazioni `asis` successive al reset.
-- [x] **Phase 3: GitOps Homelab Integration (Dual-Pipeline Ingestion)** [[dual-pipeline-gitops-integration]] (COMPLETED 2026-05-18)
-    - [x] Provisioning dataset ZFS TrueNAS con recordsize custom (1M).
-    - [x] Sviluppo template Helm per `jellyfin-classic` e `lidarr-classic` in `pindaroli-arr-helm`.
-    - [x] Aggiornare `oli-arr-values.yaml` in `pindaroli-arr-helm` con i blocchi di configurazione per i due nuovi servizi.
-    - [x] Upgrade release Helm `oli-arr` con i nuovi servizi abilitati.
-- [ ] **Phase 4: Non-Helm Infrastructure Provisioning (Classical Music)** [[dual-pipeline-gitops-integration]]
-    - [x] Applicare manifest di storage PV/PVC per la classica: `kubectl apply -f storage/classical-media-pvc.yaml`.
-    - [ ] Configurare qBittorrent (categoria `music-classical` su `/staging/classical`).
-    - [ ] Configurare Prowlarr (tag `classical-indexers` per tracker dedicati).
-    - [x] Configurare IngressRoutes di Traefik (Dual Route: esterno con OAuth2, interno senza OAuth2).
-    - [x] Aggiornare `rete.json` con i record DNS per `jellyfin-classic` e `lidarr-classic`.
-    - [x] Eseguire sync DNS Unbound su OPNsense con Ansible: `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml`.
-    - [ ] Disabilitare completed download handling in `lidarr-classic`.
-    - [ ] Integrazione script di unmonitoring API (`segregate_classical.py` come Beets post-import hook).
-    - [ ] Dichiarare Jellyfin options.xml ConfigMap per la classica.
 
-- [ ] **Standardizzazione e Bonifica Libreria Classica** [[classical-music-standardization]]
-    - [ ] **Esecuzione Standardizzazione**: Eseguire lo script `standardize_classical_track_filenames.py --run` per standardizzare i symlinks e allineare il database Beets classica (`classical_musiclibrary.db`).
-    - [ ] **Bonifica Spazzatura macOS**: Purge massivo di tutti i 9.512 file di risorsa Apple Double `._*` nella libreria classica via `find /Volumes/classical/library -name "._*" -delete`.
-    - [ ] **Vaccino macOS (Prevenzione permanente)**: Eseguire `defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true` su Mac Studio per disabilitare la scrittura di file `._*` e `.DS_Store` su share di rete (NFS/SMB) e riavviare Finder.
-
-- [ ] **Ottimizzazione Tassonomia Classica: Integrazione Ibrida Beets + Jellyfin** [[classical-music-taxonomy-optimization]]
-    - [x] **Preparazione Ambiente**: Installare `cyrtranslit`, `transliterate` e `unidecode` nel virtualenv di Beets.
-    - [x] **Materializzazione Mapping**: Creare il file `artist_normalization.json` con i mapping canonicati.
-    - [x] **Materializzazione Script**: Creare lo script `reorganize_recitals.py` per la normalizzazione linguistica ed allineamento dei recital.
-    - [x] **Integrazione Configurazione**: Aggiornare `beets_classical_config.yaml` con i campi inline (`is_recital`, ecc.) e i tracciati dinamici condizionali.
-    - [x] **Verifica Dry-Run**: Eseguire lo script in modalità dry-run e validare il comportamento delle espressioni Beets.
-    - [x] **Esecuzione Reale**: Applicare la migrazione fisica dei symlinks dei recital e sincronizzare il database di Beets.
-    - [ ] **Allineamento Jellyfin-Classic**: Ottimizzare Jellyfin-Classic con tag multivalore e plugin `jellyfin-musictags-plugin`.
 
 ### [ ] Security & Automation
 - [x] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
@@ -425,14 +419,7 @@
   > 3. Sblocco automatico dei processi del kernel e completamento di `pct stop 1400`.
   > **Obiettivo**: Studiare e implementare una soluzione strutturale per disattivare/smontare automaticamente e in modo pulito le share NFS (es. tramite script di pre-shutdown Proxmox, autofs con timeout aggressivi, o systemd mount units robuste) prima che TrueNAS venga arrestato, prevenendo hang di sistema e dipendenze bloccanti in cascata.
 
-### [ ] Risoluzione Duplicate Name `mac-studio` in Network Registry
-  > **Contesto**: Lo script di validazione della rete (`validate_network.py`) ha rilevato un **WARNING** di ambiguità critica: il nome `mac-studio` punta a più IP contemporaneamente: `10.10.20.100`, `10.10.20.101`, `192.168.100.99`, `192.168.2.99`.
-  > Questi IP corrispondono a interfacce logiche diverse dello stesso host (VLAN 20, VLAN 10, OOB VLAN 99, Transit VLAN 1), ma il nome duplicato genera ambiguità nella risoluzione DNS e nei record Unbound.
-  - [ ] Aprire `rete.json` e verificare tutte le entry che usano il nome `mac-studio`.
-  - [ ] Rinominare le interfacce secondarie con nomi univoci e descrittivi (es. `mac-studio-oob`, `mac-studio-transit`, `mac-studio-vlan10`).
-  - [ ] Eseguire la validazione: `python3 scripts/network/validate_network.py`
-  - [ ] Rigenerare il contesto wiki: `python3 scripts/wiki/build_wiki_context.py`
-  - [ ] Sincronizzare DNS OPNsense: `ansible-playbook ansible/playbooks/opnsense_sync_dns.yml`
+
 
 ### [ ] Configurazione Globale Ansible (ansible.cfg root)
   > **Contesto**: L'esecuzione dei playbook Ansible dalla root del progetto fallisce se non si specificano manualmente l'inventory e il file di password del vault.
@@ -462,37 +449,18 @@ Estendere la durata della sessione di login per evitare disconnessioni frequenti
 - Parametri: `login_maximum_inactive_lifetime_duration` e `login_maximum_lifetime_duration`.
 
 ### [ ] Analizzare e ottimizzare lo stato di HA (High Availability) su Proxmox VE
-- [ ] Analizzare il comportamento del cluster HA in caso di nodo offline e configurare al meglio le politiche di fencing/watchdog per evitare che le risorse (VM 2300, etc.) rimangano bloccate in stato 'error'.
+- [x] ~~Analizzare il comportamento del cluster HA in caso di nodo offline e configurare al meglio le politiche di fencing/watchdog per evitare che le risorse (VM 2300, etc.) rimangano bloccate in stato 'error'.~~ **Risolto architetturalmente**: disabilitato HA su Proxmox per Talos. Resilienza demandata a K8s.
 
-### [ ] Configurazione UPS Technoware Exa 1000 con PVE1 Master e TrueNAS Client [[setup-ups-nut-orchestration]]
-- [ ] Creazione del playbook Ansible `setup_ups.yml`
-- [ ] Configurazione NUT su PVE1 (Master, driver `usbhid-ups`, script di spegnimento sequenziale)
-- [ ] Configurazione TrueNAS (Client) tramite middleware API
-- [ ] Verifica connettività e test di lettura dell'UPS
 
-### [ ] Aggiornamento TrueNAS MinIO (Post Espansione RAID Z2)
-- [ ] **Aggiornamento App MinIO su TrueNAS**:
-  - Salto versione del template TrueNAS da `1.3.16` a `1.4.7` (App Version rimane identica: `RELEASE.2025-09-07T16-13-09Z`).
-  - **Precauzioni prima dell'update**:
-    - Assicurarsi che non ci siano backup massivi o trasferimenti S3 attivi verso MinIO (l'applicazione si riavvierà).
-  - **Verifica post-update**:
-    - Controllare i log nella scheda Workloads per confermare che i permessi del container (UID/GID `473` visualizzati nel metadata dell'app) siano ereditati correttamente.
+
+
 
 ## Log Management (Future Phase)
 
 ### [ ] Centrale Log (VictoriaLogs)
 Implementare un sistema di aggregazione log centralizzato nel cluster per:
-- **Ollama**: Tailing di `/opt/homebrew/var/log/ollama.log` via Promtail.
 - **Suite ARR**: Raccolta log dai pod Radarr, Lidarr, Prowlarr e qBittorrent.
 - **Configurazione**: Aggiunta log source in Grafana.
-
-## Ollama & Client Integration
-
-### [ ] Installazione AIChat su Nodi Lab
-Installare e configurare **AIChat** per interrogare Ollama (Mac Studio) direttamente dai terminali dei nodi senza `curl`.
-- [ ] Installazione binario su `pve1`, `pve2`, `pve3`.
-- [ ] Installazione binario su `truenas` (SCALE).
-- [ ] Configurazione endpoint: `http://10.10.20.100:11434`.
 
 ### [ ] Multimedia Clients & Integration
 - [ ] **Feishin Installation**: Configurare Feishin come player musicale desktop/mobile puntando alla libreria Navidrome/Lidarr.

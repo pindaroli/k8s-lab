@@ -28,9 +28,12 @@
     # ---------------------------------------------------------
     - name: Generate DNS Records from rete.json
       command:
-        cmd: "python3 ../scripts/opnsense/validate_rete_dns.py --file ../../../rete.json --json"
+        cmd: "python3 {{ playbook_dir }}/../scripts/opnsense/validate_rete_dns.py --json"
+      environment:
+        RETE_JSON_PATH: "{{ playbook_dir }}/../../../rete.json"
       register: dns_gen_result
       changed_when: false
+      check_mode: no
 
     - name: Parse Generated JSON
       set_fact:
@@ -42,9 +45,10 @@
 
     - name: Prune Duplicate and Conflicting DNS records
       command:
-        cmd: "python3 ../scripts/opnsense/prune_opnsense_dns.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
+        cmd: "python3 {{ playbook_dir }}/../scripts/opnsense/prune_opnsense_dns.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
       environment:
         PRUNE_ORPHANS: "true"
+        RETE_JSON_PATH: "{{ playbook_dir }}/../../../rete.json"
       register: prune_result
       changed_when: "'Deleted' in prune_result.stdout"
 
@@ -87,9 +91,10 @@
     # ---------------------------------------------------------
     - name: Extract DHCP Reservations from rete.json
       command:
-        cmd: "python3 scripts/extract_dhcp_from_rete_json.py --file ../../rete.json"
+        cmd: "python3 {{ playbook_dir }}/../scripts/opnsense/extract_dhcp_from_rete_json.py --file {{ playbook_dir }}/../../../rete.json"
       register: dhcp_gen_result
       changed_when: false
+      check_mode: no
 
     - name: Parse Generated DHCP JSON
       set_fact:
@@ -104,6 +109,6 @@
     # ---------------------------------------------------------
     - name: Ensure DHCP Static Mappings exist in Kea
       command:
-        cmd: "python3 scripts/push_kea_dhcp_to_opnsense.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
+        cmd: "python3 {{ playbook_dir }}/../scripts/opnsense/push_kea_dhcp_to_opnsense.py --api-key '{{ api_key }}' --api-secret '{{ api_secret }}' --url '{{ opnsense_url }}'"
       args:
         stdin: "{{ dhcp_gen_result.stdout }}"

@@ -1,6 +1,8 @@
 ---
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+resolved: true
+resolved_at: 2026-07-05
 ---
 # Piano Operativo Ingegneristico: Aggiornamento Rolling del Control Plane Kubernetes (v1.34.1 -> v1.36.2) su Talos Linux v1.13.5
 
@@ -136,7 +138,7 @@ Il rollback diretto del control-plane non è supportato da Kubernetes. In caso d
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: [x] COMPLETATO - Aggiornamento Cluster K8s a v1.36.2
-- **Ultima Azione Completata**: Aggiornamento a Kubernetes v1.36.2 e verifiche globali superate con successo (nodi Ready, DNS custom e CNPG sani).
-- **Prossimo Passo Operativo**: Nessuno. Il piano di upgrade è completamente chiuso con successo.
+- **Fase Attiva**: Archiviato
+- **Ultima Azione Completata**: Piano di upgrade completato con successo. Archiviazione documentale eseguita in data 2026-07-05.
+- **Prossimo Passo Operativo**: Nessuno.
 - **Blocchi/Decisioni Pendenti**: Nessuno.

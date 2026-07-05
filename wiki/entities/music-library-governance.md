@@ -1,17 +1,23 @@
 ---
 title: "Music Library Governance"
-last_updated: "2026-06-07"
+status: archived
+certified_for_ai: false
+last_updated: "2026-07-05"
 confidence: "High"
 tags:
   - "#core"
   - "#storage"
-  - "#active"
 provenance:
   - "beets-music-rescue-pipeline.md"
   - "album-directory-standardization.md"
   - "classical-music-standardization.md"
   - "prefect-beets-adaptation.md"
 ---
+
+> [!WARNING]
+> **DOCUMENTO OBSOLETO / DEPRECATED**
+> Questo documento è obsoleto e superato dalle nuove procedure e implementazioni del lab. Non deve essere usato come fonte di verità per le decisioni degli agenti IA.
+
 
 # Music Library Governance
 
@@ -167,7 +173,7 @@ Per importare grosse librerie frammentate (Fase di Migrazione), utilizziamo uno 
 
 ### Ciclo Dual-Pipeline & API Loopback (Classica)
 La pipeline classica opera secondo un modello disaccoppiato ("Blackhole") orchestrato da **Prefect** su Kubernetes:
-1. L'istanza K8s `lidarr-classic` inoltra i download a qBittorrent (categoria `lidarr-classic`). I file atterrano in staging. La gestione automatica di Lidarr rimane disabilitata.
+1. L'istanza K8s `lidarr-classic` inoltra i download a qBittorrent (categoria `classical`). I file atterrano in staging. La gestione automatica di Lidarr rimane disabilitata.
 2. A download ultimato, qBittorrent usa un webhook per inserire il percorso nella **Work Queue di Prefect** (concorrenza = 1 per evitare rate limiting MusicBrainz e race conditions sul DB).
 3. Il worker Prefect (`prefect-kubernetes`) lancia un Job K8s effimero:
    - **Pull (initContainer):** Scarica `classical_musiclibrary.db` da **MinIO (S3)** in un volume `emptyDir` locale al nodo (veloce, no lock NFS).

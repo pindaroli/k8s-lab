@@ -392,7 +392,8 @@
       "label": "Mac Studio M2 Ultra",
       "hostname": "olindo-macstudio",
       "aliases": [
-        "olindo-macstudio"
+        "olindo-macstudio",
+        "mac"
       ],
       "domain": "pindaroli.org",
       "ip": "10.10.20.100",
@@ -419,6 +420,7 @@
           "mac": "a4:fc:14:10:5b:80",
           "network": "Management OOB (VLAN 99)",
           "ip": "192.168.100.99",
+          "ip_assignment": "static",
           "gateway": "none (Split-Routing)",
           "dns": "none",
           "connected_to": "switch-25g-letto Port 6",
@@ -429,6 +431,7 @@
           "mac": "a4:fc:14:10:5b:80",
           "network": "Transit / Switch Management (VLAN 1)",
           "ip": "192.168.2.99",
+          "ip_assignment": "static",
           "gateway": "none (Split-Routing)",
           "dns": "none",
           "connected_to": "switch-25g-letto Port 6",
@@ -436,23 +439,6 @@
         }
       ],
       "services": [
-        {
-          "id": "ollama",
-          "label": "Ollama AI",
-          "role": "Local LLM Inference",
-          "port": 11434,
-          "data_path": "~/.ollama/models",
-          "config_file": "/Users/olindo/Library/LaunchAgents/homebrew.mxcl.ollama.plist",
-          "notes": "Servizio installato localmente per inferenza AI distribuita."
-        },
-        {
-          "id": "ollama-exporter",
-          "label": "Ollama Metrics Exporter",
-          "role": "Prometheus Metrics Bridge",
-          "port": 11435,
-          "config_file": "/Users/olindo/Library/LaunchAgents/org.norskhelsenett.ollama-metrics.plist",
-          "notes": "Proxy trasparente (Go) per catturare metriche di inferenza (VRAM/Metal). Log: ~/Library/Logs/ollama-monitoring/"
-        },
         {
           "id": "tdarr-node",
           "label": "Tdarr External Node",

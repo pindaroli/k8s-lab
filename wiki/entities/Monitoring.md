@@ -8,7 +8,6 @@ tags:
   - "#grafana"
 provenance:
   - "monitoring/README.md"
-  - "ollama/README.md"
 ---
 
 # VictoriaMetrics & Grafana
@@ -23,7 +22,6 @@ La stack di observability è basata sull'operatore di **VictoriaMetrics**, distr
 ## 2. Scraping Strategy
 Tutti i target interni sono gestiti tramite Custom Resources dell'Operatore:
 - **Traefik, CNPG, Velero, Servarr**: Utilizzano `VMServiceScrape`.
-- **Ollama (Mac Studio)**: Utilizza un `VMStaticScrape` (`ollama-static-scrape.yaml`). Punta all'IP del Mac (`10.10.20.100:11435`) dove un Exporter Proxy (avviato via `launchd`) intercetta le chiamate API per estrarre i "Token per Secondo" dal chip M2 Ultra.
 
 ## 3. Maintenance (Helm)
 Per aggiornare la stack:

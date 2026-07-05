@@ -57,6 +57,15 @@ In caso di crash di un nodo (come successo con PVE2), il quorum deve essere mant
 > [!WARNING]
 > **BLOCCO PRE-UPGRADE (CORE-DNS OVERRIDE ATTIVO)**: Prima di aggiornare Talos OS, controllare le Release Notes di Sidero Labs. Se la nuova versione di Talos aggiorna l'immagine di CoreDNS, è **OBBLIGATORIO** aggiornare manualmente il campo `image:` all'interno del blocco `inlineManifests` nei file `talos-config/controlplane-cp-0*.yaml` e fare un `talosctl apply-config` prima di riavviare i nodi.
 
+## 5. Resilienza e Alta Affidabilità (HA)
+
+> [!CAUTION]
+> **ANTI-PATTERN: PROXMOX HA DISABILITATO**
+> Le VM del Control Plane di Talos (`vm:1300`, `vm:2300`, `vm:3200`) **NON** devono mai essere configurate sotto l'HA Manager di Proxmox VE. 
+> 
+> *Motivazione*: I dischi virtuali OS e dati (`etcd`) di queste macchine risiedono su storage fisico locale (`local-lvm` / `local-zfs`). Se un host si guasta, Proxmox non può migrare i dischi, causando loop di errore, fallimenti del watchdog e potenziali split-brain.
+> L'intera logica di High Availability e quorum è demandata **esclusivamente** a livello applicativo (Kubernetes/Talos "shared-nothing").
+
 ## Relazioni
 - Dipende da [[OPNsense]] per il DNS.
 - Utilizza [[TrueNAS]] via NFS per i Persistent Volumes (PV).

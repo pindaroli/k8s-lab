@@ -59,6 +59,24 @@
           "10.10.20.143",
           "10.10.20.100",
           "10.10.10.0/24"
+        ],
+        "subdirs": [
+          {
+            "name": "downloads/radarr",
+            "purpose": "qBittorrent category 'radarr' save path"
+          },
+          {
+            "name": "downloads/lidarr",
+            "purpose": "qBittorrent category 'lidarr' save path"
+          },
+          {
+            "name": "downloads/readarr",
+            "purpose": "qBittorrent category 'readarr' save path"
+          },
+          {
+            "name": "downloads/classical",
+            "purpose": "qBittorrent category 'classical' save path"
+          }
         ]
       },
       "classical": {
