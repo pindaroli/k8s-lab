@@ -172,6 +172,10 @@ data:
             href: https://prowlarr.pindaroli.org
             description: Indexer management
             icon: prowlarr.png
+        - Autobrr:
+            href: https://autobrr.pindaroli.org
+            description: Torrent monitor and automation
+            icon: autobrr.png
         - Tdarr:
             href: https://tdarr.pindaroli.org
             description: Audio/Video Library Transcoder

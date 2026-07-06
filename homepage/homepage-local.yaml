@@ -145,6 +145,10 @@ data:
             href: https://prowlarr-internal.pindaroli.org
             description: Indexer management
             icon: prowlarr.png
+        - Autobrr:
+            href: https://autobrr-internal.pindaroli.org
+            description: Torrent monitor and automation (Internal)
+            icon: autobrr.png
         - Tdarr:
             icon: tdarr.png
             href: https://tdarr-internal.pindaroli.org
