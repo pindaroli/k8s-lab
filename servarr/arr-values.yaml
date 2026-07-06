@@ -447,6 +447,55 @@ recyclarr:
 ## Autobrr - Torrent Monitor and Automation
 autobrr:
   enabled: true
+  provisioning:
+    enabled: true
+    secrets:
+      admin: "autobrr-admin-creds"
+      qbittorrent: "servarr-api-keys"
+      telegram: "telegram-creds"
+    telegram:
+      chatId: "-100123456789"
+    clients:
+      - name: "qBittorrent-GEMINI"
+        type: "QBITTORRENT"
+        enabled: true
+        host: "http://servarr-qbittorrent-web:8080"
+        port: 0
+        tls: false
+        tls_skip_verify: true
+        username: "SECRET_QBITTORRENT_USERNAME"
+        password: "SECRET_QBITTORRENT_PASSWORD"
+        settings:
+          basic:
+            auth: true
+            username: "SECRET_QBITTORRENT_USERNAME"
+            password: "SECRET_QBITTORRENT_PASSWORD"
+          rules:
+            enabled: true
+            max_active_downloads: 3
+            ignore_slow_torrents: true
+            ignore_slow_torrents_condition: "MAX_DOWNLOADS_REACHED"
+    notifications:
+      - name: "Telegram-Alerts"
+        type: "TELEGRAM"
+        enabled: true
+        token: "SECRET_TELEGRAM_TOKEN"
+        targets: "SECRET_TELEGRAM_CHATID"
+        events: ["approved", "rejected", "error", "irc_down", "irc_up"]
+    filters:
+      - name: "GEMINI-Movies-Racing"
+        enabled: true
+        priority: 100
+        use_regex: true
+        resolutions: ["1080p", "2160p"]
+        codecs: ["H.264", "HEVC", "x265"]
+        sources: ["BluRay", "WEB-DL"]
+        containers: ["MKV"]
+        origins: ["INTERNAL"]
+        years: "2023-2030"
+        match_releases: ".*(FRENCH|MULTi|TRUEFRENCH).*"
+        except_releases: ".*(3D|REMUX|Stereo).*"
+        indexers: []
   replicaCount: 1
   image:
     repository: ghcr.io/autobrr/autobrr

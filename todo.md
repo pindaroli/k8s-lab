@@ -164,7 +164,12 @@
 - [x] **Patch Configurazione**: Riconfigurato a freddo `qBittorrent.conf` via SSH su TrueNAS con successo per abilitare `/data/incomplete`.
 - [x] **Migrazione Fisica**: Spostati con successo 91.6 GB di file parziali a freddo via `rsync` su TrueNAS ad una velocità media di 367.2 MB/s.
 - [x] **Verifica**: Convalidato il corretto funzionamento, il mount `/data/incomplete` di 4.9T su NVMe e lo stato Running di tutto il namespace `arr`.
-- [x] **Backup**: Rinominata la vecchia directory HDD in `downloads/incomplete_backup` per sicurezza.
+- [x] Backup: Rinominata la vecchia directory HDD in `downloads/incomplete_backup` per sicurezza.
+
+## [ ] Rivedere User e Pass PostgreSQL dei DB vari
+- [ ] Mappare tutti i DB su `postgres-main` (es. autobrr, n8n, ecc.).
+- [ ] Verificare ed eventualmente modificare la sicurezza delle credenziali (molte password coincidono con l'username/db_name).
+- [ ] Assicurarsi che i nuovi secret siano cifrati via SOPS.
 
 ## Vaultwarden Deployment (PAUSED)
 
