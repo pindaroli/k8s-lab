@@ -9,7 +9,7 @@ stringData:
     prowlarr-api-key: ENC[AES256_GCM,data:aa1GOBf91s0MyfGMuCCC+4pWnyfSU3j/ST/kWA9wCJA=,iv:92v4BFW5QIsE98OngjPiVzGwUgPp5qdGe2/JU65ZNyk=,tag:0mLPhucCk/RyY7kzQIqk3A==,type:str]
     qbittorrent-pass: ENC[AES256_GCM,data:qqa9pa5vHbti,iv:h+Cah1Wr8Ygvmqv8E58nf0WrfqNrYIlsYOOcdy7n9MM=,tag:V52gJXQ0PkKPkRSox4wfAA==,type:str]
     qbittorrent-user: ENC[AES256_GCM,data:BIM3GuE=,iv:5WYoXtoJUh8Vlwd1nBjusbEPaG7jK6ILmng0zaeILsc=,tag:EfEZlsWtHG1yxDIMxD02EA==,type:str]
-    radarr-api-key: ENC[AES256_GCM,data:NkbVSo4zqW8OmXSIxSLukIyV8605bzZNkonZwNGfJBE=,iv:t2qRQK7NRU1e9c8b2daEiV2dJCL1NW9fMn1l0O3WmCs=,tag:A8VQVmmVQRX0ZqT0YkkIkw==,type:str]
+    radarr-api-key: ENC[AES256_GCM,data:VjtkZTpA8gO1hTf5HM/Oa0rN6t8tuu8MH3hIih8muok=,iv:QBpw0yD9BQluq2gKaen0sbCiq+XOOjuv7YBXcenZ2Mo=,tag:mimgXDY1SMDTmx+V/Ppa6g==,type:str]
     autobrr-admin-user: ENC[AES256_GCM,data:UWI1AIc=,iv:y9M2UNYgDE7GyX2HVxVZewUGqg5mEHwBVjF8MVLTdPM=,tag:UO7Zs9I6t4kguCrKWVO49g==,type:str]
     autobrr-admin-password: ENC[AES256_GCM,data:EY0kcKYpUPLn,iv:jcJavEECN1b/DNmn0VD0QNS3ocdSaGykygYV1hg6zx4=,tag:84Ok3MgMEPwUy5Snp/7pZw==,type:str]
     telegram-token: ENC[AES256_GCM,data:dXyDA4YBLRNZE4z9YPTTNj/y0kTMFN/7PpmgeaAwZUTlA8sK5oURnrt9VS7oOQ==,iv:TF/NqTpucexOpIAjZoveJSxRmCDGa2/zUOtnZiLbUO8=,tag:/rKgKxn8SA7uzhpEDJKmIg==,type:str]
@@ -24,7 +24,7 @@ sops:
             dERJSnBSMGxJc01mZlhtRklIc3J5V28Km9BAWYR9XG2lKowTzP23VJZokbVr6gZ2
             NtF2OZmnpMdFZ8hBJAUr5uyjP4UScl65BE/ufx5yz7Neo/gwvLFQ1w==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-07-06T12:21:26Z"
-    mac: ENC[AES256_GCM,data:IyOddTBzMFTfVI0LocwoOKBzZff4rshEMGXaGj1oxr3Wpe09YxkIzgvMK6KIJ8a/78e2/1TxTM9Hl+10h/2bEKlPV3KqaUHzsrtRUTAckrM3+eRG3a7qJlevIgxbaDrTSpeQZejpkludaeQ6FbVc9OO3SWELiChwKMa5fLvPlc8=,iv:YeIRvengGpoMiy3CsesY/s/rlVKtj7N85iBcLdSUwCk=,tag:Mf+oIqgMhaZpUuxIbKEYUA==,type:str]
+    lastmodified: "2026-07-06T13:57:54Z"
+    mac: ENC[AES256_GCM,data:TDK2wzRvXUIy+vJtENWmIblo6Y4L4qHQ7cv8rJI4OqutWxq5sPguddOfcYDzBFaoKqHReylEBe1krBPWG0OwaB0moDijDTtQ8okNIDdCMdjCK73/KXTNYS4oi6ueqLeLzJU88rtBjdRyFYSXLZcEfc4L/80HnkCuasgTjMRL+sk=,iv:tbGkjovUrtpskZ3tVmJvz4FvUGZ2Q/JosKxfSUjXT7k=,tag:5/cujlkOwtjQ/kbG4YEruA==,type:str]
     encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
     version: 3.12.2
