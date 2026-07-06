@@ -311,6 +311,8 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: "home,home.pindaroli.org"
+            - name: NODE_OPTIONS
+              value: "--max-http-header-size=32768"
           ports:
             - name: http
               containerPort: 3000

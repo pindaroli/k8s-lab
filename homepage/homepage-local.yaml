@@ -261,6 +261,8 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: "home,home-internal.pindaroli.org"
+            - name: NODE_OPTIONS
+              value: "--max-http-header-size=32768"
           resources:
             requests:
               cpu: 100m
