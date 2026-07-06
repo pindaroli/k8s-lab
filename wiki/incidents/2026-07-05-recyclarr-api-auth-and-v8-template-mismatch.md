@@ -20,7 +20,7 @@ tags:
 
 ## 🔍 Diagnosis
 During the validation of the Recyclarr quality automation stack in Radarr:
-1. **API Authentication Failure (401 Unauthorized)**: The Recyclarr sync job was failing silently or skipping sync because the API Key configured in the Kubernetes Secret `servarr-api-keys` (specifically the key `radarr-api-key`) was incorrect (`0fb8a908d549466585c98632b5275b47`) due to a character inversion (positions 7 and 8 had `08` instead of `80`). The correct API key saved in Radarr's `/config/config.xml` (and in the SOPS encrypted repository source) was `0fb8a980d549466585c98632b5275b47`.
+1. **API Authentication Failure (401 Unauthorized)**: The Recyclarr sync job was failing silently or skipping sync because the API Key configured in the Kubernetes Secret `servarr-api-keys` (specifically the key `radarr-api-key`) was incorrect due to a character inversion (positions 7 and 8 had `08` instead of `80` in the old key).
 2. **Missing Custom Formats**: Because of the authentication failure, the Custom Formats API endpoint of Radarr (`/api/v3/customformat`) was returning an empty array `[]`.
 3. **v8 Template Incompatibility**: The Kubernetes CronJob was configured to run a legacy binary (`recyclarr:6.0`), but it dynamically cloned the latest TRaSH Guides templates (which target Recyclarr v8). In v8, all official `include:` templates (such as `radarr-quality-definition-movie` and `radarr-custom-formats-*`) have been removed in favor of **Guide-Backed Quality Profiles** using `trash_id`. Attempting to run v8 templates on the v6 binary caused a parsing crash (`YamlIncludeException` / property `assign_scores_to` not found).
 

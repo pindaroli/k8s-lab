@@ -23,7 +23,10 @@ spec:
             - name: URL
               value: "http://servarr-radarr.arr.svc.cluster.local:7878"
             - name: APIKEY
-              value: "0fb8a980d549466585c98632b5275b47"
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: radarr-api-key
             - name: PORT
               value: "9150"
           ports:
@@ -74,7 +77,10 @@ spec:
             - name: URL
               value: "http://servarr-lidarr.arr.svc.cluster.local:8686"
             - name: APIKEY
-              value: "ee6625f51dea47369a65a7ef53637ae1"
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: lidarr-api-key
             - name: PORT
               value: "9150"
           ports:
@@ -125,7 +131,10 @@ spec:
             - name: URL
               value: "http://servarr-prowlarr.arr.svc.cluster.local:9696"
             - name: APIKEY
-              value: "fad287a6fe814e1b885f1ba0a8f95179"
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: prowlarr-api-key
             - name: PORT
               value: "9150"
           ports:
@@ -175,9 +184,15 @@ spec:
             - name: QBIT_URL
               value: "http://servarr-qbittorrent-web.arr.svc.cluster.local:8080"
             - name: QBIT_USERNAME
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: qbittorrent-user
             - name: QBIT_PASSWORD
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: qbittorrent-pass
           ports:
             - name: metrics
               containerPort: 1234
