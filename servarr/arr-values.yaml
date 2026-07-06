@@ -443,3 +443,33 @@ recyclarr:
       - trash_id: d1d67249d3890e49bc12e275d989a7e9
         reset_unmatched_scores:
           enabled: true
+
+## Autobrr - Torrent Monitor and Automation
+autobrr:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: ghcr.io/autobrr/autobrr
+    tag: "v1.80.0"
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: Europe/Rome
+    AUTOBRR__DATABASE_TYPE: postgres
+    AUTOBRR__POSTGRES_HOST: postgres-main-rw.cnpg-system.svc.cluster.local
+    AUTOBRR__POSTGRES_PORT: "5432"
+    AUTOBRR__POSTGRES_DATABASE: autobrr
+    AUTOBRR__POSTGRES_USER: autobrr
+    AUTOBRR__POSTGRES_PASS: autobrr
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    storageClass: csi-nfs-stripe-arr-conf
+    existingClaim: ""
+    size: 1Gi

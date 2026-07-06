@@ -239,3 +239,30 @@ spec:
           port: 8686
   tls:
     secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: autobrr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # External / Public: OAuth Protected
+    - match: Host(`autobrr.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-autobrr
+          port: 7474
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Direct
+    - match: Host(`autobrr`) || Host(`autobrr-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-autobrr
+          port: 7474
+  tls:
+    secretName: pindaroli-wildcard-tls

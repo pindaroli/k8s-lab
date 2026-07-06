@@ -47,6 +47,7 @@ create_db "radarr" "radarr"
 create_db "lidarr" "lidarr"
 create_db "lidarr_classic" "lidarr_classic"
 create_db "jellyseerr" "jellyseerr"
+create_db "autobrr" "autobrr"
 # create_db "qbittorrent" "qbittorrent" # Keep qbit on sqlite for now or experimental?
 
 echo "Databases Created."

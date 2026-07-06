@@ -421,6 +421,12 @@
 
 
 
+### [ ] Generalizzazione setup_postgres_dbs.sh per integrazione in MCP Server
+  > **Contesto**: Lo script `scripts/infrastructure/setup_postgres_dbs.sh` gestisce in modo procedurale e locale la creazione dei database e degli utenti PostgreSQL eseguendo comandi SQL via kubectl. Per permettere agli agenti AI di gestire in autonomia il provisioning dei database senza dipendere da script shell complessi, questo processo dovrebbe essere integrato in un tool di un MCP Server (es. estendendo l'MCP server postgres o kubernetes).
+  > **Obiettivo**: Riscrivere o incapsulare la logica di creazione db/utente di `setup_postgres_dbs.sh` per renderla invocabile in modo dichiarativo e parametrizzato come tool MCP.
+
+
+
 ### [ ] Configurazione Globale Ansible (ansible.cfg root)
   > **Contesto**: L'esecuzione dei playbook Ansible dalla root del progetto fallisce se non si specificano manualmente l'inventory e il file di password del vault.
   > **Risoluzione da applicare**: Aggiornare `ansible.cfg` nella root per mappare i percorsi di default:
