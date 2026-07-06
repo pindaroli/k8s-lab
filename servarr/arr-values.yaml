@@ -430,12 +430,9 @@ autobrr:
         implementation: "torznab"
         enabled: true
         settings:
-          - name: "url"
-            value: "http://servarr-prowlarr:9696/1/api"
-          - name: "apikey"
-            value: "SECRET_PROWLARR_APIKEY"
-          - name: "download_type"
-            value: "torrent"
+          url: "http://servarr-prowlarr:9696/1/api"
+          apikey: "SECRET_PROWLARR_APIKEY"
+          download_type: "torrent"
     filters:
       - name: "GEMINI-Movies-Racing"
         enabled: true
