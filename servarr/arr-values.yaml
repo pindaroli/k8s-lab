@@ -450,9 +450,9 @@ autobrr:
   provisioning:
     enabled: true
     secrets:
-      admin: "autobrr-admin-creds"
+      admin: "servarr-api-keys"
       qbittorrent: "servarr-api-keys"
-      telegram: "telegram-creds"
+      telegram: "servarr-api-keys"
     telegram:
       chatId: "-100123456789"
     clients:
