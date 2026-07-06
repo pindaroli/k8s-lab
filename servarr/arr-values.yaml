@@ -385,6 +385,7 @@ autobrr:
       admin: "servarr-api-keys"
       qbittorrent: "servarr-api-keys"
       telegram: "servarr-api-keys"
+      prowlarr: "servarr-api-keys"
     telegram:
       chatId: "-100123456789"
     clients:
@@ -414,6 +415,27 @@ autobrr:
         token: "SECRET_TELEGRAM_TOKEN"
         targets: "SECRET_TELEGRAM_CHATID"
         events: ["approved", "rejected", "error", "irc_down", "irc_up"]
+    # indexers: lista di indexer da creare via API /api/indexer
+    # --- COME COSTRUIRE L'URL TORZNAB DA PROWLARR ---
+    # In Prowlarr: Indexers > fai clic sul feed dell'indexer > copia URL
+    # L'URL ha la forma: https://prowlarr.local/<id>/api?apikey=<key>&extended=1&t=search
+    # Separa in due parti:
+    #   url:    https://prowlarr.local/<id>/api       (base, senza query string)
+    #   apikey: usa il placeholder SECRET_PROWLARR_APIKEY  (sostituito a runtime dal Job)
+    # Internamente al cluster usa il DNS K8s: http://servarr-prowlarr:9696/<id>/api
+    # Per ogni indexer diverso in Prowlarr cambia solo il numero <id> nell'URL.
+    indexers:
+      - name: "Prowlarr-Generic-Torznab"
+        identifier: "generic-torznab"
+        implementation: "torznab"
+        enabled: true
+        settings:
+          - name: "url"
+            value: "http://servarr-prowlarr:9696/1/api"
+          - name: "apikey"
+            value: "SECRET_PROWLARR_APIKEY"
+          - name: "download_type"
+            value: "torrent"
     filters:
       - name: "GEMINI-Movies-Racing"
         enabled: true
