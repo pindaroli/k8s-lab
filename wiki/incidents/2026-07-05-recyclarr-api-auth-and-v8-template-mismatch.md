@@ -56,7 +56,7 @@ During the validation of the Recyclarr quality automation stack in Radarr:
 ## 🧪 Verification Results
 * **Radarr API Verification**: Ran curl against Radarr API using the correct key:
   ```bash
-  curl -s -k -H "X-Api-Key: 0fb8a980d549466585c98632b5275b47" https://radarr-internal.pindaroli.org/api/v3/customformat | jq '. | length'
+  curl -s -k -H "X-Api-Key: <RADARR_API_KEY>" https://radarr-internal.pindaroli.org/api/v3/customformat | jq '. | length'
   ```
   Result returned **`59`**, confirming that the 59 custom formats are present and synced.
 
