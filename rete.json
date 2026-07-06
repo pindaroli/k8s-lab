@@ -787,6 +787,8 @@
         "lidarr-classic",
         "tdarr-internal",
         "prowlarr",
+        "autobrr",
+        "autobrr-internal",
         "qbittorrent",
         "jellyfin",
         "jellyfin-classic",
