@@ -56,7 +56,8 @@ qbittorrent:
     - radarr
     - lidarr
     - readarr
-    - classical
+    - lidarr-classical
+    - autobrr-classical
   image:
     tag: "5.2.2_v2.0.13-ls465"
   env:
@@ -473,3 +474,58 @@ autobrr:
     storageClass: csi-nfs-stripe-arr-conf
     existingClaim: ""
     size: 1Gi
+lidarr-classic:
+  image:
+    repository: ghcr.io/hotio/lidarr
+    tag: release-3.1.0.4875
+    pullPolicy: IfNotPresent
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: Europe/Rome
+    # Hotio/NET Core uses double underscores for config mapping
+    LIDARR__POSTGRES__HOST: postgres-main-rw.cnpg-system.svc.cluster.local
+    LIDARR__POSTGRES__PORT: "5432"
+    LIDARR__POSTGRES__MAINDB: lidarr_classic
+    LIDARR__POSTGRES__LOGDB: lidarr_classic
+    LIDARR__POSTGRES__USER: lidarr_classic
+    LIDARR__POSTGRES__PASSWORD: lidarr_classic
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  persistence:
+    enabled: true
+    storageClass: csi-nfs-stripe-arr-conf
+    createInitContainer: false
+    config:
+      enabled: true
+    media:
+      enabled: true
+      existingClaim: servarr-jellyfin-media
+  monitoring:
+    enabled: true
+  extraContainers:
+    - name: exportarr
+      image: ghcr.io/onedr0p/exportarr:v2.3.0
+      args:
+        - lidarr
+      env:
+        - name: URL
+          value: "http://localhost:8686"
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: servarr-api-keys
+              key: lidarr-classic-api-key
+      ports:
+        - name: metrics
+          containerPort: 9707
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
