@@ -446,7 +446,7 @@ autobrr:
         years: "2023-2030"
         match_releases: ".*(FRENCH|MULTi|TRUEFRENCH).*"
         except_releases: ".*(3D|REMUX|Stereo).*"
-        indexers: []
+        indexers: ["Prowlarr-Generic-Torznab"]
   replicaCount: 1
   image:
     repository: ghcr.io/autobrr/autobrr
