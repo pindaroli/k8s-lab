@@ -1,10 +1,10 @@
 ---
 title: "Piano: Setup Server MCP llm-wiki"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-07-07
-completed_at: null
+completed_at: 2026-07-07
 tags:
   - "#plan"
   - "#mcp"
@@ -50,7 +50,7 @@ Questo piano definisce i passaggi operativi per clonare, compilare e registrare 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 2 (Configurazione Dichiarativa)
-- **Ultima Azione Completata**: Compilazione di llm-wiki v0.4.1 completata con successo.
-- **Prossimo Passo Operativo**: Configurare il server mcp in mcp_config.json.
+- **Fase Attiva**: Completata
+- **Ultima Azione Completata**: Test di validazione eseguito ed esito positivo riscontrato con successo.
+- **Prossimo Passo Operativo**: Nessuno.
 - **Blocchi/Decisioni Pendenti**: Nessuno.

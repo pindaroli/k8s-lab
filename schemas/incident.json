@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/geronimo-iia/llm-wiki/schemas/v0.1.0/incident.json",
+  "title": "Incident type",
+  "description": "Production incident tracking",
+  "type": "object",
+  "required": ["title", "type", "status", "certified_for_ai", "date", "severity", "resolved"],
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "const": "incident"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "archived"]
+    },
+    "certified_for_ai": {
+      "type": "boolean"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["P1", "P2", "P3", "P4"]
+    },
+    "resolved": {
+      "type": "boolean"
+    },
+    "resolved_at": {
+      "type": ["string", "null"]
+    },
+    "post_mortem": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "x-wiki-types": {
+    "incident": "Production incident tracking"
+  },
+  "additionalProperties": true
+}
