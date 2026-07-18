@@ -9,7 +9,7 @@ export PROJECT_DIR="/Users/olindo/prj/k8s-lab"
 echo "🚀 Starting Authorized Network Sync..."
 
 /opt/homebrew/bin/ansible-playbook \
-    "$PROJECT_DIR/ansible/playbooks/opnsense_sync_dns.yml" \
+    "$PROJECT_DIR/ansible/playbooks/opnsense/opnsense_sync_dns.yml" \
     --vault-password-file "/Users/olindo/.vault_pass.txt"
 
 echo "✅ Sync Process Completed."

@@ -1,23 +1,22 @@
 ---
-title: "Piano: Upgrade Radarr a v6.2.1.10461"
+title: "Piano: Upgrade Radarr a v6.3.0.10514"
 type: plan
-status: archived
-certified_for_ai: false
-superseded_by: [[radarr-upgrade-6.3.0]]
-created_at: 2026-07-05
+status: active
+certified_for_ai: true
+created_at: 2026-07-14
 tags:
   - "#plan"
   - "#talos"
   - "#database"
 ---
 
-# Piano: Upgrade Radarr a v6.2.1.10461
+# Piano: Upgrade Radarr a v6.3.0.10514
 
-**Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-07-05
+**Target**: Cluster GEMINI (`pindaroli.org`) · **Data**: 2026-07-14
 **Autore**: Antigravity AI Engineering
 
 > [!IMPORTANT]
-> Questo piano definisce l'aggiornamento dell'immagine di Radarr all'interno del namespace `arr` alla versione stabile `v6.2.1.10461`.
+> Questo piano definisce l'aggiornamento dell'immagine di Radarr all'interno del namespace `arr` alla versione stabile `v6.3.0.10514`.
 > Radarr utilizza PostgreSQL (`postgres-main-rw`), pertanto le migrazioni dello schema del database verranno applicate automaticamente all'avvio del nuovo container.
 
 ---
@@ -26,17 +25,17 @@ tags:
 
 | Componente | Versione Attuale | Nuova Versione | Registro Immagine |
 | :--- | :--- | :--- | :--- |
-| **Radarr** | `release-6.1.1.10360` | `release-6.2.1.10461` | `ghcr.io/hotio/radarr` |
+| **Radarr** | `release-6.2.1.10461` | `release-6.3.0.10514` | `ghcr.io/hotio/radarr` |
 
 ---
 
 ## Ordine di Esecuzione
 
-- [x] **Fase 1: Backup Preventivo**
+- [ ] **Fase 1: Backup Preventivo**
   - Eseguire un backup manuale del namespace `arr` tramite Velero.
-- [x] **Fase 2: Modifica Configurazione**
+- [ ] **Fase 2: Modifica Configurazione**
   - Aggiornare il tag dell'immagine in `servarr/arr-values.yaml`.
-- [x] **Fase 3: Deploy & Verifiche**
+- [ ] **Fase 3: Deploy & Verifiche**
   - Eseguire l'aggiornamento della release Helm.
   - Monitorare il rollout dei Pod e i log di avvio per verificarlo.
 
@@ -55,7 +54,7 @@ kubectl logs -n arr -l app.kubernetes.io/name=radarr -c radarr --tail=100
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Completato
-- **Ultima Azione Completata**: Upgrade a v6.2.1.10461 completato e verificato con successo (Pod 2/2 Ready).
-- **Prossimo Passo Operativo**: Nessuno, l'aggiornamento è andato a buon fine.
+- **Fase Attiva**: Fase 1: Backup Preventivo
+- **Ultima Azione Completata**: Inizializzazione della documentazione del piano.
+- **Prossimo Passo Operativo**: Modificare la configurazione dell'immagine in `servarr/arr-values.yaml`.
 - **Blocchi/Decisioni Pendenti**: Nessuno.

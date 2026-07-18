@@ -22,7 +22,7 @@ spec:
             - --with
             - "quote identifiers"
             - /config/lidarr.db
-            - postgresql://lidarr:lidarr@10.108.78.94:5432/lidarr
+            - postgresql://lidarr:lidarr@postgres-main-rw.cnpg-system.svc.cluster.local:5432/lidarr
           volumeMounts:
             - name: config
               mountPath: /config

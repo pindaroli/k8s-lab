@@ -1,5 +1,7 @@
 ---
 title: "Wiki Plan: Classical Homelab Integration & GitOps Orchestration"
+status: archived
+certified_for_ai: false
 type: plan
 status: draft
 certified_for_ai: true

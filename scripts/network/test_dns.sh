@@ -73,8 +73,8 @@ echo -e "${RESET}"
 # --- Servizi Traefik (puntano tutti al VIP 10.10.20.56) ---
 echo -e "${BOLD}[1] Servizi Traefik VIP (atteso: ${TRAEFIK_VIP})${RESET}"
 for svc in \
-  auth traefik-dash radarr lidarr lidarr-classic \
-  tdarr-internal prowlarr qbittorrent jellyfin jellyfin-classic \
+  auth traefik-dash radarr lidarr \
+  tdarr-internal prowlarr qbittorrent jellyfin \
   home minio nas n8n grafana ap kasmweb prefect tdarr \
   calibre-web firewall pve; do
   check "traefik" "${svc}.${DOMAIN}" "${TRAEFIK_VIP}"

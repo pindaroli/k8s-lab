@@ -1,10 +1,17 @@
 ---
 title: "Wiki Plan: Adattamento Routine Beets per Orchestrazione Prefect (Standalone)"
 type: plan
-status: draft
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-06-27
+archived_at: 2026-07-18
 ---
+
+> [!WARNING]
+> **PROCEDURA OBSOLETA E DISMESSA**
+> Questo piano e l'orchestrazione Beets associata sono obsoleti. L'uso di Beets e la directory `music_backup` sono formalmente dismessi nell'infrastruttura del homelab.
+
+
 
 # Wiki Plan: Adattamento Routine Beets per Orchestrazione Prefect (Standalone)
 

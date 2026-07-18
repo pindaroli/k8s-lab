@@ -18,5 +18,5 @@ repos:
       - id: sops-check
         name: Check SOPS encryption
         language: script
-        entry: scripts/check-sops-encrypted.sh
+        entry: scripts/security/check-sops-encrypted.sh
         files: ^secrets-sops/.*\.enc\.yaml$

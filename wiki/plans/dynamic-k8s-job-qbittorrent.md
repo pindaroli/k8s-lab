@@ -99,7 +99,7 @@ JSON_PAYLOAD=$(jq -n \
           "containers": [
             {
               "name": "normalizer",
-              "image": "ghcr.io/pindaroli/custom-normalizer:1.0.1",
+              "image": "ghcr.io/pindaroli/custom-normalizer:1.0.3",
               "args": [$path, "", "/media/downloads"],
               "env": [
                 {
@@ -112,7 +112,7 @@ JSON_PAYLOAD=$(jq -n \
                 }
               ],
               "volumeMounts": [
-                { "name": "media-data", "mountPath": "/media/downloads" }
+                { "name": "media-data", "mountPath": "/media" }
               ]
             }
           ],

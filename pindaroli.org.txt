@@ -49,6 +49,7 @@ prowlarr-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
 pve-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
 qbittorrent-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
 radarr-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
+bazarr-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
 tdarr-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
 traefik-dash-internal.pindaroli.org.	1	IN	A	0.0.0.0 ; cf_tags=cf-proxied:false
 
@@ -69,6 +70,7 @@ prowlarr.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
 pve.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
 qbittorrent.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
 radarr.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
+bazarr.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
 tdarr.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
 traefik-dash.pindaroli.org.	1	IN	CNAME	pindaroli.org. ; cf_tags=cf-proxied:false
 

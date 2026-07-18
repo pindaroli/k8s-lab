@@ -185,60 +185,7 @@ subsets:
     ports:
       - port: 8096
 
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: jellyfin-classic-ingress-route
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    # External / Public: OAuth Protected
-    - match: Host(`jellyfin-classic.pindaroli.org`)
-      kind: Rule
-      services:
-        - name: servarr-jellyfin-classic
-          port: 8096
-      middlewares:
-        - name: oauth2-auth
-          namespace: traefik
-    # Internal / Short: Direct
-    - match: Host(`jellyfin-classic`) || Host(`jellyfin-classic-internal.pindaroli.org`)
-      kind: Rule
-      services:
-        - name: servarr-jellyfin-classic
-          port: 8096
-  tls:
-    secretName: pindaroli-wildcard-tls
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: lidarr-classic-ingress-route
-  namespace: arr
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    # External / Public: OAuth Protected
-    - match: Host(`lidarr-classic.pindaroli.org`)
-      kind: Rule
-      services:
-        - name: servarr-lidarr-classic
-          port: 8686
-      middlewares:
-        - name: oauth2-auth
-          namespace: traefik
-    # Internal / Short: Direct
-    - match: Host(`lidarr-classic`) || Host(`lidarr-classic-internal.pindaroli.org`)
-      kind: Rule
-      services:
-        - name: servarr-lidarr-classic
-          port: 8686
-  tls:
-    secretName: pindaroli-wildcard-tls
+
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -264,5 +211,59 @@ spec:
       services:
         - name: servarr-autobrr
           port: 7474
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bazarr-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # External / Public: OAuth Protected
+    - match: Host(`bazarr.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-bazarr
+          port: 6767
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Basic Auth
+    - match: Host(`bazarr`) || Host(`bazarr-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-bazarr
+          port: 6767
+  tls:
+    secretName: pindaroli-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: minimserver-ingress-route
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # External / Public: OAuth Protected
+    - match: Host(`minimserver.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-minimserver
+          port: 9790
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Direct Access
+    - match: Host(`minimserver`) || Host(`minimserver-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: servarr-minimserver
+          port: 9790
   tls:
     secretName: pindaroli-wildcard-tls

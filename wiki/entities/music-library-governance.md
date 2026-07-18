@@ -16,8 +16,7 @@ provenance:
 
 > [!WARNING]
 > **DOCUMENTO OBSOLETO / DEPRECATED**
-> Questo documento è obsoleto e superato dalle nuove procedure e implementazioni del lab. Non deve essere usato come fonte di verità per le decisioni degli agenti IA.
-
+> Questo documento è obsoleto e deprecato. Le procedure di bonifica musicale basate su **Beets** e le directory Landing Zone **`music_backup`** e **`staging`** sono state dismesse e non sono più operative nell'infrastruttura del homelab. Non deve essere utilizzato dagli agenti IA come riferimento operativo.
 
 # Music Library Governance
 

@@ -187,6 +187,16 @@
 
 ## Radarr Upgrade
 
+### [ ] Upgrade Radarr a v6.3.0.10514 [[radarr-upgrade-6.3.0]]
+- [x] **Fase 1: Backup Preventivo**
+  - [x] Eseguire backup Velero: `velero backup create backup-pre-radarr-upgrade-6.3.0-$(date +%F) --include-namespaces arr --wait`
+- [x] **Fase 2: Modifica Configurazione**
+  - [x] Aggiornare `servarr/arr-values.yaml`
+- [ ] **Fase 3: Deploy & Verifiche**
+  - [ ] Eseguire dry-run e deploy
+  - [ ] Validare pod e log
+  - [ ] Controllare migrazioni database PostgreSQL
+
 ### [x] ✅ COMPLETATO: Upgrade Radarr a v6.2.1.10461 [[radarr-upgrade-6.2.1]]
 - [x] **Fase 1: Backup Preventivo**
   - [x] Eseguire backup Velero: `velero backup create backup-pre-radarr-upgrade-$(date +%F) --include-namespaces arr --wait`

@@ -1,13 +1,20 @@
 ---
 title: "Piano: Risoluzione KeyError ed Errore di Rete per Import Classica (Beets)"
 type: plan
-status: draft
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-06-27
+archived_at: 2026-07-18
 tags:
   - "#plan"
   - "#music"
 ---
+
+> [!WARNING]
+> **PROCEDURA OBSOLETA E DISMESSA**
+> Questo piano e le procedure relative a Beets sono obsoleti. L'uso di Beets e la directory `music_backup` sono dismessi.
+
+
 
 # Piano: Risoluzione KeyError ed Errore di Rete per Import Classica (Beets)
 

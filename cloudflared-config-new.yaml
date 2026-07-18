@@ -33,6 +33,10 @@ data:
         service: https://10.110.159.107:443
         originRequest:
           noTLSVerify: true
+      - hostname: "bazarr.pindaroli.org"
+        service: https://10.110.159.107:443
+        originRequest:
+          noTLSVerify: true
       - hostname: "ap.pindaroli.org"
         service: https://10.110.159.107:443
         originRequest:

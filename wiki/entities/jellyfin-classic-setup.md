@@ -1,5 +1,7 @@
 ---
 title: "Jellyfin Classic - Setup & Scelte di Configurazione"
+status: archived
+certified_for_ai: false
 last_updated: "2026-05-21"
 confidence: "High"
 tags:
