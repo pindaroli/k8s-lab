@@ -17,36 +17,43 @@ tags:
 
 Questo documento descrive la configurazione ed il workflow di build/pubblicazione automatizzata su **GHCR** (GitHub Container Registry) per le immagini Docker personalizzate del repository `pindaroli-arr-helm`.
 
-## Nome Immagine Pubblicata su GHCR
+## Nomi Immagini Pubblicate su GHCR
 
-L'immagine pubblicata su GitHub Container Registry è denominata:
+Le immagini pubblicate su GitHub Container Registry sono denominate:
 
-**`ghcr.io/pindaroli/custom-qbittorrent`**
+1. **`ghcr.io/pindaroli/custom-qbittorrent`**: Container qBittorrent customizzato con fmedia, cuefix e normalize.sh.
+2. **`ghcr.io/pindaroli/custom-normalizer`**: Immagine Debian standalone adibita esclusivamente all'esecuzione dello script `normalize.sh`.
 
 ### Tag Generati:
-- `ghcr.io/pindaroli/custom-qbittorrent:<VERSION>` (es. `:1.0.0`, letto dal file `VERSION`)
-- `ghcr.io/pindaroli/custom-qbittorrent:latest` (aggiornata automaticamente ad ogni push su `main`)
-- `ghcr.io/pindaroli/custom-qbittorrent:sha-<commit_sha>` (tag immutabile legato al singolo commit)
+- `ghcr.io/pindaroli/<image-name>:<VERSION>` (es. `:1.0.0`, letto dal rispettivo file `VERSION`)
+- `ghcr.io/pindaroli/<image-name>:latest` (aggiornata automaticamente ad ogni push su `main`)
+- `ghcr.io/pindaroli/<image-name>:sha-<commit_sha>` (tag immutabile legato al singolo commit)
 
 ---
 
 ## Gestione della Variabile Tag (`VERSION`)
 
-La versione dell'immagine personalizzata è definita nel file:
-`custom-docker-images/custom-qbittorrent/VERSION`
+La versione di ogni immagine personalizzata è definita nel rispettivo file `VERSION`:
+- `custom-docker-images/custom-qbittorrent/VERSION`
+- `custom-docker-images/custom-normalizer/VERSION`
 
-Durante l'esecuzione della pipeline CI/CD (`.github/workflows/build-custom-qbittorrent.yml`), il tag viene letto dinamicamente dal file `VERSION` e applicato all'immagine pushata su GHCR.
+Durante l'esecuzione delle pipeline CI/CD (`.github/workflows/build-custom-*.yml`), il tag viene letto dinamicamente dal file `VERSION` e applicato all'immagine pushata su GHCR.
 
 ```
 pindaroli-arr-helm/
 ├── .github/workflows/
-│   └── build-custom-qbittorrent.yml   # Pipeline automatizzata GitHub Actions
+│   ├── build-custom-qbittorrent.yml   # Pipeline qBittorrent custom
+│   └── build-custom-normalizer.yml    # Pipeline Normalizer standalone
 ├── custom-docker-images/
 │   ├── README.md
-│   └── custom-qbittorrent/
+│   ├── custom-qbittorrent/
+│   │   ├── Dockerfile
+│   │   ├── VERSION
+│   │   └── normalize.sh
+│   └── custom-normalizer/
 │       ├── Dockerfile
-│       ├── VERSION                    # File contenente il tag esplicito (es. 1.0.0)
-│       └── README.md
+│       ├── VERSION
+│       └── normalize.sh
 ```
 
 ---
@@ -69,3 +76,4 @@ qbittorrent:
 - Registry: GHCR (`ghcr.io`)
 - Stack: [[Servarr]]
 - Downloader: qBittorrent
+- Script di Normalizzazione: `normalize.sh`
