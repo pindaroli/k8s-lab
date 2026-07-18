@@ -59,7 +59,7 @@ qbittorrent:
     - autobrr-classical
   image:
     repository: ghcr.io/pindaroli/custom-qbittorrent
-    tag: "1.0.0"
+    tag: "1.0.1"
   env:
     PUID: "1000"
     PGID: "1000"
