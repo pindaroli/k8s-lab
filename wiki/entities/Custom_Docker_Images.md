@@ -31,18 +31,32 @@ pindaroli-arr-helm/
 │       └── README.md
 ```
 
-## Immagini Customizzate
+## Gestione Parametrizzata delle Versioni (Best Practice)
 
-### 1. `custom-qbittorrent`
-- **Immagine Base**: `lscr.io/linuxserver/qbittorrent` (o equivalente pubblica ufficiale).
-- **Scopo**: Aggiunta di script personalizzati, utility di post-processing, temi WebUI personalizzati, o regolazioni specifiche di configurazione non presenti nell'immagine base.
-- **Utilizzo**: Viene costruita e pubblicata nel container registry (o usata direttamente nel cluster) per poi essere referenziata nei Helm chart dello stack Servarr (`charts/servarr`).
+Per evitare di cablare la versione dell'immagine base o delle dipendenze direttamente nel `Dockerfile`, si utilizzano gli argomenti di build (`ARG`):
 
-## Workflow di Manutenzione
-1. Modifica del `Dockerfile` o aggiunta di risorse/script all'interno di `custom-docker-images/<nome-app>/`.
-2. Build e push dell'immagine Docker personalizzata con opportuno tag/versione.
-3. Aggiornamento dei valori nei file di configurazione Helm (es. `arr-values.yaml`) con il repository/tag dell'immagine custom.
-4. Applicazione dell'aggiornamento tramite `helm upgrade`.
+```dockerfile
+ARG QBITTORRENT_VERSION="5.2.3_v2.0.13-ls468"
+FROM lscr.io/linuxserver/qbittorrent:${QBITTORRENT_VERSION}
+
+ARG FMEDIA_VERSION="1.31"
+```
+
+### Dove definire/passare la versione:
+
+1. **`ARG` con Default nel `Dockerfile`**: Garantisce che la build funzioni da sola con una versione stabile di default.
+2. **File `VERSION` o `.env` locale**: (Opzionale) File di testo `custom-docker-images/custom-qbittorrent/VERSION` per centralizzare la versione e permettere a script/Makefile di leggerla.
+3. **Workflow CI/CD (GitHub Actions)**: Durante la build in pipeline (es. GitHub Actions), si passa la versione desiderata via `--build-arg`:
+   ```bash
+   docker build --build-arg QBITTORRENT_VERSION=5.2.3_v2.0.13-ls468 -t custom-qbittorrent:latest .
+   ```
+4. **Helm Values (`arr-values.yaml`)**: Una volta pubblicata l'immagine custom registrata nel registry, la versione/tag pubblicata viene referenziata nel file dei valori Helm del cluster:
+   ```yaml
+   qbittorrent:
+     image:
+       repository: ghcr.io/pindaroli/custom-qbittorrent
+       tag: 5.2.3-v1
+   ```
 
 ## Relazioni
 - Repository: `pindaroli-arr-helm`
