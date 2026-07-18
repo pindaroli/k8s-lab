@@ -58,8 +58,8 @@ qbittorrent:
     - readarr
     - autobrr-classical
   image:
-    repository: ghcr.io/pindaroli/custom-qbittorrent
-    tag: "1.0.2"
+    repository: lscr.io/linuxserver/qbittorrent
+    tag: "5.2.3_v2.0.13-ls468"
   env:
     PUID: "1000"
     PGID: "1000"
