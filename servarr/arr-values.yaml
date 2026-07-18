@@ -56,10 +56,10 @@ qbittorrent:
     - radarr
     - lidarr
     - readarr
-    - lidarr-classical
     - autobrr-classical
   image:
-    tag: "5.2.2_v2.0.13-ls465"
+    repository: ghcr.io/pindaroli/custom-qbittorrent
+    tag: "1.0.0"
   env:
     PUID: "1000"
     PGID: "1000"
@@ -170,7 +170,9 @@ prowlarr:
     PROWLARR__POSTGRES__MAINDB: prowlarr
     PROWLARR__POSTGRES__LOGDB: prowlarr  # Using same DB for logs (simplification)
     PROWLARR__POSTGRES__USER: prowlarr
-    PROWLARR__POSTGRES__PASSWORD: prowlarr
+  envFrom:
+    - secretRef:
+        name: servarr-db-secrets
   resources:
     requests:
       cpu: 50m
@@ -221,18 +223,34 @@ jellyseerr:
   #   storageClass: csi-nfs-stripe-arr-conf
 
 bazarr:
-  enabled: false
-  # env:
-  #   PUID: "1000"
-  #   PGID: "1000"
-  #   TZ: Europe/Rome
-  # persistence:
-  #   storageClass: csi-nfs-stripe-arr-conf
+  enabled: true
+  image:
+    tag: "v1.6.0-ls354"
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: Europe/Rome
+    POSTGRES_ENABLED: "true"
+    POSTGRES_HOST: "postgres-main-rw.cnpg-system.svc.cluster.local"
+    POSTGRES_PORT: "5432"
+    POSTGRES_DATABASE: "bazarr"
+    POSTGRES_USERNAME: "bazarr"
+  envFrom:
+    - secretRef:
+        name: servarr-db-secrets
+  persistence:
+    enabled: true
+    storageClass: csi-nfs-stripe-arr-conf
+    config:
+      enabled: true
+    media:
+      enabled: true
+      existingClaim: servarr-jellyfin-media
 
 radarr:
   image:
     repository: ghcr.io/hotio/radarr
-    tag: release-6.2.1.10461
+    tag: release-6.3.0.10514
     pullPolicy: IfNotPresent
   env:
     PUID: "1000"
@@ -244,7 +262,9 @@ radarr:
     RADARR__POSTGRES__MAINDB: radarr
     RADARR__POSTGRES__LOGDB: radarr
     RADARR__POSTGRES__USER: radarr
-    RADARR__POSTGRES__PASSWORD: radarr
+  envFrom:
+    - secretRef:
+        name: servarr-db-secrets
   resources:
     requests:
       cpu: 50m
@@ -313,7 +333,11 @@ lidarr:
     LIDARR__POSTGRES__MAINDB: lidarr
     LIDARR__POSTGRES__LOGDB: lidarr
     LIDARR__POSTGRES__USER: lidarr
-    LIDARR__POSTGRES__PASSWORD: lidarr
+    LIDARR__POSTGRES__PASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: servarr-db-secrets
+          key: LIDARR__POSTGRES__PASSWORD
   resources:
     requests:
       cpu: 50m
@@ -461,7 +485,9 @@ autobrr:
     AUTOBRR__POSTGRES_PORT: "5432"
     AUTOBRR__POSTGRES_DATABASE: autobrr
     AUTOBRR__POSTGRES_USER: autobrr
-    AUTOBRR__POSTGRES_PASS: autobrr
+  envFrom:
+    - secretRef:
+        name: servarr-db-secrets
   resources:
     requests:
       cpu: 50m
@@ -474,58 +500,24 @@ autobrr:
     storageClass: csi-nfs-stripe-arr-conf
     existingClaim: ""
     size: 1Gi
-lidarr-classic:
-  image:
-    repository: ghcr.io/hotio/lidarr
-    tag: release-3.1.0.4875
-    pullPolicy: IfNotPresent
-  env:
-    PUID: "1000"
-    PGID: "1000"
-    TZ: Europe/Rome
-    # Hotio/NET Core uses double underscores for config mapping
-    LIDARR__POSTGRES__HOST: postgres-main-rw.cnpg-system.svc.cluster.local
-    LIDARR__POSTGRES__PORT: "5432"
-    LIDARR__POSTGRES__MAINDB: lidarr_classic
-    LIDARR__POSTGRES__LOGDB: lidarr_classic
-    LIDARR__POSTGRES__USER: lidarr_classic
-    LIDARR__POSTGRES__PASSWORD: lidarr_classic
+
+minimserver:
+  enabled: true
+  replicaCount: 1
   resources:
     requests:
       cpu: 50m
       memory: 256Mi
     limits:
+      cpu: 500m
       memory: 512Mi
   persistence:
     enabled: true
-    storageClass: csi-nfs-stripe-arr-conf
-    createInitContainer: false
     config:
       enabled: true
+      storageClass: csi-nfs-stripe-arr-conf
+      size: 1Gi
     media:
       enabled: true
       existingClaim: servarr-jellyfin-media
-  monitoring:
-    enabled: true
-  extraContainers:
-    - name: exportarr
-      image: ghcr.io/onedr0p/exportarr:v2.3.0
-      args:
-        - lidarr
-      env:
-        - name: URL
-          value: "http://localhost:8686"
-        - name: APIKEY
-          valueFrom:
-            secretKeyRef:
-              name: servarr-api-keys
-              key: lidarr-classic-api-key
-      ports:
-        - name: metrics
-          containerPort: 9707
-      resources:
-        requests:
-          cpu: 10m
-          memory: 32Mi
-        limits:
-          memory: 64Mi
+      mountPath: /media
