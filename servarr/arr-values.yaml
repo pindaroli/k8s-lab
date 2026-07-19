@@ -57,6 +57,13 @@ qbittorrent:
     - lidarr
     - readarr
     - autobrr-classical
+    - lidarr-classical
+
+  triggerJob:
+    enabled: true
+    filters:
+      autobrr-classical: "classical"
+      lidarr-classical: "classical"
   image:
     repository: lscr.io/linuxserver/qbittorrent
     tag: "5.2.3_v2.0.13-ls468"
