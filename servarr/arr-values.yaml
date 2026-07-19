@@ -289,7 +289,7 @@ radarr:
       cpu: 50m
       memory: 256Mi
     limits:
-      memory: 512Mi
+      memory: 1Gi
   persistence:
     enabled: true
     storageClass: csi-nfs-stripe-arr-conf
@@ -525,11 +525,11 @@ minimserver:
   replicaCount: 1
   resources:
     requests:
-      cpu: 50m
+      cpu: 100m
       memory: 256Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 1000m
+      memory: 1Gi
   persistence:
     enabled: true
     config:
