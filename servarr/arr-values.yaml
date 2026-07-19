@@ -62,6 +62,7 @@ qbittorrent:
   triggerJob:
     enabled: true
     verbose: false
+    recipient: "o.pindaro@gmail.com"
     filters:
       autobrr-classical: "classical"
       lidarr-classical: "classical"

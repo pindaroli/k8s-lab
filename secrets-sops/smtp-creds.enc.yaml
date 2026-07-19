@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: smtp-creds
+    namespace: arr
+type: Opaque
+stringData:
+    smtp-host: ENC[AES256_GCM,data:fvUsEtWwEMzkzEItMKU=,iv:AJeEXTIGBn4/QpJvRW4Vrvl2PEjnAwFUvSMzfNivqa8=,tag:5+ruc/VSC+sLksPjICE7RA==,type:str]
+    smtp-port: ENC[AES256_GCM,data:XMfa,iv:4e2drGl/iJv1nJ8wK1BOJzFoldiwvanRUN4D1kdCQ5k=,tag:pChEYU5WIteZHGMr9VwEcA==,type:str]
+    smtp-user: ENC[AES256_GCM,data:0mI5qqJVlIDwVjhD9lhlpnZjyA==,iv:mU6hazKo0/ERiC1xWO4iPVggQqyLxk9H34UUZGM1Cbs=,tag:VIs7D8JuPeOuXmG3BEg9iw==,type:str]
+    smtp-pass: ENC[AES256_GCM,data:7m0DvG4es/xBvoofuEdAlw==,iv:EjZDyIZBaYdwjblACpNaUioaDpNau+ybLBhkD5CxeH8=,tag:ugevDxG+NQoZap3gtqE69A==,type:str]
+    smtp-from: ENC[AES256_GCM,data:5PLkVVn7rDpEEC2eQ3jQVkoCUQ==,iv:5pPpurqLR/N7alvAyeDEaBAkJFLOpLyyolPDNyHPViA=,tag:cqRpugBNYm68OwO8yXg6IQ==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBKWTN6YmExWHh6dG1NS2dO
+            OHpoVmpIV1ZwM2RPa0k2TkVIWmRNemdJNDBFCjZKTkNFTHpzeUp5d2VBOWxzQk1S
+            M1M1MDlCc0twcmM4emwydHFMcitlbFkKLS0tIFZTc1htOVV3K1RRaFJrSXN1NjB6
+            TDg0RnYxSEJMQTNNaVltZ3U0RFMxN1UKmanlAYJxKCD6R2b1ng76wqYhNq2TsEgF
+            JradFwEeG80+twYLCAFhLgWKjY50/NDHufWXFQQEafG+7Vr8LWgMKA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-07-19T21:56:27Z"
+    mac: ENC[AES256_GCM,data:2O7BEeKEEzSaEsDIReqDvlK628+wPboEnwQfzECg9gSDpqzQNL8OLT7v/Y2uSE/1ZJrp0DXcauTU9y+pvdffHWF+xo6xpN5PRxlLDfaamK4JQwlMTAvd2XhVGxSFEyUz69/2M8Jfb3HE9yIDmjfUpSV1Y5pHMK75al+9YFP4k9M=,iv:bdkoDnqyFfZ+0xhn5I21+i+ZxT4hg6zSesFF0VFV7D8=,tag:/6BroE4alkYRDYrtlsa8/g==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

@@ -24,11 +24,12 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: normalizer
-          image: ghcr.io/pindaroli/custom-normalizer:1.0.7
+          image: ghcr.io/pindaroli/custom-normalizer:1.2.0
           args:
             - "${DIR}"
             - "${DEST_DIR}"
             - "/media"
+            - "${EMAIL_RECIPIENT}"
           resources:
             requests:
               cpu: "200m"
@@ -43,6 +44,33 @@ spec:
               value: "C.UTF-8"
             - name: SONGKONG_VERBOSE
               value: "${SONGKONG_VERBOSE}"
+            - name: EMAIL_RECIPIENT
+              value: "${EMAIL_RECIPIENT}"
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: smtp-host
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: smtp-port
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: smtp-user
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: smtp-pass
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: smtp-from
             - name: TELEGRAM_BOT_TOKEN
               valueFrom:
                 secretKeyRef:

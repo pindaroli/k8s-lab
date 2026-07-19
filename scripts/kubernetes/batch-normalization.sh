@@ -19,10 +19,12 @@ DRY_RUN=false
 SOURCE_DIR=""
 DEST_DIR=""
 INTERACTIVE=false
+EMAIL_RECIPIENT=""
 
 # Nome risorsa di qBittorrent per i controlli tramite kubectl exec
 QBIT_POD_REF="deploy/servarr-qbittorrent"
 QBIT_CONTAINER="servarr"
+QBIT_CONTAINER="servarr" # duplicate but let's keep clean
 NAMESPACE="arr"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 YAML_DIR="/tmp/audio-normalizer-jobs"
@@ -41,6 +43,10 @@ format_media_path() {
 # Parsing degli argomenti per gestire opzioni e parametri posizionali
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --recipient|-r)
+            EMAIL_RECIPIENT="$2"
+            shift 2
+            ;;
         --verbose|-v)
             SONGKONG_VERBOSE="true"
             shift
@@ -147,6 +153,10 @@ if [ "$INTERACTIVE" = true ]; then
     else
         SONGKONG_VERBOSE=false
     fi
+    echo ""
+
+    echo -e -n "${BOLD}${YELLOW}Inserisci l'indirizzo email del destinatario (opzionale):${RESET} "
+    read -r EMAIL_RECIPIENT
     echo ""
 fi
 
@@ -256,8 +266,8 @@ for DIR in "${DIRS[@]}"; do
     TEMPLATE_FILE="${SCRIPT_DIR}/yaml/job-normalizzation-template.yaml"
 
     # Generazione e salvataggio del manifesto YAML tramite il template statico
-    export JOB_NAME NAMESPACE DIR DEST_DIR SONGKONG_VERBOSE="${SONGKONG_VERBOSE:-false}"
-    envsubst '$JOB_NAME $NAMESPACE $DIR $DEST_DIR $SONGKONG_VERBOSE' < "$TEMPLATE_FILE" > "$YAML_FILE"
+    export JOB_NAME NAMESPACE DIR DEST_DIR SONGKONG_VERBOSE="${SONGKONG_VERBOSE:-false}" EMAIL_RECIPIENT="${EMAIL_RECIPIENT:-}"
+    envsubst '$JOB_NAME $NAMESPACE $DIR $DEST_DIR $SONGKONG_VERBOSE $EMAIL_RECIPIENT' < "$TEMPLATE_FILE" > "$YAML_FILE"
 
     if [ "$DRY_RUN" = true ]; then
         echo -e "${YELLOW}[DRY-RUN] Directory individuata: ${RESET}${CYAN}$BASE_NAME${RESET}"
