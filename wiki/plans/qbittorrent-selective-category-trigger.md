@@ -89,8 +89,17 @@ Configurazione del filtro in `qbittorrent` con le modifiche richieste (spostando
       lidarr-classical: "classical"
 ```
 
+## Verification & Debugging
+
+### Manual Test Execution (Ad-hoc CLI Debug)
+Per testare manualmente l'innesco del Job con verbosità attivata per SongKong (`SONGKONG_VERBOSE=true`), eseguire:
+```bash
+kubectl exec deployment/servarr-qbittorrent -n arr -- env SONGKONG_VERBOSE=true /scripts/trigger-job.sh "downloads/lidarr-classical/Stabat Mater - Abbado" "lidarr-classical"
+```
+
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Esecuzione modifiche del piano.
-- **Ultima Azione Completata**: Salvataggio piano nel Wiki.
-- **Prossimo Passo Operativo**: Implementazione modifiche sui template Helm in `pindaroli-arr-helm`.
+- **Fase Attiva**: Implementazione supporto SONGKONG_VERBOSE e Normalizer 1.0.6.
+- **Ultima Azione Completata**: Documentato test manuale CLI in Wiki.
+- **Prossimo Passo Operativo**: Implementazione modifiche su Helm chart e normalize.sh.
 - **Blocchi/Decisioni Pendenti**: Nessuno.
+
