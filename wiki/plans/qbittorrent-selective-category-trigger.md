@@ -91,11 +91,13 @@ Configurazione del filtro in `qbittorrent` con le modifiche richieste (spostando
 
 ## Verification & Debugging
 
-### Manual Test Execution (Ad-hoc CLI Debug)
-Per testare manualmente l'innesco del Job con verbosità attivata per SongKong (`SONGKONG_VERBOSE=true`), eseguire:
-```bash
-kubectl exec deployment/servarr-qbittorrent -n arr -- env SONGKONG_VERBOSE=true /scripts/trigger-job.sh "downloads/lidarr-classical/Stabat Mater - Abbado" "lidarr-classical"
-```
+### Fast-Feedback Dynamic Debugging (Hot-Reloading Script without Rebuild)
+Per testare modifiche a `normalize.sh` senza dover attendere la build dell'immagine Docker su GitHub Actions:
+1. Iniettare il file locale `normalize.sh` in una ConfigMap temporanea:
+   ```bash
+   kubectl create configmap debug-normalize-script --from-file=normalize.sh=custom-docker-images/custom-normalizer/normalize.sh -n arr --dry-run=client -o yaml | kubectl apply -f -
+   ```
+2. Eseguire un Pod o Job di test montando la ConfigMap su `/app/normalize.sh`.
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: Implementazione supporto SONGKONG_VERBOSE e Normalizer 1.0.6.

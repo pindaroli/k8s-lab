@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# USO: ./batch-process-dirs.sh "<SOURCE_DIR>" "<DEST_DIR>" [--dry-run]
+# USO: ./batch-normalization.sh "<SOURCE_DIR>" "<DEST_DIR>" [--dry-run] [--verbose]
 # =============================================================================
 # Batch Process Directories — Audio Normalizer Kubernetes Jobs (Remote Exec)
 # =============================================================================
@@ -39,6 +39,10 @@ format_media_path() {
 # Parsing degli argomenti per gestire opzioni e parametri posizionali
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --verbose|-v)
+            SONGKONG_VERBOSE="true"
+            shift
+            ;;
         --dry-run|-n)
             DRY_RUN=true
             shift
@@ -117,14 +121,23 @@ if ! kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- test -
     echo -e "${YELLOW}   Il job tenterà comunque l'esecuzione (potrebbe essere creata dinamicamente o mappata nel container).${RESET}\n"
 fi
 
-# Se siamo in modalità interattiva, chiediamo la modalità DRY-RUN
+# Se siamo in modalità interattiva, chiediamo la modalità DRY-RUN e SONGKONG_VERBOSE
 if [ "$INTERACTIVE" = true ]; then
-    echo -e -n "${BOLD}${YELLOW}Abilitare la modalità DRY-RUN? (s/n):${RESET} "
+    echo -e -n "${BOLD}${YELLOW}Abilitare la modalità DRY-RUN? (s/n, default: n):${RESET} "
     read -r RESP
     if [[ "$RESP" =~ ^[sSyY]$ ]]; then
         DRY_RUN=true
     else
         DRY_RUN=false
+    fi
+    echo ""
+
+    echo -e -n "${BOLD}${YELLOW}Abilitare la modalità verbosa per SongKong (SONGKONG_VERBOSE)? (s/n, default: n):${RESET} "
+    read -r RESP_V
+    if [[ "$RESP_V" =~ ^[sSyY]$ ]]; then
+        SONGKONG_VERBOSE=true
+    else
+        SONGKONG_VERBOSE=false
     fi
     echo ""
 fi
@@ -279,11 +292,21 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: normalizer
-          image: ghcr.io/pindaroli/custom-normalizer:1.0.3
+          image: ghcr.io/pindaroli/custom-normalizer:1.0.7
           args:
             - "${DIR}"
             - "${DEST_DIR}"
+            - "/media"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
           env:
+            - name: SONGKONG_VERBOSE
+              value: "${SONGKONG_VERBOSE:-false}"
             - name: TELEGRAM_BOT_TOKEN
               valueFrom:
                 secretKeyRef:
