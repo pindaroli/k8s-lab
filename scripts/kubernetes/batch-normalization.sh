@@ -24,6 +24,8 @@ INTERACTIVE=false
 QBIT_POD_REF="deploy/servarr-qbittorrent"
 QBIT_CONTAINER="servarr"
 NAMESPACE="arr"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+YAML_DIR="${SCRIPT_DIR}/yaml"
 
 # Funzione per formattare e anteporre /media/ ai percorsi
 format_media_path() {
@@ -77,27 +79,33 @@ echo -e "${BOLD}${CYAN}=========================================================
 echo -e "${BOLD}${CYAN}   Batch Process Directories (Audio Normalizer K8s Jobs)${RESET}"
 echo -e "${BOLD}${CYAN}============================================================${RESET}\n"
 
-# Chiedi interattivamente SOURCE_DIR se non passata
-if [ -z "$SOURCE_DIR" ]; then
-    while true; do
+# Chiedi interattivamente e valida SOURCE_DIR
+while true; do
+    if [ -z "$SOURCE_DIR" ]; then
         echo -e -n "${BOLD}${YELLOW}Inserisci la cartella SORGENTE (es: downloads/lidarr-classical o /media/...):${RESET} "
         read -r SOURCE_DIR
         if [ -z "$SOURCE_DIR" ]; then
             echo -e "${RED}Errore: la cartella sorgente non può essere vuota.${RESET}\n"
-        else
-            break
+            continue
         fi
-    done
-fi
+    fi
 
-SOURCE_DIR=$(format_media_path "$SOURCE_DIR")
+    FORMATTED_SOURCE_DIR=$(format_media_path "$SOURCE_DIR")
 
-# Validazione della cartella SORGENTE (Mandatoria via kubectl exec)
-echo -e "Verifica della cartella sorgente (${CYAN}$SOURCE_DIR${RESET}) nel pod qBittorrent..."
-if ! kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- test -d "$SOURCE_DIR" &>/dev/null; then
-    echo -e "${RED}❌ Errore critico: La cartella sorgente '$SOURCE_DIR' non esiste all'interno di qBittorrent!${RESET}" >&2
-    exit 1
-fi
+    # Validazione della cartella SORGENTE (Mandatoria via kubectl exec)
+    echo -e "Verifica della cartella sorgente (${CYAN}$FORMATTED_SOURCE_DIR${RESET}) nel pod qBittorrent..."
+    if kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- test -d "$FORMATTED_SOURCE_DIR" &>/dev/null; then
+        SOURCE_DIR="$FORMATTED_SOURCE_DIR"
+        break
+    else
+        echo -e "${RED}❌ Errore: La cartella sorgente '$FORMATTED_SOURCE_DIR' non esiste all'interno di qBittorrent!${RESET}\n" >&2
+        if [ "$INTERACTIVE" = true ]; then
+            SOURCE_DIR=""
+        else
+            exit 1
+        fi
+    fi
+done
 
 # Chiedi interattivamente DEST_DIR se non passata
 if [ -z "$DEST_DIR" ]; then
@@ -164,8 +172,16 @@ done < <(kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- fi
 TOTAL_DIRS=${#DIRS[@]}
 
 if [ "$TOTAL_DIRS" -eq 0 ]; then
-    echo -e "${YELLOW}⚠️  Nessuna sottocartella trovata in '$SOURCE_DIR'.${RESET}"
-    exit 0
+    # Se non ci sono sottocartelle, controlla se la cartella stessa contiene file (singolo album)
+    HAS_FILES=$(kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- find "$SOURCE_DIR" -maxdepth 1 -type f 2>/dev/null | head -n 1)
+    if [ -n "$HAS_FILES" ]; then
+        echo -e "${CYAN}ℹ️  La cartella '$SOURCE_DIR' non contiene sottocartelle ma contiene file audio. Verrà elaborata direttamente come singola cartella.${RESET}\n"
+        DIRS=("$SOURCE_DIR")
+        TOTAL_DIRS=1
+    else
+        echo -e "${YELLOW}⚠️  Nessun file o sottocartella trovata in '$SOURCE_DIR'.${RESET}"
+        exit 0
+    fi
 fi
 
 echo -e "${GREEN}✓ Trovate ${BOLD}$TOTAL_DIRS${RESET}${GREEN} sottocartelle da elaborare.${RESET}\n"
@@ -235,9 +251,18 @@ for DIR in "${DIRS[@]}"; do
     RANDOM_SUFFIX=$(openssl rand -hex 3 | cut -c 1-5)
     JOB_NAME="audio-normalizer-${SAFE_NAME}-${RANDOM_SUFFIX}"
 
+    mkdir -p "$YAML_DIR"
+    YAML_FILE="${YAML_DIR}/${JOB_NAME}.yaml"
+    TEMPLATE_FILE="${YAML_DIR}/job-normalizzation-template.yaml"
+
+    # Generazione e salvataggio del manifesto YAML tramite il template statico
+    export JOB_NAME NAMESPACE DIR DEST_DIR SONGKONG_VERBOSE="${SONGKONG_VERBOSE:-false}"
+    envsubst '$JOB_NAME $NAMESPACE $DIR $DEST_DIR $SONGKONG_VERBOSE' < "$TEMPLATE_FILE" > "$YAML_FILE"
+
     if [ "$DRY_RUN" = true ]; then
         echo -e "${YELLOW}[DRY-RUN] Directory individuata: ${RESET}${CYAN}$BASE_NAME${RESET}"
         echo -e "          -> Verrebbe sottomesso il Job: ${BOLD}$JOB_NAME${RESET}"
+        echo -e "          -> File YAML salvato in: ${CYAN}$YAML_FILE${RESET}"
         echo -e "          -> Path Sorgente Job: $DIR"
         echo -e "          -> Path Destinazione Job: $DEST_DIR"
         echo "---------------------------------------------------"
@@ -263,68 +288,7 @@ for DIR in "${DIRS[@]}"; do
     # =================================================================
 
     echo -e "🚀 Sottomissione Job in corso per: ${CYAN}$BASE_NAME${RESET} (Job ID: ${BOLD}$JOB_NAME${RESET})"
-
-    # Generazione e applicazione dinamica del manifesto YAML (CORRETTO mountPath: /media)
-    cat <<EOF | kubectl apply -f -
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: ${JOB_NAME}
-  namespace: ${NAMESPACE}
-spec:
-  ttlSecondsAfterFinished: 600
-  backoffLimit: 0
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: audio-normalizer
-    spec:
-      restartPolicy: Never
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                      - qbittorrent
-              topologyKey: kubernetes.io/hostname
-      containers:
-        - name: normalizer
-          image: ghcr.io/pindaroli/custom-normalizer:1.0.7
-          args:
-            - "${DIR}"
-            - "${DEST_DIR}"
-            - "/media"
-          resources:
-            requests:
-              cpu: "200m"
-              memory: "512Mi"
-            limits:
-              cpu: "2"
-              memory: "2Gi"
-          env:
-            - name: SONGKONG_VERBOSE
-              value: "${SONGKONG_VERBOSE:-false}"
-            - name: TELEGRAM_BOT_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: servarr-api-keys
-                  key: telegram-token
-            - name: TELEGRAM_CHAT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: servarr-api-keys
-                  key: telegram-chat-id
-          volumeMounts:
-            - name: media-data
-              mountPath: /media
-      volumes:
-        - name: media-data
-          persistentVolumeClaim:
-            claimName: servarr-jellyfin-media
-EOF
+    kubectl apply -f "$YAML_FILE"
 
     SUBMITTED_JOBS+=("${JOB_NAME}:${BASE_NAME}")
     echo -e "${GREEN}✓ Job ${JOB_NAME} sottomesso.${RESET}"

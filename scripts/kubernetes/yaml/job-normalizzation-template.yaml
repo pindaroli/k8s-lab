@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+  namespace: ${NAMESPACE}
+spec:
+  ttlSecondsAfterFinished: 600
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: audio-normalizer
+    spec:
+      restartPolicy: Never
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - qbittorrent
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: normalizer
+          image: ghcr.io/pindaroli/custom-normalizer:1.0.7
+          args:
+            - "${DIR}"
+            - "${DEST_DIR}"
+            - "/media"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          env:
+            - name: SONGKONG_VERBOSE
+              value: "${SONGKONG_VERBOSE}"
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: telegram-token
+            - name: TELEGRAM_CHAT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-keys
+                  key: telegram-chat-id
+          volumeMounts:
+            - name: media-data
+              mountPath: /media
+      volumes:
+        - name: media-data
+          persistentVolumeClaim:
+            claimName: servarr-jellyfin-media

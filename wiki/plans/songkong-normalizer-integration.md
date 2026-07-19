@@ -50,7 +50,14 @@ L'obiettivo di questo piano è integrare **SongKong Premium** (versione Linux He
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Pianificazione e stesura del piano.
-- **Ultima Azione Completata**: Creazione del piano wiki locale.
-- **Prossimo Passo Operativo**: Presentare il piano all'utente ed attendere approvazione prima di modificare i sorgenti del Dockerfile e di normalize.sh.
-- **Blocchi/Decisioni Pendenti**: In attesa di approvazione per procedere all'esecuzione delle modifiche.
+- **Fase Attiva**: Integrazione container & script completata; In attesa del file di licenza SongKong Premium.
+- **Ultima Azione Completata**:
+  - Immagine `ghcr.io/pindaroli/custom-normalizer:1.0.7` creata ed integrata con SongKong Headless.
+  - Script [batch-normalization.sh](file:///Users/olindo/prj/k8s-lab/scripts/kubernetes/batch-normalization.sh) rifattorizzato con il template statico `job-normalizzation-template.yaml` (tramite `envsubst`) e gestione automatica dei singoli album e delle cartelle batch.
+  - Verificato nei log del pod `audio-normalizer` che SongKong esegue correttamente l'identificazione MusicBrainz/AcoustID (`Fingerprinted 21: MusicBrainz 21`), ma opera in modalità Lite (`Songs saved (if not Lite): 21`).
+- **Prossimo Passo Operativo per il Ripristino/Attivazione Licenza**:
+  1. Quando l'utente fornisce il file di licenza SongKong (`license.properties` o `songkong.license`), salvarlo in SOPS: `secrets-sops/songkong-license.enc.yaml`.
+  2. Creare il Secret Kubernetes `songkong-license` nel namespace `arr`.
+  3. Aggiornare [job-normalizzation-template.yaml](file:///Users/olindo/prj/k8s-lab/scripts/kubernetes/yaml/job-normalizzation-template.yaml) per montare il secret in `/root/.songkong/`.
+  4. Lanciare un test con `batch-normalization.sh` e verificare nei log che i tag vengano salvati effettivamente sui file audio (`Songs saved: 21`).
+- **Blocchi/Decisioni Pendenti**: In attesa del file di licenza SongKong dall'utente per sbloccare la scrittura reale dei tag sui file audio.

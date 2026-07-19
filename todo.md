@@ -263,6 +263,7 @@
 
 
 ### [ ] Security & Automation
+- [ ] **Attivazione Licenza SongKong Premium (Normalizzatore Audio)**: [[songkong-normalizer-integration]] (In attesa del file di licenza per abilitare il salvataggio dei tag nei file audio).
 - [ ] **Automazione Drain Talos su Hypervisor Shutdown**: Creare uno script/workflow automatico per effettuare il cordon e il drain del nodo Talos corrispondente prima dello spegnimento ordinato (o forzato da UPS/NUT) di un nodo hypervisor Proxmox (PVE1, PVE2, PVE3).
 - [x] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
     - [x] Sviluppo Helm-Native in `pindaroli-arr-helm` (**v1.2.3**).

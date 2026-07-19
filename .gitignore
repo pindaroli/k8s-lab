@@ -68,3 +68,5 @@ scratch/
 
 # Generated files (do not commit)
 wiki/wiki_context.md
+scripts/kubernetes/yaml/*.yaml
+!scripts/kubernetes/yaml/job-normalizzation-template.yaml
