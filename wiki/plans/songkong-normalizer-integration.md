@@ -50,11 +50,15 @@ L'obiettivo di questo piano è integrare **SongKong Premium** (versione Linux He
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Licenza SongKong Premium Cifrata & Integrata nel Cluster Kubernetes.
+- **Fase Attiva**: **COMPLETATA - NOTIFICHE APPRISE & IMMAGINE 1.2.0 IN PRODUZIONE**
 - **Ultima Azione Completata**:
-  - Secret Kubernetes `songkong-license` generato con la licenza `license.properties` (`email`, `licensekey1`, `licensekey2`), cifrato con SOPS in `secrets-sops/songkong-license.enc.yaml` ed applicato nel namespace `arr`.
-  - Aggiornato [job-normalizzation-template.yaml](file:///Users/olindo/prj/k8s-lab/scripts/kubernetes/yaml/job-normalizzation-template.yaml) per montare il Secret in `/root/.songkong/license.properties`. Superata la validazione dry-run.
-- **Prossimo Passo Operativo per il Ripristino/Attivazione Licenza**:
-  - Lanciare un test con `batch-normalization.sh` e verificare nei log del pod `audio-normalizer` che SongKong operi in modalità Premium salvando effettivamente i metadati identificati (`Songs saved: N`).
-- **Blocchi/Decisioni Pendenti**: Nessuno. Licenza integrata e pronta all'uso.
+  - **Integrazione Licenza Premium**: Secret Kubernetes `songkong-license` applicato nel namespace `arr` e montato in `/root/.songkong/license.properties`. Testato ed operativo.
+  - **Fix Locale Cyrillic Crash**: Aggiunto `LANG=C.UTF-8` e `LC_ALL=C.UTF-8` in tutti i Job per prevenire il crash JVM `InvalidPathException` con caratteri cirillici CP1251.
+  - **Transizione a Notifiche Apprise**: Sostituito `notify` e lo script custom Python `send_email.py` con **`apprise`** (installato via `pip3` nel container).
+  - **Notifiche Telegram & Email**: `normalize.sh` invia notifiche HTML su Telegram via Apprise (`tgram://`) per avvisi ed esito job, ed invia l'email di riepilogo a `o.pindaro@gmail.com` via Apprise (`mailtos://`) con allegato il report HTML nativo di SongKong.
+  - **Rilasci Codebase**: Immagine `custom-normalizer:1.2.0` e Helm Chart `servarr:1.8.0` committati e pushati su GitHub. Secret `smtp-creds` cifrato con SOPS ed applicato nel cluster.
+- **Prossimo Passo Operativo per il Ripristino**:
+  - Attendere la build automatica della CI/CD di GitHub per l'immagine `ghcr.io/pindaroli/custom-normalizer:1.2.0`.
+  - Alla prossima esecuzione di un Job da qBittorrent o `batch-normalization.sh`, verificare la ricezione delle notifiche Telegram e dell'email con il report allegato.
+- **Blocchi/Decisioni Pendenti**: Nessuno. Lavori conclusi con successo.
 
