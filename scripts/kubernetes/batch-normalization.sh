@@ -25,7 +25,7 @@ QBIT_POD_REF="deploy/servarr-qbittorrent"
 QBIT_CONTAINER="servarr"
 NAMESPACE="arr"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-YAML_DIR="${SCRIPT_DIR}/yaml"
+YAML_DIR="/tmp/audio-normalizer-jobs"
 
 # Funzione per formattare e anteporre /media/ ai percorsi
 format_media_path() {
@@ -253,7 +253,7 @@ for DIR in "${DIRS[@]}"; do
 
     mkdir -p "$YAML_DIR"
     YAML_FILE="${YAML_DIR}/${JOB_NAME}.yaml"
-    TEMPLATE_FILE="${YAML_DIR}/job-normalizzation-template.yaml"
+    TEMPLATE_FILE="${SCRIPT_DIR}/yaml/job-normalizzation-template.yaml"
 
     # Generazione e salvataggio del manifesto YAML tramite il template statico
     export JOB_NAME NAMESPACE DIR DEST_DIR SONGKONG_VERBOSE="${SONGKONG_VERBOSE:-false}"

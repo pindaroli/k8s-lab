@@ -52,7 +52,13 @@ spec:
           volumeMounts:
             - name: media-data
               mountPath: /media
+            - name: songkong-license
+              mountPath: /root/.songkong/license.properties
+              subPath: license.properties
       volumes:
         - name: media-data
           persistentVolumeClaim:
             claimName: servarr-jellyfin-media
+        - name: songkong-license
+          secret:
+            secretName: songkong-license

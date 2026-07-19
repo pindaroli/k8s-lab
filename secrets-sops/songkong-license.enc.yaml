@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: songkong-license
+    namespace: arr
+type: Opaque
+stringData:
+    license.properties: ENC[AES256_GCM,data:wOfJ898rtm2/H0CUZKvXMvN+D/BuGp9itVLg7wWUG6MUazKf3YXnn2enS6P0nbvDXrUfKxVpDVmiUF99JFwBp8hYK8nxiDQ0hujlK2i53SWRA+iazIVK4c+K4rLkkO78CEeYI5fqWKRJXnhuXiMMdS4O+PyqPUNiLwWkIxP3bNgM0PcQdZhrQxDJTOH/7awpTK4=,iv:scZQYH9Nizyv2nSgz25201ycHR9lT1gLKOv9QlQ+/HM=,tag:e1axgxdFYqMUc+mjH3nxFw==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBtb0NwY3cvd3pPQWJRZXU1
+            Wk1lVy9Eb2FjY2J2dEtyZzFzYmEzNGNJeVY0ClBQVlVER252UGtGcTE3cWhuclN6
+            RFFqYmJFNURqaHhjVUNaM1pqUndud3MKLS0tIDRLMUtmT3ZDanRBQ3dTb09yNTlV
+            Z2d2YVl1VmlleEpCeG9kSjJRMmh4OFkKUB8cp2VJ4RefIZYM65VelZlMsNBbR6Ov
+            gaGqMvtFR2S63cZcnKWwS7KV815hW7Sq0aHMtADpnyN9EgbMiibVHg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-07-19T20:03:07Z"
+    mac: ENC[AES256_GCM,data:EYQG3lWZINtKub+trexwoOwh7ETMSKxyDRsthnaeM10PI2vrzLKlrYZeXYuU10qs/1YfyuXV23mjXozjEiQrgdAOlZ/No5+6r9O18VMoQCduNM3dEKAz1qQEBviNjzzfzuMIyFcimfCTIBvw+O+gK+q3IQAFESU68VfYbvBx/G0=,iv:8nx0V1zjmjP/Ex1tFozaqruVmH8VLD7DZE5TrhBHBoc=,tag:7coLQw1mMOJlQfINy773nw==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

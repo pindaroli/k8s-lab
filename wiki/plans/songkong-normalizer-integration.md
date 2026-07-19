@@ -50,14 +50,11 @@ L'obiettivo di questo piano è integrare **SongKong Premium** (versione Linux He
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Integrazione container & script completata; In attesa del file di licenza SongKong Premium.
+- **Fase Attiva**: Licenza SongKong Premium Cifrata & Integrata nel Cluster Kubernetes.
 - **Ultima Azione Completata**:
-  - Immagine `ghcr.io/pindaroli/custom-normalizer:1.0.7` creata ed integrata con SongKong Headless.
-  - Script [batch-normalization.sh](file:///Users/olindo/prj/k8s-lab/scripts/kubernetes/batch-normalization.sh) rifattorizzato con il template statico `job-normalizzation-template.yaml` (tramite `envsubst`) e gestione automatica dei singoli album e delle cartelle batch.
-  - Verificato nei log del pod `audio-normalizer` che SongKong esegue correttamente l'identificazione MusicBrainz/AcoustID (`Fingerprinted 21: MusicBrainz 21`), ma opera in modalità Lite (`Songs saved (if not Lite): 21`).
+  - Secret Kubernetes `songkong-license` generato con la licenza `license.properties` (`email`, `licensekey1`, `licensekey2`), cifrato con SOPS in `secrets-sops/songkong-license.enc.yaml` ed applicato nel namespace `arr`.
+  - Aggiornato [job-normalizzation-template.yaml](file:///Users/olindo/prj/k8s-lab/scripts/kubernetes/yaml/job-normalizzation-template.yaml) per montare il Secret in `/root/.songkong/license.properties`. Superata la validazione dry-run.
 - **Prossimo Passo Operativo per il Ripristino/Attivazione Licenza**:
-  1. Quando l'utente fornisce il file di licenza SongKong (`license.properties` o `songkong.license`), salvarlo in SOPS: `secrets-sops/songkong-license.enc.yaml`.
-  2. Creare il Secret Kubernetes `songkong-license` nel namespace `arr`.
-  3. Aggiornare [job-normalizzation-template.yaml](file:///Users/olindo/prj/k8s-lab/scripts/kubernetes/yaml/job-normalizzation-template.yaml) per montare il secret in `/root/.songkong/`.
-  4. Lanciare un test con `batch-normalization.sh` e verificare nei log che i tag vengano salvati effettivamente sui file audio (`Songs saved: 21`).
-- **Blocchi/Decisioni Pendenti**: In attesa del file di licenza SongKong dall'utente per sbloccare la scrittura reale dei tag sui file audio.
+  - Lanciare un test con `batch-normalization.sh` e verificare nei log del pod `audio-normalizer` che SongKong operi in modalità Premium salvando effettivamente i metadati identificati (`Songs saved: N`).
+- **Blocchi/Decisioni Pendenti**: Nessuno. Licenza integrata e pronta all'uso.
+
