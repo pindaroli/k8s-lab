@@ -284,6 +284,95 @@
       "management_ip": "192.168.2.3"
     },
     {
+      "id": "extreme",
+      "label": "Extreme Networks X620-X10",
+      "model": "x620-x10",
+      "vendor": "extreme network",
+      "type": "L3 Switch",
+      "ip": "192.168.100.100",
+      "location": "Sala Server",
+      "ports": [
+        {
+          "id": "1",
+          "role": "Uplink to switch-25g-server Port 6",
+          "mode": "Trunk",
+          "speed": "10Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
+        },
+        {
+          "id": "2",
+          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 10
+        },
+        {
+          "id": "3",
+          "role": "LAN Server (VLAN 10) - PVE1 Port 1 (enp1s0f0)",
+          "mode": "ACCESS",
+          "pvid": 10
+        },
+        {
+          "id": "4",
+          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 10
+        },
+        {
+          "id": "5",
+          "role": "LAN Client (VLAN 20) - PVE1 Port 2 (enp1s0f1np1)",
+          "mode": "ACCESS",
+          "pvid": 20
+        },
+        {
+          "id": "6",
+          "role": "LAN Client (VLAN 20) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 20
+        },
+        {
+          "id": "7",
+          "role": "LAN Client (VLAN 20) - PVE DAC uplink",
+          "mode": "ACCESS",
+          "pvid": 20
+        },
+        {
+          "id": "8",
+          "role": "Uplink to switch-25g-letto Port 5",
+          "mode": "Trunk",
+          "speed": "10Gbs",
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "99"
+          ]
+        },
+        {
+          "id": "9",
+          "role": "Free / Unused",
+          "mode": "ACCESS",
+          "speed": "10Gbs",
+          "pvid": 1
+        },
+        {
+          "id": "10",
+          "role": "Free / Unused",
+          "mode": "ACCESS",
+          "speed": "10Gbs",
+          "pvid": 1
+        }
+      ]
+    },
+    {
       "id": "opnsense",
       "label": "OPNsense Firewall",
       "type": "Firewall/Router",

@@ -262,6 +262,12 @@
 
 
 
+### [x] ✅ COMPLETATO: Proxmox Talos Intelligent Watchdog (Ansible OOB Self-Healing) [[proxmox-talos-watchdog]]
+- [x] Sviluppato ruolo Ansible `proxmox_talos_watchdog` per il deploy dello script in `/usr/local/bin/talos-watchdog.sh`.
+- [x] Configurato cronjob in `/etc/cron.d/talos-watchdog` (in esecuzione ogni 3 minuti) su `pve1`, `pve2` e `pve3`.
+- [x] Implementata la logica di verifica a 3 livelli (check VM status -> check ping Talos -> check ping Gateway L3 10.10.20.1) per prevenire boot loop durante disconnessioni dello switch.
+- [x] Eseguito il deploy con successo su tutti e 3 gli ipervisori Proxmox.
+
 ### [ ] Security & Automation
 - [ ] **Attivazione Licenza SongKong Premium (Normalizzatore Audio)**: [[songkong-normalizer-integration]] (In attesa del file di licenza per abilitare il salvataggio dei tag nei file audio).
 - [ ] **Automazione Drain Talos su Hypervisor Shutdown**: Creare uno script/workflow automatico per effettuare il cordon e il drain del nodo Talos corrispondente prima dello spegnimento ordinato (o forzato da UPS/NUT) di un nodo hypervisor Proxmox (PVE1, PVE2, PVE3).

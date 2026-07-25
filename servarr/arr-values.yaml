@@ -177,9 +177,13 @@ flaresolverr:
 
 
 prowlarr:
+  initContainers:
+    - name: wait-for-db
+      image: busybox:1.36.1
+      command: ['sh', '-c', 'until nc -z -w 2 postgres-main-rw.cnpg-system.svc.cluster.local 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done']
   image:
     repository: ghcr.io/hotio/prowlarr
-    tag: "release-2.3.5.5327"
+    tag: "release-2.5.2.5491"
   env:
     PUID: "1000"
     PGID: "1000"
@@ -244,6 +248,10 @@ jellyseerr:
 
 bazarr:
   enabled: true
+  initContainers:
+    - name: wait-for-db
+      image: busybox:1.36.1
+      command: ['sh', '-c', 'until nc -z -w 2 postgres-main-rw.cnpg-system.svc.cluster.local 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done']
   image:
     tag: "v1.6.0-ls354"
   env:
@@ -268,6 +276,10 @@ bazarr:
       existingClaim: servarr-jellyfin-media
 
 radarr:
+  initContainers:
+    - name: wait-for-db
+      image: busybox:1.36.1
+      command: ['sh', '-c', 'until nc -z -w 2 postgres-main-rw.cnpg-system.svc.cluster.local 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done']
   image:
     repository: ghcr.io/hotio/radarr
     tag: release-6.3.0.10514
@@ -339,6 +351,10 @@ readarr:
 
 
 lidarr:
+  initContainers:
+    - name: wait-for-db
+      image: busybox:1.36.1
+      command: ['sh', '-c', 'until nc -z -w 2 postgres-main-rw.cnpg-system.svc.cluster.local 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done']
   image:
     repository: ghcr.io/hotio/lidarr
     tag: release-3.1.0.4875
@@ -493,6 +509,10 @@ autobrr:
         except_releases: ".*(3D|REMUX|Stereo).*"
         indexers: ["Prowlarr-Generic-Torznab"]
   replicaCount: 1
+  initContainers:
+    - name: wait-for-db
+      image: busybox:1.36.1
+      command: ['sh', '-c', 'until nc -z -w 2 postgres-main-rw.cnpg-system.svc.cluster.local 5432; do echo "Waiting for PostgreSQL to be ready..."; sleep 2; done']
   image:
     repository: ghcr.io/autobrr/autobrr
     tag: "v1.80.0"

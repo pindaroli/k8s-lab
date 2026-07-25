@@ -1,0 +1,7 @@
+---
+- name: Deploy Talos VM Intelligent Watchdog su Proxmox VE
+  hosts: proxmox
+  remote_user: root
+  gather_facts: false
+  roles:
+    - role: proxmox_talos_watchdog

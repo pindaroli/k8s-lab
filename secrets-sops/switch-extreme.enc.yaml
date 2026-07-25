@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: extreme-ssh
+    namespace: default
+type: Opaque
+stringData:
+    username: ENC[AES256_GCM,data:Po2UHp8=,iv:faN06IAhO+hcDAdXXWQbFKelpbcti5DyVHlgrzdUrYg=,tag:13qTDFxHs/QMclyM4KRmBg==,type:str]
+    password: ENC[AES256_GCM,data:iVSQe3a7n64b,iv:CgjOtnnEPE1SUpBLUbyLq+YIDnjvs+SPBYWb85AkMY0=,tag:SBzGzt8IR45U+PvPXR251A==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOUFlDeHpZa3lFZFY0OVVQ
+            SndKWjBXUjZvemhFakhrRWZyS3hsSjVUV2dZClNvODlmc2NzTXZkRXM0NDFRdThx
+            NFZmaU5KM0pxMkJnc016VnlueXFCcE0KLS0tIDdmYllmbnFjaG1zczZCK0RjNW9D
+            bWdjc0hKV0FZdkJpMEdid3h2aTNiQ3MKTlHt2e6OkKPpa8zzE0OjOqmkZfo7Tnc0
+            IcH5kLnTKRWdmfScR6OUE7kWNtDz0S/x4HXtsB+VNWtrIYunSgHt0g==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-07-25T07:56:43Z"
+    mac: ENC[AES256_GCM,data:M+R9+eqdS7twD9+Uu3njOqSKHXl41/DMpdY0bCeoIGdK7Gu5iGk5GCFtEbpUSVAfxydE/tLbKP3zSZr9zGIerRD09adDzs5VOiWf9PQYT+nA2h5ahw52+JG80SEqY3DA/y9lsUyJX6/fhJNe+yGdvV3CzT6FVHv10ip6kujYC7M=,iv:s01FI74ZCp/ICOk3QzAmlhLPFTRFaPyNvf7yR3kAUlU=,tag:CDZwuwjr2Hyw4TKeY6jW1A==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2
