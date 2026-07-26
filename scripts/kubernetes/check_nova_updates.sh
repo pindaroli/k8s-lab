@@ -30,4 +30,4 @@ echo "==========================================================================
 echo "⎈ FOGLI (RELEASE) HELM"
 echo "===================================================================================================="
 
-nova find --helm --format json -a 2>/dev/null | python3 "$PYTHON_SCRIPT" helm
+nova find --helm --format json -a --url https://pindaroli.github.io/pindaroli-arr-helm/ 2>/dev/null | python3 "$PYTHON_SCRIPT" helm
