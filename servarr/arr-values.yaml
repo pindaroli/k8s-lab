@@ -96,7 +96,7 @@ qbittorrent:
       memory: 12Gi
   extraContainers:
     - name: qbittorrent-exporter
-      image: ghcr.io/martabal/qbittorrent-exporter:latest
+      image: ghcr.io/martabal/qbittorrent-exporter:v1.12.1
       env:
         - name: QBITTORRENT_BASE_URL
           value: "http://127.0.0.1:8080"

@@ -68,9 +68,7 @@ data:
       "Network Infrastructure":
         style: row
         columns: 4
-      "Remote Access":
-        style: row
-        columns: 4
+
       "GitOps":
         style: row
         columns: 4
@@ -203,12 +201,12 @@ data:
             href: http://10.10.20.103
             description: Cudy AP11000 (LAN)
             icon: mdi-wifi
+        - Extreme Switch:
+            href: http://extreme
+            description: Switch Extreme X620-X10 (OOB)
+            icon: mdi-switch
 
-    - "Remote Access":
-        - Kasmweb:
-            href: https://kasmweb-internal.pindaroli.org
-            description: Goto Jumphost
-            icon:  mdi-monitor-dashboard
+
 
     - "GitOps":
         - Prefect Console:
@@ -259,7 +257,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: homepage
-          image: "ghcr.io/gethomepage/homepage:latest"
+          image: "ghcr.io/gethomepage/homepage:v1.4.5"
           imagePullPolicy: Always
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS

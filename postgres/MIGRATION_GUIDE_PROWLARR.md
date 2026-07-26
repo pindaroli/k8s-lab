@@ -61,7 +61,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: pgloader
-          image: ghcr.io/dimitri/pgloader:latest
+          image: ghcr.io/dimitri/pgloader:3.6.9
           securityContext:
             runAsUser: 1000 # MATCH Prowlarr UID to avoid NFS ReadOnly errors
             runAsGroup: 1000

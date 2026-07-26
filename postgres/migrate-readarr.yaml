@@ -12,7 +12,7 @@ spec:
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
-          image: ghcr.io/dimitri/pgloader:latest
+          image: ghcr.io/dimitri/pgloader:3.6.9
           command:
             - pgloader
             - --with
