@@ -20,6 +20,46 @@
 - [x] Verificare compatibilità CNI, operatori (CNPG) e manifest inline.
 - [x] Eseguire transizione intermedia (`talosctl upgrade-k8s --to 1.35.x`).
 - [x] Eseguire transizione finale alla versione stabile (`talosctl upgrade-k8s --to 1.36.2`).
+## 🚀 [ ] ServiceNow & CMDB Homelab Integration Plan [[plan-servicenow-homelab-integration]]
+### [ ] FASE 1: Foundation & Struttura Dati Fondazionale (Piattaforma)
+- [ ] Creazione Company `HomeLab Corp`, Dipartimenti (`IT Ops`, `NetOps`, `DevOps`, `Security`) e Location `Home Server Room`.
+- [ ] Creazione utenti, gruppi e assegnazione ruoli RBAC (`admin`, `itil`, `asset_manager`, `discovery_admin`, `developer`).
+- [ ] Installazione plugin `ITOM Visibility` (`sn_itom_pattern`), `ITSM Guided Setup` e `Hardware Asset Management Pro`.
+- [ ] Popolamento tabelle CSDM 4.0 (`Business Process`, `Contract`, `Product Model`).
+- [ ] Configurazione categorie Incident, Change Models (`Standard`, `Normal`, `Emergency`) e Service Catalog Items.
+
+### [ ] FASE 2: MID Server, Connettività & ITOM Discovery
+- [ ] Provisioning VM MID Server su Proxmox (Linux Debian/Ubuntu, VLAN 10 Server, IP `10.10.10.x`, outbound 443 OPNsense).
+- [ ] Download agent, configurazione `config.xml`, avvio daemon e validazione MID Server su PDI.
+- [ ] Configurazione credenziali SSH, SNMP v3 e TrueNAS API.
+- [ ] Esecuzione Subnet Discovery e Discovery Schedules per VLAN 10, VLAN 20, nodi Talos K8s, OPNsense e Switch.
+
+### [ ] FASE 3: CMDB Design, CSDM Implementation & Governance
+- [ ] Mapping sistematico delle classi CMDB per tutte le risorse Homelab (PVE, TrueNAS, OPNsense, Switch, VM, Talos K8s, CNPG, App).
+- [ ] Population manuale / Import Set via API per risorse non raggiungibili via agentless (Proxmox API, `talosctl`, LXC).
+- [ ] Modellazione relazioni CI (`cmdb_rel_ci`) e definizione Technical/Application Services CSDM (`Kubernetes Cluster GEMINI`, `Media Stack`, `Automation Platform`).
+- [ ] Service Mapping Top-Down per Kubernetes Ingress (Traefik VIP `10.10.20.56`).
+- [ ] Configurazione CMDB Health Dashboard, Data Manager policy di attestazione e purge.
+
+### [ ] FASE 4: ITSM Operativo, HAM & Event Management
+- [ ] Gestione ciclo completo Incident/Problem/Change reali per l'Homelab e definizione SLA Agreements.
+- [ ] Configurazione Hardware Asset Management Workspace, Asset Records e lifecycle automation.
+- [ ] Modellazione rete OOB (VLAN 99) come Management Network separata nel CMDB.
+- [ ] Event Management AIOps: integrazione REST API da Prometheus/Alertmanager verso MID Server.
+
+### [ ] FASE 5: Integrazioni Bidirezionali, IntegrationHub & Workflow Automation
+- [ ] Script Python/Ansible per interazione bidirezionale con Table API.
+- [ ] IntegrationHub Spokes per Proxmox VE REST API e SSH Step proxy via MID Server (`pvesh get /nodes`).
+- [ ] Flow Designer Workflows: verifica automatica pool ZFS TrueNAS per incidenti Storage, orchestrazione playbook Ansible.
+- [ ] Inbound Webhooks da n8n/Alertmanager a ServiceNow per creazione automatica incident.
+- [ ] Playbook ITSM per *"Nodo K8s Irraggiungibile"* (Check -> Cordon -> Drain -> Reboot -> Wait -> Uncordon -> Verify).
+
+### [ ] FASE 6: Sviluppo Custom App Engine "HomeLab CMDB Enhancer"
+- [ ] Scrittura Business Rules, Script Includes, Client Scripts e UI Policies.
+- [ ] Sviluppo Scoped Application in App Engine Studio: tabella custom `Proxmox Cluster Node`, Service Portal Widget, Scheduled Job.
+- [ ] Scripted REST API endpoint `/api/homelab/infra/summary` per n8n.
+- [ ] Test suite Automated Test Framework (ATF).
+
 ## [x] ✅ FATTO: Implementazione CoreDNS Hard Anti-Affinity [[coredns-hard-anti-affinity]]
 - [x] Analisi architetturale completata (Scelta strategia Disable & Replace).
 - [x] Materializzazione piano nel Wiki.
