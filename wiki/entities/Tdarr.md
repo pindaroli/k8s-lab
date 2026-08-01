@@ -22,7 +22,7 @@ Il sistema è diviso in due componenti principali:
 ## 2. Configurazione Nodo Mac Studio
 - **Script di Avvio**: `tdarr/node/start_node.sh`.
 - **Lancio allo Startup**: Gestito tramite il launcher AppleScript nativo (`Avvia-Tdarr-Node.app`) posizionato sulla Scrivania per aggirare le restrizioni di sicurezza di Ghostty (Vedi dettagli completi in [[Ghostty_Workaround]]).
-- **Path Translators**: Mappa i percorsi interni del server (`/media`, `/temp`) con quelli locali del Mac (`/Volumes/arrdata/media`, `/Volumes/k8s-arr/tdarr-cache`).
+- **Path Translators**: Mappa i percorsi interni del server (`/media`, `/temp`) con quelli locali del Mac (`/Volumes/arrdata/media`, `/tmp/tdarr-cache`).
 - **Automazione Mount**: Utilizza `sudoers` per montare le share NFS senza password (Vedi [[TrueNAS]]).
 
 ## 3. Modello di Esecuzione in Background (Nohup & Tail)
@@ -31,7 +31,7 @@ Per consentire l'avvio automatico all'accesso GUI ma evitare che la chiusura man
 1. **Verifica Rete & Mount Automontati (Sequenziale)**:
    * **Verifica 1 (NFS/Rete Generale)**: Effettua un controllo preventivo di ping verso il server NFS (`10.10.10.50`) con un retry loop di sicurezza (fino a 60 secondi) per attendere la prontezza della rete o l'avvio del server storage.
    * **Verifica 2 (Tdarr Server)**: Effettua una verifica TCP sulla porta `8266` di `tdarr-api.pindaroli.org` con attese sintetiche a riga singola (fino a 60 secondi). Questo impedisce l'avvio del binario Tdarr Node e i conseguenti cicli di crash con log Axios verbosi se il Tdarr Server è momentaneamente offline, mostrando una diagnostica dettagliata di rete solo in caso di aborto definitivo.
-   * **Mount NFS**: Successivamente, verifica ed esegue i mount delle share NFS (`/Volumes/arrdata/media` e `/Volumes/k8s-arr`) sfruttando i permessi `sudoers` passwordless dell'utente.
+   * **Mount NFS**: Successivamente, verifica ed esegue il mount della share NFS (`/Volumes/arrdata/media`) sfruttando i permessi `sudoers` passwordless dell'utente.
 2. **Esecuzione Detached (`nohup`)**:
    Il binario viene lanciato in background separato dalla shell:
    ```bash
@@ -47,7 +47,7 @@ Per consentire l'avvio automatico all'accesso GUI ma evitare che la chiusura man
 
 ## 4. Storage e Cache
 - **Libreria**: `/Volumes/arrdata/media` (NFS su TrueNAS).
-- **Cache (NVMe)**: `/Volumes/k8s-arr/tdarr-cache`. È fondamentale che la cache sia su uno storage veloce (Pool Stripe NVMe) per non strozzare le performance di transcodifica.
+- **Cache (Local SSD macOS)**: `/tmp/tdarr-cache`. Sfrutta l'SSD NVMe ad alte prestazioni del Mac Studio per transcodificare a banda ultra-larga. Viene ripulita automaticamente da macOS ad ogni riavvio del sistema.
 
 ## 5. Logica di Transcodifica (Flows)
 - Si utilizzano i **Tdarr Flows** invece dei plugin classici per una gestione più granulare.

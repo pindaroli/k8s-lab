@@ -13,7 +13,7 @@
     },
     {
       "server": "/temp",
-      "node": "/Volumes/k8s-arr/tdarr-cache"
+      "node": "/tmp/tdarr-cache"
     }
   ],
   "nodeType": "mapped",

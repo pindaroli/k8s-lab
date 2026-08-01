@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: garage-creds
+    namespace: cnpg-system
+type: Opaque
+stringData:
+    ACCESS_KEY_ID: ENC[AES256_GCM,data:4p2QdpeiXXpYtd8z0TqyxPjpQRMLYWToalI=,iv:yJSP8UrIYCOuGJw5enH1RwnRSiRLyLhCLf/klEgMc+M=,tag:TaM1oJNPxfI0H8PN6PyyyA==,type:str]
+    SECRET_ACCESS_KEY: ENC[AES256_GCM,data:0/ikP6Gxu5hLhvJMafEJWjG9voWSZSzQLwKm1rTV0s/RvP5Pq4EETpWT4w4gb/4GiJoO2wsjHpOb8sH1117Fvg==,iv:nlLE6iGMU11uFm5wR4KklvDM/cAwt0BtO8v7s90XMqE=,tag:7+ok+SDT2BflLIPxK/fPbg==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBld2c4WUM3Wm5NVDNEZmhY
+            QWVQWXArUlFTTzBaa0FWZUpnVHB6Yk5iUmk0CmhIaVhFbEVYbk5YZzNMbUFPb3Ry
+            ZXB6TVRQYVo1TWR3ZDcyODNoRDdJelUKLS0tIEE2Y0JFa2txZ3l5MEhpYWlVcUlE
+            WnBUMi83VlY3UDRjQkIrMWdndFlWRVUKuQMt+1cUVtJBapiJqRxin4INUVlPxkU5
+            HLmZjL5LXenGwMWllQ4R/qTUcHWLwp+ZeGKQllQnJUK9zOBa25m9wQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-07-30T17:38:04Z"
+    mac: ENC[AES256_GCM,data:iY6abWytxDIx5TQq3wQCvv0NfR3z+GF4GR4nSuKU5mlCPkf9qaey0VI9xrSYOaQxCCFWySnQwzrnRqz7AxHnhLICam+O/dOl8yd7xa3Lt9qe7XWIy83wNSNqOjTXQkF9eezcriZa3cFKnOcaOMwsuTKnWaf1htoS0p0AndnZIJY=,iv:6BiCBmCMiNrLA88hpkF/nO3c4XD4abvnuSrMnT5Dlxo=,tag:n41DOVsnxyKlkc10npq34A==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

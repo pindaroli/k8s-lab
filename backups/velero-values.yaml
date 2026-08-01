@@ -4,10 +4,9 @@ configuration:
       provider: aws
       bucket: velero
       config:
-        region: minio
+        region: garage
         s3ForcePathStyle: true
-        s3Url: http://10.10.10.50:9000
-        publicUrl: https://minio.pindaroli.org
+        s3Url: http://10.10.10.50:3900
   volumeSnapshotLocation:
     - name: default
       provider: aws
@@ -16,11 +15,7 @@ configuration:
 
 credentials:
   useSecret: true
-  secretContents:
-    cloud: |
-      [default]
-      aws_access_key_id = minio
-      aws_secret_access_key = REDACTED_SECRET
+  existingSecret: velero-creds
 
 initContainers:
   - name: velero-plugin-for-aws

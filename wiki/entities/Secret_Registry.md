@@ -33,7 +33,10 @@ L'architettura segue il principio della **Separazione tra Configurazione e Crede
 | `oauth2-proxy` | `oauth2-proxy` | `google_client_id`, `google_client_secret` | Autenticazione Google per accesso esterno |
 | `pindaroli-wildcard-tls` | *Multi-NS* | Cloudflare API (per Cert-Manager) | Certificati SSL Let's Encrypt |
 | `cloudflare-token-secret` | `cert-manager` | `cloudflare_api_token` | DNS-01 Challenge |
+| `deepseek-apikey` | `default` | `deepseek_api_key` | DeepSeek API Key per Hermes Agent (SOPS) |
 | `discogs-token` | N/A (Mac Studio) | `discogs_token` | Beets Metadata (Music Rescue Pipeline) |
+
+
 
 ## 3. Procedure Operative
 

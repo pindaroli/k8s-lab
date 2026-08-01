@@ -96,7 +96,8 @@ data:
   custom.css: |
     /* Custom CSS */
   custom.js: |
-    /* Custom JS */
+    // Custom JS
+
   bookmarks.yaml: |
     # Empty bookmarks list
   docker.yaml: |

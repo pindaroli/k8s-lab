@@ -1,0 +1,16 @@
+deepseek_api_key: ENC[AES256_GCM,data:OPLmmfoGEb28CHqalsmslBImdf0xory3r0JYFtrsZegq55c=,iv:uLmDVThB8o9thh0qTBs2xGoLJDlNXE3JJJxxekwSecg=,tag:OHudEAyOaQAPz+mHl0hlYw==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBnbDNuaEkrbk5BeUw1UTdH
+            bWZiRndkSzZDQ1VCVmZJSTVIZWRudnh4TTF3Cnh2Vlg3MEY1VUdJSXVhTmloeHBj
+            cmJTdDhYOW96UUxwbVVnSWF2NUZTM2cKLS0tIEJHaFc4eTZpSWZVemsvKzNmUDcw
+            VTBvMWFMQ0ZTYWRhbDVLVUNWVEVkZ2sKq9a8ggfuzJ7LjZ/3ui4xzgIt+4+ij1R5
+            sNeuOjXvYy7dF5FxAobVdu4ABDS3it51zhJGguCgHE4NgEYZ7ywV8Q==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-08-01T13:59:21Z"
+    mac: ENC[AES256_GCM,data:RNdseHfFlrawL4Y8PxOrYFGlIwu6UwmHsIOMfmjG7WtmoHoN6IfIAzmZhzEHwqE/9J3atercmUuOWG7FgGspXjMVHvPjn04grZlgcv8+P0G9qAVyZPGDZBYVEDdsxqOlvy6//ED0SG66usOoRnPbtsjwcsFbiiJ87sJ0te9jxpA=,iv:k+7Z5idi53aBYpP4rMdQDaOqc1vtpIVZUBRVR7g68GI=,tag:+c4VSP8T2QcYoobLCoMohQ==,type:str]
+    encrypted_regex: ^(deepseek_api_key|deepsearch_api_key|.*api_key|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

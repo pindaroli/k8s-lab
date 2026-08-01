@@ -482,6 +482,11 @@
   > 3. Sblocco automatico dei processi del kernel e completamento di `pct stop 1400`.
   > **Obiettivo**: Studiare e implementare una soluzione strutturale per disattivare/smontare automaticamente e in modo pulito le share NFS (es. tramite script di pre-shutdown Proxmox, autofs con timeout aggressivi, o systemd mount units robuste) prima che TrueNAS venga arrestato, prevenendo hang di sistema e dipendenze bloccanti in cascata.
 
+### [ ] Migrazione Dataset di Sistema TrueNAS (ix-apps e .ix-virt) su oliraid
+  > **Contesto**: Attualmente le cartelle di sistema di TrueNAS (`ix-apps` e `.ix-virt`) risiedono sul pool NVMe `stripe`. Questo "sporca" il pool ad alte prestazioni con file temporanei (cataloghi App, Docker images) che complicano inutilmente le procedure di backup e restore ricorsivo ZFS, mischiandole ai dischi essenziali (come la VM Talos). Inoltre, si verifica la **"stranezza ZFS"** dove le policy di snapshot desincronizzano le cartelle padre (es. `k8s-runner-1` ferma a Marzo) dalle cartelle figlio (es. `k8s-runner-1.block` aggiornata a Luglio), rendendo di fatto impossibili i ripristini ricorsivi completi con `-R`.
+  > **Obiettivo 1**: Spostare l'App Pool e l'ambiente Virtualization di default su `oliraid`. In questo modo `stripe` rimarrà dedicato al 100% solo ed esclusivamente ai dataset ad alte prestazioni (`k8s-arr`, `qb_temp`) e ai dischi Zvol delle VM, rendendo i backup chirurgici ed esenti da errori ricorsivi.
+  > **Obiettivo 2**: Investigare la retention policy degli snapshot automatici su TrueNAS per forzare l'allineamento degli snapshot gerarchici (Padre-Figlio) in modo da garantire che il flag `-R` funzioni sempre senza trovare "buchi" temporali nei dataset annidati.
+
 
 
 ### [ ] Generalizzazione setup_postgres_dbs.sh per integrazione in MCP Server
@@ -568,3 +573,7 @@ Implementare un sistema di aggregazione log centralizzato nel cluster per:
   - [ ] Installare Bazzite (immagine `bazzite-nvidia`) via KVM over IP.
   - [ ] Aggiornare `rete.json` con la VM gaming e l'indirizzo IP del KVM.
   - [ ] Sincronizzare il DNS su OPNsense.
+
+### [ ] Integrazione Gestione Scaling App su Homepage Local via OliveTin (Iframe) [[homepage-app-scaling-buttons]]
+- [ ] Fase 1: Deployment OliveTin e configurazione Webhook n8n.
+- [ ] Fase 2: Aggiunta dell'Iframe OliveTin nella dashboard di Homepage.

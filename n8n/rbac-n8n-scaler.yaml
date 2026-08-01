@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: n8n-deployment-scaler
+  labels:
+    app.kubernetes.io/name: n8n
+    app.kubernetes.io/component: rbac
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "deployments/scale"]
+    verbs: ["get", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: n8n-deployment-scaler-binding
+  labels:
+    app.kubernetes.io/name: n8n
+    app.kubernetes.io/component: rbac
+subjects:
+  - kind: ServiceAccount
+    name: n8n
+    namespace: n8n
+roleRef:
+  kind: ClusterRole
+  name: n8n-deployment-scaler
+  apiGroup: rbac.authorization.k8s.io

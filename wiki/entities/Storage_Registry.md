@@ -21,6 +21,7 @@ Questo nodo del Wiki definisce le **regole** e la topologia dello storage condiv
 Lo storage primario è fornito da [[TrueNAS]] tramite protocollo NFS.
 Ci sono due pool principali:
 - **`oliraid`**: Pool HDD primario, alta capacità. Usato per i media (`arrdata`), backup, musica classica e documenti a lungo termine.
+  - **Dataset Trickplay (`oliraid/jellyfin-trickplay`)**: Dataset specializzato per i file `.bif` di Jellyfin configurato con **Recordsize: 1M**, **Compression: zstd**, **Atime: off** e **Quota: 500G**. Escluso dagli snapshot e dai backup di sistema.
 - **`stripe`**: Pool NVMe ad alte prestazioni. Usato per cache K8s, transcodifica temporanea di [[Tdarr]] (`k8s-arr/tdarr-cache`), storage temporaneo qBittorrent (`qb_temp`), PVC NFS per la suite n8n (`k8s-n8n`) e libreria Steam/Games (`games`).
   - **Ottimizzazione qB Temp**: Dataset `stripe/qb_temp` configurato con **Recordsize: 16k** e **Sync: Disabled** per gestire burst di IOPS a 20 MB/s.
 - **MinIO (S3-compatibile)** su TrueNAS: Usato come storage persistente e versionato per il database SQLite della pipeline classica (`classical_musiclibrary.db`). Il DB viene scaricato in `emptyDir` K8s durante l'esecuzione e ri-caricato atomicamente al termine del flow Prefect (sempre, anche in caso di errore). Il versioning nativo di MinIO permette rollback istantanei in caso di corruzione dell'ontologia.

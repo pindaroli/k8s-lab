@@ -176,6 +176,30 @@
         "networks": [
           "*"
         ]
+      },
+      "garage_data": {
+        "path": "/mnt/oliraid/garage-data",
+        "description": "Dataset ZFS per Garage S3",
+        "protocol": "hostpath/docker",
+        "notes": "Mappato direttamente all'app Custom Garage su TrueNAS. Nessun overhead NFS.",
+        "networks": []
+      },
+      "jellyfin_trickplay": {
+        "path": "/mnt/oliraid/jellyfin-trickplay",
+        "description": "Specialized ZFS Dataset for Jellyfin Trickplay (BIF) files",
+        "protocol": "nfs",
+        "zfs_compression": "zstd",
+        "zfs_recordsize": "1M",
+        "zfs_atime": "off",
+        "zfs_quota": "500G",
+        "notes": "Dedicated dataset excluded from ZFS snapshot backups and offsite replicas. High performance 1M recordsize for large BIF sequential files.",
+        "networks": [
+          "10.10.20.141",
+          "10.10.20.142",
+          "10.10.20.143",
+          "10.10.20.100",
+          "10.10.10.0/24"
+        ]
       }
     }
   }

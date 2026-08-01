@@ -8,3 +8,8 @@ creation_rules:
   - path_regex: helm-charts/.*/secrets\.enc\.yaml$
     encrypted_regex: ^(password|secret|token|key|apiKey|client.*)$
     age: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+
+  # Segreti Ansible (SOPS)
+  - path_regex: ansible/vars/.*\.enc\.yaml$
+    encrypted_regex: ^(deepseek_api_key|deepsearch_api_key|.*api_key|password|secret|token|key|apiKey|client.*)$
+    age: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl

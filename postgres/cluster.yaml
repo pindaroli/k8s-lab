@@ -17,14 +17,14 @@ spec:
   backup:
     barmanObjectStore:
       destinationPath: s3://postgres-wal/
-      endpointURL: http://10.10.10.50:9000
+      endpointURL: http://10.10.10.50:3900
       s3Credentials:
         accessKeyId:
           key: ACCESS_KEY_ID
-          name: minio-creds
+          name: garage-creds
         secretAccessKey:
           key: SECRET_ACCESS_KEY
-          name: minio-creds
+          name: garage-creds
     retentionPolicy: 30d
   bootstrap:
     initdb:
@@ -33,6 +33,7 @@ spec:
   managed:
     roles:
     - name: n8n
+      login: true
       passwordSecret:
         name: n8n-db-password
   affinity:
