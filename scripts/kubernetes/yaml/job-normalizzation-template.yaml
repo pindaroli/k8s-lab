@@ -9,7 +9,7 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: audio-normalizer
+        app.kubernetes.io/name: ${NORMALIZATION_TYPE}-normalizer
     spec:
       restartPolicy: Never
       affinity:
@@ -24,7 +24,9 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: normalizer
-          image: ghcr.io/pindaroli/custom-normalizer:1.2.1
+          image: ghcr.io/pindaroli/custom-normalizer:1.2.2
+          command:
+            - "${COMMAND}"
           args:
             - "${DIR}"
             - "${DEST_DIR}"
@@ -87,6 +89,9 @@ spec:
             - name: songkong-license
               mountPath: /root/.songkong/license.properties
               subPath: license.properties
+            - name: filebot-license
+              mountPath: /root/.filebot/license.psm
+              subPath: license.psm
       volumes:
         - name: media-data
           persistentVolumeClaim:
@@ -94,3 +99,7 @@ spec:
         - name: songkong-license
           secret:
             secretName: songkong-license
+        - name: filebot-license
+          secret:
+            secretName: filebot-license
+            optional: true

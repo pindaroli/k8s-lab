@@ -20,6 +20,7 @@ SOURCE_DIR=""
 DEST_DIR=""
 INTERACTIVE=false
 EMAIL_RECIPIENT=""
+NORMALIZATION_TYPE="audio"
 
 # Nome risorsa di qBittorrent per i controlli tramite kubectl exec
 QBIT_POD_REF="deploy/servarr-qbittorrent"
@@ -51,13 +52,17 @@ while [[ $# -gt 0 ]]; do
             SONGKONG_VERBOSE="true"
             shift
             ;;
+        --type|-t)
+            NORMALIZATION_TYPE="$2"
+            shift 2
+            ;;
         --dry-run|-n)
             DRY_RUN=true
             shift
             ;;
         -*)
             echo -e "${RED}Errore: Opzione sconosciuta $1${RESET}" >&2
-            echo "Uso: $0 <source_dir> <dest_dir> [--dry-run]"
+            echo "Uso: $0 <source_dir> <dest_dir> [--type <audio|video>] [--dry-run]"
             exit 1
             ;;
         *)
@@ -67,7 +72,7 @@ while [[ $# -gt 0 ]]; do
                 DEST_DIR="$1"
             else
                 echo -e "${RED}Errore: Troppi argomenti posizionali.${RESET}" >&2
-                echo "Uso: $0 <source_dir> <dest_dir> [--dry-run]"
+                echo "Uso: $0 <source_dir> <dest_dir> [--type <audio|video>] [--dry-run]"
                 exit 1
             fi
             shift
@@ -82,8 +87,20 @@ fi
 
 # Intestazione grafica
 echo -e "${BOLD}${CYAN}============================================================${RESET}"
-echo -e "${BOLD}${CYAN}   Batch Process Directories (Audio Normalizer K8s Jobs)${RESET}"
+echo -e "${BOLD}${CYAN}   Batch Process Directories (Normalizzatore Audio/Video)${RESET}"
 echo -e "${BOLD}${CYAN}============================================================${RESET}\n"
+
+# Chiedi interattivamente il tipo di normalizzazione
+if [ "$INTERACTIVE" = true ]; then
+    echo -e -n "${BOLD}${YELLOW}Seleziona tipo di normalizzazione (1: audio, 2: video, default: 1):${RESET} "
+    read -r RESP_T
+    if [ "$RESP_T" = "2" ] || [ "$RESP_T" = "video" ]; then
+        NORMALIZATION_TYPE="video"
+    else
+        NORMALIZATION_TYPE="audio"
+    fi
+    echo ""
+fi
 
 # Chiedi interattivamente e valida SOURCE_DIR
 while true; do
@@ -163,6 +180,14 @@ fi
 echo -e "${GREEN}✓ Validazione completata.${RESET}"
 echo -e "Cartella Sorgente: ${CYAN}$SOURCE_DIR${RESET}"
 echo -e "Cartella Destinazione: ${CYAN}$DEST_DIR${RESET}"
+echo -e "Tipo Normalizzazione: ${CYAN}$NORMALIZATION_TYPE${RESET}"
+
+if [ "$NORMALIZATION_TYPE" = "video" ]; then
+    COMMAND="/app/normalize-video.sh"
+else
+    COMMAND="/app/normalize.sh"
+fi
+
 if [ "$DRY_RUN" = true ]; then
     echo -e "Stato: ${BOLD}${YELLOW}DRY-RUN (Simulazione)${RESET}"
 else
@@ -230,7 +255,7 @@ check_completed_jobs() {
 
     # Estrae lo stato dei Job in JSON
     local jobs_json
-    jobs_json=$(kubectl get jobs -n "$NAMESPACE" -l app.kubernetes.io/name=audio-normalizer -o json 2>/dev/null || echo "")
+    jobs_json=$(kubectl get jobs -n "$NAMESPACE" -l app.kubernetes.io/name=${NORMALIZATION_TYPE}-normalizer -o json 2>/dev/null || echo "")
     [ -z "$jobs_json" ] && return
 
     for entry in "${SUBMITTED_JOBS[@]}"; do
@@ -259,15 +284,15 @@ for DIR in "${DIRS[@]}"; do
 
     # Generazione id casuale pulita via openssl
     RANDOM_SUFFIX=$(openssl rand -hex 3 | cut -c 1-5)
-    JOB_NAME="audio-normalizer-${SAFE_NAME}-${RANDOM_SUFFIX}"
+    JOB_NAME="${NORMALIZATION_TYPE}-normalizer-${SAFE_NAME}-${RANDOM_SUFFIX}"
 
     mkdir -p "$YAML_DIR"
     YAML_FILE="${YAML_DIR}/${JOB_NAME}.yaml"
     TEMPLATE_FILE="${SCRIPT_DIR}/yaml/job-normalizzation-template.yaml"
 
     # Generazione e salvataggio del manifesto YAML tramite il template statico
-    export JOB_NAME NAMESPACE DIR DEST_DIR SONGKONG_VERBOSE="${SONGKONG_VERBOSE:-false}" EMAIL_RECIPIENT="${EMAIL_RECIPIENT:-}"
-    envsubst '$JOB_NAME $NAMESPACE $DIR $DEST_DIR $SONGKONG_VERBOSE $EMAIL_RECIPIENT' < "$TEMPLATE_FILE" > "$YAML_FILE"
+    export JOB_NAME NAMESPACE DIR DEST_DIR SONGKONG_VERBOSE="${SONGKONG_VERBOSE:-false}" EMAIL_RECIPIENT="${EMAIL_RECIPIENT:-}" COMMAND NORMALIZATION_TYPE
+    envsubst '$JOB_NAME $NAMESPACE $DIR $DEST_DIR $SONGKONG_VERBOSE $EMAIL_RECIPIENT $COMMAND $NORMALIZATION_TYPE' < "$TEMPLATE_FILE" > "$YAML_FILE"
 
     if [ "$DRY_RUN" = true ]; then
         echo -e "${YELLOW}[DRY-RUN] Directory individuata: ${RESET}${CYAN}$BASE_NAME${RESET}"
@@ -286,7 +311,7 @@ for DIR in "${DIRS[@]}"; do
         check_completed_jobs
 
         # Conta quanti job normalizer hanno la proprietà status.active > 0
-        ACTIVE_JOBS=$(kubectl get jobs -n "$NAMESPACE" -l app.kubernetes.io/name=audio-normalizer -o json | jq '[.items[] | select(.status.active != null and .status.active > 0)] | length' 2>/dev/null || echo "0")
+        ACTIVE_JOBS=$(kubectl get jobs -n "$NAMESPACE" -l app.kubernetes.io/name=${NORMALIZATION_TYPE}-normalizer -o json | jq '[.items[] | select(.status.active != null and .status.active > 0)] | length' 2>/dev/null || echo "0")
         ACTIVE_JOBS=${ACTIVE_JOBS:-0}
 
         if [ "$ACTIVE_JOBS" -lt "$MAX_CONCURRENT" ]; then

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: filebot-license
+    namespace: arr
+type: Opaque
+stringData:
+    license.psm: ENC[AES256_GCM,data:yjPBdb69TFkD1rinP3kMOvCvOtjjpL/KCpKoJ4HFXZYLPwBX0jmK3CDj/RcGeWBEt1ETP3rG9FDTqs9nl8+1MymeBkybVE6Ii3/uYTIvAikkwhrlx/xisn3PqPSs54FPswBs1dk36X9Eg3EdaH2h90AyGsoDWP8Y4t6AW41fHHbwYtttBGFPukWJEVM8cP2CpbAqx2r91xwrrFiDbUjOYGE7WfvvJfai983wPwAYsWIEqVvzASLaJaCycnkvWsumaCSr9krWXh60JobJM6I4yLVxUsY44jP0Ex0Rg/oMtAgkP7f1AonYude7NyZ1GBRipz2GePxjCYG+uWuJEnYty+0t6zer22HDPXBUPp5ldouCnjJOtJVfg+sS8pnD5v8SOcUsgPL2+K1SPVfxseX33XJ/EKnLjSQyKm+2fqILy9kCbb7WKf/iB0S2a6fZofFe80l7cqDmCtLhm0PF+47zcMT2j3ubhz71O4HZuhaKaKVySAPOy8vWyXirUlBMrp3ldBjHBYLlSHtKIBbLnCx+0LvusRWzCMSHlScqshGCLrLBSuxb6RBHuFaJB+eh7JOEy/o/eC+rem8Kefvu1ZZ19hXeUqJWE1Au5FqujUVfQv6XJi8nTwzzgbF6sJAeLc5BxvgpkMlQDP6OQqJyBQA78jCt6K6sTvAA51wUezwGubsYm0vvc0TqKCvAwRktGRzWWI3sVxhBBtVXWwshcX2aiIhzEAFnMFO1y8HlycdMMUEz22adhM9DgSemSnlKBtJwMXOjKvOXMPJLmgtSiebaoaT4/pr7jD+3WUuOfv3d3vGcMuTSIF6bwzA8HwAl6wfxFpJA/c7Z948A1z/qwIMR1796p3xi58/BcI7uXoI=,iv:USnf/J3rlpda7qJ/RYZxNCs052A4P2noSnFMFHf4ABI=,tag:6uQ7klsDgqCxpnNyUPnx4A==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPWng4WW9JY2wyL09oRVNL
+            Q2FHVEF6NEthZHpuN0lNSWxjeUlQZkVDUEhVCmhzQ0ZxRWNZaDhuTnJWSndnQTg0
+            bWI4a2kyVVNaVWpWZi9CdndPdHJqSlkKLS0tIDZRdTlzS2E1SVhsMjRLSU8wS09N
+            dU1FMzcwb3ljMENnYnhWSUxxeUg1QlUK9SYf4VeozSGHlJ7tjSt1QtljDtqGB7n+
+            LPiJ+3zXC7KJCpdSqoci6hOzFImfzSb8iC2emy0goe7IJ6uHiGKpeQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-08-02T16:52:10Z"
+    mac: ENC[AES256_GCM,data:a2D8KRBBjx0Z5ZgCKVqxraYJdWtHBUqH10DwqkTelgQ7WY6KUeKm9bG93MhzgmLA+O4fo5QVTBu1x573SlNDH1olD0Utbi6wfAud9iFG5t2fQ2eU5uShe6P794LGCn1cpFZQrHMADA6rIdD/Qg/GJ60GMOasJiVAuHxEwU/NMWI=,iv:5dxva8h1bSmz604aVno2En3bqTqmBLe9GuNXK90wMqM=,tag:7MkqTC2L1fWwAshzttJUEw==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

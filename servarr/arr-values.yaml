@@ -64,8 +64,9 @@ qbittorrent:
     verbose: false
     recipient: "o.pindaro@gmail.com"
     filters:
-      autobrr-classical: "classical"
-      lidarr-classical: "classical"
+      autobrr-classical: "classical audio"
+      lidarr-classical: "classical audio"
+      radarr: "movies video"
   image:
     repository: lscr.io/linuxserver/qbittorrent
     tag: "5.2.3_v2.0.13-ls468"
