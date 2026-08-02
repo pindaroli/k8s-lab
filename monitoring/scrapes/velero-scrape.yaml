@@ -12,8 +12,8 @@ spec:
       - velero
   selector:
     matchLabels:
-      component: velero
+      app.kubernetes.io/name: velero
   endpoints:
-    - port: metrics
+    - port: http-monitoring
       path: /metrics
       interval: 1m

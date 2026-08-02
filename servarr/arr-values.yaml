@@ -544,6 +544,12 @@ autobrr:
 minimserver:
   enabled: true
   replicaCount: 1
+  profile: |
+    contentDir = /media/classical
+    displayName = MinimServer
+    indexTags = Artist, Date, Genre, All Artists, Composer, Conductor, Orchestra, Soloist, Performer, Work
+    itemTags = Conductor, Orchestra, Soloist, Performer, Work
+    .profileVersion = 2.2
   resources:
     requests:
       cpu: 100m
