@@ -22,10 +22,9 @@ INTERACTIVE=false
 EMAIL_RECIPIENT=""
 NORMALIZATION_TYPE="audio"
 
-# Nome risorsa di qBittorrent per i controlli tramite kubectl exec
-QBIT_POD_REF="deploy/servarr-qbittorrent"
-QBIT_CONTAINER="servarr"
-QBIT_CONTAINER="servarr" # duplicate but let's keep clean
+# Nome risorsa di Jellyfin per i controlli sul volume /media tramite kubectl exec
+MEDIA_POD_REF="deploy/servarr-jellyfin"
+MEDIA_CONTAINER="servarr"
 NAMESPACE="arr"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 YAML_DIR="/tmp/audio-normalizer-jobs"
@@ -142,13 +141,13 @@ while true; do
 
     FORMATTED_SOURCE_DIR=$(format_media_path "$SOURCE_DIR")
 
-    # Validazione della cartella SORGENTE (Mandatoria via kubectl exec)
-    echo -e "Verifica della cartella sorgente (${CYAN}$FORMATTED_SOURCE_DIR${RESET}) nel pod qBittorrent..."
-    if kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- test -d "$FORMATTED_SOURCE_DIR" &>/dev/null; then
+    # Validazione della cartella SORGENTE (Mandatoria via kubectl exec su Jellyfin)
+    echo -e "Verifica della cartella sorgente (${CYAN}$FORMATTED_SOURCE_DIR${RESET}) nel pod Jellyfin..."
+    if kubectl exec -n "$NAMESPACE" "$MEDIA_POD_REF" -c "$MEDIA_CONTAINER" -- test -d "$FORMATTED_SOURCE_DIR" &>/dev/null; then
         SOURCE_DIR="$FORMATTED_SOURCE_DIR"
         break
     else
-        echo -e "${RED}❌ Errore: La cartella sorgente '$FORMATTED_SOURCE_DIR' non esiste all'interno di qBittorrent!${RESET}\n" >&2
+        echo -e "${RED}❌ Errore: La cartella sorgente '$FORMATTED_SOURCE_DIR' non esiste all'interno del volume /media!${RESET}\n" >&2
         if [ "$INTERACTIVE" = true ]; then
             SOURCE_DIR=""
         else
@@ -173,9 +172,9 @@ fi
 DEST_DIR=$(format_media_path "$DEST_DIR")
 
 # Validazione della cartella DESTINAZIONE (Warning non bloccante via kubectl exec)
-echo -e "Verifica della cartella destinazione (${CYAN}$DEST_DIR${RESET}) nel pod qBittorrent..."
-if ! kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- test -d "$DEST_DIR" &>/dev/null; then
-    echo -e "${YELLOW}⚠️  Attenzione: La cartella destinazione '$DEST_DIR' non esiste all'interno del container qBittorrent.${RESET}"
+echo -e "Verifica della cartella destinazione (${CYAN}$DEST_DIR${RESET}) nel pod Jellyfin..."
+if ! kubectl exec -n "$NAMESPACE" "$MEDIA_POD_REF" -c "$MEDIA_CONTAINER" -- test -d "$DEST_DIR" &>/dev/null; then
+    echo -e "${YELLOW}⚠️  Attenzione: La cartella destinazione '$DEST_DIR' non esiste all'interno del container Jellyfin.${RESET}"
     echo -e "${YELLOW}   Il job tenterà comunque l'esecuzione (potrebbe essere creata dinamicamente o mappata nel container).${RESET}\n"
 fi
 
@@ -231,13 +230,13 @@ DIRS=()
 while IFS= read -r line; do
     line=$(echo "$line" | tr -d '\r')
     [[ -n "$line" ]] && DIRS+=("$line")
-done < <(kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+done < <(kubectl exec -n "$NAMESPACE" "$MEDIA_POD_REF" -c "$MEDIA_CONTAINER" -- find "$SOURCE_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
 
 TOTAL_DIRS=${#DIRS[@]}
 
 if [ "$TOTAL_DIRS" -eq 0 ]; then
-    # Se non ci sono sottocartelle, controlla se la cartella stessa contiene file (singolo album)
-    HAS_FILES=$(kubectl exec -n "$NAMESPACE" "$QBIT_POD_REF" -c "$QBIT_CONTAINER" -- find "$SOURCE_DIR" -maxdepth 1 -type f 2>/dev/null | head -n 1)
+    # Se non ci sono sottocartelle, controlla se la cartella stessa contiene file (singolo album/film)
+    HAS_FILES=$(kubectl exec -n "$NAMESPACE" "$MEDIA_POD_REF" -c "$MEDIA_CONTAINER" -- find "$SOURCE_DIR" -maxdepth 1 -type f 2>/dev/null | head -n 1)
     if [ -n "$HAS_FILES" ]; then
         echo -e "${CYAN}ℹ️  La cartella '$SOURCE_DIR' non contiene sottocartelle ma contiene file audio. Verrà elaborata direttamente come singola cartella.${RESET}\n"
         DIRS=("$SOURCE_DIR")
