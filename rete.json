@@ -893,7 +893,9 @@
         "tdarr",
         "calibre-web",
         "firewall",
-        "pve"
+        "pve",
+        "hermes",
+        "hermes-internal"
       ],
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
     },

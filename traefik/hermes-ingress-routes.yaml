@@ -1,0 +1,28 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hermes-ingress-route
+  namespace: hermes
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # External / Public: OAuth Protected (Cloudflare)
+    - match: Host(`hermes.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: hermes-hermes-agent
+          namespace: hermes
+          port: 9119
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+    # Internal / Short: Direct Access
+    - match: Host(`hermes`) || Host(`hermes-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: hermes-hermes-agent
+          namespace: hermes
+          port: 9119
+  tls:
+    secretName: pindaroli-wildcard-tls

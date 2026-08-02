@@ -138,6 +138,10 @@ data:
             href: https://n8n.pindaroli.org
             description: Workflow automation platform
             icon: n8n.png
+        - Hermes Agent:
+            href: https://hermes.pindaroli.org
+            description: LLM-based Kubernetes & Infra Agent
+            icon: mdi-robot-outline
 
     - "ArrServices":
         - Jellyfin:

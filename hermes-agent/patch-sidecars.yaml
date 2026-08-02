@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-hermes-agent
+spec:
+  template:
+    spec:
+      containers:
+        # Esempio di Sidecar per MCP Kubernetes (SSE Server)
+        # Nota: L'upstream Hermes deve supportare il trasporto SSE per connettersi a sidecar remoti/separati,
+        # oppure è necessario un proxy Stdio-to-SSE. In alternativa, andrebbe estesa l'immagine base
+        # di Hermes per includere Node.js ed eseguire questi MCP via stdio direttamente.
+        - name: mcp-kubernetes
+          image: node:20-alpine
+          # Qui andrebbe avviato un bridge/server SSE che espone @modelcontextprotocol/server-kubernetes
+          # Per ora è impostato come sleep infinito per mantenere attivo il pod a scopo dimostrativo architetturale.
+          command: ["sleep", "infinity"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+
+        - name: hermes-agent
+          command: []
+          args: ["hermes", "gateway", "run"]
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0

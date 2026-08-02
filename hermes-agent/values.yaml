@@ -1,0 +1,42 @@
+config:
+  model:
+    provider: deepseek
+  terminal:
+    backend: local
+
+service:
+  enabled: true
+  port: 9119
+
+ingress:
+  enabled: false
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    cert-manager.io/cluster-issuer: "letsencrypt-cloudflare"
+  hosts:
+    - host: hermes-internal.pindaroli.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: hermes-internal-tls
+      hosts:
+        - hermes-internal.pindaroli.org
+
+persistence:
+  enabled: true
+  existingClaim: "hermes-agent-pvc"
+
+extraEnvFrom:
+  - secretRef:
+      name: hermes-secrets
+
+extraEnv:
+  - name: TALOSCONFIG
+    value: /var/run/secrets/kubeconfig/talosconfig
+  - name: HERMES_DASHBOARD
+    value: "1"
+  - name: HERMES_DASHBOARD_HOST
+    value: "0.0.0.0"
+  - name: HERMES_AUTH_PROVIDER
+    value: "password"
