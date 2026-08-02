@@ -190,14 +190,16 @@ if [ "$INTERACTIVE" = true ]; then
     fi
     echo ""
 
-    echo -e -n "${BOLD}${YELLOW}Abilitare la modalità verbosa per SongKong (SONGKONG_VERBOSE)? (s/n, default: n):${RESET} "
-    read -r RESP_V
-    if [[ "$RESP_V" =~ ^[sSyY]$ ]]; then
-        SONGKONG_VERBOSE=true
-    else
-        SONGKONG_VERBOSE=false
+    if [ "$NORMALIZATION_TYPE" = "audio" ]; then
+        echo -e -n "${BOLD}${YELLOW}Abilitare la modalità verbosa per SongKong (SONGKONG_VERBOSE)? (s/n, default: n):${RESET} "
+        read -r RESP_V
+        if [[ "$RESP_V" =~ ^[sSyY]$ ]]; then
+            SONGKONG_VERBOSE=true
+        else
+            SONGKONG_VERBOSE=false
+        fi
+        echo ""
     fi
-    echo ""
 
     echo -e -n "${BOLD}${YELLOW}Inserisci l'indirizzo email del destinatario (opzionale):${RESET} "
     read -r EMAIL_RECIPIENT
