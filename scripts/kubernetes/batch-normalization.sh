@@ -30,6 +30,33 @@ NAMESPACE="arr"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 YAML_DIR="/tmp/audio-normalizer-jobs"
 
+# Handler per la gestione pulita dell'interruzione via CTRL+C (SIGINT / SIGTERM)
+cleanup_and_exit() {
+    echo -e "\n\n${BOLD}${RED}⚠️  INTERRUZIONE DA TASTIERA (CTRL+C) RILEVATA!${RESET}"
+    if [ ${#SUBMITTED_JOBS[@]:-0} -gt 0 ]; then
+        echo -e "${YELLOW}I seguenti Job sono stati sottomessi al cluster:${RESET}"
+        for entry in "${SUBMITTED_JOBS[@]}"; do
+            local j_name="${entry%%:*}"
+            echo -e "  - ${CYAN}$j_name${RESET}"
+        done
+        echo -e "\n${BOLD}${YELLOW}Vuoi cancellare i Job in corso sottomessi su Kubernetes? (s/n, default: n):${RESET} "
+        read -r CANCEL_RESP < /dev/tty || CANCEL_RESP="n"
+        if [[ "$CANCEL_RESP" =~ ^[sSyY]$ ]]; then
+            echo -e "${RED}Cancellazione dei Job in corso su K8s...${RESET}"
+            for entry in "${SUBMITTED_JOBS[@]}"; do
+                local j_name="${entry%%:*}"
+                kubectl delete job -n "$NAMESPACE" "$j_name" --cascade=foreground &>/dev/null || true
+            done
+            echo -e "${GREEN}✓ Job cancellati.${RESET}"
+        else
+            echo -e "${CYAN}ℹ️  I Job sottomessi continueranno l'esecuzione in background sul cluster.${RESET}"
+        fi
+    fi
+    exit 130
+}
+
+trap cleanup_and_exit INT TERM
+
 # Funzione per formattare e anteporre /media/ ai percorsi
 format_media_path() {
     local p="$1"
