@@ -22,9 +22,9 @@ INTERACTIVE=false
 EMAIL_RECIPIENT=""
 NORMALIZATION_TYPE="audio"
 
-# Nome risorsa di Jellyfin per i controlli sul volume /media tramite kubectl exec
-MEDIA_POD_REF="deploy/servarr-jellyfin"
-MEDIA_CONTAINER="servarr"
+# Nome risorsa di Radarr per i controlli sul volume /media tramite kubectl exec
+MEDIA_POD_REF="deploy/servarr-radarr"
+MEDIA_CONTAINER="radarr"
 NAMESPACE="arr"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 YAML_DIR="/tmp/audio-normalizer-jobs"
@@ -141,8 +141,8 @@ while true; do
 
     FORMATTED_SOURCE_DIR=$(format_media_path "$SOURCE_DIR")
 
-    # Validazione della cartella SORGENTE (Mandatoria via kubectl exec su Jellyfin)
-    echo -e "Verifica della cartella sorgente (${CYAN}$FORMATTED_SOURCE_DIR${RESET}) nel pod Jellyfin..."
+    # Validazione della cartella SORGENTE (Mandatoria via kubectl exec su Radarr)
+    echo -e "Verifica della cartella sorgente (${CYAN}$FORMATTED_SOURCE_DIR${RESET}) nel pod Radarr..."
     if kubectl exec -n "$NAMESPACE" "$MEDIA_POD_REF" -c "$MEDIA_CONTAINER" -- test -d "$FORMATTED_SOURCE_DIR" &>/dev/null; then
         SOURCE_DIR="$FORMATTED_SOURCE_DIR"
         break
@@ -172,9 +172,9 @@ fi
 DEST_DIR=$(format_media_path "$DEST_DIR")
 
 # Validazione della cartella DESTINAZIONE (Warning non bloccante via kubectl exec)
-echo -e "Verifica della cartella destinazione (${CYAN}$DEST_DIR${RESET}) nel pod Jellyfin..."
+echo -e "Verifica della cartella destinazione (${CYAN}$DEST_DIR${RESET}) nel pod Radarr..."
 if ! kubectl exec -n "$NAMESPACE" "$MEDIA_POD_REF" -c "$MEDIA_CONTAINER" -- test -d "$DEST_DIR" &>/dev/null; then
-    echo -e "${YELLOW}⚠️  Attenzione: La cartella destinazione '$DEST_DIR' non esiste all'interno del container Jellyfin.${RESET}"
+    echo -e "${YELLOW}⚠️  Attenzione: La cartella destinazione '$DEST_DIR' non esiste all'interno del container Radarr.${RESET}"
     echo -e "${YELLOW}   Il job tenterà comunque l'esecuzione (potrebbe essere creata dinamicamente o mappata nel container).${RESET}\n"
 fi
 
