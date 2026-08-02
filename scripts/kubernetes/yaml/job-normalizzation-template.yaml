@@ -24,7 +24,7 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: normalizer
-          image: ghcr.io/pindaroli/custom-normalizer:1.2.0
+          image: ghcr.io/pindaroli/custom-normalizer:1.2.1
           args:
             - "${DIR}"
             - "${DEST_DIR}"
