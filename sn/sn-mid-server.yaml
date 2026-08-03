@@ -20,10 +20,23 @@ spec:
       - name: mid-server
         image: ghcr.io/pindaroli/custom-mid-server:australia-02-11-2026__patch3-05-25-2026_06-12-2026_1106
         env:
-        - name: JAVA_OPTS
-          value: "-Dmid.max.extract.file.size=4294967296 -Dmid.download.max_uncompressed_bytes=4294967296 -Dmid.unzip.max_uncompressed_bytes=4294967296 -Dcom.glide.util.ZipUtil.maxSize=4294967296"
-        - name: MID_OPTS
-          value: "-Dmid.max.extract.file.size=4294967296 -Dmid.download.max_uncompressed_bytes=4294967296 -Dmid.unzip.max_uncompressed_bytes=4294967296 -Dcom.glide.util.ZipUtil.maxSize=4294967296"
+        - name: MID_INSTANCE_URL
+          valueFrom:
+            secretKeyRef:
+              name: servicenow-mid-creds
+              key: SN_URL
+        - name: MID_INSTANCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: servicenow-mid-creds
+              key: SN_USER
+        - name: MID_INSTANCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: servicenow-mid-creds
+              key: SN_PASSWD
+        - name: MID_SERVER_NAME
+          value: "MID_Server_K8s"
         - name: SN_URL
           valueFrom:
             secretKeyRef:
@@ -31,6 +44,10 @@ spec:
               key: SN_URL
         - name: SN_MID_NAME
           value: "MID_Server_K8s"
+        - name: JAVA_OPTS
+          value: "-Dmid.max.extract.file.size=4294967296 -Dmid.download.max_uncompressed_bytes=4294967296 -Dmid.unzip.max_uncompressed_bytes=4294967296 -Dcom.glide.util.ZipUtil.maxSize=4294967296"
+        - name: MID_OPTS
+          value: "-Dmid.max.extract.file.size=4294967296 -Dmid.download.max_uncompressed_bytes=4294967296 -Dmid.unzip.max_uncompressed_bytes=4294967296 -Dcom.glide.util.ZipUtil.maxSize=4294967296"
         envFrom:
         - secretRef:
             name: servicenow-mid-creds
