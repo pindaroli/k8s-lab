@@ -13,10 +13,18 @@ import urllib.request
 import urllib.parse
 import base64
 
-# Configurazione di default (può essere sovrascritta via env)
-DEFAULT_URL = os.getenv("SERVICENOW_INSTANCE_URL", "https://dev395227.service-now.com")
-DEFAULT_USER = os.getenv("SERVICENOW_USERNAME", "admin")
-DEFAULT_PASS = os.getenv("SERVICENOW_PASSWORD", "cupV=59*CYcK")
+INSTANCE_URL = os.getenv("SERVICENOW_INSTANCE_URL")
+USERNAME = os.getenv("SERVICENOW_USERNAME")
+PASSWORD = os.getenv("SERVICENOW_INSTANCE_PASSWORD")
+
+if not INSTANCE_URL or not USERNAME or not PASSWORD:
+    print(
+        "❌ Errore: Variabili d'ambiente ServiceNow mancanti!\n"
+        "Assicurati di aver definito SERVICENOW_INSTANCE_URL, SERVICENOW_USERNAME e SERVICENOW_INSTANCE_PASSWORD nello shell.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 BACKUP_DIR = os.path.join(SCRIPT_DIR, "backups")
@@ -77,9 +85,9 @@ def main():
 
     dump_data = {
         "metadata": {
-            "instance_url": DEFAULT_URL,
+            "instance_url": INSTANCE_URL,
             "dumped_at": datetime.datetime.now().isoformat(),
-            "user": DEFAULT_USER
+            "user": USERNAME
         },
         "tables": {}
     }
@@ -90,7 +98,7 @@ def main():
         query = item["query"]
 
         print(f"  ➜ Scarico {desc} (`{table_name}`)...")
-        records = make_request(DEFAULT_URL, DEFAULT_USER, DEFAULT_PASS, table_name, query)
+        records = make_request(INSTANCE_URL, USERNAME, PASSWORD, table_name, query)
         dump_data["tables"][table_name] = records
         print(f"    ✓ Trovati {len(records)} record")
 

@@ -18,11 +18,17 @@ spec:
       hostname: k8s-lab-mid-server
       containers:
       - name: mid-server
-        image: lgp1985/sn-mid-server:latest
-        args: ["mid:start"]
+        image: ghcr.io/pindaroli/custom-mid-server:australia-02-11-2026__patch3-05-25-2026_06-12-2026_1106
         env:
+        - name: JAVA_OPTS
+          value: "-Dmid.max.extract.file.size=4294967296 -Dmid.download.max_uncompressed_bytes=4294967296 -Dmid.unzip.max_uncompressed_bytes=4294967296 -Dcom.glide.util.ZipUtil.maxSize=4294967296"
+        - name: MID_OPTS
+          value: "-Dmid.max.extract.file.size=4294967296 -Dmid.download.max_uncompressed_bytes=4294967296 -Dmid.unzip.max_uncompressed_bytes=4294967296 -Dcom.glide.util.ZipUtil.maxSize=4294967296"
         - name: SN_URL
-          value: "dev395227"
+          valueFrom:
+            secretKeyRef:
+              name: servicenow-mid-creds
+              key: SN_URL
         - name: SN_MID_NAME
           value: "MID_Server_K8s"
         envFrom:

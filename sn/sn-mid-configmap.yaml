@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: servicenow-mid-config
+  namespace: sn
+data:
+  config.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <parameters>
+        <parameter name="name" value="MID_Server_K8s"/>
+        <parameter name="mid.download.max_uncompressed_bytes" value="4294967296"/>
+        <parameter name="mid.download.max_entries" value="200000"/>
+        <parameter name="mid.unzip.max_uncompressed_bytes" value="4294967296"/>
+    </parameters>

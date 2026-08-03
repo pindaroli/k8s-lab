@@ -12,9 +12,18 @@ import datetime
 import urllib.request
 import base64
 
-DEFAULT_URL = os.getenv("SERVICENOW_INSTANCE_URL", "https://dev395227.service-now.com")
-DEFAULT_USER = os.getenv("SERVICENOW_USERNAME", "admin")
-DEFAULT_PASS = os.getenv("SERVICENOW_PASSWORD", "cupV=59*CYcK")
+INSTANCE_URL = os.getenv("SERVICENOW_INSTANCE_URL")
+USERNAME = os.getenv("SERVICENOW_USERNAME")
+PASSWORD = os.getenv("SERVICENOW_INSTANCE_PASSWORD")
+
+if not INSTANCE_URL or not USERNAME or not PASSWORD:
+    print(
+        "❌ Errore: Variabili d'ambiente ServiceNow mancanti!\n"
+        "Assicurati di aver definito SERVICENOW_INSTANCE_URL, SERVICENOW_USERNAME e SERVICENOW_INSTANCE_PASSWORD nello shell.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
@@ -85,11 +94,11 @@ def main():
         path_latest = os.path.join(latest_dir, filename)
 
         print(f"  ➜ Scarico {desc} (`{endpoint}`)...")
-        size = download_single_xml(DEFAULT_URL, DEFAULT_USER, DEFAULT_PASS, endpoint, path_timestamp)
+        size = download_single_xml(INSTANCE_URL, USERNAME, PASSWORD, endpoint, path_timestamp)
 
         if size > 0:
             # Copia/scarica anche nella cartella latest
-            download_single_xml(DEFAULT_URL, DEFAULT_USER, DEFAULT_PASS, endpoint, path_latest)
+            download_single_xml(INSTANCE_URL, USERNAME, PASSWORD, endpoint, path_latest)
             print(f"    ✓ {filename} ({size} bytes)")
 
     print(f"\n✅ Backup XML completato con successo!")

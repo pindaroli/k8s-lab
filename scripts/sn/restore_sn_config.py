@@ -12,9 +12,18 @@ import urllib.request
 import urllib.parse
 import base64
 
-DEFAULT_URL = os.getenv("SERVICENOW_INSTANCE_URL", "https://dev395227.service-now.com")
-DEFAULT_USER = os.getenv("SERVICENOW_USERNAME", "admin")
-DEFAULT_PASS = os.getenv("SERVICENOW_PASSWORD", "cupV=59*CYcK")
+INSTANCE_URL = os.getenv("SERVICENOW_INSTANCE_URL")
+USERNAME = os.getenv("SERVICENOW_USERNAME")
+PASSWORD = os.getenv("SERVICENOW_INSTANCE_PASSWORD")
+
+if not INSTANCE_URL or not USERNAME or not PASSWORD:
+    print(
+        "❌ Errore: Variabili d'ambiente ServiceNow mancanti!\n"
+        "Assicurati di aver definito SERVICENOW_INSTANCE_URL, SERVICENOW_USERNAME e SERVICENOW_INSTANCE_PASSWORD nello shell.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 LATEST_FILE = os.path.join(SCRIPT_DIR, "backups", "sn_config_latest.json")
@@ -65,7 +74,7 @@ def main():
             prop_val = rec.get("value")
             if prop_name and prop_val:
                 payload = {"name": prop_name, "value": prop_val}
-                res = make_post_request(DEFAULT_URL, DEFAULT_USER, DEFAULT_PASS, "ecc_agent_property", payload)
+                res = make_post_request(INSTANCE_URL, USERNAME, PASSWORD, "ecc_agent_property", payload)
                 if res:
                     print(f"    ✓ Ripristinato parametro: {prop_name} = {prop_val}")
 
@@ -85,7 +94,7 @@ def main():
                     "active": "true",
                     "tag": tag
                 }
-                res = make_post_request(DEFAULT_URL, DEFAULT_USER, DEFAULT_PASS, "discovery_credentials", payload)
+                res = make_post_request(INSTANCE_URL, USERNAME, PASSWORD, "discovery_credentials", payload)
                 if res:
                     print(f"    ✓ Ripristinata credenziale: {cred_name} (tipo: {cred_type})")
 
