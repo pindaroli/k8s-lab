@@ -24,7 +24,7 @@ spec:
         - name: SN_URL
           value: "dev395227"
         - name: SN_MID_NAME
-          value: "K8s_Lab_MID_Server"
+          value: "MID_Server_K8s"
         envFrom:
         - secretRef:
             name: servicenow-mid-creds
