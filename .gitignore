@@ -71,3 +71,7 @@ wiki/wiki_context.md
 scripts/kubernetes/yaml/*.yaml
 !scripts/kubernetes/yaml/job-normalizzation-template.yaml
 talos_mcp_audit.log
+
+# ServiceNow Discovery Token Secret
+*.secret
+sn/*.secret

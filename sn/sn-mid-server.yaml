@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sn-mid-server
+  namespace: sn
+  labels:
+    app: mid-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mid-server
+  template:
+    metadata:
+      labels:
+        app: mid-server
+    spec:
+      containers:
+      - name: mid-server
+        image: lgp1985/sn-mid-server:latest
+        args: ["mid:start"]
+        env:
+        - name: SN_URL
+          value: "dev395227"
+        - name: SN_MID_NAME
+          value: "K8s_Lab_MID_Server"
+        envFrom:
+        - secretRef:
+            name: servicenow-mid-creds
