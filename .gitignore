@@ -75,3 +75,7 @@ talos_mcp_audit.log
 # ServiceNow Discovery Token Secret
 *.secret
 sn/*.secret
+
+# ServiceNow XML backups folder
+sn/backup/
+sn/backups/

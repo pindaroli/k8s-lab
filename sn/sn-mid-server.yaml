@@ -15,6 +15,7 @@ spec:
       labels:
         app: mid-server
     spec:
+      hostname: k8s-lab-mid-server
       containers:
       - name: mid-server
         image: lgp1985/sn-mid-server:latest
