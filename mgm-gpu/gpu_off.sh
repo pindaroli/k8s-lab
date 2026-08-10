@@ -8,6 +8,11 @@ if [ "$VM_STATUS" == "running" ]; then
     exit 1
 fi
 
+echo "Ripristino la regola udev di risparmio energetico..."
+if [ -f /etc/udev/rules.d/99-remove-nvidia.rules.disabled ]; then
+    mv /etc/udev/rules.d/99-remove-nvidia.rules.disabled /etc/udev/rules.d/99-remove-nvidia.rules
+fi
+
 echo "Sgancio la GPU NVIDIA dal bus PCI..."
 # Rimozione Logica della GPU
 if [ -d /sys/bus/pci/devices/0000:03:00.0 ]; then

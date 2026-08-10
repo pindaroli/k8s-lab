@@ -1,7 +1,7 @@
 ---
 title: "Piano: Configurazione VM da Gioco su PVE2 (bazzite-nvidia)"
 type: plan
-status: draft
+status: active
 certified_for_ai: true
 created_at: 2026-06-28
 tags:

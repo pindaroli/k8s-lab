@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "Disabilito temporaneamente la regola udev di rimozione..."
+if [ -f /etc/udev/rules.d/99-remove-nvidia.rules ]; then
+    mv /etc/udev/rules.d/99-remove-nvidia.rules /etc/udev/rules.d/99-remove-nvidia.rules.disabled
+fi
+
 echo "Forzo la scansione del bus PCI per risvegliare la GPU NVIDIA..."
 echo 1 > /sys/bus/pci/rescan
 sleep 2
