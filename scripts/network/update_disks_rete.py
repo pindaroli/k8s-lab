@@ -9,7 +9,7 @@ RETE_PATH = os.path.join(PROJECT_ROOT, "rete.json")
 
 def get_remote_disks(host):
     """Esegue lsblk via SSH sul nodo e restituisce i dati JSON."""
-    cmd = ["ssh", f"root@{host}", "lsblk -J -o NAME,SIZE,TYPE,MODEL,SERIAL,FSTYPE,MOUNTPOINT"]
+    cmd = ["ssh", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=5", f"root@{host}", "lsblk -J -o NAME,SIZE,TYPE,MODEL,SERIAL,FSTYPE,MOUNTPOINT"]
     output = run_cmd(cmd)
     if not output:
         return []
@@ -22,7 +22,7 @@ def get_remote_disks(host):
 
 def get_pve_hostpci(host, vmid):
     """Controlla se ci sono dispositivi PCI passati in una VM (es. TrueNAS)."""
-    cmd = ["ssh", f"root@{host}", f"qm config {vmid} | grep 'hostpci'"]
+    cmd = ["ssh", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=5", f"root@{host}", f"qm config {vmid} | grep 'hostpci'"]
     output = run_cmd(cmd)
     if not output:
         return []

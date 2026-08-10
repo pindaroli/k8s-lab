@@ -19,4 +19,7 @@
 
 - **Gestione Switch Extreme via Ansible (Ansible Mandate)**: Per lo switch Extreme Networks, i comandi CLI/SSH di sola lettura (es. `show vlan`, `show configuration`, ispezioni di stato) sono liberamente consentiti per la diagnostica. Qualsiasi operazione di modifica della configurazione DEVE essere obbligatoriamente automatizzata tramite Playbook Ansible permanenti salvati nel repository.
 
+- **Mandato Autenticazione Passwordless SSH**: È vietato l'uso di password hardcoded o trasmesse in qualsiasi script Python, script Shell (`.sh`) o playbook Ansible. Tutte le connessioni automatizzate DEVONO basarsi sull'autenticazione a chiavi SSH (`ssh -o BatchMode=yes`).
+
+
 

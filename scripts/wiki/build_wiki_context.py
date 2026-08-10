@@ -391,15 +391,19 @@ def main():
     # Rimuovi trailing whitespace da ogni riga, mantieni newline finale
     clean_lines = [line.rstrip() for line in raw_output.splitlines()]
     output = "\n".join(clean_lines).rstrip("\n") + "\n"
-    # Se esiste già, rimuovi temporaneamente il read-only per sovrascrivere
+    # Se esiste già, rimuovi il vecchio file per superare eventuali lock read-only (0444)
     if OUTPUT_FILE.exists():
-        OUTPUT_FILE.chmod(0o644)
+        try:
+            OUTPUT_FILE.chmod(0o644)
+        except Exception:
+            pass
+        try:
+            OUTPUT_FILE.unlink()
+        except Exception:
+            pass
     OUTPUT_FILE.write_text(output, encoding="utf-8")
-    # Rendi il file read-only per evitare modifiche manuali accidentali
-    OUTPUT_FILE.chmod(0o444)
     size_kb = OUTPUT_FILE.stat().st_size / 1024
     print(f"✅ Output scritto: {OUTPUT_FILE.relative_to(PROJECT_ROOT)} ({size_kb:.1f} KB, {len(output.splitlines())} righe)")
-    print(f"🔒 File impostato in sola lettura (chmod 444)")
 
 
 if __name__ == "__main__":

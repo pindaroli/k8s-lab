@@ -28,6 +28,7 @@ _OLD_ARCHIVE/
 *.xml
 *.exp
 *.cfg
+!ansible/ansible.cfg
 *bak*
 import_music/*.db.bak*
 import_music/library.db

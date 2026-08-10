@@ -13,126 +13,52 @@ import re
 import sys
 import os
 
-TEMP_DIR = "/Users/olindo/.gemini/antigravity/scratch"
-TEMP_EXPECT_PATH = os.path.join(TEMP_DIR, "run_diagnostics.exp")
-TEMP_SH_PATH = os.path.join(TEMP_DIR, "remote_diag.sh")
-
-def create_payload_scripts():
-    os.makedirs(TEMP_DIR, exist_ok=True)
-
-    # 1. Creiamo lo script Bash pulito che girerà su TrueNAS
-    # Su TrueNAS/FreeBSD non serve readlink per smartctl, digerisce bene i gptid.
-    sh_content = """#!/bin/sh
+def get_remote_diagnostics():
+    script = r"""sudo -n sh << 'EOF'
 echo "===LIST==="
-zpool list -v oliraid
+/sbin/zpool list -v oliraid
 
 echo "===STATUS==="
-zpool status -P oliraid
+/sbin/zpool status -P oliraid
 
 echo "===IOSTAT==="
-zpool iostat -vy oliraid 1 1
+/sbin/zpool iostat -vy oliraid 1 1
 
 echo "===LISTZFS==="
-zfs list -r -H -o name,recordsize,special_small_blocks oliraid
+/sbin/zfs list -r -H -o name,recordsize,special_small_blocks oliraid
 
 echo "===SMART==="
-for disk in $(zpool status -P oliraid | awk '/special/ {flag=1; next} /logs/ {flag=0} /cache/ {flag=0} flag && /\\/dev\\// {print $1}' | sort -u); do
+for disk in $(/sbin/zpool status -P oliraid | awk '/special/ {flag=1; next} /logs/ {flag=0} /cache/ {flag=0} flag && /\/dev\// {print $1}' | sort -u); do
     echo "===SMART:$disk==="
-    smartctl -i -H -A "$disk"
+    /sbin/smartctl -i -H -A "$disk"
 done
 
 echo "===ZDB==="
-/usr/sbin/zdb -mm oliraid 2
+/sbin/zdb -mm oliraid 2
+EOF
 """
-    with open(TEMP_SH_PATH, "w") as f:
-        f.write(sh_content)
-    os.chmod(TEMP_SH_PATH, 0o755)
+    cmd = [
+        "ssh", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=10",
+        "olindo@10.10.10.50"
+    ]
 
-    # 2. Creiamo lo script Expect che carica ed esegue il payload
-    expect_content = f"""#!/usr/bin/expect -f
-set timeout 120
-match_max 1000000
-# Disabilitiamo l'eco a schermo per non inquinare l'output di Python
-log_user 0
-
-set host "10.10.10.50"
-set user "olindo"
-set pass "REDACTED_SECRET"
-set sh_path "{TEMP_SH_PATH}"
-
-# STEP A: Copia lo script sul server in modo silente
-spawn scp -o StrictHostKeyChecking=no -q $sh_path $user@$host:/tmp/remote_diag.sh
-expect {{
-    "*assword:*" {{ send "$pass\\r"; exp_continue }}
-    "yes/no" {{ send "yes\\r"; exp_continue }}
-    eof
-}}
-
-# STEP B: Esegui lo script con Sudo
-# sudo -S legge la password da stdin, niente prompt visibili che rompono il parsing
-# log_user 1 PRIMA dello spawn: se SSH usa key-auth, *assword:* non appare mai
-# e senza questo lo script cattura output vuoto silenziosamente.
-log_user 1
-spawn ssh -o StrictHostKeyChecking=no $user@$host "echo '$pass' | sudo -S sh /tmp/remote_diag.sh"
-expect {{
-    "yes/no" {{ send "yes\\r"; exp_continue }}
-    "*assword:*" {{
-        send "$pass\\r"
-        exp_continue
-    }}
-    eof {{
-        # Fine esecuzione
-    }}
-    timeout {{
-        puts stderr "TIMEOUT: Connessione SSH o esecuzione comandi fallita."
-        exit 1
-    }}
-}}
-"""
-    with open(TEMP_EXPECT_PATH, "w") as f:
-        f.write(expect_content)
-    os.chmod(TEMP_EXPECT_PATH, 0o755)
-
-def main():
-    create_payload_scripts()
-
-    # Assicuriamoci che paths standard siano disponibili per subprocess
-    env = os.environ.copy()
-    common_paths = ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin"]
-    current_path = env.get("PATH", "")
-    for p in common_paths:
-        if p not in current_path:
-            current_path = f"{p}:{current_path}"
-    env["PATH"] = current_path
-
-    print("Connecting to TrueNAS and gathering diagnostics (could take 15-20 seconds)...")
-
+    print("Connecting to TrueNAS (10.10.10.50) via Passwordless SSH...")
     process = subprocess.Popen(
-        ["expect", "-f", TEMP_EXPECT_PATH],
+        cmd,
+        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True,
-        env=env
+        text=True
     )
-
-    stdout, stderr = process.communicate()
-
-    # Gestione degli errori
-    if process.returncode != 0 or "TIMEOUT" in stderr:
-        print(f"\n[!] Errore critico di connessione o esecuzione. Codice: {process.returncode}")
+    stdout, stderr = process.communicate(input=script)
+    if process.returncode != 0:
+        print(f"\n[!] Errore critico di connessione o esecuzione SSH. Codice: {process.returncode}")
         print(f"STDERR:\n{stderr.strip()}")
-        # Pulizia prima di uscire
-        if os.path.exists(TEMP_EXPECT_PATH):
-            os.remove(TEMP_EXPECT_PATH)
-        if os.path.exists(TEMP_SH_PATH):
-            os.remove(TEMP_SH_PATH)
         sys.exit(1)
+    return stdout
 
-    # Pulizia
-    if os.path.exists(TEMP_EXPECT_PATH):
-        os.remove(TEMP_EXPECT_PATH)
-    if os.path.exists(TEMP_SH_PATH):
-        os.remove(TEMP_SH_PATH)
+def main():
+    stdout = get_remote_diagnostics()
 
     # Split the output by sections
     sections = re.split(r'===([A-Z0-9:]+)===', stdout)
