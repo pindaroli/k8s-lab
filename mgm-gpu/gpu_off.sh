@@ -11,6 +11,7 @@ fi
 echo "Ripristino la regola udev di risparmio energetico..."
 if [ -f /etc/udev/rules.d/99-remove-nvidia.rules.disabled ]; then
     mv /etc/udev/rules.d/99-remove-nvidia.rules.disabled /etc/udev/rules.d/99-remove-nvidia.rules
+    udevadm control --reload
 fi
 
 echo "Sgancio la GPU NVIDIA dal bus PCI..."
