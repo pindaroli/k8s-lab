@@ -1,0 +1,29 @@
+---
+- name: Test EXOS - Lettura e Ispezione Porte Switch
+  hosts: switches
+  gather_facts: no
+  vars_files:
+    - "../vars/switch_extreme_secrets.enc.yaml"
+
+  vars:
+    ansible_network_os: extreme.exos.exos
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_network_cli_ssh_type: paramiko
+    ansible_ssh_common_args: '-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa'
+
+  tasks:
+    - name: 1. Raccogli lo stato e la configurazione delle interfacce
+      extreme.exos.exos_facts:
+        gather_subset:
+          - interfaces
+      register: exos_facts_result
+
+    - name: 2. Esegui il comando 'show ports information' sulla CLI EXOS
+      extreme.exos.exos_command:
+        commands:
+          - show ports information
+      register: ports_info
+
+    - name: 3. Mostra l'output dello stato delle porte
+      ansible.builtin.debug:
+        var: ports_info.stdout_lines[0]

@@ -1,0 +1,24 @@
+---
+- name: Configure VLAN 40 (KVM) on Extreme EXOS
+  hosts: switches
+  gather_facts: no
+  vars_files:
+    - "../vars/switch_extreme_secrets.enc.yaml"
+
+  vars:
+    ansible_network_os: extreme.exos.exos
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_network_cli_ssh_type: paramiko
+    ansible_ssh_common_args: '-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa'
+
+  tasks:
+    - name: 1. Ensure VLAN kvm (Tag 40) is configured on Extreme EXOS
+      extreme.exos.exos_config:
+        lines:
+          - configure vlan kvm add ports 1,8 tagged
+          - enable igmp snooping vlan kvm
+      register: config_result
+
+    - name: 2. Display configuration result
+      ansible.builtin.debug:
+        var: config_result

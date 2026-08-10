@@ -1,0 +1,31 @@
+# Netmiko MCP Server Device Inventory per Extreme EXOS
+defaults:
+  timeout: 30
+  fast_cli: false
+
+credentials:
+  exos:
+    username: "${EXOS_USERNAME:-admin}"
+    password: "${EXOS_PASSWORD:-REDACTED_SECRET}"
+
+groups:
+  switches:
+    - exos-switch-01
+
+devices:
+  exos-switch-01:
+    host: "192.168.100.100"
+    device_type: "extreme_exos"
+    credential_profile: "exos"
+    port: 22
+    tags:
+      - core
+      - switch
+      - exos
+
+pool_settings:
+  max_connections_per_device: 2
+  connection_timeout: 300
+  health_check_interval: 60
+  max_retries: 3
+  retry_delay: 1.0

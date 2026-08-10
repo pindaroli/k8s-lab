@@ -19,11 +19,11 @@ class TestNetworkConfigs(unittest.TestCase):
         self.assertIsNotNone(opnsense_node, "Nodo OPNsense non trovato in rete.json")
         self.assertEqual(opnsense_node.get('management_ip'), '192.168.100.1', "OPNsense management_ip non è 192.168.100.1")
 
-    def test_switch10g_dns_server(self):
-        # Estrae il dns_server di switch10g (Transit DNS)
-        switch_node = next((n for n in self.rete_data.get('nodi', []) if n.get('id') == 'switch10g'), None)
-        self.assertIsNotNone(switch_node, "Nodo switch10g non trovato in rete.json")
-        self.assertEqual(switch_node.get('dns_server'), '192.168.2.254', "switch10g dns_server non è 192.168.2.254")
+    def test_extreme_dns_server(self):
+        # Estrae il dns_server del L3 Core Switch (extreme)
+        switch_node = next((n for n in self.rete_data.get('nodi', []) if n.get('id') == 'extreme'), None)
+        self.assertIsNotNone(switch_node, "Nodo extreme non trovato in rete.json")
+        self.assertEqual(switch_node.get('dns_server'), '192.168.2.254', "extreme dns_server non è 192.168.2.254")
 
     def test_vlan20_interface_has_ip(self):
         """gw-vlan20 deve avere un IP valido nella subnet 10.10.20.0/24."""

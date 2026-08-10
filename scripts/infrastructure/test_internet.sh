@@ -12,7 +12,7 @@ RETE_JSON="${RETE_JSON_PATH}"
 
 # Estrai gli IP dinamicamente da rete.json
 OPNSENSE_OOB_IP=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='opnsense')['management_ip'])")
-OPNSENSE_TRANSIT_DNS=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='switch10g')['dns_server'])")
+OPNSENSE_TRANSIT_DNS=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id'] in ['extreme', 'switch10g'] and n.get('status')!='dismesso')['dns_server'])")
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'

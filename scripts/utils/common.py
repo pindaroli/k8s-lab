@@ -125,7 +125,7 @@ def get_transit_dns_ip():
     try:
         with open(rete_path, 'r') as f:
             data = json.load(f)
-        switch_node = next((n for n in data.get('nodi', []) if n.get('id') == 'switch10g'), None)
+        switch_node = next((n for n in data.get('nodi', []) if n.get('id') in ['extreme', 'switch10g'] and n.get('status') != 'dismesso'), None)
         if switch_node:
             return switch_node.get('dns_server')
     except Exception as e:

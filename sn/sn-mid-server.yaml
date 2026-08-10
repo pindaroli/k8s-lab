@@ -16,6 +16,7 @@ spec:
         app: mid-server
     spec:
       hostname: k8s-lab-mid-server
+      serviceAccountName: sn-discovery-sa
       containers:
       - name: mid-server
         image: ghcr.io/pindaroli/custom-mid-server:australia-02-11-2026__patch3-05-25-2026_06-12-2026_1106
@@ -48,6 +49,24 @@ spec:
           value: "-Dmid.max.extract.file.size=4294967296 -Dmid.download.max_uncompressed_bytes=4294967296 -Dmid.unzip.max_uncompressed_bytes=4294967296 -Dcom.glide.util.ZipUtil.maxSize=4294967296"
         - name: MID_OPTS
           value: "-Dmid.max.extract.file.size=4294967296 -Dmid.download.max_uncompressed_bytes=4294967296 -Dmid.unzip.max_uncompressed_bytes=4294967296 -Dcom.glide.util.ZipUtil.maxSize=4294967296"
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "2Gi"
+          limits:
+            cpu: "2000m"
+            memory: "4Gi"
+        volumeMounts:
+        - name: mid-storage
+          mountPath: /opt/snc_mid_server/agent/work
+          subPath: work
+        - name: mid-storage
+          mountPath: /opt/snc_mid_server/agent/logs
+          subPath: logs
         envFrom:
         - secretRef:
             name: servicenow-mid-creds
+      volumes:
+      - name: mid-storage
+        persistentVolumeClaim:
+          claimName: sn-mid-cache-pvc

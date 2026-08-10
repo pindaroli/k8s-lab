@@ -200,6 +200,26 @@
           "10.10.20.100",
           "10.10.10.0/24"
         ]
+      },
+      "k8s_sn": {
+        "path": "/mnt/oliraid/k8s-sn",
+        "description": "NFS Storage per ServiceNow MID Server (Cache Workdir, Download & Logs)",
+        "protocol": "nfs",
+        "zfs_quota": "20G",
+        "mount_options": [
+          "nfsvers=4.1",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime"
+        ],
+        "networks": [
+          "10.10.20.141",
+          "10.10.20.142",
+          "10.10.20.143",
+          "10.10.20.100",
+          "10.10.10.0/24"
+        ]
       }
     }
   }

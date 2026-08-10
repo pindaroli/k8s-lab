@@ -1,0 +1,23 @@
+---
+- name: Add Port 8 to VLAN Default on Extreme EXOS and Save
+  hosts: switches
+  gather_facts: no
+  vars_files:
+    - "../vars/switch_extreme_secrets.enc.yaml"
+
+  vars:
+    ansible_network_os: extreme.exos.exos
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_network_cli_ssh_type: paramiko
+    ansible_ssh_common_args: '-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa'
+
+  tasks:
+    - name: 1. Add Port 8 untagged to VLAN Default on Extreme EXOS
+      extreme.exos.exos_config:
+        lines:
+          - configure vlan Default add ports 8 untagged
+      register: config_result
+
+    - name: 2. Display configuration result
+      ansible.builtin.debug:
+        var: config_result

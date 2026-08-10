@@ -62,6 +62,8 @@ def check_congruence(data):
     nodi = data.get("nodi", [])
 
     for nodo in nodi:
+        if nodo.get("status") in ["dismesso", "decommissioned", "inactive"]:
+            continue
         nodo_id = nodo.get("id", "sconosciuto")
 
         # 1. Controlla IP a livello di nodo principale

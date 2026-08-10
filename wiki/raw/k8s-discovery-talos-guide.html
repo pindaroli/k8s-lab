@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServiceNow — Kubernetes Discovery su cluster Talos on-premise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      color: #3c3c3a;
+      background: #ffffff;
+      line-height: 1.6;
+      padding: 0 0 60px 0;
+    }
+
+    /* HEADER */
+    .page-header {
+      background: #f8485e;
+      color: #ffffff;
+      padding: 36px 48px 32px 48px;
+    }
+    .page-header h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+    }
+    .page-header p {
+      font-size: 0.88rem;
+      font-weight: 400;
+      opacity: 0.92;
+    }
+
+    .content-wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    /* NOTE BOX */
+    .note {
+      background: #fddade;
+      border-left: 4px solid #f8485e;
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 0.87rem;
+    }
+    .note strong { color: #f8485e; }
+
+    /* SECTION TITLES */
+    h2 {
+      font-size: 1.13rem;
+      font-weight: 700;
+      color: #f8485e;
+      margin: 38px 0 10px 0;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #fddade;
+    }
+    h3 {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #3c3c3a;
+      margin: 24px 0 8px 0;
+    }
+
+    /* STEP BLOCKS */
+    .step-list { list-style: none; counter-reset: step-counter; margin: 0; padding: 0; }
+    .step-list > li {
+      counter-increment: step-counter;
+      display: flex;
+      gap: 16px;
+      margin-bottom: 22px;
+      padding: 18px 20px;
+      background: #efeeee;
+      border-radius: 4px;
+    }
+    .step-list > li::before {
+      content: counter(step-counter);
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      background: #f8485e;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.92rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .step-list > li .step-body { flex: 1; }
+    .step-list > li .step-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #3c3c3a;
+      margin-bottom: 6px;
+    }
+    .step-list > li .step-desc {
+      font-size: 0.88rem;
+      color: #3c3c3a;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin: 14px 0 24px 0;
+    }
+    thead tr {
+      background: #efeeee;
+    }
+    thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 700;
+      color: #3c3c3a;
+      border-bottom: 2px solid #d0cfcf;
+    }
+    tbody tr:nth-child(even) { background: #fafafa; }
+    tbody td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #efeeee;
+      vertical-align: top;
+    }
+    td code, th code {
+      font-family: 'Courier New', monospace;
+      background: #efeadc;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 0.82rem;
+    }
+
+    /* INLINE CODE */
+    p code, li code, .step-desc code {
+      font-family: 'Courier New', monospace;
+      background: #efeadc;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 0.83rem;
+    }
+
+    /* CODE BLOCK */
+    pre {
+      background: #3c3c3a;
+      color: #ffffff;
+      padding: 14px 18px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+      margin: 10px 0 18px 0;
+      line-height: 1.5;
+    }
+
+    /* PATH NAV */
+    .nav-path {
+      display: inline-block;
+      background: #d7ebe7;
+      color: #3c3c3a;
+      font-size: 0.83rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 3px;
+      margin: 4px 0 10px 0;
+      font-family: 'Courier New', monospace;
+    }
+    .nav-sep { color: #5ab891; font-weight: 700; margin: 0 3px; }
+
+    /* PILL / TAG */
+    .pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.77rem;
+      font-weight: 700;
+    }
+    .pill-red { background: #fca2ae; color: #3c3c3a; }
+    .pill-green { background: #d7ebe7; color: #3c3c3a; }
+    .pill-beige { background: #efeadc; color: #3c3c3a; }
+    .pill-blue { background: #4a8cca; color: #ffffff; }
+
+    /* DIAGNOSIS SECTION */
+    .diag-box {
+      border: 1px solid #fca2ae;
+      background: #fddade;
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin: 18px 0;
+    }
+    .diag-box h3 { margin-top: 0; color: #f8485e; }
+
+    ul.plain { padding-left: 20px; margin: 6px 0; }
+    ul.plain li { margin-bottom: 4px; font-size: 0.88rem; }
+
+    /* FOOTER TABLE */
+    .rag-table { margin-top: 40px; }
+
+    /* SEPARATOR */
+    hr { border: none; border-top: 1px solid #efeeee; margin: 30px 0; }
+
+    /* VARIANT LABEL */
+    .variant-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #4a8cca;
+      margin-bottom: 4px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 12px 0;
+    }
+    .col-box {
+      background: #efeeee;
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+    .col-box .col-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+    }
+    .col-box ul { padding-left: 18px; }
+    .col-box ul li { font-size: 0.85rem; margin-bottom: 3px; }
+
+    @media (max-width: 700px) {
+      .page-header { padding: 24px 20px; }
+      .content-wrap { padding: 0 16px; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Kubernetes Discovery — Cluster Talos on-premise</h1>
+  <p>Guida operativa completa per la configurazione del Discovery ServiceNow su cluster K8s on-site &bull; Release Australia Patch 3 &bull; Basata su documentazione ufficiale ServiceNow</p>
+</div>
+
+<div class="content-wrap">
+
+  <!-- DIAGNOSI DEL PROBLEMA -->
+  <h2>Diagnosi: perche il Discovery Kubernetes non compare nello scheduling serverless</h2>
+
+  <div class="diag-box">
+    <h3>Causa radice identificata</h3>
+    <p style="font-size:0.9rem;">
+      Il Discovery Kubernetes di tipo <strong>on-premise</strong> <em>non</em> viene presentato come voce autonoma nelle opzioni di scheduling serverless della UI standard. Le voci visibili (GCP, AWS, Azure) sono generate <strong>automaticamente</strong> dai pattern cloud infrastructure (<em>Get Kubernetes Clusters</em>) solo quando si dispone di un Cloud Service Account configurato per uno di quei provider.
+    </p>
+    <p style="font-size:0.9rem;margin-top:10px;">
+      Per un cluster <strong>Talos on-premise</strong> — che non appartiene a nessun cloud provider — occorre creare lo schedule serverless <strong>manualmente</strong>, seguendo il percorso distinto documentato per il discovery on-premise con pattern Kubernetes e, nel vostro caso specifico, sfruttare la modalita <strong>Credential-less / MID-in-cluster</strong> poiche il MID Server e gia deployato all'interno del cluster.
+    </p>
+  </div>
+
+  <div class="note">
+    <strong>Nota importante — Discovery and Service Mapping Patterns:</strong>
+    Il pattern Kubernetes non e incluso nel plugin base <code>com.snc.discovery</code>. Richiede l'applicazione separata
+    <strong>Discovery and Service Mapping Patterns (sn_itom_pattern)</strong> installabile dal ServiceNow Store.
+    Verificarne la presenza prima di procedere.
+    [Fonte: servicenow-australia-it-operations-management-enus.pdf, pp. 950-951]
+  </div>
+
+  <!-- PREREQUISITI -->
+  <h2>Prerequisiti da verificare prima di iniziare</h2>
+
+  <div class="two-col">
+    <div class="col-box">
+      <div class="col-title">Su ServiceNow</div>
+      <ul>
+        <li>Plugin <code>com.snc.discovery</code> attivo (gia confermato)</li>
+        <li>App <strong>Discovery and Service Mapping Patterns</strong> (<code>sn_itom_pattern</code>) installata da Store</li>
+        <li>MID Server registrato e <em>Up</em> nella console MID (gia confermato)</li>
+        <li>Ruolo <strong>admin</strong> o <strong>discovery_admin</strong> sull'istanza</li>
+      </ul>
+    </div>
+    <div class="col-box">
+      <div class="col-title">Sul cluster Talos / K8s</div>
+      <ul>
+        <li>MID Server deployato nel namespace <code>sn</code> (gia confermato)</li>
+        <li>ServiceAccount <code>sn-discovery-sa</code> + ClusterRole <code>sn-discovery-read-role</code> applicati (gia presenti nel vostro RBAC)</li>
+        <li>API server raggiungibile dall'interno del cluster</li>
+        <li>Kubernetes versione 1.34 (versione validata per release Australia)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Versione Kubernetes validata:</strong> On-Premises Kubernetes 1.34.
+    [Fonte: servicenow-australia-it-operations-management-enus.pdf, p. 950]
+  </div>
+
+  <!-- STEP 1: VERIFICA PATTERN APP -->
+  <h2>Procedura passo per passo</h2>
+
+  <h3>Fase A — Verifica e installazione dell'applicazione Patterns</h3>
+  <ol class="step-list">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Verificare l'installazione di Discovery and Service Mapping Patterns</div>
+        <div class="step-desc">
+          Navigare in:
+          <div class="nav-path">All <span class="nav-sep">&gt;</span> System Applications <span class="nav-sep">&gt;</span> All Available Applications <span class="nav-sep">&gt;</span> All</div>
+          Cercare l'applicazione <strong>Discovery and Service Mapping Patterns</strong> (<code>sn_itom_pattern</code>).
+          Se compare il pulsante <em>Install</em> anziche <em>Installed</em>, installare la versione piu recente disponibile.
+          Questa e la causa principale del problema: senza questa app, il pattern Kubernetes non esiste nell'istanza.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Verificare la presenza del pattern Kubernetes nel Pattern Designer</div>
+        <div class="step-desc">
+          Navigare in:
+          <div class="nav-path">All <span class="nav-sep">&gt;</span> Pattern Designer <span class="nav-sep">&gt;</span> Discovery Patterns</div>
+          Cercare la stringa <strong>Kubernetes</strong>. Devono essere visibili almeno:
+          <ul class="plain" style="margin-top:8px;">
+            <li><strong>Kubernetes</strong> (pattern principale)</li>
+            <li><strong>Kubernetes Event</strong> (pattern eventi)</li>
+          </ul>
+          Se non sono presenti, l'applicazione <code>sn_itom_pattern</code> non e installata o non e aggiornata.
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <!-- FASE B: BEARER TOKEN DA TALOS -->
+  <h3>Fase B — Estrazione del Bearer Token dal cluster Talos (modalita standard con credenziali)</h3>
+
+  <div class="note">
+    <strong>Alternativa semplificata disponibile:</strong> poiche il MID Server e gia deployato all'interno del cluster,
+    e possibile usare la modalita <strong>Credential-less</strong> (Fase C) che elimina la necessita di gestire il token.
+    Si consiglia di valutare prima la Fase C. La Fase B serve come fallback o se si preferisce autenticazione esplicita.
+  </div>
+
+  <ol class="step-list">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Ottenere l'URL dell'API server Talos</div>
+        <div class="step-desc">
+          Eseguire sul cluster:
+          <pre>kubectl cluster-info</pre>
+          L'output mostra la riga: <em>Kubernetes control plane is running at https://&lt;IP&gt;:&lt;PORT&gt;</em>
+          Annotare l'URL completo compreso di protocollo e porta (es. <code>https://10.x.x.x:6443</code>).
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Ottenere i namespace</div>
+        <div class="step-desc">
+          Eseguire:
+          <pre>kubectl get namespaces</pre>
+          Annotare i namespace rilevanti. Il namespace <code>kube-system</code> e obbligatorio nel campo namespace dello schedule.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Estrarre il Bearer Token dal ServiceAccount sn-discovery-sa</div>
+        <div class="step-desc">
+          Poiche Talos usa Kubernetes moderno (versione 1.24+), i token non vengono piu creati automaticamente come Secret.
+          Creare un token temporaneo dal ServiceAccount gia esistente:
+          <pre>kubectl create token sn-discovery-sa -n sn --duration=8760h</pre>
+          Questo restituisce un token JWT. Copiarlo interamente: sara necessario nel campo Bearer Token di ServiceNow.
+          <br><br>
+          In alternativa, verificare se esiste un Secret associato:
+          <pre>kubectl describe secret -n sn</pre>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Creare le credenziali Kubernetes su ServiceNow</div>
+        <div class="step-desc">
+          Navigare in:
+          <div class="nav-path">All <span class="nav-sep">&gt;</span> Discovery <span class="nav-sep">&gt;</span> Credentials</div>
+          Selezionare <strong>New</strong>, poi scegliere <strong>Kubernetes Credentials</strong>.
+          Compilare i seguenti campi:
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Campo</th>
+        <th>Valore da inserire per il cluster Talos</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Name</strong></td>
+        <td><code>K8s-Talos-OnPrem-Cred</code> (nome descrittivo univoco)</td>
+        <td>Libero, deve essere riconoscibile</td>
+      </tr>
+      <tr>
+        <td><strong>Bearer Token Authentication</strong></td>
+        <td>Selezionare la checkbox <em>Bearer Token Authentication</em></td>
+        <td>Abilita il campo Bearer Token; non usare username/password insieme al token</td>
+      </tr>
+      <tr>
+        <td><strong>Bearer Token</strong></td>
+        <td>Incollare il token JWT estratto in formato BASE64</td>
+        <td>Usare solo uno dei due metodi: username/password <em>oppure</em> Bearer Token</td>
+      </tr>
+      <tr>
+        <td><strong>Credential alias</strong></td>
+        <td>Creare un nuovo alias: selezionare l'icona lucchetto &gt; icona lente &gt; <strong>New</strong> &gt; nome <code>k8s-talos-alias</code>, Type = <em>Credential</em></td>
+        <td>L'alias e obbligatorio per il collegamento allo schedule serverless</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Regola esclusiva:</strong> usare <em>esclusivamente</em> il Bearer Token
+    oppure Username/Password. Non entrambi contemporaneamente.
+    [Fonte: servicenow-australia-it-operations-management-enus.pdf, pp. 953-954]
+  </div>
+
+  <!-- FASE C: CREDENTIAL-LESS -->
+  <h3>Fase C — Modalita Credential-less / MID-in-cluster (percorso consigliato per il vostro setup)</h3>
+
+  <div class="note">
+    <strong>Prerequisito:</strong> il MID Server deve essere deployato come container all'interno del cluster Kubernetes.
+    Nel vostro caso e gia soddisfatto (namespace <code>sn</code>, Deployment confermato).
+    In questa modalita non e necessario configurare credenziali Kubernetes: il MID Server si autentica automaticamente
+    all'API server tramite il ServiceAccount del pod.
+    [Fonte: servicenow-australia-it-operations-management-enus.pdf, pp. 961-962]
+  </div>
+
+  <ol class="step-list">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Verificare che il ServiceAccount del pod MID abbia i permessi corretti</div>
+        <div class="step-desc">
+          Il ClusterRole <code>sn-discovery-read-role</code> nel vostro YAML e gia corretto e copre tutti gli endpoint richiesti dal pattern Kubernetes:
+          <code>/api/v1/nodes</code>, <code>/api/v1/pods</code>, <code>/api/v1/services</code>,
+          <code>/apis/apps/v1/deployments</code>, <code>/apis/apps/v1/statefulsets</code>,
+          <code>/apis/apps/v1/daemonsets</code>, <code>/apis/apps/v1/replicasets</code>,
+          <code>/apis/networking.k8s.io/v1/ingresses</code>, <code>/apis/batch/v1/jobs</code>,
+          <code>/apis/batch/v1/cronjobs</code>.
+          <br>Verificare con:
+          <pre>kubectl auth can-i list pods --as=system:serviceaccount:sn:sn-discovery-sa -n default</pre>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <!-- FASE D: CREAZIONE SCHEDULE SERVERLESS -->
+  <h3>Fase D — Creazione dello schedule serverless Kubernetes (passaggi GUI dettagliati)</h3>
+
+  <ol class="step-list">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Aprire la creazione dello schedule di Discovery</div>
+        <div class="step-desc">
+          Navigare in:
+          <div class="nav-path">All <span class="nav-sep">&gt;</span> Discovery <span class="nav-sep">&gt;</span> Discovery Schedules</div>
+          Selezionare <strong>New</strong>.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Impostare il tipo di Discovery come Serverless</div>
+        <div class="step-desc">
+          Nel form dello schedule, impostare il campo <strong>Discover</strong> su <em>Serverless</em>.<br>
+          <strong>Attenzione:</strong> questo e il campo che determina le opzioni successive.
+          Non scegliere IP Range o altri tipi: per Kubernetes on-premise va usato il tipo Serverless.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Selezionare il Pattern Kubernetes</div>
+        <div class="step-desc">
+          Dopo aver scelto <em>Serverless</em>, comparira il campo <strong>Pattern</strong> (o <em>Execution Pattern</em>).<br>
+          Cliccare sull'icona di ricerca e cercare <strong>Kubernetes</strong>.<br>
+          Selezionare il pattern denominato <strong>Kubernetes</strong> (non i pattern GCP/AWS/Azure che sono cloud-specific e causano esattamente il sintomo descritto).<br><br>
+          <span class="pill pill-red">Causa del problema originale</span>&nbsp;
+          I pattern cloud (GCP – Get Kubernetes Clusters, AWS – Get Kubernetes Clusters, Azure – Get Kubernetes Clusters)
+          compaiono solo dopo la configurazione di un Cloud Service Account. Il pattern <strong>Kubernetes</strong> puro
+          deve essere selezionato manualmente da questo campo.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Compilare il campo Name dello schedule</div>
+        <div class="step-desc">
+          Inserire un nome descrittivo univoco, ad esempio: <code>K8s-Talos-OnPrem-Discovery</code>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Assegnare il MID Server</div>
+        <div class="step-desc">
+          Nel campo <strong>MID Server</strong>, selezionare il MID Server deployato nel cluster Talos
+          (nel vostro caso: <code>MID_Server_K8s</code> / hostname <code>k8s-lab-mid-server</code>).
+          <br>E fondamentale selezionare il MID Server che risiede fisicamente nel cluster, in modo che la
+          Credential-less discovery funzioni tramite il ServiceAccount del pod.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Configurare gli Execution Pattern Attributes</div>
+        <div class="step-desc">
+          Nella sezione <strong>Execution Pattern Attributes</strong> (o <em>Attributes</em>) compilare i campi seguenti.
+          Seguire la tabella riportata di seguito in base alla modalita scelta.
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <!-- TABELLA ATTRIBUTI MODALITA CREDENTIAL-LESS -->
+  <div class="variant-label">Modalita Credential-less (MID-in-cluster) — consigliata per il vostro setup</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Campo (Execution Pattern Attribute)</th>
+        <th>Valore da inserire</th>
+        <th>Descrizione</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>url</code></td>
+        <td><code>https://kubernetes.default.svc</code><br>oppure<br><code>https://cluster</code></td>
+        <td>URL interno all'API server Kubernetes raggiungibile dal pod MID. In Talos, l'endpoint standard e <code>https://kubernetes.default.svc</code></td>
+      </tr>
+      <tr>
+        <td><code>namespace</code></td>
+        <td><code>*, kube-system</code> (tutti i namespace)<br>oppure<br><code>sn, default, kube-system</code> (selettivo)</td>
+        <td>Elenco namespace separati da virgola. <code>kube-system</code> e sempre obbligatorio. Usare <code>*</code> per tutti.</td>
+      </tr>
+      <tr>
+        <td><code>cluster_name</code></td>
+        <td><code>talos-onprem-cluster</code> (nome univoco a scelta)</td>
+        <td>Nome che identifica il cluster nel CMDB. Deve essere univoco. Non richiede formato speciale nella modalita on-premise.</td>
+      </tr>
+      <tr>
+        <td><code>credentials alias</code></td>
+        <td><em>Lasciare vuoto</em></td>
+        <td>Non richiesto in modalita credential-less: il MID Server usa il proprio ServiceAccount</td>
+      </tr>
+      <tr>
+        <td><code>provider</code></td>
+        <td><em>Lasciare vuoto</em></td>
+        <td>Il campo provider e riservato a GCP / AWS / Azure. Per on-premise non valorizzare.</td>
+      </tr>
+      <tr>
+        <td><code>cluster_resource_id</code></td>
+        <td><em>Lasciare vuoto</em></td>
+        <td>Applicabile solo per cluster cloud (Azure Resource ID, AWS ARN, GCP global name)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- TABELLA ATTRIBUTI MODALITA CON CREDENZIALI -->
+  <div class="variant-label" style="margin-top:20px;">Modalita con Bearer Token (alternativa — Fase B)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Campo (Execution Pattern Attribute)</th>
+        <th>Valore da inserire</th>
+        <th>Descrizione</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>url</code></td>
+        <td><code>https://&lt;IP-control-plane&gt;:6443</code></td>
+        <td>URL dell'API server Talos (es. VIP del control-plane se HA, o IP di uno dei tre nodi). Includere protocollo e porta.</td>
+      </tr>
+      <tr>
+        <td><code>namespace</code></td>
+        <td><code>*, kube-system</code></td>
+        <td>Stessa logica della modalita credential-less</td>
+      </tr>
+      <tr>
+        <td><code>credentials alias</code></td>
+        <td><code>k8s-talos-alias</code> (alias creato nella Fase B)</td>
+        <td>Alias che punta alle credenziali Kubernetes con Bearer Token</td>
+      </tr>
+      <tr>
+        <td><code>cluster name</code></td>
+        <td><code>&lt;serviceaccountid&gt; talos-onprem-cluster</code></td>
+        <td>Formato: ID account di servizio (se applicabile) + spazio + nome cluster. Per on-premise senza Cloud SA, usare solo il nome cluster.</td>
+      </tr>
+      <tr>
+        <td><code>provider</code></td>
+        <td><em>Lasciare vuoto</em></td>
+        <td>Non applicabile per on-premise</td>
+      </tr>
+      <tr>
+        <td><code>cluster_resource_id</code></td>
+        <td><em>Lasciare vuoto</em></td>
+        <td>Non applicabile per on-premise</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ol class="step-list" style="counter-reset: step-counter 6;">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Impostare la frequenza di esecuzione</div>
+        <div class="step-desc">
+          Impostare il campo <strong>Run</strong> secondo le esigenze operative. Valori supportati:
+          <em>Daily, On Demand, Weekdays, Weekends, Month Last Day, Calendar Quarter End</em>.<br>
+          Raccomandazione: iniziare con <em>On Demand</em> per il test iniziale, poi passare a <em>Daily</em>.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Salvare e attivare lo schedule</div>
+        <div class="step-desc">
+          Selezionare <strong>Submit</strong> o <strong>Update</strong> per salvare il record.
+          Lo schedule appare nella lista Discovery Schedules con stato <em>Active</em>.
+          Per lanciare il primo discovery manualmente: aprire il record e selezionare <strong>Execute Now</strong>.
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <!-- FASE E: SCHEDULE EVENTI KUBERNETES -->
+  <h2>Fase E — Creazione dello schedule per Kubernetes Events (opzionale ma raccomandato)</h2>
+
+  <p style="font-size:0.9rem;margin:10px 0 16px 0;">
+    Il pattern <strong>Kubernetes Event</strong> aggiorna il CMDB con gli eventi del cluster in modo incrementale.
+    Al primo avvio registra un <code>event_timestamp</code>; nelle esecuzioni successive raccoglie solo i delta.
+    Configurarlo con frequenza di 5-10 minuti.
+    [Fonte: servicenow-australia-it-operations-management-enus.pdf, p. 955]
+  </p>
+
+  <ol class="step-list">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Creare un secondo schedule serverless</div>
+        <div class="step-desc">
+          Seguire la stessa procedura della Fase D, selezionando il pattern <strong>Kubernetes Event</strong>
+          (anziche <em>Kubernetes</em>). Configurare gli stessi attributi di esecuzione (URL, namespace, cluster_name).
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Impostare frequenza a 5 o 10 minuti</div>
+        <div class="step-desc">
+          Nel campo Run scegliere la frequenza piu breve disponibile. Piu frequente e l'esecuzione,
+          minore e il numero di update CMDB-IRE necessari a mantenere lo stato aggiornato.
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <!-- FASE F: PROPRIETA DI SISTEMA -->
+  <h2>Fase F — Proprieta di sistema rilevanti (sys_properties.list)</h2>
+
+  <p style="font-size:0.9rem;margin:10px 0 16px 0;">
+    Queste proprieta controllano il comportamento del discovery Kubernetes a livello globale.
+    Navigare in: <span class="nav-path">All <span class="nav-sep">&gt;</span> sys_properties.list</span>
+    e verificare / impostare i valori seguenti.
+    [Fonte: servicenow-australia-it-operations-management-enus.pdf, pp. 958-961]
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Property Name</th>
+        <th>Valore raccomandato</th>
+        <th>Descrizione</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>sn_itom_pattern.k8s_midserver</code></td>
+        <td><code>MID_Server_K8s</code></td>
+        <td>Nome del MID Server da usare per il discovery Kubernetes</td>
+      </tr>
+      <tr>
+        <td><code>sn_itom_pattern.k8s_create_schedule-enabled</code></td>
+        <td><code>false</code> (per on-premise)</td>
+        <td>Impostare <code>true</code> solo per cloud (GCP/AWS/Azure): crea automaticamente schedules per i cluster cloud. Per on-premise lasciare <code>false</code> per non generare schedule indesiderati.</td>
+      </tr>
+      <tr>
+        <td><code>sn_itom_k8s_run_ck</code></td>
+        <td><code>Da validare</code></td>
+        <td>Se abilitata, esegue i pattern cloud Kubernetes senza creare auto-schedules. Verificare se necessario per l'ambiente specifico.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- VERIFICA POST-DISCOVERY -->
+  <h2>Verifica post-esecuzione</h2>
+
+  <ol class="step-list">
+    <li>
+      <div class="step-body">
+        <div class="step-title">Verificare lo stato di Discovery</div>
+        <div class="step-desc">
+          Navigare in:
+          <div class="nav-path">All <span class="nav-sep">&gt;</span> Discovery <span class="nav-sep">&gt;</span> Discovery Status</div>
+          Cercare la riga corrispondente allo schedule <code>K8s-Talos-OnPrem-Discovery</code>.
+          Lo stato deve evolvere da <em>Running</em> a <em>Completed</em> senza errori critici.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Verificare i CI creati nel CMDB</div>
+        <div class="step-desc">
+          Navigare in:
+          <div class="nav-path">All <span class="nav-sep">&gt;</span> Configuration <span class="nav-sep">&gt;</span> Kubernetes Cluster</div>
+          Tabella: <code>cmdb_ci_kubernetes_cluster</code>. Devono comparire record con il <code>cluster_name</code> impostato.<br>
+          Verificare anche: <code>cmdb_ci_kubernetes_node</code>, <code>cmdb_ci_kubernetes_pod</code>,
+          <code>cmdb_ci_kubernetes_service</code>, <code>cmdb_ci_kubernetes_deployment</code>.
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-body">
+        <div class="step-title">Controllare i log del MID Server in caso di errori</div>
+        <div class="step-desc">
+          Navigare in:
+          <div class="nav-path">All <span class="nav-sep">&gt;</span> MID Server <span class="nav-sep">&gt;</span> Log</div>
+          Filtrare per il MID Server <code>MID_Server_K8s</code>. Cercare errori di connessione all'API server
+          o problemi di autorizzazione RBAC.
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <!-- TABELLA CMDB OUTPUT -->
+  <h2>Dati raccolti nel CMDB (output atteso per cluster Talos)</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tabella CMDB</th>
+        <th>Classe CI</th>
+        <th>Dati principali raccolti</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Kubernetes Cluster</td>
+        <td><code>cmdb_ci_kubernetes_cluster</code></td>
+        <td>Nome cluster, IP API server, porta, namespace, K8s_uid (UID namespace kube-system)</td>
+      </tr>
+      <tr>
+        <td>Kubernetes Node</td>
+        <td><code>cmdb_ci_kubernetes_node</code></td>
+        <td>Nome nodo, UUID, stato operativo, cluster di appartenenza</td>
+      </tr>
+      <tr>
+        <td>Kubernetes Pod</td>
+        <td><code>cmdb_ci_kubernetes_pod</code></td>
+        <td>Nome, UUID, namespace, stato (Pending/Running/Succeeded/Failed/Unknown)</td>
+      </tr>
+      <tr>
+        <td>Kubernetes Service</td>
+        <td><code>cmdb_ci_kubernetes_service</code></td>
+        <td>Nome, UUID, namespace, selettori label</td>
+      </tr>
+      <tr>
+        <td>Kubernetes Deployment</td>
+        <td><code>cmdb_ci_kubernetes_deployment</code></td>
+        <td>Nome, UUID, namespace</td>
+      </tr>
+      <tr>
+        <td>Kubernetes DaemonSet</td>
+        <td><code>cmdb_ci_kubernetes_daemonset</code></td>
+        <td>Nome, UUID, namespace</td>
+      </tr>
+      <tr>
+        <td>Kubernetes Job / CronJob</td>
+        <td><code>cmdb_ci_kubernetes_job</code> / <code>cmdb_ci_kubernetes_cronjob</code></td>
+        <td>Nome, UUID, namespace</td>
+      </tr>
+    </tbody>
+  </table>
+
+  [Fonte: servicenow-australia-it-operations-management-enus.pdf, pp. 962-964]
+
+  <hr>
+
+  <!-- RIEPILOGO DECISION TREE -->
+  <div class="note">
+    <strong>Riepilogo decisionale — quale percorso scegliere per il cluster Talos:</strong><br>
+    Dato che il MID Server e gia deployato nel namespace <code>sn</code> del cluster con ServiceAccount RBAC configurato,
+    il percorso raccomandato e la <strong>Modalita Credential-less (Fase C)</strong>:
+    URL = <code>https://kubernetes.default.svc</code> &mdash; nessuna credenziale da configurare &mdash;
+    il MID Server si autentica autonomamente. Questo elimina la complessita di gestione dei token JWT su Talos
+    (che non espone secrets legacy) e e il metodo nativamente supportato per MID Server deployati in-cluster.
+  </div>
+
+  <hr>
+
+  <!-- DOCUMENTI RAG CONSULTATI -->
+  <h3>Documenti RAG consultati</h3>
+
+  <table class="rag-table">
+    <thead>
+      <tr>
+        <th>Documento</th>
+        <th>Pagine chiave citate</th>
+        <th>Contenuto utilizzato</th>
+        <th>Download</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>servicenow-australia-it-operations-management-enus</strong></td>
+        <td>949-951, 953-964, 988-990, 1010-1012, 1553-1556, 2592-2595, 3020-3022</td>
+        <td>Pattern Kubernetes, prerequisiti, execution attributes, credential-less discovery, schedule serverless, KVA, proprieta di sistema, plugin installati con ITOM Visibility</td>
+        <td><a href="https://downloads.docs.servicenow.com/pdf/enus/servicenow-australia-it-operations-management-enus.pdf" target="_blank">Download PDF</a></td>
+      </tr>
+      <tr>
+        <td><strong>servicenow-australia-cloud-observability-enus</strong></td>
+        <td>1-6</td>
+        <td>Verifica scope del documento: Cloud Observability (Lightstep) non pertinente per K8s on-premise discovery</td>
+        <td><a href="https://downloads.docs.servicenow.com/pdf/enus/servicenow-australia-cloud-observability-enus.pdf" target="_blank">Download PDF</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>

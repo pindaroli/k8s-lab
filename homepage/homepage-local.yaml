@@ -169,16 +169,16 @@ data:
 
     - "Infrastructure":
         - Truenas:
-            href: https://nas-direct.pindaroli.org
-            description: TrueNAS server (Infrastructure Direct)
+            href: https://nas-internal.pindaroli.org
+            description: TrueNAS server (Internal)
             icon: https://www.svgrepo.com/show/331613/truenas.svg
         - OPNsense:
-            href: https://firewall-direct.pindaroli.org
-            description: OPNsense firewall (Infrastructure Direct)
+            href: https://firewall-internal.pindaroli.org
+            description: OPNsense firewall (Internal)
             icon: opnsense.png
         - Proxmox:
-            href: https://pve-direct.pindaroli.org:8006
-            description: Proxmox server (Infrastructure Direct)
+            href: https://pve-internal.pindaroli.org
+            description: Proxmox server (Internal)
             icon: proxmox.png
         - MinIO:
             href: https://minio-internal.pindaroli.org

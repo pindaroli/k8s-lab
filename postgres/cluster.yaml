@@ -10,7 +10,7 @@ spec:
     size: 100Gi
     storageClass: local-postgres
   walStorage:
-    size: 4Gi
+    size: 10Gi
     storageClass: local-postgres
   monitoring:
     enablePodMonitor: false
@@ -24,6 +24,9 @@ spec:
           name: garage-creds
         secretAccessKey:
           key: SECRET_ACCESS_KEY
+          name: garage-creds
+        region:
+          key: REGION
           name: garage-creds
     retentionPolicy: 30d
   bootstrap:

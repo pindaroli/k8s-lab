@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServiceNow Discovery Report - Ultima Scansione</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1557b0;
+      --primary-light: #e8f0fe;
+      --surface: #ffffff;
+      --bg: #f8f9fa;
+      --text: #202124;
+      --text-muted: #5f6368;
+      --border: #dadce0;
+      --success: #1e8e3e;
+      --success-bg: #e6f4ea;
+      --shadow: 0 1px 3px rgba(60,64,67,0.15), 0 1px 2px rgba(60,64,67,0.1);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header Bar */
+    .app-header {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .brand-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text);
+    }
+    .brand-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 4px 0 0 0;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    /* Metrics Summary Bar */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .metric-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+    }
+    .metric-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .metric-val {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 4px;
+    }
+
+    /* Card Wrapper */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 16px 24px;
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+    .section-badge {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--primary-light);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    /* Search Box */
+    .search-input-wrapper {
+      display: flex;
+      align-items: center;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      width: 280px;
+    }
+    .search-input-wrapper input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text);
+      width: 100%;
+    }
+
+    /* Table Scroll Container (Max 12 Rows Height) */
+    .table-scroll-container {
+      max-height: 490px; /* Altezza per visualizzare max 12 righe con scorrimento */
+      overflow-y: auto;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    /* Custom Scrollbar */
+    .table-scroll-container::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    .table-scroll-container::-webkit-scrollbar-track {
+      background: #f1f3f4;
+    }
+    .table-scroll-container::-webkit-scrollbar-thumb {
+      background: #c1c4c9;
+      border-radius: 4px;
+    }
+    .table-scroll-container::-webkit-scrollbar-thumb:hover {
+      background: #9aa0a6;
+    }
+
+    /* Table Styling */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    table.data-table th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: #f1f3f4;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 12px 18px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.15s ease;
+    }
+    table.data-table th:hover {
+      background-color: #e8eaed;
+      color: var(--primary);
+    }
+    table.data-table th .th-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      pointer-events: none;
+    }
+    table.data-table th .sort-icon {
+      font-size: 10px;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+    table.data-table th.active-sort .sort-icon {
+      opacity: 1;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    table.data-table td {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      color: var(--text);
+    }
+    table.data-table tbody tr:hover {
+      background-color: rgba(26, 115, 232, 0.04);
+    }
+    table.data-table tbody tr.hidden-row {
+      display: none !important;
+    }
+
+    /* Chips & Code styling */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      gap: 6px;
+    }
+    .chip-success {
+      background-color: var(--success-bg);
+      color: var(--success);
+    }
+    .chip-info {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+    .code-text {
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 12px;
+      background: #f1f3f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #3c4043;
+    }
+
+    .table-footer-info {
+      padding: 10px 20px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+      background-color: var(--surface);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <div class="app-header">
+    <div>
+      <h1 class="brand-title">ServiceNow Discovery & CMDB Report</h1>
+      <p class="brand-subtitle">Istanza Target: dev395227.service-now.com | Ambito: Kubernetes Homelab Infrastructure</p>
+    </div>
+    <div>
+      <span class="chip chip-success">
+        <span class="chip-dot"></span> MID Server Online
+      </span>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- KPI Summary Row -->
+    <div class="metrics-row">
+      <div class="metric-box">
+        <div class="metric-label">Cluster K8s</div>
+        <div class="metric-val">1</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Nodi Cluster</div>
+        <div class="metric-val">3</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Pod Censiti</div>
+        <div class="metric-val">50</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Servizi K8s</div>
+        <div class="metric-val">50</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">MID Server</div>
+        <div class="metric-val" style="color: var(--success); font-size: 18px;">Up</div>
+      </div>
+    </div>
+
+    <!-- 1. CLUSTERS TABLE -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Cluster Kubernetes</h2>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Tabella CMDB: <span class="code-text">cmdb_ci_kubernetes_cluster</span></div>
+        </div>
+        <span class="section-badge">1 Elemento</span>
+      </div>
+      <div class="table-scroll-container">
+        <table class="data-table" id="clusterTable">
+          <thead>
+            <tr>
+              <th data-col="0"><div class="th-flex">Nome Cluster <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="1"><div class="th-flex">Versione <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="2"><div class="th-flex">UID Kubernetes <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="3"><div class="th-flex">IP Endpoint <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="4"><div class="th-flex">Stato Operativo <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="5"><div class="th-flex">Discovery Source <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="6"><div class="th-flex">Ultima Scansione <span class="sort-icon">&#9650;&#9660;</span></div></th>
+            </tr>
+          </thead>
+          <tbody>
+
+              <tr>
+                <td><strong>talos-onprem-cluster</strong></td>
+                <td><span class="chip chip-info">v1.36.2</span></td>
+                <td><span class="code-text">a426b3cc-d45a-4596-b1c9-2306101756f1</span></td>
+                <td><span class="code-text">10.96.0.1:443</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Operational</span></td>
+                <td>ServiceNow</td>
+                <td>2026-08-04 22:13:45</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer-info">Visualizzati 1 di 1 elementi</div>
+    </div>
+
+    <!-- 2. NODES TABLE -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Nodi del Cluster</h2>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Tabella CMDB: <span class="code-text">cmdb_ci_kubernetes_node</span></div>
+        </div>
+        <span class="section-badge">3 Elementi</span>
+      </div>
+      <div class="table-scroll-container">
+        <table class="data-table" id="nodeTable">
+          <thead>
+            <tr>
+              <th data-col="0"><div class="th-flex">Nome Nodo <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="1"><div class="th-flex">Sys ID <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="2"><div class="th-flex">Indirizzo IP <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="3"><div class="th-flex">Stato Installazione <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="4"><div class="th-flex">Ultimo Aggiornamento <span class="sort-icon">&#9650;&#9660;</span></div></th>
+            </tr>
+          </thead>
+          <tbody>
+
+              <tr>
+                <td><strong>talos-cp-01</strong></td>
+                <td><span class="code-text">9ccd7ff84b6ac7103c6fdf4ae904da52</span></td>
+                <td><span class="code-text">10.10.20.141</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Installed</span></td>
+                <td>2026-08-04 22:13:23</td>
+              </tr>
+              <tr>
+                <td><strong>talos-cp-03</strong></td>
+                <td><span class="code-text">9ccd7ff84d6ac71014435c70d062038f</span></td>
+                <td><span class="code-text">10.10.20.143</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Installed</span></td>
+                <td>2026-08-04 22:13:24</td>
+              </tr>
+              <tr>
+                <td><strong>talos-cp-02</strong></td>
+                <td><span class="code-text">d8cd7ff85c6ac710e90f6df40c8d8655</span></td>
+                <td><span class="code-text">10.10.20.142</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Installed</span></td>
+                <td>2026-08-04 22:13:23</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer-info">Visualizzati 3 di 3 elementi</div>
+    </div>
+
+    <!-- 3. PODS TABLE (SEARCH BOX INCLUDED: >12 ROWS) -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Pod Kubernetes</h2>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Tabella CMDB: <span class="code-text">cmdb_ci_kubernetes_pod</span> (Max 12 visibili contemporaneamente con scroll)</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="search-input-wrapper">
+            <input type="text" id="podSearchInput" placeholder="Cerca Pod o Namespace...">
+          </div>
+          <span class="section-badge">50 Elementi</span>
+        </div>
+      </div>
+      <div class="table-scroll-container">
+        <table class="data-table" id="podTable">
+          <thead>
+            <tr>
+              <th data-col="0"><div class="th-flex">Nome Pod <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="1"><div class="th-flex">Namespace <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="2"><div class="th-flex">Indirizzo IP <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="3"><div class="th-flex">Stato <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="4"><div class="th-flex">Sys ID <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="5"><div class="th-flex">Ultima Scansione <span class="sort-icon">&#9650;&#9660;</span></div></th>
+            </tr>
+          </thead>
+          <tbody>
+
+              <tr>
+                <td><strong>kube-proxy-mbjvg</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.142</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">10cd7ff87b6ac71002a6b460e68608b1</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-prowlarr-7c47cfc569-dfx2q</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.244.0.95</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">10cd7ff8876ac71055c8a64ba8880cd2</span></td>
+                <td>2026-08-04 22:13:28</td>
+              </tr>
+              <tr>
+                <td><strong>vmalertmanager-vm-0</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.244.1.187</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">10cd7ff8c16ac710b5068bf1af7bc98b</span></td>
+                <td>2026-08-04 22:13:24</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-prometheus-node-exporter-jz7t8</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.10.20.141</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">14cd7ff8606ac710159be7ace328ab99</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-prometheus-node-exporter-r52jl</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.10.20.143</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">14cd7ff8dc6ac710a117cb4f1297d296</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-kube-state-metrics-84bbc98c74-7nstq</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.244.2.92</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">14cdbff8026ac7105ff81c4aef0d8a05</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>homepage-local-554c7bdc8f-rw5b4</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.244.1.98</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">14cdbff8d06ac710ec09dabefaae830c</span></td>
+                <td>2026-08-04 22:13:31</td>
+              </tr>
+              <tr>
+                <td><strong>blackbox-exporter-9d985fb45-sjq9l</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.244.1.183</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">14cdbff8ec6ac710f4f6821e3edf6807</span></td>
+                <td>2026-08-04 22:13:31</td>
+              </tr>
+              <tr>
+                <td><strong>coredns-84d846864f-pcpgg</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.244.0.46</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">18cd7ff8306ac71007640969a9512bad</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>metallb-speaker-95dkm</strong></td>
+                <td><span class="chip chip-info">metallb-system</span></td>
+                <td><span class="code-text">10.10.20.142</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">18cd7ff87a6ac7109ffb26c442047fa0</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>kube-proxy-q822g</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.143</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">18cd7ff88e6ac7107c15bc3bf31b39b0</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>vmagent-vm-84cdc7c4dc-fvt9v</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.244.2.97</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">18cdbff8b66ac71057279070a22a7400</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>sn-mid-server-799c877684-4v4pp</strong></td>
+                <td><span class="chip chip-info">sn</span></td>
+                <td><span class="code-text">10.244.1.108</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">1ccd7ff8576ac71003abba13557a9d56</span></td>
+                <td>2026-08-04 22:13:23</td>
+              </tr>
+              <tr>
+                <td><strong>traefik-qqrrp</strong></td>
+                <td><span class="chip chip-info">traefik</span></td>
+                <td><span class="code-text">10.244.1.102</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">1ccd7ff8d96ac7109eaf9bc7e8838e54</span></td>
+                <td>2026-08-04 22:13:23</td>
+              </tr>
+              <tr>
+                <td><strong>kube-apiserver-talos-cp-03</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.143</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">1ccd7ff8ef6ac7101b9fad3337d7cbbb</span></td>
+                <td>2026-08-04 22:13:27</td>
+              </tr>
+              <tr>
+                <td><strong>temp-hermes-check</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.244.2.172</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">22bdf3b8ac6ac7104daac368409ca877</span></td>
+                <td>2026-08-04 22:13:19</td>
+              </tr>
+              <tr>
+                <td><strong>cnpg-cloudnative-pg-6ccf5f5998-h4v5v</strong></td>
+                <td><span class="chip chip-info">cnpg-system</span></td>
+                <td><span class="code-text">10.244.1.186</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">26bdf3b8d56ac710663bb3d24234832b</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>hermes-hermes-agent-5f5c67489c-8hhrs</strong></td>
+                <td><span class="chip chip-info">hermes</span></td>
+                <td><span class="code-text">10.244.2.241</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">2abdf3b8e06ac710371ef271c0165f72</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>temp-id</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.244.2.179</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">2ebdf3b8d66ac710571ad1cf2efc0d76</span></td>
+                <td>2026-08-04 22:13:19</td>
+              </tr>
+              <tr>
+                <td><strong>kube-flannel-zhfm5</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.142</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">50cd7ff80a6ac7102d26d349dc9613b2</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>postgres-main-3</strong></td>
+                <td><span class="chip chip-info">cnpg-system</span></td>
+                <td><span class="code-text">10.244.2.158</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">50cd7ff81c6ac710d1903485d914a0c0</span></td>
+                <td>2026-08-04 22:13:27</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-grafana-f84756b9f-hq5gx</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.244.0.120</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">50cd7ff8d36ac710710d99faae8a5f9a</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>metrics-server-799f7ccf68-sx2hk</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.244.0.36</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">54cd7ff8dc6ac7106b91893961bff7a5</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>metallb-speaker-ksc89</strong></td>
+                <td><span class="chip chip-info">metallb-system</span></td>
+                <td><span class="code-text">10.10.20.141</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">58cd7ff8246ac7101ab291fdd62cde9f</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>kube-flannel-pbq4m</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.143</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">58cd7ff8a76ac710a96ddfab0fd209b2</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>kube-controller-manager-talos-cp-03</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.143</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">5ccd7ff8246ac7101d319f48fda9c2b8</span></td>
+                <td>2026-08-04 22:13:27</td>
+              </tr>
+              <tr>
+                <td><strong>vmsingle-vm-6789bb765-rsprh</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.244.0.118</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">5ccd7ff8546ac71086cac9b80c981b8e</span></td>
+                <td>2026-08-04 22:13:24</td>
+              </tr>
+              <tr>
+                <td><strong>kube-controller-manager-talos-cp-01</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.141</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">5ccd7ff8776ac7101590fe29a01b3dba</span></td>
+                <td>2026-08-04 22:13:27</td>
+              </tr>
+              <tr>
+                <td><strong>n8n-8547b5957b-6gws8</strong></td>
+                <td><span class="chip chip-info">n8n</span></td>
+                <td><span class="code-text">10.244.1.234</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">5ccd7ff8d26ac710904940609894e987</span></td>
+                <td>2026-08-04 22:13:24</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-bazarr-554cc58cc9-c64s8</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.244.0.40</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">5ccd7ff8e16ac71014a4f7f97c5f55f2</span></td>
+                <td>2026-08-04 22:13:29</td>
+              </tr>
+              <tr>
+                <td><strong>oauth2-proxy-5dd6f765b9-rrsf9</strong></td>
+                <td><span class="chip chip-info">oauth2-proxy</span></td>
+                <td><span class="code-text">10.244.2.96</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">66bdf3b8456ac710391bae58ef87fe6f</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-recyclarr-29764080-mxn9z</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.244.2.231</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">6abdf3b86f6ac710f7d705ccd542f4b1</span></td>
+                <td>2026-08-04 22:13:20</td>
+              </tr>
+              <tr>
+                <td><strong>cloudflared-deployment-6659dbd45c-g6lnv</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.244.2.98</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">6abdf3b8b36ac71053b6b584a8652226</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>cloudflared-deployment-6659dbd45c-l6dcr</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.244.1.177</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">6ebdf3b8276ac710030256e1702f5225</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-flaresolverr-6f8f59b9c5-b6bgn</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.244.1.176</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">90cd7ff8216ac7102244f3aaded176ed</span></td>
+                <td>2026-08-04 22:13:29</td>
+              </tr>
+              <tr>
+                <td><strong>prefect-worker-c4cf995db-b5cf6</strong></td>
+                <td><span class="chip chip-info">prefect</span></td>
+                <td><span class="code-text">10.244.2.95</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">90cd7ff8496ac710dbb9df98169ea685</span></td>
+                <td>2026-08-04 22:13:24</td>
+              </tr>
+              <tr>
+                <td><strong>metallb-controller-679c6d6f97-bdhph</strong></td>
+                <td><span class="chip chip-info">metallb-system</span></td>
+                <td><span class="code-text">10.244.1.181</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">90cd7ff86e6ac710b82ebdf8da39b2a4</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-prometheus-node-exporter-zvhm6</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.10.20.142</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">90cd7ff8bd6ac7100d7dfefee930e397</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>tdarr-server-5cfc5c7558-dgz5x</strong></td>
+                <td><span class="chip chip-info">tdarr</span></td>
+                <td><span class="code-text">10.244.0.37</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">90cd7ff8d36ac71049fdef302fb20d93</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>descheduler-29764690-xwlpb</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.244.2.143</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">90cdbff8a46ac71096f33d148580f30b</span></td>
+                <td>2026-08-04 22:13:31</td>
+              </tr>
+              <tr>
+                <td><strong>kube-proxy-6ktvd</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.141</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">94cd7ff8b26ac710aca0d9da22fe75b1</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>csi-nfs-node-4ckzk</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.141</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">98cd7ff8706ac7108626f24e16977faa</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-minimserver-85ff4b8cdc-n9g6g</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.10.20.142</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">98cd7ff8d86ac710f72061de93e9e0e1</span></td>
+                <td>2026-08-04 22:13:29</td>
+              </tr>
+              <tr>
+                <td><strong>homepage-6bdf49dc7-c67q2</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.244.1.97</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">98cdbff81b6ac710b6d2917f21cfbc0e</span></td>
+                <td>2026-08-04 22:13:31</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-victoria-metrics-operator-5568cc8d-d8gvt</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.244.2.90</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">98cdbff89a6ac7102d8dc7bb8bcb8702</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-lidarr-7474bcfcb6-7ls4c</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.244.0.96</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">9ccd7ff8496ac710bc2e0a10347e0ed2</span></td>
+                <td>2026-08-04 22:13:28</td>
+              </tr>
+              <tr>
+                <td><strong>kube-controller-manager-talos-cp-02</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.142</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">9ccd7ff86c6ac7102b1a06af131726b9</span></td>
+                <td>2026-08-04 22:13:27</td>
+              </tr>
+              <tr>
+                <td><strong>postgres-main-5</strong></td>
+                <td><span class="chip chip-info">cnpg-system</span></td>
+                <td><span class="code-text">10.244.0.243</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">9ccd7ff8796ac71048fbf19d55bee8be</span></td>
+                <td>2026-08-04 22:13:27</td>
+              </tr>
+              <tr>
+                <td><strong>kube-scheduler-talos-cp-01</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.141</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">9ccd7ff8796ac7108218200ea89731b7</span></td>
+                <td>2026-08-04 22:13:27</td>
+              </tr>
+              <tr>
+                <td><strong>csi-nfs-node-pfg57</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.10.20.142</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Running</span></td>
+                <td><span class="code-text">9ccd7ff88c6ac710623d95e1ad03f8a8</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer-info" id="podFooterInfo">Totale elementi nella tabella: 50 (Utilizza la barra di scorrimento laterale)</div>
+    </div>
+
+    <!-- 4. SERVICES TABLE (SEARCH BOX INCLUDED: >12 ROWS) -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Servizi Kubernetes</h2>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Tabella CMDB: <span class="code-text">cmdb_ci_kubernetes_service</span> (Max 12 visibili contemporaneamente con scroll)</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="search-input-wrapper">
+            <input type="text" id="svcSearchInput" placeholder="Cerca Servizio...">
+          </div>
+          <span class="section-badge">50 Elementi</span>
+        </div>
+      </div>
+      <div class="table-scroll-container">
+        <table class="data-table" id="svcTable">
+          <thead>
+            <tr>
+              <th data-col="0"><div class="th-flex">Nome Servizio <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="1"><div class="th-flex">Namespace <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="2"><div class="th-flex">Cluster IP <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="3"><div class="th-flex">Tipo <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="4"><div class="th-flex">Sys ID <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="5"><div class="th-flex">Data Creazione <span class="sort-icon">&#9650;&#9660;</span></div></th>
+            </tr>
+          </thead>
+          <tbody>
+
+              <tr>
+                <td><strong>victoria-monitoring-grafana</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.99.102.157</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">10cd7ff8576ac710f921656712f9459e</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-kube-state-metrics</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.103.171.215</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">10cdbff80a6ac7109024138f0c7e6e06</span></td>
+                <td>2026-08-04 22:13:31</td>
+              </tr>
+              <tr>
+                <td><strong>vmsingle-vm</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.100.53.88</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">14cd7ff84b6ac710568323cf02ed74ff</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>vm-core-dns</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">None</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">18cd7ff8ac6ac710c536a8b5413a20ae</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-prometheus-node-exporter</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.96.155.252</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">18cd7ff8fb6ac7105b25c375d6324998</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>vmalert-vm</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.98.181.172</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">18cdbff8ae6ac710ae0bd6e625e20308</span></td>
+                <td>2026-08-04 22:13:31</td>
+              </tr>
+              <tr>
+                <td><strong>kube-dns</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.96.0.10</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">1ccd7ff84b6ac71041a4348c598ec3af</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>jellyfin-external-k8s-service</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.108.226.129</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">1ccd7ff88d6ac71020c3146a9df55ff8</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-autobrr</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.96.194.65</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">1ccd7ff8976ac710043c65c15be7b6f7</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>proxmox-external</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.110.226.235</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">22bdf3b8a56ac71074a8df25ddaf4228</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>cert-manager-webhook</strong></td>
+                <td><span class="chip chip-info">cert-manager</span></td>
+                <td><span class="code-text">10.109.134.61</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">22bdf3b8c16ac71063b55d91a02565af</span></td>
+                <td>2026-08-04 22:13:20</td>
+              </tr>
+              <tr>
+                <td><strong>minio-truenas-backend</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.108.112.228</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">26bdf3b8776ac7102e52199d0410be28</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>postgres-main-external</strong></td>
+                <td><span class="chip chip-info">cnpg-system</span></td>
+                <td><span class="code-text">10.111.133.92</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">2abdf3b8536ac710ac46c227ead67e6d</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>truenas-external</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.102.44.214</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">2abdf3b8a86ac710790fba070264f027</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>oauth2-proxy</strong></td>
+                <td><span class="chip chip-info">oauth2-proxy</span></td>
+                <td><span class="code-text">10.106.112.186</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">2ebdf3b83f6ac710886cf96bbea16370</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>sw-letto-external</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.97.34.78</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">2ebdf3b8676ac7103069dfa35966d427</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>vm-kube-scheduler</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">None</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">54cd7ff8b96ac71084b4b98aad9b2eb3</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>vmalertmanager-vm</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">None</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">58cd7ff8bb6ac7108f0c5fd715c86b8d</span></td>
+                <td>2026-08-04 22:13:24</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-victoria-metrics-k8s-stack-kube-scheduler</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">None</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">58cd7ff8bc6ac7105846b0087aa483b4</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-flaresolverr</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.110.130.126</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">5ccd7ff8836ac710b73688625c48d9ef</span></td>
+                <td>2026-08-04 22:13:29</td>
+              </tr>
+              <tr>
+                <td><strong>postgres-main-ro</strong></td>
+                <td><span class="chip chip-info">cnpg-system</span></td>
+                <td><span class="code-text">10.101.103.81</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">66bdf3b83f6ac71040eab2125072ee6c</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>postgres-main-metrics</strong></td>
+                <td><span class="chip chip-info">cnpg-system</span></td>
+                <td><span class="code-text">10.103.145.67</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">66bdf3b8446ac71095a063a936cd426d</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>velero</strong></td>
+                <td><span class="chip chip-info">velero</span></td>
+                <td><span class="code-text">10.105.210.245</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">6abdf3b82a6ac710155268a22ae922b5</span></td>
+                <td>2026-08-04 22:13:20</td>
+              </tr>
+              <tr>
+                <td><strong>dns-upstream</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">None</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">6abdf3b8856ac710612a81efcd76f229</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>homepage-local</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.107.149.101</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">6abdf3b8d36ac71060b134a7c024b528</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>postgres-main-r</strong></td>
+                <td><span class="chip chip-info">cnpg-system</span></td>
+                <td><span class="code-text">10.98.121.207</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">6ebdf3b8796ac71029a82fca15ab756c</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>postgres-main-rw</strong></td>
+                <td><span class="chip chip-info">cnpg-system</span></td>
+                <td><span class="code-text">10.106.48.155</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">6ebdf3b8e46ac710a9aa32af4258346b</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-victoria-metrics-k8s-stack-core-dns</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">None</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">90cd7ff8a46ac71002723db5c5482daf</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>vmagent-vm</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.101.153.69</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">90cdbff8306ac710f1b9d4ded429a201</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>traefik-metrics</strong></td>
+                <td><span class="chip chip-info">traefik</span></td>
+                <td><span class="code-text">10.102.215.172</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">94cd7ff86f6ac71057ccaf1b38f2b792</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>tdarr-service</strong></td>
+                <td><span class="chip chip-info">tdarr</span></td>
+                <td><span class="code-text">10.100.185.222</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">94cd7ff8c96ac71089acbc8ac11df594</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>blackbox-exporter</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.110.178.42</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">94cdbff8336ac710cf81edb19cf75608</span></td>
+                <td>2026-08-04 22:13:31</td>
+              </tr>
+              <tr>
+                <td><strong>traefik</strong></td>
+                <td><span class="chip chip-info">traefik</span></td>
+                <td><span class="code-text">10.110.159.107</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">98cd7ff86c6ac710804804328bc00b92</span></td>
+                <td>2026-08-04 22:13:25</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-prowlarr</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.106.232.123</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">98cd7ff8766ac710d7c58686e36aaadf</span></td>
+                <td>2026-08-04 22:13:29</td>
+              </tr>
+              <tr>
+                <td><strong>jellyfin-external-svc</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.104.231.102</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">98cd7ff8f16ac7109ff20192d3b5d2f8</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-qbittorrent-bt</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.100.158.18</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">9ccd7ff8946ac7103d7e6b444079d8cc</span></td>
+                <td>2026-08-04 22:13:28</td>
+              </tr>
+              <tr>
+                <td><strong>opnsense-external</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.103.164.75</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">a2bdf3b8df6ac7103b5caf4cdeb39e28</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>hermes-hermes-agent</strong></td>
+                <td><span class="chip chip-info">hermes</span></td>
+                <td><span class="code-text">10.96.45.198</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">a6bdf3b8ba6ac71083ba99c7a312e174</span></td>
+                <td>2026-08-04 22:13:18</td>
+              </tr>
+              <tr>
+                <td><strong>cert-manager</strong></td>
+                <td><span class="chip chip-info">cert-manager</span></td>
+                <td><span class="code-text">10.99.113.235</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">a6bdf3b8c66ac710090c4972bf6f5eae</span></td>
+                <td>2026-08-04 22:13:20</td>
+              </tr>
+              <tr>
+                <td><strong>kubernetes</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.96.0.1</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">a6bdf3b8cb6ac710c4d2374042a6c028</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>sw-server-external</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.99.58.95</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">aabdf3b8e96ac710157127133d6ce927</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>cert-manager-cainjector</strong></td>
+                <td><span class="chip chip-info">cert-manager</span></td>
+                <td><span class="code-text">10.106.8.70</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">aabdf3b8f76ac710b395572d845faf98</span></td>
+                <td>2026-08-04 22:13:19</td>
+              </tr>
+              <tr>
+                <td><strong>sw-core-external</strong></td>
+                <td><span class="chip chip-info">default</span></td>
+                <td><span class="code-text">10.106.207.136</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">aebdf3b8666ac710d13789747d2aa827</span></td>
+                <td>2026-08-04 22:13:17</td>
+              </tr>
+              <tr>
+                <td><strong>metrics-server</strong></td>
+                <td><span class="chip chip-info">kube-system</span></td>
+                <td><span class="code-text">10.104.140.134</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">d0cd7ff8156ac710b7e290ab72896bb5</span></td>
+                <td>2026-08-04 22:13:26</td>
+              </tr>
+              <tr>
+                <td><strong>prefect-server</strong></td>
+                <td><span class="chip chip-info">prefect</span></td>
+                <td><span class="code-text">10.101.229.164</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">d0cd7ff86c6ac7102269b7e889358287</span></td>
+                <td>2026-08-04 22:13:24</td>
+              </tr>
+              <tr>
+                <td><strong>n8n</strong></td>
+                <td><span class="chip chip-info">n8n</span></td>
+                <td><span class="code-text">10.106.4.109</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">d0cd7ff8c66ac7109bfb3029acc1868a</span></td>
+                <td>2026-08-04 22:13:24</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-radarr</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.106.242.223</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">d0cd7ff8f86ac7109adc7f42061156f8</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>victoria-monitoring-victoria-metrics-operator</strong></td>
+                <td><span class="chip chip-info">monitoring</span></td>
+                <td><span class="code-text">10.101.33.104</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">d0cdbff8016ac71062ca014747bd0803</span></td>
+                <td>2026-08-04 22:13:30</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-lidarr</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.111.212.106</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">d4cd7ff81e6ac7104f846b46264de5db</span></td>
+                <td>2026-08-04 22:13:28</td>
+              </tr>
+              <tr>
+                <td><strong>servarr-qbittorrent-web</strong></td>
+                <td><span class="chip chip-info">arr</span></td>
+                <td><span class="code-text">10.98.166.241</span></td>
+                <td><span class="chip chip-success">ClusterIP</span></td>
+                <td><span class="code-text">d4cd7ff8736ac710504c95042c4db3cc</span></td>
+                <td>2026-08-04 22:13:28</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer-info" id="svcFooterInfo">Totale elementi nella tabella: 50 (Utilizza la barra di scorrimento laterale)</div>
+    </div>
+
+    <!-- 5. MID SERVER TABLE -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">MID Server Associato</h2>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Tabella ServiceNow: <span class="code-text">ecc_agent</span></div>
+        </div>
+        <span class="section-badge">1 Elemento</span>
+      </div>
+      <div class="table-scroll-container">
+        <table class="data-table" id="midTable">
+          <thead>
+            <tr>
+              <th data-col="0"><div class="th-flex">Nome MID Server <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="1"><div class="th-flex">Stato <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="2"><div class="th-flex">Host Name <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="3"><div class="th-flex">IP Container <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="4"><div class="th-content">Versione Build <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="5"><div class="th-flex">Java JVM <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="6"><div class="th-flex">Ultimo Heartbeat <span class="sort-icon">&#9650;&#9660;</span></div></th>
+            </tr>
+          </thead>
+          <tbody>
+
+              <tr>
+                <td><strong>MID_Server_K8s</strong></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Up</span></td>
+                <td>k8s-lab-mid-server</td>
+                <td><span class="code-text">10.244.1.108</span></td>
+                <td><span class="chip chip-info">australia-02-11-2026__patch3-05-25-2026_06-12-2026_1106</span></td>
+                <td>21.0.7-sncmid1</td>
+                <td>2026-08-05 10:03:24</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer-info">Visualizzati 1 di 1 elementi</div>
+    </div>
+
+    <!-- 6. DISCOVERY STATUS RUNS TABLE -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Storico Esecuzioni Discovery</h2>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Tabella ServiceNow: <span class="code-text">discovery_status</span></div>
+        </div>
+        <span class="section-badge">5 Elementi</span>
+      </div>
+      <div class="table-scroll-container">
+        <table class="data-table" id="statusTable">
+          <thead>
+            <tr>
+              <th data-col="0"><div class="th-flex">Sys ID Run <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="1"><div class="th-flex">Stato Esecuzione <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="2"><div class="th-flex">Creato Da <span class="sort-icon">&#9650;&#9660;</span></div></th>
+              <th data-col="3"><div class="th-flex">Data Creazione <span class="sort-icon">&#9650;&#9660;</span></div></th>
+            </tr>
+          </thead>
+          <tbody>
+
+              <tr>
+                <td><span class="code-text">368167fc83a2c7107c2353a6feaad358</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Completed</span></td>
+                <td>admin</td>
+                <td>2026-08-04 20:10:07</td>
+              </tr>
+              <tr>
+                <td><span class="code-text">6fb7f734832ac7107c2353a6feaad354</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Completed</span></td>
+                <td>admin</td>
+                <td>2026-08-04 21:47:07</td>
+              </tr>
+              <tr>
+                <td><span class="code-text">92e96824832643107c2353a6feaad338</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Completed</span></td>
+                <td>admin</td>
+                <td>2026-08-03 12:09:20</td>
+              </tr>
+              <tr>
+                <td><span class="code-text">996cb7b0836ac7107c2353a6feaad3ba</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Completed</span></td>
+                <td>admin</td>
+                <td>2026-08-04 22:07:27</td>
+              </tr>
+              <tr>
+                <td><span class="code-text">e0d863308366c7107c2353a6feaad34c</span></td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span> Completed</span></td>
+                <td>admin</td>
+                <td>2026-08-04 20:41:55</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer-info">Visualizzati 5 di 5 elementi</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      ServiceNow CMDB & Discovery Expert Report | Layout Max 12 Righe con Scorrimento | Search & Lexicographical Sort | Zero Emoticon o Emoji.
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. LEXICOGRAPHICAL COLUMN SORTING
+      const sortStates = {};
+      const tableIds = ['clusterTable', 'nodeTable', 'podTable', 'svcTable', 'midTable', 'statusTable'];
+
+      tableIds.forEach(tableId => {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+
+        const headers = table.querySelectorAll('th');
+        headers.forEach(th => {
+          th.addEventListener('click', () => {
+            const colIndex = parseInt(th.getAttribute('data-col'), 10);
+            if (isNaN(colIndex)) return;
+
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            if (!sortStates[tableId]) sortStates[tableId] = { col: -1, dir: 'asc' };
+            let dir = 'asc';
+            if (sortStates[tableId].col === colIndex) {
+              dir = sortStates[tableId].dir === 'asc' ? 'desc' : 'asc';
+            }
+            sortStates[tableId] = { col: colIndex, dir: dir };
+
+            // Update Header UI Indicators
+            headers.forEach((h, idx) => {
+              h.classList.remove('active-sort');
+              const icon = h.querySelector('.sort-icon');
+              if (icon) icon.innerHTML = '&#9650;&#9660;';
+              if (idx === colIndex) {
+                h.classList.add('active-sort');
+                if (icon) icon.innerHTML = dir === 'asc' ? '&#9650;' : '&#9660;';
+              }
+            });
+
+            // Sort Rows Lexicographically using localeCompare
+            rows.sort((a, b) => {
+              const cellA = (a.cells[colIndex] ? a.cells[colIndex].textContent : '').trim().toLowerCase();
+              const cellB = (b.cells[colIndex] ? b.cells[colIndex].textContent : '').trim().toLowerCase();
+              return dir === 'asc'
+                ? cellA.localeCompare(cellB, 'it', { numeric: true, sensitivity: 'base' })
+                : cellB.localeCompare(cellA, 'it', { numeric: true, sensitivity: 'base' });
+            });
+
+            rows.forEach(r => tbody.appendChild(r));
+          });
+        });
+      });
+
+      // 2. DYNAMIC SEARCH FILTER FOR TABLES (>12 ROWS)
+      function setupTableSearch(inputId, tableId, footerInfoId) {
+        const input = document.getElementById(inputId);
+        const table = document.getElementById(tableId);
+        const footerInfo = document.getElementById(footerInfoId);
+        if (!input || !table) return;
+
+        const tbody = table.querySelector('tbody');
+        if (!tbody) return;
+
+        input.addEventListener('input', () => {
+          const filter = input.value.toLowerCase().trim();
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          let visibleCount = 0;
+
+          rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.indexOf(filter) > -1) {
+              row.classList.remove('hidden-row');
+              visibleCount++;
+            } else {
+              row.classList.add('hidden-row');
+            }
+          });
+
+          if (footerInfo) {
+            footerInfo.textContent = `Trovati ${visibleCount} di ${rows.length} elementi` + (filter ? ` (Filtro: "${filter}")` : '');
+          }
+        });
+      }
+
+      setupTableSearch('podSearchInput', 'podTable', 'podFooterInfo');
+      setupTableSearch('svcSearchInput', 'svcTable', 'svcFooterInfo');
+    });
+  </script>
+
+</body>
+</html>
