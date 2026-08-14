@@ -9,7 +9,7 @@ created_at: 2026-08-06
 
 > [!IMPORTANT]
 > **Stato Operativo**: **CONFIGURAZIONE SU EXTREME EXOS COMPLETATA CON SUCCESSO ✅**
-> Lo switch Extreme Networks X620-X10 (`extreme`) è stato interamente configurato via SSH (`192.168.100.100`), verificato e salvato in memoria (`primary.cfg`).
+> Lo switch Extreme Networks X620-X10 (`extreme`) è stato interamente configurato via SSH (`192.168.2.1`), verificato e salvato in memoria (`primary.cfg`).
 
 ---
 
@@ -57,8 +57,8 @@ configure bootprelay add 192.168.2.254 vr VR-Default
 enable bootprelay ipv4 vlan client
 enable bootprelay ipv4 vlan server
 
-# Interfaccia Gestione OOB
-configure vlan Mgmt ipaddress 192.168.100.100 255.255.255.0
+# Interfaccia Gestione (Default Transit)
+# Configurazione gestita su VLAN 1 (192.168.2.1)
 ```
 
 ---

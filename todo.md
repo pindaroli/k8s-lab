@@ -94,7 +94,7 @@
 
 
 ## [x] 🟢 COMPLETATO: Sostituzione Switch Core ONTi 10G con Extreme Networks X620-X10 [[plan-switch-onti-to-extreme-migration]] (COMPLETED 2026-08-06)
-- [x] Configurazione EXOS CLI via SSH su switch Extreme (`192.168.100.100`): VLAN 10, 20, 30, 99, IP SVIs (`192.168.2.1`, `10.10.10.1`, `10.10.20.1`), Default Route (`192.168.2.254`), Bootprelay e DNS Client.
+- [x] Configurazione EXOS CLI via SSH su switch Extreme (`192.168.2.1`): VLAN 10, 20, 30, 99, IP SVIs (`192.168.2.1`, `10.10.10.1`, `10.10.20.1`), Default Route (`192.168.2.254`), Bootprelay e DNS Client.
 - [x] Impostazione Porta 7 (Access VLAN 10 Server) e Porta 8 (Access VLAN 20 Client).
 - [x] Aggiornamento `rete.json` con `extreme` attivo (`192.168.2.1`) e `switch10g` dismesso.
 - [x] Sincronizzazione script repository (`common.py`, `test_internet.sh`, `test_dns.sh`, `test_network_configs.py`).

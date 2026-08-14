@@ -8,7 +8,7 @@ This guide is designed for configuring your 3 switches offline, one by one.
 ### 🟥 Switch 1: extreme (The Core)
 **Role**: L3 Core Router + Aggregation
 **Model**: Extreme Networks X620-X10 (ExtremeXOS)
-**Management IP**: `192.168.2.1` (Transit) / `192.168.100.100` (OOB Mgmt)
+**Management IP**: `192.168.2.1`
 
 ### 1. VLAN & Port Configuration (Layer 2)
 | Port | Mode | PVID | Tagged VLANs | Untagged VLANs | Notes |

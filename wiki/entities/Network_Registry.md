@@ -41,29 +41,11 @@ Il Network Registry contiene anche la lista centralizzata dei domini di tracciam
 
 Per garantire la resilienza e facilitare il disaster recovery, le configurazioni dei dispositivi di rete gestiti devono essere salvate prima di ogni manutenzione fisica in `/Users/olindo/devices-backup/`.
 
-### A. Switch Managed ONTi (XikeStor SKS8300-8X)
-*   **IP Gestione**: `192.168.2.1` (VLAN 1)
-*   **Accesso CLI**: Telnet porta `23` → `telnet 192.168.2.1`
-
-> [!WARNING]
-> **CLI Gotcha**: Il firmware ONTi/Realtek NON accetta `configure terminal` (sintassi Cisco standard).
-> Il comando corretto per entrare in modalità configurazione è **`config`** (abbreviato).
-> ```
-> enable
-> config          ← corretto
-> # configure terminal  ← NON funziona su questo firmware
-> ```
-
-> [!IMPORTANT]
-> **DHCP Relay & WebGUI Gotchas**:
-> * Il comando CLI `no ip helper-address` fallisce con l'errore `failed to delete helper address on active port 67` se il relay è in esecuzione.
-> * Per disattivare il DHCP Relay, accedere alla WebGUI (`http://192.168.2.1`), andare in **L3 Features ➔ DHCP Relay ➔ DHCP Relay Config** e impostare **`DHCP Relay Forwarding`** su **`Off`** (Apply). Questo permette ai broadcast DHCP di fluire liberamente a livello L2 verso il DHCP server di OPNsense.
-
-*   **Procedura Web GUI (Config Backup)**:
-    1. Andare in `System Config` -> `Management Config` -> `HTTP`.
-    2. Impostare `Operation Type` su **`Download`**.
-    3. Impostare `File Type` su **`Running Configuration`**.
-    4. Cliccare su **`Apply`** per scaricare il file di configurazione.
+### A. Switch Core Extreme Networks (X620-X10)
+*   **IP Gestione**: `192.168.2.1` (VLAN 1 Default / Transit)
+*   **Accesso CLI / Automazione**: SSH porta `22` con autenticazione a chiavi (`~/.ssh/id_rsa_extreme`).
+*   **Gestione Ansible**: Moduli `extreme.exos` (vedere [[Ansible_Extreme_EXOS]]).
+*   **Backup Configurazione EXOS**: `save configuration primary` o esportazione automatizzata via Ansible.
 
 ### B. Switch Managed GoodTop (GT-ST024M) e Horaco (HC-SWTGW218ASHC)
 *   **IP Gestione**: `192.168.2.2` (GoodTop Letto) e `192.168.2.3` (Horaco Server - Sala Server) (VLAN 1).

@@ -1,0 +1,31 @@
+---
+- name: Configure Port 9 on Extreme EXOS for VLANs (Trunk)
+  hosts: switches
+  gather_facts: no
+
+
+  tasks:
+    - name: 1. Add Port 9 untagged to VLAN Default (VLAN 1)
+      extreme.exos.exos_config:
+        lines:
+          - configure vlan Default add ports 9 untagged
+
+    - name: 2. Add Port 9 tagged to VLANs 10, 20, 30
+      extreme.exos.exos_config:
+        lines:
+          - configure vlan 10 add ports 9 tagged
+          - configure vlan 20 add ports 9 tagged
+          - configure vlan 30 add ports 9 tagged
+      register: config_result
+
+    - name: 3. Save configuration
+      extreme.exos.exos_command:
+        commands:
+          - command: save configuration primary
+            prompt: '(?i)already exists'
+            answer: 'y'
+      ignore_errors: yes
+
+    - name: 4. Display configuration result
+      ansible.builtin.debug:
+        var: config_result

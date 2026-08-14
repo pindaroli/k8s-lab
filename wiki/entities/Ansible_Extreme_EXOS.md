@@ -44,14 +44,14 @@ Utilizza SSH per interagire direttamente con la CLI dello switch.
 **Variabili di Inventario (`inventory.ini` / `group_vars`):**
 ```ini
 [switches]
-exos-switch-01 ansible_host=192.168.100.100 ansible_user=admin
+192.168.2.1 ansible_user=admin
 
 [switches:vars]
 ansible_network_os=extreme.exos.exos
 ansible_connection=ansible.netcommon.network_cli
 ansible_network_cli_ssh_type=paramiko
+ansible_ssh_private_key_file=~/.ssh/id_rsa_extreme
 ansible_ssh_common_args='-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa'
-ansible_ssh_pass={{ sops_exos_password }}
 ```
 
 ### B. HTTP API (`ansible.netcommon.httpapi`) — Via REST API EXOS

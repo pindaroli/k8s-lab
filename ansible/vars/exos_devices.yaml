@@ -14,7 +14,7 @@ groups:
 
 devices:
   exos-switch-01:
-    host: "192.168.100.100"
+    host: "192.168.2.1"
     device_type: "extreme_exos"
     credential_profile: "exos"
     port: 22

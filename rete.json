@@ -203,7 +203,8 @@
       "model": "HC-SWTGW218ASHC",
       "vendor": "Horaco",
       "location": "Sala Server",
-      "status": "operativo",
+      "status": "dismesso",
+      "notes": "Guasto hardware (PHY chip e SFP+ bruciati). Rimosso ad Agosto 2026.",
       "ports": [
         {
           "id": "1",
@@ -239,11 +240,10 @@
         },
         {
           "id": "5",
-          "role": "Extreme Networks X620 OOB Management (VLAN 99)",
+          "role": "Free / Unused",
           "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "pvid": 99,
-          "connected_to": "extreme oob"
+          "pvid": 1
         },
         {
           "id": "6",
@@ -299,7 +299,7 @@
       "vendor": "extreme network",
       "type": "L3 Switch",
       "ip": "192.168.2.1",
-      "oob_ip": "192.168.100.100",
+      "management_ip": "192.168.2.1",
       "dns_server": "192.168.2.254",
       "status": "operativo",
       "location": "Sala Server",
@@ -363,10 +363,16 @@
         },
         {
           "id": "9",
-          "role": "Free / Unused",
-          "mode": "ACCESS",
+          "role": "Trunk (VLAN 1, 10, 20, 30)",
+          "mode": "Trunk",
           "speed": "10Gbs",
-          "pvid": 1
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30"
+          ]
         },
         {
           "id": "10",
