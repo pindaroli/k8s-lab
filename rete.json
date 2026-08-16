@@ -306,18 +306,10 @@
       "ports": [
         {
           "id": "1",
-          "role": "Uplink to switch-25g-server Port 6",
-          "mode": "Trunk",
+          "role": "OOB Management (VLAN 99) - Access",
+          "mode": "ACCESS",
           "speed": "10Gbs",
-          "native_vlan": "1",
-          "allowed_vlans": [
-            "1",
-            "10",
-            "20",
-            "30",
-            "40",
-            "99"
-          ]
+          "pvid": 99
         },
         {
           "id": "2",

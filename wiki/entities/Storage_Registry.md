@@ -27,15 +27,18 @@ Ci sono due pool principali:
 - **MinIO (S3-compatibile)** su TrueNAS: Usato come storage persistente e versionato per il database SQLite della pipeline classica (`classical_musiclibrary.db`). Il DB viene scaricato in `emptyDir` K8s durante l'esecuzione e ri-caricato atomicamente al termine del flow Prefect (sempre, anche in caso di errore). Il versioning nativo di MinIO permette rollback istantanei in caso di corruzione dell'ontologia.
 
 > [!NOTE]
-> **Database e Local Storage**: Il database `postgres-main` (CloudNativePG) NON usa NFS di TrueNAS, ma utilizza **Local Storage** (`rancher.io/local-path`) per massimizzare le performance IOPS. Questo introduce un **Single Point of Failure (SPOF) a livello di nodo fisico**: i dischi del database sono vincolati ai nodi specifici (es. `talos-cp-02` e `talos-cp-01`).
-> **STATO ATTUALE (2026-06-06)**: Il sistema è stato completamente ripristinato. PVE2 e il nodo `talos-cp-02` sono tornati online, e la replica del database è stata risincronizzata ed è in esecuzione con successo.
-
 ## 2. Integrazione Kubernetes
 Il [[Talos_Cluster]] accede allo storage tramite il CSI Driver NFS (Local Path Provisioner customizzato o mount diretti nei container).
 I PersistentVolume (PV) e PersistentVolumeClaim (PVC) che richiedono grandi capacità o persistenza off-cluster devono essere mappati sulle share NFS di TrueNAS, prendendo i riferimenti esatti da `storage.json`.
 
+## 3. Storage Locale Hypervisor (Proxmox PVE)
+I nodi Proxmox mantengono dischi dedicati locali per il boot dell'hypervisor e i dischi virtuali delle VM/LXC:
+- **PVE1**:
+  - **Boot OS**: NVMe 512GB (`nvme0n1`) formattato in `ext4`/LVM (`pve-root` + `local-lvm`).
+  - **VM Storage**: Crucial P3 Plus 1TB NVMe (`nvme1n1`) interamente dedicato al pool ZFS **`local-zfs-1tb`** (`ashift=12`, `compression=on`, `xattr=sa`, dataset `local-zfs-1tb/data` per le VM e nodi Talos).
+
 ## Relazioni
 - Governa: `storage.json`
-- Fornito da: [[TrueNAS]]
+- Fornito da: [[TrueNAS]], Proxmox Hypervisor
 - Utilizzato da: [[Talos_Cluster]], [[Tdarr]], Servarr Stack.
 - DB Pipeline Classica: MinIO → [[prefect-beets-adaptation]].

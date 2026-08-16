@@ -54,11 +54,11 @@ Questo piano documenta i passaggi per spostare TrueNAS SCALE da una VM su PVE1 a
   - [ ] 4-E: Collegamento datastore PBS ai backup NFS esistenti
   - [ ] 4-F: Verifica raggiungibilità e storage da PVE2 e PVE3
 - [ ] **Fase 5: Reinstallazione PVE1**
-  - [ ] 5-A: Backup definitivo config VM talos-cp-01 (`/etc/pve/qemu-server/1300.conf`)
-  - [ ] 5-B: Installazione Proxmox VE 9.2 su NVMe 512GB (Crucial P3 Plus 1TB escluso)
-  - [ ] 5-C: Riconfigurazione rete (bridge `vmbr10` statico e `vmbr20` manuale su X710)
-  - [ ] 5-D: Aggiunta Crucial P3 Plus 1TB come storage local-lvm (importazione ed avvio pool ZFS rinominato in `local-zfs-1tb` per evitare conflitti)
-  - [ ] 5-E: Ricreazione VM `talos-cp-01` (1300) con MAC address originale
+  - [x] 5-A: Backup definitivo config VM talos-cp-01 (`/etc/pve/qemu-server/1300.conf`)
+  - [x] 5-B: Installazione Proxmox VE 9.2 su NVMe 512GB ext4 (Crucial P3 Plus 1TB escluso)
+  - [x] 5-C: Riconfigurazione rete (bridge `vmbr10` statico e `vmbr20` manuale su X710 Quad-Port, porta OOB `nic0` 2.5G)
+  - [x] 5-D: Piallatura e bonifica totale Crucial P3 Plus 1TB: backup configurazioni legacy salvato su boot NVMe 512GB e Mac, azzeramento GPT (`sgdisk --zap-all`) e creazione pool ZFS pulito nativo `local-zfs-1tb` a disco intero con dataset `data` per VM/LXC
+  - [ ] 5-E: Re-integrazione nel Cluster Proxmox `HomeLab` e ricreazione VM `talos-cp-01` (1300) con MAC address originale
   - [ ] 5-F: Avvio VM e verifica stato cluster Kubernetes
 - [ ] **Fase 6: Verifica Finale e Aggiornamento Registry**
   - [ ] 6-A: Checklist di verifica completa (TrueNAS, K8s, PBS, Jellyfin)
@@ -69,8 +69,7 @@ Questo piano documenta i passaggi per spostare TrueNAS SCALE da una VM su PVE1 a
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-
-- **Fase Attiva**: FASE 1 - SPOSTAMENTO HARDWARE (Intervento Fisico)
-- **Ultima Azione Completata**: Fase 1-A completata. Smontati gli NFS e spente correttamente tutte le macchine virtuali su PVE1, inclusa TrueNAS.
-- **Prossimo Passo Operativo**: Spegnere fisicamente il server PVE1 (`poweroff`) e procedere all'apertura del case per estrarre la scheda LSI HBA e il disco Samsung NVMe.
-- **Blocchi/Decisioni Pendenti**: Attesa fine intervento hardware da parte dell'utente.
+- **Fase Attiva**: FASE 5 - REINSTALLAZIONE PVE1 (Preparazione Banco Completata ✅)
+- **Ultima Azione Completata**: PVE1 installato su NVMe 512GB (ext4), configurazione di rete 10G/OOB attiva, backup legacy salvato (`backup_pve1_legacy_20260816.tar.gz`), disco Crucial 1TB piallato a zero e ricreato come pool nativo ZFS `local-zfs-1tb` a disco intero con dataset `data`.
+- **Prossimo Passo Operativo**: Re-integrazione nel cluster Proxmox (`pvecm join` o riallineamento corosync), ricreazione VM `talos-cp-01` (1300) su `local-zfs-1tb` e bootstrap Talos.
+- **Blocchi/Decisioni Pendenti**: Join nel cluster Proxmox e riavvio cluster K8s.

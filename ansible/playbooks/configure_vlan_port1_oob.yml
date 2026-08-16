@@ -1,0 +1,34 @@
+---
+- name: Configure Port 1 on Extreme EXOS for VLAN 99 (Access OOB)
+  hosts: switches
+  gather_facts: no
+
+  tasks:
+    - name: 1. Remove Port 1 from previous tagged and untagged VLANs
+      extreme.exos.exos_config:
+        lines:
+          - configure vlan Default delete ports 1
+          - configure vlan server delete ports 1
+          - configure vlan client delete ports 1
+          - configure vlan IOT delete ports 1
+          - configure vlan kvm delete ports 1
+          - configure vlan OOB delete ports 1
+      ignore_errors: yes
+
+    - name: 2. Add Port 1 untagged to VLAN OOB (VLAN 99)
+      extreme.exos.exos_config:
+        lines:
+          - configure vlan OOB add ports 1 untagged
+      register: config_result
+
+    - name: 3. Save configuration
+      extreme.exos.exos_command:
+        commands:
+          - command: save configuration primary
+            prompt: '(?i)already exists'
+            answer: 'y'
+      ignore_errors: yes
+
+    - name: 4. Display configuration result
+      ansible.builtin.debug:
+        var: config_result
