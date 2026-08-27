@@ -1,6 +1,6 @@
 ---
 title: "Network Registry (rete.json)"
-last_updated: "2026-06-26"
+last_updated: "2026-08-27"
 confidence: "High"
 tags:
   - "#network"
@@ -8,6 +8,8 @@ tags:
   - "#dns"
 provenance:
   - "rete.json"
+  - "raw/zx310s-8t2xs/ZX310S-8T2XS.pdf"
+  - "incidents/2026-08-22-vlan20-asymmetric-routing-l3-alignment.md"
 ---
 
 # Network Registry
@@ -17,11 +19,14 @@ Questo nodo del Wiki definisce le **regole** e la **governance** dell'architettu
 > [!WARNING]
 > **SOURCE OF TRUTH**: I dati effettivi risiedono in `rete.json` (nella root del progetto). L'agente IA e l'utente devono modificare `rete.json` per applicare cambiamenti reali. Questo documento serve per capire *come* e *perché* quei dati sono strutturati in quel modo.
 
-## 1. Topologia VLAN
-L'infrastruttura è segmentata tramite lo Switch L3 (Xikestor) e OPNsense (Symmetric Routing):
-- **VLAN 10 (Server)**: `10.10.10.0/24`. Rete di management. Ospita [[TrueNAS]] e le interfacce di gestione di Proxmox. Gateway logico L3: `10.10.10.1` (Switch L3). Il DNS di riferimento del lab è `192.168.2.254` (OPNsense Transit).
-- **VLAN 20 (Client/K8s)**: `10.10.20.0/24`. Rete operativa. Ospita i nodi del [[Talos_Cluster]] e i dispositivi personali. Gateway logico L3: `10.10.20.1` (Switch L3).
-- **Transit**: `192.168.2.0/24`. Rete di interconnessione tra OPNsense (`192.168.2.254`) e lo Switch L3 (`192.168.2.1`).
+## 1. Topologia VLAN e Routing Simmetrico L3
+L'infrastruttura è segmentata tramite lo Switch Core L3 Extreme Networks (X620-10X) e OPNsense (Symmetric Routing):
+- **VLAN 10 (Server)**: `10.10.10.0/24`. Rete di management e server. Ospita [[TrueNAS]] e le interfacce di gestione di Proxmox. Gateway logico L3: `10.10.10.1` (Switch Extreme L3). Rotta statica su OPNsense via TRANSIT (`192.168.2.1`).
+- **VLAN 20 (Client/K8s)**: `10.10.20.0/24`. Rete operativa. Ospita i nodi del [[Talos_Cluster]] e i dispositivi personali/client. Gateway logico L3: `10.10.20.1` (Switch Extreme L3). Rotta statica su OPNsense via TRANSIT (`192.168.2.1`). Servizio DHCP gestito da Kea su OPNsense tramite **Bootprelay / DHCP Relay**.
+- **VLAN 40 (IP Streamer / KVM)**: `10.10.40.0/24`. Rete isolata a bassissima latenza per lo streaming video multicast KVM (AV Access 4KIP100).
+- **VLAN 99 (OOB Management)**: `192.168.100.0/24`. Rete Out-of-Band di emergenza per PVE1, PVE2, PVE3 (`nic0`), OPNsense (`igc3` LAN) e TrueNAS.
+- **Transit**: `192.168.2.0/24`. Rete punto-a-punto di interconnessione tra OPNsense (`192.168.2.254`), Switch L3 Extreme (`192.168.2.1`) e Switch 2.5G Horaco (`192.168.2.3`).
+- **DNS Primario Lab**: `192.168.2.254` (Unbound su OPNsense Transit).
 
 ## 2. Regola d'Oro del DNS (Explicit Mapping)
 Nel paradigma GEMINI, **non utilizziamo record wildcard (`*.pindaroli.org`) per il traffico interno**.
@@ -47,10 +52,10 @@ Per garantire la resilienza e facilitare il disaster recovery, le configurazioni
 *   **Gestione Ansible**: Moduli `extreme.exos` (vedere [[Ansible_Extreme_EXOS]]).
 *   **Backup Configurazione EXOS**: `save configuration primary` o esportazione automatizzata via Ansible.
 
-### B. Switch Managed GoodTop (GT-ST024M) e Horaco (HC-SWTGW218ASHC)
+### B. Switch Managed GoodTop (GT-ST024M) e Horaco (ZX-310S-8T2XS)
 *   **IP Gestione**: `192.168.2.2` (GoodTop Letto) e `192.168.2.3` (Horaco Server - Sala Server) (VLAN 1).
-    *   *Nota*: Lo switch LIAGUO (`192.168.2.4`) è stato dismesso, spento e rimosso dalla rete. Lo switch Horaco a `192.168.2.3` (ex Studio) è stato spostato in Sala Server come switch principale per le interfacce OOB e il Trunk LAN.
-*   **Nota Software**: Lo switch Horaco (`192.168.2.3`) utilizza attualmente il **firmware di default (OEM)**. Le specifiche dettagliate, la compilazione del firmware open-source alternativo `RTLPlayground` e le metriche di telemetria avanzate sono documentate esclusivamente in `wiki/raw/Specifiche Tecniche HC-SWTGW218AS.md`.
+    *   *Nota*: Lo switch Horaco ZX-310S-8T2XS (`192.168.2.3`) opera come switch principale per le interfacce OOB (Porte 1..5 in Access PBID 1 / VLAN 99), IP Streamer (Porta 8 in Access PBID 2 / VLAN 40), Uplink Trunk verso OPNsense `igc1` (Porta 7) e Downlink Trunk 10G SFP+ verso Extreme Switch (Porta 10).
+*   **Architettura Switch Horaco**: Configurato tramite il sistema a Bridge ID (PBID: 1 per OOB, 2 per Streamer) e mapping 802.1Q Single Tag (`ST`) in `Tagged VLAN`.
 *   **Procedura Web GUI**:
     1. Andare in `System Tools` -> `Backup/Restore Configuration`.
     2. Cliccare su **`Backup`** per scaricare il file di configurazione `.bin`.
@@ -64,4 +69,4 @@ Per garantire la resilienza e facilitare il disaster recovery, le configurazioni
 ## Relazioni
 - Governa: `rete.json`
 - Letto da: Automazioni Ansible.
-- Impatta: [[OPNsense]], [[Traefik]], [[Talos_Cluster]].
+- Impatta: [[OPNsense]], [[Traefik]], [[Talos_Cluster]], [[Ansible_Extreme_EXOS]].

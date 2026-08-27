@@ -28,24 +28,24 @@ Questo piano documenta i passaggi per spostare TrueNAS SCALE da una VM su PVE1 a
   - [x] 0-F: Configurazione VM talos-cp-01 su PVE1 (MAC: BC:24:11:81:6A:19, bridge vmbr20)
   - [x] 0-G: Creazione snapshot ZFS di sicurezza su tutti i pool (`pre-baremetal-20260811`)
   - [x] 0-H: Esecuzione backup config (`truenas-config.tar`), chiavi ZFS ed export pulito dei pool (Rif: [[truenas-backup-restore]])
-- [x] **Fase 1: Spostamento Hardware (Prossima Fase ⏳)**
+- [x] **Fase 1: Spostamento Hardware (Completata ✅)**
   - [x] 1-A: Spegnimento ordinato VM/LXC su PVE1 (`talos-cp-01`, `pbs`, `truenas`)
-  - [ ] 1-B: Rimozione fisica LSI HBA e Samsung NVMe da PVE1
-  - [ ] 1-C: Installazione nuovo NVMe 512GB boot su PVE1
-  - [ ] 1-D: Assemblaggio nuovo bare metal (8 HDD direct SATA, Samsung NVMe M.2_2, X710 PCIe1)
-  - [ ] 1-E: Connessione di rete del nuovo bare metal a Extreme X620 (VLAN 10)
-- [ ] **Fase 2: Installazione TrueNAS SCALE su Bare Metal**
-  - [ ] 2-A: Preparazione USB boot con TrueNAS SCALE 25.x
-  - [ ] 2-B: Installazione su NVMe 128GB del nuovo bare metal
-  - [ ] 2-B1: Verifica impostazione SATA Mode su **AHCI** nel BIOS (Rif: [[truenas-backup-restore]])
-  - [ ] 2-C: Configurazione interfaccia di rete primaria (`10.10.10.50/24`)
-  - [ ] 2-D: Import pool ZFS (`oliraid` e `stripe`) dalla GUI
-- [ ] **Fase 3: Ripristino Configurazione TrueNAS**
-  - [ ] 3-A: Upload archivio `truenas-config.tar` via WebUI e riassegnazione NIC da console (Rif: [[truenas-backup-restore]])
-  - [ ] 3-B: Verifica e applicazione permessi dataset (NFS Storage Schema: `chown olindo:k8s`, `chmod 777`)
-  - [ ] 3-C: Configurazione e avvio servizi NFS, SMB, SSH
-  - [ ] 3-D: Reinstallazione e configurazione App MinIO (S3)
-  - [ ] 3-E: Verifica mount NFS e share SMB da Mac Studio
+  - [x] 1-B: Rimozione fisica LSI HBA e Samsung NVMe da PVE1
+  - [x] 1-C: Installazione nuovo NVMe 512GB boot su PVE1
+  - [x] 1-D: Assemblaggio nuovo bare metal (8 HDD direct SATA, Samsung NVMe M.2_2, X710 PCIe1)
+  - [x] 1-E: Connessione di rete del nuovo bare metal a Extreme X620 (VLAN 10)
+- [x] **Fase 2: Installazione TrueNAS SCALE su Bare Metal (Completata ✅)**
+  - [x] 2-A: Preparazione USB boot con TrueNAS SCALE 25.x
+  - [x] 2-B: Installazione su NVMe 128GB del nuovo bare metal
+  - [x] 2-B1: Verifica impostazione SATA Mode su **AHCI** e Typical Current Idle nel BIOS (Rif: [[truenas-backup-restore]])
+  - [x] 2-C: Configurazione interfaccia di rete primaria (`10.10.10.50/24`) e OOB (`192.168.100.50/24`)
+  - [x] 2-D: Import pool ZFS (`oliraid` e `stripe`) dalla GUI/CLI
+- [x] **Fase 3: Ripristino Configurazione TrueNAS (Completata ✅)**
+  - [x] 3-A: Upload archivio `truenas-config.tar` via WebUI e aggiornamento versione 25.10.6 (Rif: [[truenas-backup-restore]])
+  - [x] 3-B: Verifica e applicazione permessi dataset (NFS Storage Schema: `chown olindo:k8s`, `chmod 777`, 22T liberi su oliraid e 3.5T su stripe)
+  - [x] 3-C: Configurazione e avvio servizi NFS, SMB, SSH (passwordless per olindo e truenas_admin)
+  - [x] 3-D: Identificazione e configurazione App Garage S3
+  - [x] 3-E: Verifica mount NFS e share SMB da Mac Studio (Time Machine attivo)
 - [ ] **Fase 4: VM PBS su TrueNAS SCALE**
   - [ ] 4-A: Creazione ZVOL per boot VM e dataset per i backup su `oliraid`
   - [ ] 4-B: Scaricamento ISO Proxmox Backup Server 3.x
@@ -69,7 +69,7 @@ Questo piano documenta i passaggi per spostare TrueNAS SCALE da una VM su PVE1 a
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: FASE 5 - REINSTALLAZIONE PVE1 (Preparazione Banco Completata ✅)
-- **Ultima Azione Completata**: PVE1 installato su NVMe 512GB (ext4), configurazione di rete 10G/OOB attiva, backup legacy salvato (`backup_pve1_legacy_20260816.tar.gz`), disco Crucial 1TB piallato a zero e ricreato come pool nativo ZFS `local-zfs-1tb` a disco intero con dataset `data`.
-- **Prossimo Passo Operativo**: Re-integrazione nel cluster Proxmox (`pvecm join` o riallineamento corosync), ricreazione VM `talos-cp-01` (1300) su `local-zfs-1tb` e bootstrap Talos.
-- **Blocchi/Decisioni Pendenti**: Join nel cluster Proxmox e riavvio cluster K8s.
+- **Fase Attiva**: FASE 4 - VM PBS SU TRUENAS SCALE / FASE 5-E - RE-JOIN PVE1
+- **Ultima Azione Completata**: TrueNAS SCALE Bare Metal (25.10.6) operativo al 100%. Hardware/BIOS configurato con Typical Current Idle, Single-homing VLAN 10 (`10.10.10.50`) + OOB (`192.168.100.50`), chiavi SSH passwordless attive (`olindo`, `truenas_admin`), pool ZFS `oliraid` e `stripe` online e montati, export NFS e share SMB attivi.
+- **Prossimo Passo Operativo**: Creazione VM Proxmox Backup Server (PBS) su TrueNAS SCALE (Fase 4) o Re-integrazione PVE1 nel cluster Proxmox (`pvecm join`) e ricreazione VM Talos CP1 (Fase 5-E).
+- **Blocchi/Decisioni Pendenti**: Scelta del prossimo step tra Fase 4 e Fase 5-E.

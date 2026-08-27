@@ -1,0 +1,136 @@
+[
+  {
+    "slug": "gitops-methodology-autobrr-implementation",
+    "title": "GitOps Methodology Implementation / 自动化实现的GitOps方法论",
+    "summary": "Detailed implementation of GitOps methodology focusing on Autobrr's provisioning approach and secret management.",
+    "tags": [
+      "gitops",
+      "autobrr",
+      "kubernetes",
+      "secret-management",
+      "devops"
+    ],
+    "sources": [
+      {
+        "plugin": "local_file",
+        "title": "precisazioni-approccio-gitops-autobrr",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "slug": "gitops-provisioning-autobrr",
+    "title": "GitOps Provisioning for Autobrr / 自动化配置GitOps方法论在Autobrr中的应用",
+    "summary": "Implementation of GitOps provisioning patterns for Autobrr in cloud-native environments.",
+    "tags": [
+      "autobrr",
+      "automation",
+      "cloud-native",
+      "gitops",
+      "provisioning"
+    ],
+    "sources": [
+      {
+        "plugin": "local_file",
+        "title": "gitops-provisoning-autobr",
+        "url": ""
+      },
+      {
+        "plugin": "local_file",
+        "title": "ZX310S-8T2XS",
+        "url": "/Users/olindo/prj/k8s-lab/raw/ZX310S-8T2XS.pdf"
+      }
+    ]
+  },
+  {
+    "slug": "opnsense-configd-architecture",
+    "title": "OPNsense Configd Architecture / OPNsense的Configd架构",
+    "summary": "Understanding the core architecture of configd in OPNsense and its role in integrating CLI and WebGUI.",
+    "tags": [
+      "opnsense",
+      "automation",
+      "system administration"
+    ],
+    "sources": [
+      {
+        "plugin": "local_file",
+        "title": "opnsens-action-cron-guide",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "slug": "opnsense-cron-job-scheduling",
+    "title": "Cron Job Scheduling in OPNsense / OPNsense中的Cron任务调度",
+    "summary": "Configuring and managing automation tasks using OPNsense's native Cron interface.",
+    "tags": [
+      "cron",
+      "scheduling",
+      "opnsense"
+    ],
+    "sources": [
+      {
+        "plugin": "local_file",
+        "title": "opnsens-action-cron-guide",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "slug": "opnsense-shell-script-creation",
+    "title": "Creating Custom Shell Scripts in OPNsense / OPNsense中的Shell脚本创建",
+    "summary": "Guide to developing and registering custom shell scripts for automation tasks.",
+    "tags": [
+      "shell scripting",
+      "opnsense",
+      "system administration"
+    ],
+    "sources": [
+      {
+        "plugin": "local_file",
+        "title": "opnsens-action-cron-guide",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "slug": "opnsense-system-automation",
+    "title": "OPNsense System Automation / OPNsense系统自动化",
+    "summary": "Comprehensive guide to automating system tasks in OPNsense using configd and Cron.",
+    "tags": [
+      "automation",
+      "opnsense",
+      "scripting"
+    ],
+    "sources": [
+      {
+        "plugin": "local_file",
+        "title": "opnsens-action-cron-guide",
+        "url": ""
+      },
+      {
+        "plugin": "local_file",
+        "title": "ZX310S-8T2XS",
+        "url": "/Users/olindo/prj/k8s-lab/raw/ZX310S-8T2XS.pdf"
+      }
+    ]
+  },
+  {
+    "slug": "servicenow-k8s-discovery",
+    "title": "ServiceNow Kubernetes Discovery / 服务现在Kubernetes发现",
+    "summary": "Guide on integrating ServiceNow with Kubernetes for cluster discovery and resource management.",
+    "tags": [
+      "service-management",
+      "kubernetes",
+      "gitops",
+      "automation"
+    ],
+    "sources": [
+      {
+        "plugin": "local_file",
+        "title": "servicenow-k8s-discovery-guide",
+        "url": "/Users/olindo/prj/k8s-lab/raw/servicenow-k8s-discovery-guide.html"
+      }
+    ]
+  }
+]

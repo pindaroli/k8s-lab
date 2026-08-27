@@ -11,14 +11,15 @@
       "description": "VLAN dei Client",
       "subnet": "10.10.20.0/24",
       "dhcp": {
-        "mode": "direct",
-        "opnsense_ip": "10.10.20.254",
+        "mode": "relay",
+        "relay_agent": "10.10.20.1",
+        "dhcp_server": "192.168.2.254",
         "pool_start": "10.10.20.201",
         "pool_end": "10.10.20.253",
         "gateway": "10.10.20.1",
         "dns": "192.168.2.254",
         "domain": "pindaroli.org",
-        "note": "OPNsense serve DHCP direttamente. Gateway = Switch L3 SVI (10.10.20.1)."
+        "note": "DHCP Relay via Extreme Switch EXOS bootprelay -> Kea DHCP su OPNsense TRANSIT (192.168.2.254). Gateway = Switch L3 SVI (10.10.20.1)."
       }
     },
     {
@@ -168,7 +169,7 @@
         },
         {
           "id": "5",
-          "role": "Uplink to switch10g Port 7",
+          "role": "Uplink to extreme Port 10",
           "mode": "Trunk",
           "speed": "10Gbs",
           "native_vlan": "1",
@@ -179,7 +180,8 @@
             "30",
             "40",
             "99"
-          ]
+          ],
+          "connected_to": "extreme 10"
         },
         {
           "id": "6",
@@ -199,12 +201,12 @@
     },
     {
       "id": "switch-25g-server",
-      "description": "Switch managed with 8 porte 2.5G e 1 10G SFP+ ports",
-      "model": "HC-SWTGW218ASHC",
+      "description": "Switch managed with 8 porte 2.5G e 2 10G SFP+ ports",
+      "model": "ZX-310S-8T2XS",
       "vendor": "Horaco",
       "location": "Sala Server",
-      "status": "dismesso",
-      "notes": "Guasto hardware (PHY chip e SFP+ bruciati). Rimosso ad Agosto 2026.",
+      "status": "operativo",
+      "management_ip": "192.168.2.3",
       "ports": [
         {
           "id": "1",
@@ -240,27 +242,20 @@
         },
         {
           "id": "5",
-          "role": "Free / Unused",
+          "role": "TrueNAS / Spare OOB (VLAN 99)",
           "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "pvid": 1
+          "pvid": 99
         },
         {
           "id": "6",
-          "role": "AV Access 4KIP100-KVM Receiver (VLAN 40 KVM)",
-          "mode": "ACCESS",
-          "speed": "2.5Gbs",
-          "pvid": 40
-        },
-        {
-          "id": "7",
-          "role": "Free / Unused",
+          "role": "Free / Spare (Maintenance Port)",
           "mode": "ACCESS",
           "speed": "2.5Gbs",
           "pvid": 1
         },
         {
-          "id": "8",
+          "id": "7",
           "role": "Uplink to OPNsense igc1 (LAN Trunk)",
           "mode": "Trunk",
           "speed": "2.5Gbs",
@@ -270,13 +265,28 @@
             "10",
             "20",
             "30",
+            "40",
             "99"
           ],
           "connected_to": "opnsense igc1"
         },
         {
+          "id": "8",
+          "role": "AV Access 4KIP100-KVM / IP Streamer (VLAN 40 KVM)",
+          "mode": "ACCESS",
+          "speed": "2.5Gbs",
+          "pvid": 40
+        },
+        {
           "id": "9",
-          "role": "Downlink to extreme Port 1",
+          "role": "Free / Spare (10G SFP+)",
+          "mode": "ACCESS",
+          "speed": "10Gbs",
+          "pvid": 1
+        },
+        {
+          "id": "10",
+          "role": "Downlink to extreme Port 9 (10G SFP+ Trunk)",
           "mode": "Trunk",
           "speed": "10Gbs",
           "native_vlan": "1",
@@ -287,10 +297,10 @@
             "30",
             "40",
             "99"
-          ]
+          ],
+          "connected_to": "extreme 9"
         }
-      ],
-      "management_ip": "192.168.2.3"
+      ]
     },
     {
       "id": "extreme",
@@ -306,56 +316,63 @@
       "ports": [
         {
           "id": "1",
-          "role": "OOB Management (VLAN 99) - Access",
+          "role": "LAN Server (VLAN 10) - TrueNAS 10G / PVE DAC",
           "mode": "ACCESS",
           "speed": "10Gbs",
-          "pvid": 99
+          "pvid": 10
         },
         {
           "id": "2",
           "role": "LAN Server (VLAN 10) - PVE DAC uplink",
           "mode": "ACCESS",
+          "speed": "10Gbs",
           "pvid": 10
         },
         {
           "id": "3",
           "role": "LAN Server (VLAN 10) - PVE1 Port 1 (enp1s0f0)",
           "mode": "ACCESS",
+          "speed": "10Gbs",
           "pvid": 10
         },
         {
           "id": "4",
-          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
+          "role": "LAN Server (VLAN 10) - PVE3 Port 1 (enp101s0f0)",
           "mode": "ACCESS",
+          "speed": "10Gbs",
           "pvid": 10
         },
         {
           "id": "5",
           "role": "LAN Client (VLAN 20) - PVE1 Port 2 (enp1s0f1np1)",
           "mode": "ACCESS",
+          "speed": "10Gbs",
           "pvid": 20
         },
         {
           "id": "6",
-          "role": "LAN Client (VLAN 20) - PVE DAC uplink",
+          "role": "LAN Client (VLAN 20) - PVE2 DAC uplink",
           "mode": "ACCESS",
+          "speed": "10Gbs",
           "pvid": 20
         },
         {
           "id": "7",
-          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
+          "role": "LAN Client (VLAN 20) - PVE3 Port 2 (enp101s0f1)",
           "mode": "ACCESS",
-          "pvid": 10
+          "speed": "10Gbs",
+          "pvid": 20
         },
         {
           "id": "8",
-          "role": "LAN Client (VLAN 20) - PVE DAC uplink",
+          "role": "LAN Client (VLAN 20) - Spare Client 10G DAC",
           "mode": "ACCESS",
+          "speed": "10Gbs",
           "pvid": 20
         },
         {
           "id": "9",
-          "role": "Trunk (VLAN 1, 10, 20, 30)",
+          "role": "Trunk 10G to switch-25g-server Port 10",
           "mode": "Trunk",
           "speed": "10Gbs",
           "native_vlan": "1",
@@ -363,15 +380,27 @@
             "1",
             "10",
             "20",
-            "30"
-          ]
+            "30",
+            "40",
+            "99"
+          ],
+          "connected_to": "switch-25g-server Port 10"
         },
         {
           "id": "10",
-          "role": "Free / Unused",
-          "mode": "ACCESS",
+          "role": "Trunk 10G to switch-25g-letto Port 5",
+          "mode": "Trunk",
           "speed": "10Gbs",
-          "pvid": 1
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "40",
+            "99"
+          ],
+          "connected_to": "switch-25g-letto Port 5"
         }
       ]
     },
@@ -403,12 +432,13 @@
           "role": "Trunk LAN Master",
           "speed": "2.5Gbs",
           "mode": "Trunk",
-          "connected_to": "switch-25g-server Port 8",
+          "connected_to": "switch-25g-server Port 7",
           "allowed_vlans": [
             "1",
             "10",
             "20",
             "30",
+            "40",
             "99"
           ],
           "logical_interfaces": [
@@ -416,11 +446,11 @@
               "name": "gw-vlan20",
               "interface": "opt2",
               "vlan_tag": "20",
-              "ip": "10.10.20.254",
+              "ip": "None",
               "subnet": "10.10.20.0/24",
-              "dhcp": "direct",
+              "dhcp": "relay",
               "dns": "192.168.2.254",
-              "firewall_policy": "Allow All"
+              "firewall_policy": "Allow All / SVI on Switch L3 (Rotta Statica 10.10.20.0/24 -> 192.168.2.1)"
             },
             {
               "name": "gw-vlan30",

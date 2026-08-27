@@ -1,1 +1,7 @@
 name = "k8s-lab"
+model = "deepseek-r1:32b"
+
+[models]
+fast = "deepseek-r1:32b"
+heavy = "deepseek-r1:32b"
+model = "deepseek-r1:32b"
