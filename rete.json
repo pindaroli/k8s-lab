@@ -965,18 +965,19 @@
     },
     {
       "id": "pbs",
+      "hostname": "pbs.pindaroli.org",
       "label": "Proxmox Backup Server",
-      "type": "LXC",
-      "vm_id": "1400",
-      "host_node": "pve1",
+      "type": "VM",
+      "host_node": "truenas",
       "ip": "10.10.10.100",
       "role": "Backup Server",
-      "os": "Debian 13 (Trixie)",
-      "network": "VLAN 10 (vmbr0)",
-      "storage": "NFS (/mnt/pbs-store)",
+      "os": "Proxmox Backup Server 4.2",
+      "network": "VLAN 10 Server",
+      "storage": "VirtIO Zvol ext4 (/mnt/datastore/pbs-store)",
       "aliases": [
         "backup"
-      ]
+      ],
+      "notes": "KVM VM on TrueNAS SCALE bare metal with Host Passthrough and thin-provisioned Zvol ext4 datastore."
     },
     {
       "id": "kvm-extender",

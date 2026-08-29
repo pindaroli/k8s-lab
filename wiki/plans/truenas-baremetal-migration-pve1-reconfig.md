@@ -46,13 +46,13 @@ Questo piano documenta i passaggi per spostare TrueNAS SCALE da una VM su PVE1 a
   - [x] 3-C: Configurazione e avvio servizi NFS, SMB, SSH (passwordless per olindo e truenas_admin)
   - [x] 3-D: Identificazione e configurazione App Garage S3
   - [x] 3-E: Verifica mount NFS e share SMB da Mac Studio (Time Machine attivo)
-- [ ] **Fase 4: VM PBS su TrueNAS SCALE**
-  - [ ] 4-A: Creazione ZVOL per boot VM e dataset per i backup su `oliraid`
-  - [ ] 4-B: Scaricamento ISO Proxmox Backup Server 3.x
-  - [ ] 4-C: Creazione e configurazione VM PBS su TrueNAS GUI
-  - [ ] 4-D: Installazione ed impostazione IP statico `10.10.10.100`
-  - [ ] 4-E: Collegamento datastore PBS ai backup NFS esistenti
-  - [ ] 4-F: Verifica raggiungibilità e storage da PVE2 e PVE3
+- [x] **Fase 4: VM PBS su TrueNAS SCALE (Completata ✅)** (Rif: [[pbs-truenas-vm-deployment]])
+  - [x] 4-A: Creazione Zvol per boot VM (`oliraid/pbs-os`) e Zvol datastore (`oliraid/pbs-store-vol`) ✅
+  - [x] 4-B: Scaricamento ISO Proxmox Backup Server 4.2-1 ✅
+  - [x] 4-C: Creazione e configurazione VM PBS su TrueNAS GUI/KVM (VirtIO, 4 vCPU Host Passthrough, 6GB RAM) ✅
+  - [x] 4-D: Installazione OS, partizionamento ext4 (`/dev/vdb`) ed impostazione IP statico `10.10.10.100` ✅
+  - [x] 4-E: Inizializzazione Datastore PBS e migrazione chunk da vecchio storage (413 GB trasferiti, cron job configurati) ✅
+  - [ ] 4-F: Verifica raggiungibilità e configurazione storage PBS da PVE2 e PVE3 (In attesa di accensione nodi PVE)
 - [ ] **Fase 5: Reinstallazione PVE1**
   - [x] 5-A: Backup definitivo config VM talos-cp-01 (`/etc/pve/qemu-server/1300.conf`)
   - [x] 5-B: Installazione Proxmox VE 9.2 su NVMe 512GB ext4 (Crucial P3 Plus 1TB escluso)
@@ -62,14 +62,14 @@ Questo piano documenta i passaggi per spostare TrueNAS SCALE da una VM su PVE1 a
   - [ ] 5-F: Avvio VM e verifica stato cluster Kubernetes
 - [ ] **Fase 6: Verifica Finale e Aggiornamento Registry**
   - [ ] 6-A: Checklist di verifica completa (TrueNAS, K8s, PBS, Jellyfin)
-  - [ ] 6-B: Aggiornamento `rete.json` (truenas bare metal, pbs VM, nuove porte switch)
+  - [x] 6-B: Aggiornamento `rete.json` (truenas bare metal, pbs VM, nuove porte switch) ✅
   - [ ] 6-C: Aggiornamento `wiki/entities/TrueNAS.md`
   - [ ] 6-D: Esecuzione script di validazione e rigenerazione wiki context
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: FASE 4 - VM PBS SU TRUENAS SCALE / FASE 5-E - RE-JOIN PVE1
-- **Ultima Azione Completata**: TrueNAS SCALE Bare Metal (25.10.6) operativo al 100%. Hardware/BIOS configurato con Typical Current Idle, Single-homing VLAN 10 (`10.10.10.50`) + OOB (`192.168.100.50`), chiavi SSH passwordless attive (`olindo`, `truenas_admin`), pool ZFS `oliraid` e `stripe` online e montati, export NFS e share SMB attivi.
-- **Prossimo Passo Operativo**: Creazione VM Proxmox Backup Server (PBS) su TrueNAS SCALE (Fase 4) o Re-integrazione PVE1 nel cluster Proxmox (`pvecm join`) e ricreazione VM Talos CP1 (Fase 5-E).
-- **Blocchi/Decisioni Pendenti**: Scelta del prossimo step tra Fase 4 e Fase 5-E.
+- **Fase Attiva**: FASE 5-E - RE-JOIN PVE1 & RIPRISTINO TALOS CP1 / FASE 4-F - INTEGRATION PBS PVE
+- **Ultima Azione Completata**: TrueNAS SCALE Bare Metal operativo al 100%. VM PBS 4.2 deployata su KVM con Zvol VirtIO ext4 da 1.5 TB (`/mnt/datastore/pbs-store`), 413 GB di backup storici migrati con successo, job di manutenzione configurati e TLS Fingerprint registrato (`93:b3:92:68:5c:04:3c:30:18:ef:cb:53:09:6b:a6:1f:0e:4c:94:f6:76:08:cc:56:13:8b:19:31:86:9c:87:ef`).
+- **Prossimo Passo Operativo**: All'accensione dei nodi Proxmox (PVE2, PVE3, PVE1), procedere con il re-join di PVE1 nel cluster Proxmox (`pvecm join`), il ripristino della VM `talos-cp-01` (1300) su `local-zfs-1tb` e l'aggiornamento dello storage PBS.
+- **Blocchi/Decisioni Pendenti**: Lavorazione manuale/locale dell'utente sui nodi fisici Proxmox VE. Piano sospeso in attesa dell'accensione host PVE.
