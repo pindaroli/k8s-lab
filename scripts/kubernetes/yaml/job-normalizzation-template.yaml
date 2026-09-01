@@ -24,7 +24,7 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: normalizer
-          image: ghcr.io/pindaroli/custom-normalizer:1.2.8
+          image: ghcr.io/pindaroli/custom-normalizer:1.2.9
           imagePullPolicy: Always
           command:
             - "${COMMAND}"
