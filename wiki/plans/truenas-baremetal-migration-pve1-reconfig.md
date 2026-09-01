@@ -1,9 +1,10 @@
 ---
 title: "Migrazione TrueNAS su Bare Metal e Riconfigurazione PVE1"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-08-11
+archived_at: 2026-08-30
 tags:
   - "#plan"
   - "#storage"
@@ -12,6 +13,10 @@ tags:
 ---
 
 # Piano: Migrazione TrueNAS su Bare Metal + Riconfigurazione PVE1
+
+> [!NOTE]
+> **Stato**: 🟢 **COMPLETATO CON SUCCESSO (2026-08-30)**
+> TrueNAS SCALE Bare Metal operativo su hardware dedicato (`10.10.10.50`), PBS 4.2 attivo come VM KVM (`10.10.10.100`), PVE1 reinstallato su Proxmox VE 9.2 con storage pulito `local-zfs-1tb`, cluster Proxmox a 3 nodi ripristinato in quorum (`pve1`, `pve2`, `pve3`) e cluster Kubernetes Talos a 3 Control Plane pienamente convergente e Ready.
 
 Questo piano documenta i passaggi per spostare TrueNAS SCALE da una VM su PVE1 a un nodo fisico dedicato (Ryzen 5 PRO 5650G, ASRock X570M Pro4, 32GB ECC, Intel X710 10G) e la successiva reinstallazione di PVE1 su un disco di boot dedicato da 512GB, liberando il Crucial P3 Plus 1TB come storage locale per le VM.
 
@@ -52,24 +57,24 @@ Questo piano documenta i passaggi per spostare TrueNAS SCALE da una VM su PVE1 a
   - [x] 4-C: Creazione e configurazione VM PBS su TrueNAS GUI/KVM (VirtIO, 4 vCPU Host Passthrough, 6GB RAM) ✅
   - [x] 4-D: Installazione OS, partizionamento ext4 (`/dev/vdb`) ed impostazione IP statico `10.10.10.100` ✅
   - [x] 4-E: Inizializzazione Datastore PBS e migrazione chunk da vecchio storage (413 GB trasferiti, cron job configurati) ✅
-  - [ ] 4-F: Verifica raggiungibilità e configurazione storage PBS da PVE2 e PVE3 (In attesa di accensione nodi PVE)
-- [ ] **Fase 5: Reinstallazione PVE1**
-  - [x] 5-A: Backup definitivo config VM talos-cp-01 (`/etc/pve/qemu-server/1300.conf`)
-  - [x] 5-B: Installazione Proxmox VE 9.2 su NVMe 512GB ext4 (Crucial P3 Plus 1TB escluso)
-  - [x] 5-C: Riconfigurazione rete (bridge `vmbr10` statico e `vmbr20` manuale su X710 Quad-Port, porta OOB `nic0` 2.5G)
-  - [x] 5-D: Piallatura e bonifica totale Crucial P3 Plus 1TB: backup configurazioni legacy salvato su boot NVMe 512GB e Mac, azzeramento GPT (`sgdisk --zap-all`) e creazione pool ZFS pulito nativo `local-zfs-1tb` a disco intero con dataset `data` per VM/LXC
-  - [ ] 5-E: Re-integrazione nel Cluster Proxmox `HomeLab` e ricreazione VM `talos-cp-01` (1300) con MAC address originale
-  - [ ] 5-F: Avvio VM e verifica stato cluster Kubernetes
-- [ ] **Fase 6: Verifica Finale e Aggiornamento Registry**
-  - [ ] 6-A: Checklist di verifica completa (TrueNAS, K8s, PBS, Jellyfin)
-  - [x] 6-B: Aggiornamento `rete.json` (truenas bare metal, pbs VM, nuove porte switch) ✅
-  - [ ] 6-C: Aggiornamento `wiki/entities/TrueNAS.md`
-  - [ ] 6-D: Esecuzione script di validazione e rigenerazione wiki context
+  - [x] 4-F: Registrazione storage PBS su PVE1/PVE2/PVE3 con TLS Fingerprint (`93:b3:92:68:5c:04:3c:30:18:ef:cb:53:09:6b:a6:1f:0e:4c:94:f6:76:08:cc:56:13:8b:19:31:86:9c:87:ef`) e API Token ✅
+- [x] **Fase 5: Reinstallazione PVE1 & Ripristino Talos (Completata ✅)**
+  - [x] 5-A: Backup definitivo config VM talos-cp-01 (`/etc/pve/qemu-server/1300.conf`) ✅
+  - [x] 5-B: Installazione Proxmox VE 9.2 su NVMe 512GB ext4 (Crucial P3 Plus 1TB escluso) ✅
+  - [x] 5-C: Riconfigurazione rete (bridge `vmbr10` statico e `vmbr20` manuale su X710 Quad-Port, porta OOB `nic0` 2.5G) ✅
+  - [x] 5-D: Piallatura e bonifica totale Crucial P3 Plus 1TB: azzeramento GPT (`sgdisk --zap-all`) e creazione pool ZFS nativo `local-zfs-1tb` per VM/LXC ✅
+  - [x] 5-E: Re-integrazione nel Cluster Proxmox `HomeLab` (3/3 quorate) e ripristino VM `talos-cp-01` (1300) da PBS a 3.8 GB/s ✅
+  - [x] 5-F: Avvio VM 1300, 2300, 3200 e convergenza cluster Kubernetes Talos (3/3 nodi Ready) ✅
+- [x] **Fase 6: Verifica Finale e Aggiornamento Registry (Completata ✅)**
+  - [x] 6-A: Checklist di verifica completa (TrueNAS, K8s, PBS, Servarr, Ingress, Database CNPG) ✅
+  - [x] 6-B: Aggiornamento `rete.json` (truenas bare metal, pbs VM, porte switch Extreme e schede 10G) ✅
+  - [x] 6-C: Aggiornamento `wiki/entities/TrueNAS.md` e `wiki/entities/Talos_Cluster.md` ✅
+  - [x] 6-D: Esecuzione script di validazione e rigenerazione wiki context ✅
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: FASE 5-E - RE-JOIN PVE1 & RIPRISTINO TALOS CP1 / FASE 4-F - INTEGRATION PBS PVE
-- **Ultima Azione Completata**: TrueNAS SCALE Bare Metal operativo al 100%. VM PBS 4.2 deployata su KVM con Zvol VirtIO ext4 da 1.5 TB (`/mnt/datastore/pbs-store`), 413 GB di backup storici migrati con successo, job di manutenzione configurati e TLS Fingerprint registrato (`93:b3:92:68:5c:04:3c:30:18:ef:cb:53:09:6b:a6:1f:0e:4c:94:f6:76:08:cc:56:13:8b:19:31:86:9c:87:ef`).
-- **Prossimo Passo Operativo**: All'accensione dei nodi Proxmox (PVE2, PVE3, PVE1), procedere con il re-join di PVE1 nel cluster Proxmox (`pvecm join`), il ripristino della VM `talos-cp-01` (1300) su `local-zfs-1tb` e l'aggiornamento dello storage PBS.
-- **Blocchi/Decisioni Pendenti**: Lavorazione manuale/locale dell'utente sui nodi fisici Proxmox VE. Piano sospeso in attesa dell'accensione host PVE.
+- **Fase Attiva**: PIANO COMPLETATO CON SUCCESSO ✅
+- **Ultima Azione Completata**: Migrazione Bare Metal TrueNAS, ripristino PVE1, deploy PBS KVM, convergenza quorum Proxmox (3/3) e Talos (3/3) con riallineamento totale documentazione.
+- **Prossimo Passo Operativo**: Nessuno (Piano archiviato).
+- **Blocchi/Decisioni Pendenti**: Nessuno.

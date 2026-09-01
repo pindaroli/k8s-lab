@@ -1,0 +1,27 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ragflow-ingress-route
+  namespace: ragflow-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # 1. External / Public Access: OAuth2 Protected (Google Login via Traefik Middleware)
+    - match: Host(`ragflow.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: ragflow
+          port: 80
+      middlewares:
+        - name: oauth2-auth
+          namespace: traefik
+
+    # 2. Internal / LAN Direct Access: No OAuth2 Required
+    - match: Host(`ragflow`) || Host(`ragflow-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: ragflow
+          port: 80
+  tls:
+    secretName: pindaroli-wildcard-tls

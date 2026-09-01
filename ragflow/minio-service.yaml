@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: ragflow-system
+spec:
+  ports:
+    - name: s3
+      port: 9000
+      targetPort: 3900
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: minio
+  namespace: ragflow-system
+subsets:
+  - addresses:
+      - ip: 10.10.10.50
+    ports:
+      - name: s3
+        port: 3900

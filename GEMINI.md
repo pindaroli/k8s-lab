@@ -15,7 +15,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Workloads**: [[Servarr]], [[Tdarr]], [[Xray]].
 - **Data & Registry**: [[Network_Registry]], [[Storage_Registry]], [[Secret_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]], [[truenas-backup-restore]] (Backup e Ripristino TrueNAS).
-- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam), [[dual-pipeline-gitops-integration]] (Integrazione GitOps Duale Classica), [[plan-out-of-band-service-access]] (Accesso Fisico OOB), [[pve3-10g-migration-recovery]] (Migrazione 10G PVE3 & Ripristino), [[oob-hardening-validation]] (Validazione e Hardening OOB), [[pve1-upgrade-ve9.2]] (Upgrade PVE1 e Spegnimento Safe), [[pve1-hostname-rename]] (Rinomina Hostname PVE1: pve → pve1), [[opnsense-recovery-and-temporary-routing]] (Ripristino OPNsense & Rete Temporanea), [[special-vdev-optimization]] (Ottimizzazione Special VDEV oliraid: 1M → 64K), [[oliraid-expansion-special-vdev-evacuation]] (Espansione oliraid e Evacuazione Special VDEV), [[kubernetes-mcp-server-and-kubeconfig-migration]] (Configurazione Kubernetes MCP & Migrazione Kubeconfig), [[truenas-master-mcp-integration]] (Installazione TrueNAS Master MCP), [[minimserver-deployment]] (Deployment di MinimServer), [[proxmox-talos-watchdog]] (Proxmox Talos Intelligent Watchdog), [[truenas-baremetal-migration-pve1-reconfig]] (Migrazione TrueNAS su Bare Metal e Riconfigurazione PVE1).
+- **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam), [[dual-pipeline-gitops-integration]] (Integrazione GitOps Duale Classica), [[plan-out-of-band-service-access]] (Accesso Fisico OOB), [[pve3-10g-migration-recovery]] (Migrazione 10G PVE3 & Ripristino), [[oob-hardening-validation]] (Validazione e Hardening OOB), [[pve1-upgrade-ve9.2]] (Upgrade PVE1 e Spegnimento Safe), [[pve1-hostname-rename]] (Rinomina Hostname PVE1: pve → pve1), [[opnsense-recovery-and-temporary-routing]] (Ripristino OPNsense & Rete Temporanea), [[special-vdev-optimization]] (Ottimizzazione Special VDEV oliraid: 1M → 64K), [[oliraid-expansion-special-vdev-evacuation]] (Espansione oliraid e Evacuazione Special VDEV), [[kubernetes-mcp-server-and-kubeconfig-migration]] (Configurazione Kubernetes MCP & Migrazione Kubeconfig), [[truenas-master-mcp-integration]] (Installazione TrueNAS Master MCP), [[minimserver-deployment]] (Deployment di MinimServer), [[proxmox-talos-watchdog]] (Proxmox Talos Intelligent Watchdog), [[truenas-baremetal-migration-pve1-reconfig]] (Migrazione TrueNAS su Bare Metal e Riconfigurazione PVE1), [[ragflow-enterprise-deployment]] (Deployment Enterprise di RAGFlow).
 
 - **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]], [[2026-05-06-google-oauth2-credential-leak]], [[2026-05-08-qbittorrent-port-forward-outage]], [[2026-05-16-dnsbl-automation-payload-mismatch]], [[2026-06-02-pve3-kernel-hang-nomodeset]], [[2026-06-03-flannel-restart-dns-cascading-failure]], [[2026-06-20-dhcp-relay-outage-symmetric-routing]], [[2026-06-24-special-mirror-degraded-replaced-disk]], [[2026-06-28-mcp-server-connection-failures-and-github-token-expiry]], [[2026-06-28-talos-cluster-quorum-loss-down]], [[2026-06-28-zshrc-kubeconfig-talosconfig-paths-update]].
 
@@ -25,10 +25,15 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 ---
 
 ## 2. Status & Active Goals
-- **Current Status**: **RECYCLARR AUTOMATION OPERATIONAL** (Anti-spam synced).
+- **Current Status**: **INFRASTRUCTURE FULLY CONVERGENT & OPERATIONAL** (Proxmox 3/3 Quorate, Talos 3/3 CP Ready, PBS KVM Operational).
 - **Active Goal**: Ingress & External Access (Phase 5).
-- **PVE2 Status**: **ONLINE**
-- **Storage Maintenance**: Piano [[oliraid-expansion-special-vdev-evacuation]] COMPLETATO CON SUCCESSO ✅ — (Capacità espansa a 5 dischi e Special VDEV evacuato al 16% ✅).
+- **PVE Cluster Status**:
+  - **PVE1**: **ONLINE** (Proxmox VE 9.2, VM 1300 `talos-cp-01` attiva su `local-zfs-1tb`).
+  - **PVE2**: **ONLINE** (Proxmox VE 9.2, VM 2300 `talos-cp-02` attiva).
+  - **PVE3**: **ONLINE** (Proxmox VE 9.2, VM 3200 `talos-cp-03` attiva).
+- **Talos K8s Cluster**: **OPERATIONAL** (3/3 Control Plane Ready, etcd quorate, VIP `10.10.20.55` attivo).
+- **PBS Backup Server**: **OPERATIONAL** (VM KVM `10.10.10.100` su TrueNAS SCALE Bare Metal).
+- **Storage Maintenance**: Piano [[oliraid-expansion-special-vdev-evacuation]] e [[pbs-truenas-vm-deployment]] COMPLETATI CON SUCCESSO ✅.
 
 ---
 

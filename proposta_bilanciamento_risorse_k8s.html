@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta di Bilanciamento Risorse Kubernetes - Homelab</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --border-color: #334155;
+            --table-header: #0f172a;
+            --table-row-alt: #1e293b;
+            --table-row: #182234;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 2rem;
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+        }
+        h2 {
+            font-size: 1.4rem;
+            color: var(--text-main);
+            margin-top: 36px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h3 {
+            font-size: 1.15rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p {
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card.recommended {
+            border-left: 4px solid var(--accent-green);
+        }
+        .card.alternative {
+            border-left: 4px solid var(--accent-blue);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: var(--table-header);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: var(--table-row-alt);
+        }
+        tr:nth-child(odd) {
+            background-color: var(--table-row);
+        }
+        ul, ol {
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        strong {
+            color: #ffffff;
+        }
+        code {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9em;
+            color: #e2e8f0;
+        }
+        .tag-free {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ribilanciamento Risorse Kubernetes (Talos)</h1>
+        <p>Quadro completo e dettagliato delle <strong>risorse fisiche disponibili</strong> sugli host Proxmox e della <strong>situazione attuale delle VM Kubernetes (Talos)</strong>, con la proposta di bilanciamento a seguito della dismissione della VM TrueNAS e del recupero di 32 GB di RAM e 4 CPU.</p>
+
+        <h2>1. 🔍 Inventario Risorse Fisiche vs Risorse Allocate</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nodo Host</th>
+                    <th>CPU Fisica</th>
+                    <th>RAM Totale</th>
+                    <th>VM Attive / Ospitate</th>
+                    <th>Risorse Attuali Assegnate a Talos</th>
+                    <th>RAM Libera sull'Host</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>PVE1</strong> (<code>10.10.10.11</code>)</td>
+                    <td>Ryzen 9 7945HX (16C/32T Zen 4)</td>
+                    <td><strong>96 GB</strong></td>
+                    <td>Solo VM 1300 (<code>talos-cp-01</code>)</td>
+                    <td><strong>4 vCPU / 16 GB RAM</strong></td>
+                    <td><span class="tag-free">~65 GB Liberi 🚀</span></td>
+                </tr>
+                <tr>
+                    <td><strong>PVE2</strong> (<code>10.10.10.21</code>)</td>
+                    <td>Ryzen 9 7945HX (16C/32T Zen 4)</td>
+                    <td><strong>64 GB</strong></td>
+                    <td>VM 2300 (<code>talos-cp-02</code>) + VM 2500 (Gaming, 16GB)</td>
+                    <td><strong>4 vCPU / 16 GB RAM</strong></td>
+                    <td><span class="tag-free">~52 GB Liberi</span></td>
+                </tr>
+                <tr>
+                    <td><strong>PVE3</strong> (<code>10.10.10.31</code>)</td>
+                    <td>Ryzen AI 9 HX 370 (12C/24T Zen 5)</td>
+                    <td><strong>64 GB</strong></td>
+                    <td>Solo VM 3200 (<code>talos-cp-03</code>)</td>
+                    <td><strong>4 vCPU / 22 GB RAM</strong></td>
+                    <td><span class="tag-free">~35 GB Liberi</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>2. 🧐 Analisi delle Asimmetrie e Criticità Attuali</h2>
+        <div class="card">
+            <ol>
+                <li><strong>Sotto-utilizzo massiccio di PVE1</strong>: Con la cancellazione di TrueNAS (32.5 GB) e PBS (4 GB), PVE1 ha a disposizione <strong>96 GB di RAM DDR5</strong> e 32 thread CPU, ma ne sta utilizzando solo una frazione minima (16 GB).</li>
+                <li><strong>Disomogeneità tra i nodi Talos</strong>: Attualmente abbiamo una configurazione asimmetrica (16 GB su CP-01, 16 GB su CP-02, 22 GB su CP-03).</li>
+                <li><strong>Margine di calcolo CPU (4 vCPU)</strong>: 4 core per VM sono sufficienti per il solo control plane, ma quando partono carichi di lavoro intensivi nel cluster (es. <em>transcoding MinimServer/Tdarr, vacuum del DB Postgres CNPG, scansioni massive Servarr</em>), 4 vCPU possono diventare un collo di bottiglia durante i picchi.</li>
+            </ol>
+        </div>
+
+        <h2>3. 🎯 Proposte di Ribilanciamento</h2>
+
+        <div class="card recommended">
+            <h3>🟢 Opzione Consigliata: "Simmetrica ad Alte Prestazioni" (HA Uniforme)</h3>
+            <p>Uniforma le dimensioni delle 3 VM per garantire resilienza identica in caso di failover:</p>
+            <ul>
+                <li><strong><code>talos-cp-01</code> (PVE1)</strong>: <strong>8 vCPU</strong> / <strong>32 GB RAM</strong> <em>(consumo PVE1: 32 GB su 96 GB &rarr; 64 GB liberi)</em></li>
+                <li><strong><code>talos-cp-02</code> (PVE2)</strong>: <strong>8 vCPU</strong> / <strong>24 GB RAM</strong> <em>(consumo PVE2: 24 GB su 64 GB &rarr; rimangono 40 GB liberi per la VM Gaming)</em></li>
+                <li><strong><code>talos-cp-03</code> (PVE3)</strong>: <strong>8 vCPU</strong> / <strong>24 GB RAM</strong> <em>(consumo PVE3: 24 GB su 64 GB &rarr; 40 GB liberi)</em></li>
+            </ul>
+            <p><strong>Totale Cluster K8s</strong>: <strong>24 vCPU</strong> e <strong>80 GB RAM</strong> allocati all'intero cluster.</p>
+        </div>
+
+        <div class="card alternative">
+            <h3>🔵 Opzione Alternativa: "Power-Worker su PVE1"</h3>
+            <p>Sfrutta la grande quantità di RAM (96 GB) di PVE1 dedicandogli la quota maggiore di memoria:</p>
+            <ul>
+                <li><strong><code>talos-cp-01</code> (PVE1)</strong>: <strong>8 vCPU</strong> / <strong>48 GB RAM</strong></li>
+                <li><strong><code>talos-cp-02</code> (PVE2)</strong>: <strong>8 vCPU</strong> / <strong>20 GB RAM</strong></li>
+                <li><strong><code>talos-cp-03</code> (PVE3)</strong>: <strong>8 vCPU</strong> / <strong>20 GB RAM</strong></li>
+            </ul>
+        </div>
+
+        <h2>4. 🔄 Modalità di Esecuzione (Zero Downtime)</h2>
+        <div class="card">
+            <p>Grazie al quorum etcd attivo a 3 nodi, la modifica di CPU/RAM può essere effettuata in <strong>Rolling Update nodo per nodo</strong> (es. modifica PVE1 &rarr; riavvio rapido VM 1300 &rarr; verifica quorum &rarr; modifica PVE2 &rarr; ...), garantendo che i servizi Kubernetes non subiscano alcuna interruzione.</p>
+        </div>
+    </div>
+</body>
+</html>

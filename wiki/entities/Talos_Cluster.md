@@ -1,6 +1,6 @@
 ---
 title: "Talos Cluster (Kubernetes Control Plane)"
-last_updated: "2026-06-06"
+last_updated: "2026-08-30"
 confidence: "High"
 tags:
   - "#compute"
@@ -26,22 +26,20 @@ La configurazione base è `talos-config/controlplane.yaml`.
 > Per evitare la perdita di identità al riavvio/reinstallazione (che bloccherebbe lo storage locale), l'hostname di ogni nodo è ora codificato in file specifici. **Non usare mai** il file `controlplane.yaml` generico per le installazioni.
 >
 > Ogni nodo ha il suo file dedicato:
-> - **CP-01**: `talos-config/controlplane-cp-01.yaml`
-> - **CP-02**: `talos-config/controlplane-cp-02.yaml`
-> - **CP-03**: `talos-config/controlplane-cp-03.yaml`
+> - **CP-01**: `talos-config/controlplane-cp-01.yaml` (su PVE1, VM `1300`)
+> - **CP-02**: `talos-config/controlplane-cp-02.yaml` (su PVE2, VM `2300`)
+> - **CP-03**: `talos-config/controlplane-cp-03.yaml` (su PVE3, VM `3200`)
 >
 > In caso di reinstallazione da zero, la procedura corretta è:
 > `talosctl apply-config -n <IP> -f talos-config/controlplane-cp-<XX>.yaml`
 >
 > (Questo comando imposta correttamente sia l'IP statico che l'Hostname in un unico passaggio).
 
-| Nodo | IP | Ruolo | Stato |
-| :--- | :--- | :--- | :--- |
-| **talos-cp-01** | `10.10.20.141` | Leader / Etcd | **Ready** |
-| **talos-cp-02** | `10.10.20.142` | Member | **Ready** |
-| **talos-cp-03** | `10.10.20.143` | Member | **Ready** |
-| **talos-7ke-08g** | `...` | Nuovi Nodi | **Ready** |
-| **talos-ate-kwz** | `...` | Nuovi Nodi | **Ready** |
+| Nodo | IP | Ruolo | Stato | Risorse (vCPU/RAM) | Host |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **talos-cp-01** | `10.10.20.141` | Leader / Etcd | **Ready** | **8 vCPU / 32 GB RAM** | PVE1 (VM 1300) |
+| **talos-cp-02** | `10.10.20.142` | Member / Etcd | **Ready** | **8 vCPU / 24 GB RAM** | PVE2 (VM 2300) |
+| **talos-cp-03** | `10.10.20.143` | Member / Etcd | **Ready** | **8 vCPU / 24 GB RAM** | PVE3 (VM 3200) |
 
 - **Virtual IP (VIP)**: `10.10.20.55` (Punto di ingresso per `kubectl`).
 

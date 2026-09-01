@@ -1,0 +1,101 @@
+env:
+    DOC_ENGINE: infinity
+    DB_TYPE: postgres
+    API_PROXY_SCHEME: python
+    POSTGRES_USER: ragflow
+    POSTGRES_PASSWORD: Pindaroli_RAGFlow_DB_2026_x8K!
+    POSTGRES_DBNAME: rag_flow
+    POSTGRES_PORT: "5432"
+    POSTGRES_HOST: postgres-main-rw.cnpg-system.svc.cluster.local
+    TZ: Europe/Rome
+    DOC_BULK_SIZE: 4
+    EMBEDDING_BATCH_SIZE: 16
+    MYSQL_HOST: postgres-main-rw.cnpg-system.svc.cluster.local
+    MYSQL_PASSWORD: Pindaroli_RAGFlow_DB_2026_x8K!
+    REDIS_PASSWORD: Pindaroli_Redis_RAGFlow_2026!
+ragflow:
+    image:
+        repository: infiniflow/ragflow
+        tag: v0.27.1
+        pullPolicy: IfNotPresent
+    service_conf:
+        postgres:
+            name: rag_flow
+            user: ragflow
+            password: ENC[AES256_GCM,data:OQQvmKB5a+l9Y46fMzQ/IXbek6auv9Bztjc0HgYw,iv:EELhsy8oi/h7tfK1tnrjrvjiOlUFCRKVigH84LgRWlU=,tag:2PqbIZp8/Ma77W4jys5HNg==,type:str]
+            host: postgres-main-rw.cnpg-system.svc.cluster.local
+            port: 5432
+            max_connections: 100
+            stale_timeout: 30
+        s3:
+            access_key: GKa73f49d96bda5d51199ff4b1
+            secret_key: 149b3234c684c860cbeff31c14f61bd3a378b53e60ff97c39cd3b17fdeccfa2b
+            endpoint_url: http://10.10.10.50:3900
+            bucket: ragflow-docs
+            region: garage
+            signature_version: v4
+            addressing_style: path
+    deployment:
+        resources:
+            requests:
+                cpu: 1500m
+                memory: 3Gi
+            limits:
+                cpu: 3000m
+                memory: 6Gi
+    service:
+        type: ClusterIP
+infinity:
+    storage:
+        className: local-postgres
+        capacity: 20Gi
+    deployment:
+        resources:
+            requests:
+                cpu: 1000m
+                memory: 2Gi
+            limits:
+                cpu: 2000m
+                memory: 4Gi
+    service:
+        type: ClusterIP
+redis:
+    enabled: true
+    storage:
+        className: local-postgres
+        capacity: 5Gi
+    deployment:
+        resources:
+            requests:
+                cpu: 200m
+                memory: 512Mi
+            limits:
+                cpu: 500m
+                memory: 1Gi
+    service:
+        type: ClusterIP
+minio:
+    enabled: false
+mysql:
+    enabled: false
+elasticsearch:
+    enabled: false
+opensearch:
+    enabled: false
+ingress:
+    enabled: false
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBrUE5qNkRMbEFhdGVyQ2x1
+            N1R0T093cGhCK0l5dVVONUx2dEp6YlN5aVYwClR0cnhWYjBtVnJ1bE1sTVZNeitJ
+            QUtFWEpwaUcxR3pYbDdNRVNmN1ZxSkEKLS0tIEhKZWNVSjc3VTlRU2RneHZ3bGN6
+            ajFNWXBMQ24yQnZYdGs0OXZSQ0VHSG8K3ffaOm9UBFJfktmrC1Umoe0yRAVp4dsi
+            LAnka1Xq7rvb0buq2c2wgtfLAchYdHhMZNz3SDlqPiLEiUkC9L4lsA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-08-30T16:54:35Z"
+    mac: ENC[AES256_GCM,data:iw4GK8BiQGfTs21dUWz2VRLEsE2Bv6+JfcD6hYzEFF/jg3UEUhx6NTVqtAxebypPGT0cLXQLHrQA6AK2XvjGmEQM/Iq5qgR4ri7n6NWeW2EI5myypxL/tHbWRBX+7DRNNwlN9zXGCCH4Hsz2qdK0iJwF9qfnNJY7Aw6a03wvt0w=,iv:kL2aHRmVC5YSNWvRw2baWftcOgKxwcuqkK9lPwGsgdo=,tag:s6X59i0L3Kd1/Q0LE2fOww==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

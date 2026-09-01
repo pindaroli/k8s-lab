@@ -208,7 +208,7 @@
         "path": "/mnt/oliraid/garage-data",
         "description": "Dataset ZFS per Garage S3",
         "protocol": "hostpath/docker",
-        "notes": "Mappato direttamente all'app Custom Garage su TrueNAS. Nessun overhead NFS.",
+        "notes": "Mappato direttamente all'app Custom Garage su TrueNAS. Buckets: postgres-wal, velero, ragflow-docs.",
         "networks": []
       },
       "jellyfin_trickplay": {

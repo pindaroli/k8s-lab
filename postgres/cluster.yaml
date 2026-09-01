@@ -39,6 +39,10 @@ spec:
       login: true
       passwordSecret:
         name: n8n-db-password
+    - name: ragflow
+      login: true
+      passwordSecret:
+        name: ragflow-db-password
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname

@@ -20,6 +20,56 @@
 - [x] Verificare compatibilità CNI, operatori (CNPG) e manifest inline.
 - [x] Eseguire transizione intermedia (`talosctl upgrade-k8s --to 1.35.x`).
 - [x] Eseguire transizione finale alla versione stabile (`talosctl upgrade-k8s --to 1.36.2`).
+
+## 🚀 [x] ✅ COMPLETATO: RAGFlow Enterprise Deployment Plan [[ragflow-enterprise-deployment]]
+### [x] FASE 1: Storage & Credenziali Garage S3 (TrueNAS)
+- [x] Creazione bucket `ragflow-docs` via Garage CLI su TrueNAS.
+- [x] Generazione chiave API `ragflow-key` e assegnazione permessi Read/Write.
+- [x] Verifica raggiungibilità porta 3900 e config `addressing_style: path`.
+
+### [x] FASE 2: Segreti SOPS & Namespace K8s
+- [x] Creazione namespace `ragflow-system`.
+- [x] Creazione template e cifratura `secrets-sops/ragflow-secrets.enc.yaml` e `secrets-sops/ragflow-db-secrets.enc.yaml`.
+- [x] Sincronizzazione secret `ragflow-secrets` e `garage-creds` in `ragflow-system`.
+
+### [x] FASE 3: Cluster PostgreSQL HA via CloudNativePG (Consolidato su postgres-main)
+- [x] Ripristino e consolidamento su `postgres-main` (2 repliche sincronizzate su NVMe locale `local-postgres`).
+- [x] Managed role `ragflow` riconciliato con secret SOPS e database `rag_flow` creato e inizializzato.
+- [x] Validazione salute cluster (Healthy state, 2/2 ready, test endpoint RW).
+
+### [x] FASE 4: Helm Chart & Core RAGFlow
+- [x] Creazione file di override `ragflow/values-hybrid.yaml` (sanitizzato per GitOps).
+- [x] Integrazione CNPG `postgres-main`, Garage S3, Infinity vector engine e Redis.
+- [x] Installazione release Helm `ragflow` (v0.27.1) nel namespace `ragflow-system`.
+- [x] Validazione stato Pod (1/1 Running per `ragflow`, `ragflow-infinity-0`, `ragflow-redis-0`).
+
+### [x] FASE 5: Routing Ingress Traefik Split-Horizon & Dashboard
+- [x] Creazione manifest `traefik/ragflow-ingress-routes.yaml` (Port 80 backend).
+- [x] Configurazione route esterna (`ragflow.pindaroli.org` con OAuth2) e interna (`ragflow-internal.pindaroli.org`).
+- [x] Aggiornamento `rete.json` con alias DNS.
+- [x] Integrazione in `homepage/homepage.yaml` e rollout restart eseguito.
+
+### [x] FASE 6: Test-Driven Verification & Database Tables
+- [x] Test connettività HTTP (Nginx 200 OK).
+- [x] Inizializzazione tabelle ORM Peewee completata con successo su `postgres-main` (database `rag_flow`).
+- [x] Verifica assenza plaintext secrets su Git e archiviazione piano nel Wiki.
+
+## 🚀 [ ] Integrazione RAGFlow MCP Server per Antigravity [[ragflow-antigravity-mcp-integration]]
+### [ ] FASE 1: Generazione Credenziali & Endpoint RAGFlow
+- [ ] Generazione API Key utente su RAGFlow (`ragflow-internal.pindaroli.org`).
+- [ ] Archiviazione sicura dell'API Key in SOPS (`secrets-sops/ragflow-mcp-secrets.enc.yaml`).
+- [ ] Validazione raggiungibilità endpoint REST API (`/api/v1/datasets`, `/api/v1/retrieval`).
+
+### [ ] FASE 2: Sviluppo del Server MCP (`scripts/mcp/ragflow_mcp_server.py`)
+- [ ] Implementazione server FastMCP (tools: `ragflow_list_datasets`, `ragflow_search`, `ragflow_ask_assistant`, `ragflow_get_document_chunks`).
+
+### [ ] FASE 3: Registrazione & Configurazione MCP in Antigravity
+- [ ] Registrazione entry in `mcpServers` e definizione schema tool.
+- [ ] Validazione caricamento MCP Server.
+
+### [ ] FASE 4: Test-Driven Verification & Test RAG
+- [ ] Test recupero semantico dal dataset RAGFlow e validazione citazioni.
+
 ## 🚀 [ ] ServiceNow & CMDB Homelab Integration Plan [[plan-servicenow-homelab-integration]]
 ### [ ] FASE 1: Foundation & Struttura Dati Fondazionale (Piattaforma)
 - [ ] Creazione Company `HomeLab Corp`, Dipartimenti (`IT Ops`, `NetOps`, `DevOps`, `Security`) e Location `Home Server Room`.

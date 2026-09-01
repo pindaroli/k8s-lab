@@ -142,6 +142,11 @@ data:
             href: https://hermes.pindaroli.org
             description: LLM-based Kubernetes & Infra Agent
             icon: mdi-robot-outline
+        - RAGFlow:
+            href: https://ragflow.pindaroli.org
+            description: Enterprise RAG & DeepDoc Document Intelligence
+            icon: mdi-brain
+
 
     - "ArrServices":
         - Jellyfin:

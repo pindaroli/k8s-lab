@@ -1,0 +1,103 @@
+# RAGFlow Hybrid Deployment Values (Refer to secrets-sops/ragflow-secrets.enc.yaml for sensitive values)
+env:
+  DOC_ENGINE: infinity
+  DB_TYPE: postgres
+  API_PROXY_SCHEME: python
+  TZ: "Europe/Rome"
+  DOC_BULK_SIZE: 4
+  EMBEDDING_BATCH_SIZE: 16
+  MYSQL_HOST: "postgres-main-rw.cnpg-system.svc.cluster.local"
+  MYSQL_PASSWORD: "<SOPS_ENCRYPTED>"
+  REDIS_PASSWORD: "<SOPS_ENCRYPTED>"
+  POSTGRES_USER: ragflow
+  POSTGRES_PASSWORD: "<SOPS_ENCRYPTED>"
+  POSTGRES_DBNAME: rag_flow
+  POSTGRES_PORT: "5432"
+  POSTGRES_HOST: "postgres-main-rw.cnpg-system.svc.cluster.local"
+
+ragflow:
+  image:
+    repository: infiniflow/ragflow
+    tag: v0.27.1
+    pullPolicy: IfNotPresent
+
+  service_conf:
+    postgres:
+      name: rag_flow
+      user: ragflow
+      password: "<SOPS_ENCRYPTED>"
+      host: "postgres-main-rw.cnpg-system.svc.cluster.local"
+      port: 5432
+      max_connections: 100
+      stale_timeout: 30
+    minio:
+      user: "<SOPS_ENCRYPTED>"
+      password: "<SOPS_ENCRYPTED>"
+      host: "10.10.10.50:3900"
+      bucket: "ragflow-docs"
+    s3:
+      access_key: "<SOPS_ENCRYPTED>"
+      secret_key: "<SOPS_ENCRYPTED>"
+      endpoint_url: "http://10.10.10.50:3900"
+      bucket: "ragflow-docs"
+      region: "garage"
+      signature_version: "v4"
+      addressing_style: "path"
+
+  deployment:
+    resources:
+      requests:
+        cpu: "1500m"
+        memory: "3Gi"
+      limits:
+        cpu: "3000m"
+        memory: "6Gi"
+
+  service:
+    type: ClusterIP
+
+infinity:
+  storage:
+    className: "local-postgres"
+    capacity: 20Gi
+  deployment:
+    resources:
+      requests:
+        cpu: "1000m"
+        memory: "2Gi"
+      limits:
+        cpu: "2000m"
+        memory: "4Gi"
+  service:
+    type: ClusterIP
+
+redis:
+  enabled: true
+  storage:
+    className: "local-postgres"
+    capacity: 5Gi
+  deployment:
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "512Mi"
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+  service:
+    type: ClusterIP
+
+minio:
+  enabled: false
+
+mysql:
+  enabled: false
+
+elasticsearch:
+  enabled: false
+
+opensearch:
+  enabled: false
+
+ingress:
+  enabled: false
