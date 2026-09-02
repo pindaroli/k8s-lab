@@ -119,4 +119,5 @@ Il test eseguito con il codice patchato ha confermato:
 - Autenticazione qBittorrent: `HTTP 204 No Content`
 - Cookie identificato correttamente: `QBT_SID_8080 = lmScZV5mj3TuEyXf7nKxLfhq2c2y9LM5`
 - Interrogazione API `/api/v2/torrents/info`: `HTTP 200 OK` con estrazione in tempo reale di 801 torrent attivi.
+- Upstream Pull Request: [CT4nk3r/arrstack-mcp#6](https://github.com/CT4nk3r/arrstack-mcp/pull/6).
 - Stato: **RISOLTO**.
