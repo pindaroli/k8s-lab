@@ -21,5 +21,7 @@
 
 - **Mandato Autenticazione Passwordless SSH**: È vietato l'uso di password hardcoded o trasmesse in qualsiasi script Python, script Shell (`.sh`) o playbook Ansible. Tutte le connessioni automatizzate DEVONO basarsi sull'autenticazione a chiavi SSH (`ssh -o BatchMode=yes`).
 
+- **Mandato Gestione Server MCP (mcp_config.json)**: Ogni volta che l'utente richiede di installare o configurare un nuovo server MCP, la configurazione **DEVE essere eseguita tassativamente in modo centralizzato all'interno di `~/.gemini/antigravity/mcp_config.json`**, evitando l'uso di plugin o directory nascoste. Eventuali script Python, monkeypatch o wrapper personalizzati devono essere salvati nella repository in `scripts/<mcp-name>/`. L'AI deve segnalare all'utente esclusivamente eventuali impedimenti tecnici oggettivi che impediscano questo approccio centralizzato.
+
 
 

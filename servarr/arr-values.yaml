@@ -67,6 +67,24 @@ qbittorrent:
       autobrr-classical: "classical audio"
       lidarr-classical: "classical audio"
       radarr: "movies video"
+  initContainers:
+    - name: qbt-config-security
+      image: busybox:latest
+      command:
+        - sh
+        - -c
+        - |
+          CONF="/config/qBittorrent/qBittorrent.conf"
+          if [ -f "$CONF" ]; then
+            echo "Patching qBittorrent.conf security settings..."
+            sed -i '/WebUI\\CSRFProtection/d; /WebUI\\HostHeaderValidation/d; /WebUI\\AuthSubnetWhitelist/d' "$CONF"
+            sed -i '/\[Preferences\]/a WebUI\\AuthSubnetWhitelist=10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8\nWebUI\\AuthSubnetWhitelistEnabled=true\nWebUI\\CSRFProtection=false\nWebUI\\HostHeaderValidation=false' "$CONF"
+            chown 1000:1000 "$CONF"
+            echo "qBittorrent.conf patched successfully."
+          fi
+      volumeMounts:
+        - name: config
+          mountPath: /config
   image:
     repository: lscr.io/linuxserver/qbittorrent
     tag: "5.2.3_v2.0.13-ls468"

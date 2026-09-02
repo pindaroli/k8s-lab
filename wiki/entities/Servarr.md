@@ -1,6 +1,6 @@
 ---
 title: "Servarr Stack & qBittorrent"
-last_updated: "2026-06-07"
+last_updated: "2026-09-02"
 confidence: "High"
 tags:
   - "#app"
@@ -47,6 +47,12 @@ La gestione musicale è affidata a una singola istanza Lidarr.
 
 *(Nota: L'architettura multi-istanza con `lidarr-classic` e `jellyfin-classic` è stata dismessa per semplificare la gestione).*
 
+## 4. MCP Server & Automazione (arrstack-mcp)
+Lo stack Servarr è governato tramite il server MCP `arrstack-mcp` (in `scripts/arrstack-mcp/server.py`), configurato centralmente in `~/.gemini/antigravity/mcp_config.json`.
+- **Servizi Abilitati**: Radarr, Lidarr, Prowlarr, qBittorrent.
+- **qBittorrent Security & Cookie Patch**: A seguito del breaking change introdotto da qBittorrent v5.2.x (rinomina cookie da `SID` a `QBT_SID_<PORT>`), qBittorrent adotta un `initContainer` dichiarativo in Helm (`qbt-config-security` in `servarr/arr-values.yaml`) e `arrstack-mcp` implementa il matching dinamico del cookie di sessione.
+- **Incidente Correlato**: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]].
+
 ## Relazioni
 - Namespace: `arr`
 - Dipendenze Database: `postgres-main` ([[Talos_Cluster]]).
@@ -55,3 +61,4 @@ La gestione musicale è affidata a una singola istanza Lidarr.
 - Strategia Classica: [[classical-music-strategy]].
 - Orchestrazione Classica (Prefect): [[prefect-beets-adaptation]].
 - Bonifica Modern: [[beets-music-rescue-pipeline]].
+- Incidenti: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]].
