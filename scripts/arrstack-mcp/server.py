@@ -1753,6 +1753,11 @@ def _qbt_add_result(result):
             return False, "qBittorrent returned an empty response."
         # _qbt returns plain-text error messages (not configured, HTTP errors, …).
         return False, text
+    if isinstance(result, dict):
+        if result.get("success_count", 0) > 0 or result.get("added_torrent_ids"):
+            return True, ""
+        if result.get("failure_count", 0) > 0:
+            return False, f"qBittorrent failed to add torrent: {result}"
     return False, str(result)
 
 
