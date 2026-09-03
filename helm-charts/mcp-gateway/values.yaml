@@ -1,0 +1,29 @@
+image:
+  repository: ghcr.io/kuadrant/mcp-gateway
+  tag: "v0.9.0"
+  pullPolicy: IfNotPresent
+
+replicas: 1
+
+gateway:
+  publicHost: "mcp-internal.pindaroli.org"
+  parentGateway:
+    name: "traefik-gateway"
+    namespace: "traefik"
+
+signingKey:
+  secretName: "mcp-gateway-signing-key"
+  secretKey: "GATEWAY_SIGNING_KEY"
+
+logLevel: 0
+enableURLElicitation: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+servers: []

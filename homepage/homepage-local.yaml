@@ -108,20 +108,31 @@ data:
             href: https://traefik-dash.pindaroli.org
             description: Traefik reverse proxy dashboard
             icon: traefik.png
+            siteMonitor: http://traefik-metrics.traefik.svc.cluster.local:9100/metrics
 
     - "AI services":
         - n8n:
             href: https://n8n.pindaroli.org
             description: Workflow automation platform
             icon: n8n.png
+            siteMonitor: http://n8n.n8n.svc.cluster.local:5678/healthz
         - Hermes Agent:
             href: https://hermes-internal.pindaroli.org
             description: LLM-based Kubernetes & Infra Agent (Internal)
             icon: mdi-robot-outline
+            siteMonitor: http://hermes-hermes-agent.hermes.svc.cluster.local:9119/health
         - RAGFlow:
             href: https://ragflow-internal.pindaroli.org
             description: Enterprise RAG & DeepDoc Document Intelligence (Internal)
             icon: mdi-brain
+            siteMonitor: http://ragflow.ragflow-system.svc.cluster.local:80/
+        - MCP Gateway & Fleet:
+            href: https://mcp-ui-internal.pindaroli.org
+            description: Model Context Protocol Fleet Gateway & Web Console (Internal)
+            icon: mdi-transit-connection-variant
+            siteMonitor: http://mcp-inspector.mcp-system.svc.cluster.local:6274
+
+
 
 
     - "ArrServices":
@@ -129,44 +140,54 @@ data:
             href: https://jellyfin-internal.pindaroli.org
             description: Media server (Internal)
             icon: jellyfin.png
+            siteMonitor: http://jellyfin-external-svc.arr.svc.cluster.local:8096/health
 
         - qBittorrent:
             href: https://qbittorrent-internal.pindaroli.org
             description: BitTorrent client (Internal)
             icon: qbittorrent.png
+            siteMonitor: http://servarr-qbittorrent-web.arr.svc.cluster.local:8080
         - Radarr:
             href: https://radarr-internal.pindaroli.org
             description: Movie management (Internal)
             icon: radarr.png
+            siteMonitor: http://servarr-radarr.arr.svc.cluster.local:7878/ping
         - Lidarr:
             href: https://lidarr-internal.pindaroli.org
             description: Music management (Internal)
             icon: lidarr.png
+            siteMonitor: http://servarr-lidarr.arr.svc.cluster.local:8686/ping
         - MinimServer:
             href: https://minimserver-internal.pindaroli.org
             description: Audio DLNA/UPnP library server (Internal)
             icon: minimserver.png
+            siteMonitor: http://servarr-minimserver.arr.svc.cluster.local:9790
+
+
 
 
         - Prowlarr:
             href: https://prowlarr-internal.pindaroli.org
             description: Indexer management
             icon: prowlarr.png
+            siteMonitor: http://servarr-prowlarr.arr.svc.cluster.local:9696/ping
         - Autobrr:
             href: https://autobrr-internal.pindaroli.org
             description: Torrent monitor and automation (Internal)
             icon: autobrr.png
+            siteMonitor: http://servarr-autobrr.arr.svc.cluster.local:7474
         - Bazarr:
             href: https://bazarr-internal.pindaroli.org
             description: Subtitle management (Internal)
             icon: bazarr.png
+            siteMonitor: http://servarr-bazarr.arr.svc.cluster.local:6767/ping
         - Tdarr:
             icon: tdarr.png
             href: https://tdarr-internal.pindaroli.org
             description: Audio/Video Library Transcoder (Internal)
             widget:
-              type: tdarr
-              url: https://tdarr-internal.pindaroli.org
+               type: tdarr
+               url: https://tdarr-internal.pindaroli.org
         - Calibre-web:
             href: https://calibre-web.pindaroli.org
             description: Web-based ebook library management
@@ -177,14 +198,17 @@ data:
             href: https://nas-internal.pindaroli.org
             description: TrueNAS server (Internal)
             icon: https://www.svgrepo.com/show/331613/truenas.svg
+            siteMonitor: https://nas-internal.pindaroli.org
         - OPNsense:
             href: https://firewall-internal.pindaroli.org
             description: OPNsense firewall (Internal)
             icon: opnsense.png
+            siteMonitor: https://192.168.100.1
         - Proxmox:
             href: https://pve-internal.pindaroli.org
             description: Proxmox server (Internal)
             icon: proxmox.png
+            siteMonitor: https://pve-internal.pindaroli.org
         - MinIO:
             href: https://minio-internal.pindaroli.org
             description: S3 Object Storage (Internal)
@@ -193,6 +217,7 @@ data:
             href: https://grafana-internal.pindaroli.org
             description: Monitoring Dashboard (Internal)
             icon: grafana.png
+            siteMonitor: http://victoria-monitoring-grafana.monitoring.svc.cluster.local:80/api/health
 
     - "Network Infrastructure":
         - Core Switch:
@@ -223,6 +248,7 @@ data:
             href: https://prefect-internal.pindaroli.org
             description: Workflow & Task Orchestrator
             icon: mdi-api
+            siteMonitor: http://prefect-server.prefect.svc.cluster.local:4200/api/health
 ---
 apiVersion: v1
 kind: Service

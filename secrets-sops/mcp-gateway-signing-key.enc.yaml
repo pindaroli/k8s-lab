@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: mcp-gateway-signing-key
+    namespace: mcp-system
+type: Opaque
+stringData:
+    GATEWAY_SIGNING_KEY: ENC[AES256_GCM,data:m08zRXuiLJfC8f4iTbeQde4NibKj/5hpcXyrU94f/+Z3dkimYtcFeSvQtRG2Q5dj86Jy8bWP2MH6fj3CSU1/1A==,iv:ERayTdwlxsfb4WiiA9CAU9kbjYP18gqN5P7kG2zuHAQ=,tag:6MUrnClxtgarCFNV70r8ig==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBuckdRYmNXcG9vOVJHTmZJ
+            UUtlRk9DR3BDNDFiL0p2dGRqa2ZrKzd4czBZCklNMU5FR1gvVE1IVWZ0S05vTk1B
+            RU5DemtYcDU0M2NtSjdwdmtaRitJNmMKLS0tIDUvWVVhNThTb0dzZG5XdTJRTENo
+            S3gwbnNpRUg5dzdMTnE1S3dJZk13a2MKTnFMR1N+QJXdU5jXBjQyxWifiKPb1wTc
+            oDkVFT5lBbF23jTN6gfmpwP7yfR80FUSX9B/Dxw/8YP+mAksdPQQdg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-09-03T10:15:02Z"
+    mac: ENC[AES256_GCM,data:B0SQ2T3wvpAB0S/MSXb+HzloxDQH0Xa4JWv5ky7dm4pTUmyUjgIAo85vFFwnuw2thsITGN3fqyL4JieF+4WD8/NExImTqm34jruH7G+4d/GFD90987qcM2T0nPaXKMh5w/pp+L5bQ/SKyhpXMu74ex94r/Oq90u/wfvdbvCuIxY=,iv:zPF9+uP93CeJl+oq0s7IvETdLXKlQFpD1UpoXkT3OT0=,tag:yAUYvzYvr+soeLtKlp84mA==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

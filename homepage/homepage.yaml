@@ -132,20 +132,31 @@ data:
             href: https://traefik-dash.pindaroli.org
             description: Traefik reverse proxy dashboard
             icon: traefik.png
+            siteMonitor: http://traefik-metrics.traefik.svc.cluster.local:9100/metrics
 
     - "AI services":
         - n8n:
             href: https://n8n.pindaroli.org
             description: Workflow automation platform
             icon: n8n.png
+            siteMonitor: http://n8n.n8n.svc.cluster.local:5678/healthz
         - Hermes Agent:
             href: https://hermes.pindaroli.org
             description: LLM-based Kubernetes & Infra Agent
             icon: mdi-robot-outline
+            siteMonitor: http://hermes-hermes-agent.hermes.svc.cluster.local:9119/health
         - RAGFlow:
             href: https://ragflow.pindaroli.org
             description: Enterprise RAG & DeepDoc Document Intelligence
             icon: mdi-brain
+            siteMonitor: http://ragflow.ragflow-system.svc.cluster.local:80/
+        - MCP Gateway & Fleet:
+            href: https://mcp-ui.pindaroli.org
+            description: Model Context Protocol Fleet Gateway & Web Console (Google OAuth2)
+            icon: mdi-transit-connection-variant
+            siteMonitor: http://mcp-inspector.mcp-system.svc.cluster.local:6274
+
+
 
 
     - "ArrServices":
@@ -153,23 +164,28 @@ data:
             href: https://jellyfin.pindaroli.org
             description: Media server for movies, TV shows and music
             icon: jellyfin.png
+            siteMonitor: http://jellyfin-external-svc.arr.svc.cluster.local:8096/health
 
         - qBittorrent:
             href: https://qbittorrent.pindaroli.org
             description: BitTorrent client
             icon: qbittorrent.png
+            siteMonitor: http://servarr-qbittorrent-web.arr.svc.cluster.local:8080
         - Radarr:
             href: https://radarr.pindaroli.org
             description: Movie management
             icon: radarr.png
+            siteMonitor: http://servarr-radarr.arr.svc.cluster.local:7878/ping
         - Lidarr:
             href: https://lidarr.pindaroli.org
             description: Music management
             icon: lidarr.png
+            siteMonitor: http://servarr-lidarr.arr.svc.cluster.local:8686/ping
         - MinimServer:
             href: https://minimserver.pindaroli.org
             description: Audio DLNA/UPnP library server
             icon: minimserver.png
+            siteMonitor: http://servarr-minimserver.arr.svc.cluster.local:9790
 
 
 
@@ -178,14 +194,17 @@ data:
             href: https://prowlarr.pindaroli.org
             description: Indexer management
             icon: prowlarr.png
+            siteMonitor: http://servarr-prowlarr.arr.svc.cluster.local:9696/ping
         - Autobrr:
             href: https://autobrr.pindaroli.org
             description: Torrent monitor and automation
             icon: autobrr.png
+            siteMonitor: http://servarr-autobrr.arr.svc.cluster.local:7474
         - Bazarr:
             href: https://bazarr.pindaroli.org
             description: Subtitle management
             icon: bazarr.png
+            siteMonitor: http://servarr-bazarr.arr.svc.cluster.local:6767/ping
         - Tdarr:
             href: https://tdarr.pindaroli.org
             description: Audio/Video Library Transcoder
@@ -203,14 +222,17 @@ data:
             href: https://nas.pindaroli.org
             description: TrueNAS server
             icon: https://www.svgrepo.com/show/331613/truenas.svg
+            siteMonitor: https://nas-internal.pindaroli.org
         - OPNsense:
             href: https://firewall.pindaroli.org
             description: OPNsense firewall
             icon: opnsense.png
+            siteMonitor: https://192.168.100.1
         - Proxmox:
             href: https://pve.pindaroli.org
             description: Proxmox server
             icon: proxmox.png
+            siteMonitor: https://pve-internal.pindaroli.org
         - MinIO:
             href: https://minio.pindaroli.org
             description: S3 Object Storage
@@ -219,6 +241,7 @@ data:
             href: https://grafana.pindaroli.org
             description: Monitoring Dashboard
             icon: grafana.png
+            siteMonitor: http://victoria-monitoring-grafana.monitoring.svc.cluster.local:80/api/health
 
     - "Network Infrastructure":
         - Core Switch:
@@ -245,6 +268,7 @@ data:
             href: https://prefect.pindaroli.org
             description: Workflow & Task Orchestrator
             icon: mdi-api
+            siteMonitor: http://prefect-server.prefect.svc.cluster.local:4200/api/health
   widgets.yaml: |
     - kubernetes:
         cluster:
@@ -481,7 +505,7 @@ spec:
 apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
 metadata:
-  name: opnsense-external-1
+  name: opnsense-firewall-mgmt-ip
   labels:
     kubernetes.io/service-name: opnsense-external
 addressType: IPv4
@@ -490,7 +514,7 @@ ports:
     protocol: TCP
 endpoints:
   - addresses:
-      - "10.10.20.254"
+      - "192.168.100.1"
     conditions:
       ready: true
 ---
@@ -510,6 +534,7 @@ spec:
       port: 443
       scheme: https
       serversTransport: skip-verify
+      passHostHeader: false
     middlewares:
     - name: oauth2-auth
       namespace: traefik
@@ -520,6 +545,7 @@ spec:
       port: 443
       scheme: https
       serversTransport: skip-verify
+      passHostHeader: false
   tls:
     secretName: pindaroli-wildcard-tls
 ---

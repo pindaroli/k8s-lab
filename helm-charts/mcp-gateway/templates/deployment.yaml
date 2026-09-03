@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-broker-router
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mcp-gateway.labels" . | nindent 4 }}
+    app: mcp-broker-router
+    component: broker-router
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: mcp-broker-router
+      component: broker-router
+  template:
+    metadata:
+      labels:
+        app: mcp-broker-router
+        component: broker-router
+    spec:
+      containers:
+        - name: mcp-broker-router
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - ./mcp_gateway
+            - --mcp-gateway-config=/config/config.yaml
+            - --mcp-broker-public-address=0.0.0.0:8080
+            - --mcp-gateway-public-host={{ .Values.gateway.publicHost }}
+            - --mcp-router-address=0.0.0.0:50051
+            {{- if .Values.enableURLElicitation }}
+            - --enable-url-elicitation
+            {{- end }}
+            - --log-level={{ .Values.logLevel }}
+          env:
+            - name: GATEWAY_SIGNING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.signingKey.secretName }}
+                  key: {{ .Values.signingKey.secretKey }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: grpc
+              containerPort: 50051
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: config
+          secret:
+            secretName: mcp-gateway-config

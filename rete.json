@@ -928,7 +928,11 @@
         "hermes",
         "hermes-internal",
         "ragflow",
-        "ragflow-internal"
+        "ragflow-internal",
+        "mcp",
+        "mcp-internal",
+        "mcp-ui",
+        "mcp-ui-internal"
       ],
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
     },
