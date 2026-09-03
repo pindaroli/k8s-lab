@@ -23,5 +23,19 @@
 
 - **Mandato Gestione Server MCP (mcp_config.json)**: Ogni volta che l'utente richiede di installare o configurare un nuovo server MCP, la configurazione **DEVE essere eseguita tassativamente in modo centralizzato all'interno di `~/.gemini/antigravity/mcp_config.json`**, evitando l'uso di plugin o directory nascoste. Eventuali script Python, monkeypatch o wrapper personalizzati devono essere salvati nella repository in `scripts/<mcp-name>/`. L'AI deve segnalare all'utente esclusivamente eventuali impedimenti tecnici oggettivi che impediscano questo approccio centralizzato.
 
+- **RAGFlow Knowledge Base Policy (`k8s-lab` Dataset)**:
+  - **Scope & Purpose**: The RAGFlow knowledge base (dataset: `k8s-lab`) is the authoritative source for homelab physical hardware documentation, including vendor manuals, component datasheets, installation guides, motherboard pinouts, PCIe slot allocations/bifurcation, BIOS/UEFI/IPMI settings, chassis cabling, and power/thermal specifications (servers, Extreme switch, TrueNAS host, NICs, storage controllers, UPS).
+  - **Intelligent Trigger Conditions (MUST query RAGFlow via `ragflow_search` / `ragflow_ask_assistant`)**:
+    1. **Hardware Specifications & Datasheets**: Queries regarding physical component specs, power consumption, connector types, jumper settings, or hardware capabilities.
+    2. **Installation & Setup Guides**: Questions about physical mounting, internal cabling, BIOS/BMC configuration procedures, or vendor-specific troubleshooting from manuals.
+    3. **Vendor Model Inquiries**: Whenever the user references specific hardware models present in the lab (e.g., Extreme switch models, motherboard model numbers, network card chipsets).
+    4. **Local Knowledge Fallback**: If local repository files (`rete.json`, `ansible/`, `wiki/`) lack physical hardware details, query RAGFlow before declaring missing data or searching the web.
+  - **Strict Exclusions (Do NOT query RAGFlow)**:
+    - **Live Cluster Operations**: Real-time pod status, service health, live ZFS pool states, Talos cluster events, or OPNsense active firewall states -> Query live system tools directly.
+    - **Git Workspace Code & Configs**: Helm values (`arr-values.yaml`), Kubernetes manifests, Ansible playbooks, and GitOps logic -> Inspect local repository files.
+    - **General Programming / Syntax**: Standard Python, YAML, or bash syntax questions.
+  - **Citation Protocol**: Whenever answering based on RAGFlow retrieval, the agent MUST explicitly cite the source document name, the `k8s-lab` dataset, and the specific section or page referenced.
+
+
 
 
