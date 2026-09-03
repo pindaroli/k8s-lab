@@ -5,23 +5,6 @@
       "server_vlan": "10.10.10.50",
       "client_vlan": "10.10.10.50"
     },
-    "local": {
-      "postgres_disk": {
-        "device": "/dev/sdb",
-        "mountpoint": "/var/mnt/postgres",
-        "description": "Dedicate Zvol for CloudNativePG",
-        "size": "100Gi",
-        "fs": "XFS (Formatted by Talos)",
-        "provisioner": "rancher.io/local-path",
-        "status": "OPERATIONAL",
-        "notes": "Local storage is physically bound to the nodes. Active replication handled by CNPG across talos-cp-01, talos-cp-02, and talos-cp-03.",
-        "nodes": [
-          "talos-cp-01",
-          "talos-cp-02",
-          "talos-cp-03"
-        ]
-      }
-    },
     "exports": {
       "k8s_arr": {
         "path": "/mnt/stripe/k8s-arr",
@@ -59,24 +42,6 @@
           "10.10.20.143",
           "10.10.20.100",
           "10.10.10.0/24"
-        ],
-        "subdirs": [
-          {
-            "name": "downloads/radarr",
-            "purpose": "qBittorrent category 'radarr' save path"
-          },
-          {
-            "name": "downloads/lidarr",
-            "purpose": "qBittorrent category 'lidarr' save path"
-          },
-          {
-            "name": "downloads/readarr",
-            "purpose": "qBittorrent category 'readarr' save path"
-          },
-          {
-            "name": "downloads/classical",
-            "purpose": "qBittorrent category 'classical' save path"
-          }
         ]
       },
       "classical": {
@@ -117,10 +82,7 @@
           "10.10.20.143",
           "10.10.20.100",
           "10.10.10.0/24"
-        ],
-        "zfs_recordsize": "16k",
-        "zfs_sync": "disabled",
-        "notes": "Optimized for IOPS burst. Force Async sync for high-speed download."
+        ]
       },
       "backup_proxmox": {
         "path": "/mnt/oliraid/backup-proxmox",
@@ -129,47 +91,6 @@
         "networks": [
           "10.10.10.0/24"
         ]
-      },
-      "pbs_os": {
-        "path": "/dev/zvol/oliraid/pbs-os",
-        "description": "Dedicated Sparse Zvol for Proxmox Backup Server OS",
-        "protocol": "virtio-block",
-        "size": "32GiB",
-        "sparse": true,
-        "volblocksize": "16k",
-        "notes": "Thin-provisioned block device passed directly to PBS VM on TrueNAS KVM (/dev/vda)."
-      },
-      "pbs_store": {
-        "path": "/dev/zvol/oliraid/pbs-store-vol",
-        "mountpoint": "/mnt/datastore/pbs-store",
-        "description": "High-Performance PBS Datastore on Sparse Zvol (ext4)",
-        "protocol": "virtio-block",
-        "size": "1.5TiB",
-        "sparse": true,
-        "volblocksize": "64k",
-        "fs": "ext4",
-        "mount_options": [
-          "defaults",
-          "noatime",
-          "barrier=0",
-          "commit=60"
-        ],
-        "notes": "Zero-copy VirtIO block device (/dev/vdb) formatted with ext4 (-m 1) and tuned for high chunk I/O."
-      },
-      "pbs_store_legacy_nfs": {
-        "path": "/mnt/oliraid/pbs-store",
-        "description": "Legacy NFS PBS Datastore (Migration Source)",
-        "protocol": "nfs",
-        "status": "MIGRATION_SOURCE",
-        "networks": [
-          "10.10.10.0/24"
-        ]
-      },
-      "backup_k8s_arr": {
-        "path": "/mnt/oliraid/backup-stripe",
-        "description": "Replica Target for Stripe (ZFS Snapshots)",
-        "protocol": "zfs-replication",
-        "networks": []
       },
       "k8s_n8n": {
         "path": "/mnt/stripe/k8s-n8n",
@@ -186,7 +107,8 @@
           "10.10.20.141",
           "10.10.20.142",
           "10.10.20.143",
-          "10.10.20.100"
+          "10.10.20.100",
+          "10.10.10.0/24"
         ]
       },
       "games": {
@@ -208,18 +130,19 @@
         "path": "/mnt/oliraid/garage-data",
         "description": "Dataset ZFS per Garage S3",
         "protocol": "hostpath/docker",
-        "notes": "Mappato direttamente all'app Custom Garage su TrueNAS. Buckets: postgres-wal, velero, ragflow-docs.",
-        "networks": []
+        "notes": "Mappato direttamente all'app Custom Garage su TrueNAS. Buckets: postgres-wal, velero, ragflow-docs."
       },
       "jellyfin_trickplay": {
         "path": "/mnt/oliraid/jellyfin-trickplay",
         "description": "Specialized ZFS Dataset for Jellyfin Trickplay (BIF) files",
         "protocol": "nfs",
-        "zfs_compression": "zstd",
-        "zfs_recordsize": "1M",
-        "zfs_atime": "off",
-        "zfs_quota": "500G",
-        "notes": "Dedicated dataset excluded from ZFS snapshot backups and offsite replicas. High performance 1M recordsize for large BIF sequential files.",
+        "mount_options": [
+          "nfsvers=4.1",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime"
+        ],
         "networks": [
           "10.10.20.141",
           "10.10.20.142",
@@ -232,7 +155,6 @@
         "path": "/mnt/oliraid/k8s-sn",
         "description": "NFS Storage per ServiceNow MID Server (Cache Workdir, Download & Logs)",
         "protocol": "nfs",
-        "zfs_quota": "20G",
         "mount_options": [
           "nfsvers=4.1",
           "soft",

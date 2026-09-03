@@ -8,8 +8,9 @@
 - [x] **Leakage Risolto**: Le chiavi esposte sono state rimosse dal firewall e quelle nuove sono protette tramite cifratura con Ansible Vault.
 
 ## 🚀 [ ] Sincronizzazione & Allineamento TrueNAS NFS con storage.json [[truenas-storage-json-sync]]
-- [ ] Analizzare discrepanze tra export live TrueNAS (`/api/v2.0/sharing/nfs`) e `storage.json`.
-- [ ] Riconciliare `storage.json` come Source of Truth per rimuovere duplicazioni e disallineamenti.
+- [x] Analizzare discrepanze e duplicazioni tra TrueNAS e `storage.json`.
+- [ ] Riconciliare e snellire `storage.json` come Source of Truth per rimuovere duplicazioni e disallineamenti.
+- [ ] Sviluppare Playbook Ansible per allineare ed applicare dichiarativamente le share NFS su TrueNAS da `storage.json` via REST API v2 (`/api/v2.0/sharing/nfs`).
 - [ ] Verificare conformità permessi e maproot (`chmod 777`, `olindo:k8s`, `maproot_user="root"`, `maproot_group="wheel"`).
 
 ## 🚀 [ ] Talos & Kubernetes Upgrade Plan [[talos-1.13.5-upgrade]]
