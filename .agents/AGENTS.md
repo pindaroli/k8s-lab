@@ -25,7 +25,7 @@
 
 - **RAGFlow Knowledge Base Policy (`k8s-lab` Dataset)**:
   - **Scope & Purpose**: The RAGFlow knowledge base (dataset: `k8s-lab`) is the authoritative source for homelab physical hardware documentation, including vendor manuals, component datasheets, installation guides, motherboard pinouts, PCIe slot allocations/bifurcation, BIOS/UEFI/IPMI settings, chassis cabling, and power/thermal specifications (servers, Extreme switch, TrueNAS host, NICs, storage controllers, UPS).
-  - **Intelligent Trigger Conditions (MUST query RAGFlow via `ragflow_search` / `ragflow_ask_assistant`)**:
+  - **Intelligent Trigger Conditions (MUST query RAGFlow via `ragflow_retrieval_by_name`)**:
     1. **Hardware Specifications & Datasheets**: Queries regarding physical component specs, power consumption, connector types, jumper settings, or hardware capabilities.
     2. **Installation & Setup Guides**: Questions about physical mounting, internal cabling, BIOS/BMC configuration procedures, or vendor-specific troubleshooting from manuals.
     3. **Vendor Model Inquiries**: Whenever the user references specific hardware models present in the lab (e.g., Extreme switch models, motherboard model numbers, network card chipsets).

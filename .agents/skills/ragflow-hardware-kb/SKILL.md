@@ -25,7 +25,7 @@ The `k8s-lab` dataset contains datasheets, installation manuals, hardware refere
 - **Power & Protection**: NUT / UPS systems, serial/USB monitoring pinouts, wattage ratings, runtime curves.
 
 ## Intelligent Trigger Conditions (When to Use)
-Activate this skill and query RAGFlow (`ragflow_search` or `ragflow_ask_assistant`) when:
+Activate this skill and query RAGFlow (`ragflow_retrieval_by_name`) when:
 1. **Component Specifications & Datasheets**: User asks about power consumption, dimensions, supported RAM types, PCIe slot bandwidth, jumper settings, or hardware limits.
 2. **Installation & Cabling Guides**: Questions about motherboard headers, front panel wiring, serial console pinout, fan headers, or storage controller cabling.
 3. **Firmware & BIOS/IPMI Configuration**: Vendor-recommended BIOS settings, BMC default IPs, jumper recovery procedures.
@@ -38,9 +38,9 @@ Activate this skill and query RAGFlow (`ragflow_search` or `ragflow_ask_assistan
 
 ## Execution Workflow
 1. **Identify Hardware Model**: Extract the exact component, server, switch, or controller model from the user query.
-2. **Query RAGFlow**:
-   - Use `ragflow_search(query=..., dataset_name="k8s-lab")` to retrieve relevant chunks, tables, and page excerpts.
-   - If dataset IDs are needed, use `ragflow_list_datasets()` to verify `k8s-lab` availability.
+2. **Query RAGFlow via `ragflow-local`**:
+   - Use `ragflow_retrieval_by_name(dataset_names=["k8s-lab"], query=...)` to retrieve relevant chunks, tables, and page excerpts.
+   - Use `ragflow_list_datasets()` or `ragflow_list_documents_by_name(dataset_name="k8s-lab")` to inspect available knowledge base documents.
 3. **Synthesize & Cite**:
    - Answer the question clearly in the user's language (Italian/English).
    - **MANDATORY**: Explicitly cite the source document name, the `k8s-lab` dataset, and section/page if available.
