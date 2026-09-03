@@ -1,0 +1,53 @@
+{{- if .Values.inspector.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-inspector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mcp-gateway.labels" . | nindent 4 }}
+    app.kubernetes.io/name: mcp-inspector
+    app.kubernetes.io/part-of: mcp-fleet
+    app: mcp-inspector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-inspector
+  template:
+    metadata:
+      labels:
+        app: mcp-inspector
+        app.kubernetes.io/name: mcp-inspector
+        app.kubernetes.io/part-of: mcp-fleet
+    spec:
+      containers:
+        - name: inspector
+          image: "{{ .Values.inspector.image.repository }}:{{ .Values.inspector.image.tag }}"
+          imagePullPolicy: {{ .Values.inspector.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: 6274
+              protocol: TCP
+          env:
+            - name: ALLOWED_ORIGINS
+              value: {{ .Values.inspector.env.ALLOWED_ORIGINS | quote }}
+          {{- if .Values.inspector.nfsMounts }}
+          volumeMounts:
+            {{- range .Values.inspector.nfsMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.inspector.resources | nindent 12 }}
+      {{- if .Values.inspector.nfsMounts }}
+      volumes:
+        {{- range .Values.inspector.nfsMounts }}
+        - name: {{ .name }}
+          nfs:
+            server: {{ .server }}
+            path: {{ .path }}
+        {{- end }}
+      {{- end }}
+{{- end }}

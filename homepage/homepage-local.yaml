@@ -126,11 +126,11 @@ data:
             description: Enterprise RAG & DeepDoc Document Intelligence (Internal)
             icon: mdi-brain
             siteMonitor: http://ragflow.ragflow-system.svc.cluster.local:80/
-        - MCP Gateway & Fleet:
-            href: https://mcp-ui-internal.pindaroli.org
-            description: Model Context Protocol Fleet Gateway & Web Console (Internal)
-            icon: mdi-transit-connection-variant
-            siteMonitor: http://mcp-inspector.mcp-system.svc.cluster.local:6274
+        # - MCP Gateway & Fleet:
+        #     href: https://mcp-ui-internal.pindaroli.org
+        #     description: Model Context Protocol Fleet Gateway & Web Console (Internal)
+        #     icon: mdi-transit-connection-variant
+        #     siteMonitor: http://mcp-inspector.mcp-system.svc.cluster.local:6274
 
 
 

@@ -1,0 +1,21 @@
+{{- if .Values.inspector.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-inspector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mcp-gateway.labels" . | nindent 4 }}
+    app.kubernetes.io/name: mcp-inspector
+    app.kubernetes.io/part-of: mcp-fleet
+    app: mcp-inspector
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 6274
+      targetPort: 6274
+      protocol: TCP
+  selector:
+    app: mcp-inspector
+{{- end }}

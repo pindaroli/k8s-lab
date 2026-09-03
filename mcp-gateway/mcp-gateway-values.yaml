@@ -35,3 +35,29 @@ servers:
     hostname: "mcp-github-mcp-proxy.mcp-system.svc.cluster.local"
     enabled: true
     prefix: "github_"
+
+# Configurazione MCP Inspector (Web UI e File System Access)
+inspector:
+  enabled: false
+  image:
+    repository: ghcr.io/modelcontextprotocol/inspector
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  env:
+    ALLOWED_ORIGINS: "https://mcp-ui.pindaroli.org,https://mcp-ui-internal.pindaroli.org,http://localhost:6274,http://127.0.0.1:6274"
+  nfsMounts:
+    - name: nfs-media
+      server: 10.10.10.50
+      path: /mnt/oliraid/arrdata/media
+      mountPath: /mnt/media
+    - name: nfs-classical
+      server: 10.10.10.50
+      path: /mnt/oliraid/arrdata/classical
+      mountPath: /mnt/classical
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi

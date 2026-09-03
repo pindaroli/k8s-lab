@@ -27,3 +27,20 @@ resources:
     memory: 256Mi
 
 servers: []
+
+inspector:
+  enabled: false
+  image:
+    repository: ghcr.io/modelcontextprotocol/inspector
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  env:
+    ALLOWED_ORIGINS: ""
+  nfsMounts: []
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
