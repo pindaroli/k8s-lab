@@ -3,6 +3,7 @@ title: "Piano: Installazione TrueNAS Master MCP"
 type: plan
 status: archived
 certified_for_ai: false
+superseded_by: [[truenas-master-mcp-kubernetes-migration]]
 created_at: 2026-06-28
 completed_at: 2026-06-28
 tags:

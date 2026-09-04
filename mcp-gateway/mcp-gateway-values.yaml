@@ -62,6 +62,42 @@ servers:
           cpu: "50m"
           memory: "64Mi"
 
+  - name: truenas
+    url: "http://mcp-truenas-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
+    hostname: "mcp-truenas-mcp-proxy.mcp-system.svc.cluster.local"
+    enabled: true
+    prefix: "truenas_"
+    ingress:
+      enabled: true
+      host: "truenas-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: truenas-mcp
+      image: ghcr.io/pindaroli/truenas-master-mcp:latest
+      transport: stdio
+      proxyPort: 8080
+      secrets:
+        - name: truenas-mcp-credentials
+          key: TRUENAS_API_KEY
+          targetEnvName: TRUENAS_API_KEY
+      env:
+        - name: TRUENAS_SERVER_URL
+          value: "https://10.10.10.50"
+        - name: TRUENAS_VERIFY_SSL
+          value: "false"
+        - name: TRUENAS_TIMEOUT
+          value: "30"
+        - name: TRUENAS_VERSION
+          value: "scale"
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+
 # Configurazione MCP Inspector (Web UI e File System Access)
 inspector:
   enabled: false

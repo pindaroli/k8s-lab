@@ -1,6 +1,6 @@
 ---
 title: "MCP Platform (Model Context Protocol Hub & Inspector)"
-last_updated: "2026-09-03"
+last_updated: "2026-09-04"
 confidence: "High"
 tags:
   - "#mcp"
@@ -48,17 +48,20 @@ flowchart TD
         ROUTER["Kuadrant MCP Gateway (ghcr.io/kuadrant/mcp-gateway:v0.9.0)"]
         TH["ToolHive Operator (Stacklok)"]
         GH["github-mcp-proxy (MCPServer)"]
+        TN["truenas-mcp-proxy (MCPServer)"]
     end
 
     subgraph Storage["TrueNAS SCALE (10.10.10.50)"]
         NFS_MED["/mnt/oliraid/arrdata/media -> /mnt/media"]
         NFS_CLA["/mnt/oliraid/arrdata/classical -> /mnt/classical"]
+        API_TN["TrueNAS REST API v2.0 (Port 443)"]
     end
 
     USER --> TR_EXT & TR_INT --> INSP
     AG & HA & N8N --> GW_INT --> ROUTER
-    ROUTER --> GH
-    TH -.->|Gestione Lifecycle| GH
+    ROUTER --> GH & TN
+    TH -.->|Gestione Lifecycle| GH & TN
+    TN -->|API Calls| API_TN
     Storage -->|NFS Mount| INSP
 ```
 
@@ -82,7 +85,7 @@ flowchart TD
 
 Ai sensi della regola aurea [[GEMINI#3. Security & Operational Policies (The Golden Rules)|HELM DEPLOYMENT & PROJECT CHARTS]]:
 - **Motivazione dell'incompatibilità upstream**: La chart ufficiale Kuadrant (`oci://ghcr.io/kuadrant/charts/mcp-gateway`) impone la presenza della Service Mesh Istio/Envoy e una dozzina di controller/CRD enterprise non presenti nel cluster.
-- **Implementazione**: Viene mantenuta la Chart di Progetto `helm-charts/mcp-gateway/` (versione semantica `0.2.0`) che aggrega in modo snello sia il Broker Kuadrant sia l'Inspector Web UI.
+- **Implementazione**: Viene mantenuta la Chart di Progetto `helm-charts/mcp-gateway/` (versione semantica `0.2.3`) che aggrega sia il Broker Kuadrant, sia i server federati gestiti da ToolHive (GitHub, TrueNAS), sia l'Inspector Web UI.
 - **Configurazione Centralizzata**: L'intero deployment di produzione è governato dichiarativamente dal file [mcp-gateway/mcp-gateway-values.yaml](file:///Users/olindo/prj/k8s-lab/mcp-gateway/mcp-gateway-values.yaml).
 
 ---

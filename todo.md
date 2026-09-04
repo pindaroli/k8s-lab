@@ -7,6 +7,15 @@
 - [x] Verificare il funzionamento delle nuove chiavi con lo script `scripts/check_opnsense_plugins.py`.
 - [x] **Leakage Risolto**: Le chiavi esposte sono state rimosse dal firewall e quelle nuove sono protette tramite cifratura con Ansible Vault.
 
+## 🚀 [x] ✅ COMPLETATO: Migrazione Kubernetes di TrueNAS Master MCP [[truenas-master-mcp-kubernetes-migration]]
+- [x] Fase 1: Fork GitHub `hongkongkiwi/truenas-master-mcp` -> `pindaroli/truenas-master-mcp` e riallineamento remotes.
+- [x] Fase 2: Containerizzazione Docker, commit dei fix homelab e CI/CD GitHub Actions su GHCR.
+- [x] Fase 3: Provisioning secret SOPS `truenas-mcp-credentials` in `mcp-system`.
+- [x] Fase 4: Integrazione nella Project Chart Helm `mcp-gateway` via ToolHive Operator.
+- [x] Fase 5: Routing Traefik IngressRoute e registrazione DNS Unbound `truenas-mcp-internal.pindaroli.org`.
+- [x] Fase 6: Aggiornamento endpoint `serverUrl` in `mcp_config.json`.
+- [x] Fase 7: Validazione funzionale end-to-end e consolidamento Wiki.
+
 ## 🚀 [ ] Sincronizzazione & Allineamento TrueNAS NFS con storage.json [[truenas-storage-json-sync]]
 - [x] Analizzare discrepanze e duplicazioni tra TrueNAS e `storage.json`.
 - [ ] Riconciliare e snellire `storage.json` come Source of Truth per rimuovere duplicazioni e disallineamenti.
