@@ -1,0 +1,30 @@
+{{- range .Values.servers }}
+{{- if and .enabled .toolhive .toolhive.enabled }}
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: {{ default (printf "%s-mcp" .name) .toolhive.name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "mcp-gateway.labels" $ | nindent 4 }}
+    app.kubernetes.io/part-of: mcp-fleet
+    mcp.stacklok.dev/server: {{ .name }}
+spec:
+  image: {{ .toolhive.image }}
+  transport: {{ default "stdio" .toolhive.transport }}
+  proxyPort: {{ default 8080 .toolhive.proxyPort }}
+  {{- if .toolhive.secrets }}
+  secrets:
+    {{- toYaml .toolhive.secrets | nindent 4 }}
+  {{- end }}
+  {{- if .toolhive.env }}
+  env:
+    {{- toYaml .toolhive.env | nindent 4 }}
+  {{- end }}
+  {{- if .toolhive.resources }}
+  resources:
+    {{- toYaml .toolhive.resources | nindent 4 }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}

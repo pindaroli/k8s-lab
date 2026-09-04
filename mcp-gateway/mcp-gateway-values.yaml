@@ -35,6 +35,32 @@ servers:
     hostname: "mcp-github-mcp-proxy.mcp-system.svc.cluster.local"
     enabled: true
     prefix: "github_"
+    ingress:
+      enabled: true
+      host: "github-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: github-mcp
+      image: ghcr.io/github/github-mcp-server
+      transport: stdio
+      proxyPort: 8080
+      secrets:
+        - name: github-mcp-credentials
+          key: GITHUB_PERSONAL_ACCESS_TOKEN
+          targetEnvName: GITHUB_PERSONAL_ACCESS_TOKEN
+      env:
+        - name: GITHUB_API_URL
+          value: https://api.github.com
+        - name: LOG_LEVEL
+          value: info
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
 
 # Configurazione MCP Inspector (Web UI e File System Access)
 inspector:

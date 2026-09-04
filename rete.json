@@ -932,7 +932,8 @@
         "mcp",
         "mcp-internal",
         "mcp-ui",
-        "mcp-ui-internal"
+        "mcp-ui-internal",
+        "github-mcp-internal"
       ],
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
     },

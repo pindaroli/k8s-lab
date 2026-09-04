@@ -1,0 +1,21 @@
+{{- range .Values.servers }}
+{{- if and .enabled .ingress .ingress.enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .name }}-mcp-internal
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "mcp-gateway.labels" $ | nindent 4 }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ .ingress.host }}`)
+      kind: Rule
+      services:
+        - name: mcp-{{ .name }}-mcp-proxy
+          port: {{ default 8080 .ingress.port }}
+---
+{{- end }}
+{{- end }}
