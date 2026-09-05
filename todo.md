@@ -40,6 +40,14 @@
 - [x] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
 - [x] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
 
+## 🚀 [ ] IN PIANIFICAZIONE: Migrazione Kubernetes di Kubernetes MCP Server [[kubernetes-mcp-server-kubernetes-migration]]
+- [ ] Fase 1: Configurazione permessi RBAC (ClusterRoleBinding) o provisioning secret SOPS (`secrets-sops/kubernetes-mcp-credentials.enc.yaml`).
+- [ ] Fase 2: Integrazione server `kubernetes` nella Project Chart Helm `mcp-gateway` (ToolHive stdio -> HTTP/SSE bridge :8080).
+- [ ] Fase 3: Configurazione routing Traefik IngressRoute e alias DNS Unbound `kubernetes-mcp-internal.pindaroli.org`.
+- [ ] Fase 4: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
+- [ ] Fase 5: Validazione Test-Driven end-to-end e non-regressione.
+- [ ] Fase 6: Aggiornamento `MCP_Platform.md` e consolidamento Wiki.
+
 ## 🚀 [ ] Out-of-Band Automation Engine: LXC su TrueNAS NFS (`oliraid`) + Semaphore + MCP Gateway [[out-of-band-automation-engine]]
 ### [ ] PARTE 1: PIANO PRINCIPALE (Parent Plan)
 - [ ] Fase 1: Creazione dataset TrueNAS `oliraid/pve-shared-lxc` (ZFS Special VDEV 64K, recordsize 64K, atime=off, xattr=sa, lz4), export NFS e registrazione `truenas-nfs` su Proxmox VE.
