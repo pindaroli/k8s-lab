@@ -16,6 +16,14 @@
 - [x] Fase 6: Aggiornamento endpoint `serverUrl` in `mcp_config.json`.
 - [x] Fase 7: Validazione funzionale end-to-end e consolidamento Wiki.
 
+## 🚀 [ ] Migrazione Kubernetes di OPNsense MCP Server [[opnsense-mcp-kubernetes-migration]]
+- [ ] Fase 1: Creazione repository GitHub `pindaroli/opnsense-mcp` e workflow CI per container `ghcr.io/pindaroli/opnsense-mcp:latest`.
+- [ ] Fase 2: Provisioning secret SOPS `secrets-sops/opnsense-mcp-credentials.enc.yaml` in `mcp-system`.
+- [ ] Fase 3: Integrazione server `opnsense` nella Project Chart Helm `mcp-gateway` (ToolHive stdio -> HTTP/SSE bridge :8080).
+- [ ] Fase 4: Configurazione routing Traefik IngressRoute e alias DNS Unbound `opnsense-mcp-internal.pindaroli.org`.
+- [ ] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
+- [ ] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
+
 ## 🚀 [ ] Out-of-Band Automation Engine: LXC su TrueNAS NFS (`oliraid`) + Semaphore + MCP Gateway [[out-of-band-automation-engine]]
 ### [ ] PARTE 1: PIANO PRINCIPALE (Parent Plan)
 - [ ] Fase 1: Creazione dataset TrueNAS `oliraid/pve-shared-lxc` (ZFS Special VDEV 64K, recordsize 64K, atime=off, xattr=sa, lz4), export NFS e registrazione `truenas-nfs` su Proxmox VE.
