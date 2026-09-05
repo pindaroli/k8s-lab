@@ -124,6 +124,47 @@
 ### [ ] FASE 4: Test-Driven Verification & Test RAG
 - [ ] Test recupero semantico dal dataset RAGFlow e validazione citazioni.
 
+## 🚀 [ ] Integrazione Suite Server MCP Standard (Antigravity & ToolHive) [[mcp-servers-suite-integration]]
+### [ ] FASE 1: MCP Server Filesystem (Categoria: File)
+- [ ] Pacchetto: `@modelcontextprotocol/server-filesystem` (Runtime: Node.js >= 18).
+- [ ] Configurazione centralizzata in `~/.gemini/antigravity/mcp_config.json` con autorizzazione esplicita dei percorsi assoluti del workspace (`/Users/olindo/prj/k8s-lab`, `/Users/olindo/prj/pindaroli-arr-helm`).
+- [ ] Test di lettura/scrittura filesystem tramite tool MCP.
+
+### [ ] FASE 2: MCP Server Git (Categoria: Git)
+- [ ] Pacchetto: `mcp-server-git` (Runtime: Python >= 3.10 / uvx).
+- [ ] Verifica binario `git` nel PATH di sistema e configurazione percorsi repository consentiti in `~/.gemini/antigravity/mcp_config.json`.
+- [ ] Test esecuzione comandi git (status, diff, log) tramite tool MCP.
+
+### [ ] FASE 3: MCP Server Fetch (Categoria: Web)
+- [ ] Pacchetto: `@modelcontextprotocol/server-fetch` (Runtime: Node.js >= 18).
+- [ ] Configurazione in `~/.gemini/antigravity/mcp_config.json` (nessuna chiave API richiesta).
+- [ ] Test di scraping/estrazione contenuti web statici via HTTP/Markdown.
+
+### [ ] FASE 4: MCP Server Puppeteer (Categoria: Web Dinamico)
+- [ ] Pacchetto: `@modelcontextprotocol/server-puppeteer` (Runtime: Node.js >= 18).
+- [ ] Configurazione in `~/.gemini/antigravity/mcp_config.json` e verifica download/funzionamento browser headless Chromium.
+- [ ] Test di rendering pagine web dinamiche, interazione e screenshot.
+
+### [ ] FASE 5: MCP Server Brave Search (Categoria: Search)
+- [ ] Pacchetto: `@modelcontextprotocol/server-brave-search` (Runtime: Node.js >= 18).
+- [ ] Provisioning token Brave Search API e cifratura in SOPS (`secrets-sops/brave-search-mcp.enc.yaml`).
+- [ ] Configurazione env `BRAVE_API_KEY` in `~/.gemini/antigravity/mcp_config.json` e test query di ricerca web.
+
+### [ ] FASE 6: MCP Server SQLite (Categoria: Database)
+- [ ] Pacchetto: `@modelcontextprotocol/server-sqlite` (Runtime: Node.js >= 18).
+- [ ] Mappatura dei percorsi ai database locali `.db` / `.sqlite` (es. n8n SQLite, Beets DB).
+- [ ] Configurazione in `~/.gemini/antigravity/mcp_config.json` e test query SQL (introspezione schema e SELECT).
+
+### [ ] FASE 7: MCP Server PostgreSQL (Categoria: Database)
+- [ ] Pacchetto: `@modelcontextprotocol/server-postgres` (Runtime: Node.js >= 18).
+- [ ] Configurazione connection string URI verso `postgres-main` (cluster CNPG `10.10.20.56:5432`) o istanze target.
+- [ ] Cifratura credenziali con SOPS, configurazione in `~/.gemini/antigravity/mcp_config.json` e test connettività/query.
+
+### [ ] FASE 8: MCP Server GitHub (Categoria: Cloud/VCS)
+- [ ] Pacchetto: `@modelcontextprotocol/server-github` (Runtime: Node.js >= 18).
+- [ ] Verifica integrazione/allineamento con il server Kubernetes `github-mcp-internal.pindaroli.org` già attivo.
+- [ ] Verifica Personal Access Token GitHub (`GITHUB_PERSONAL_ACCESS_TOKEN`), configurazione e test API (issue, PR, repo).
+
 ## 🚀 [ ] ServiceNow & CMDB Homelab Integration Plan [[plan-servicenow-homelab-integration]]
 ### [ ] FASE 1: Foundation & Struttura Dati Fondazionale (Piattaforma)
 - [ ] Creazione Company `HomeLab Corp`, Dipartimenti (`IT Ops`, `NetOps`, `DevOps`, `Security`) e Location `Home Server Room`.
@@ -371,6 +412,25 @@
 - [x] **Fase 3: Deploy & Verifiche**
   - [x] Eseguire dry-run e validazione localmente
   - [x] Eseguire deploy e validare l'esecuzione del Job di setup categorie
+
+## qBittorrent Exporter Sidecar & Monitoring
+
+### [ ] Integrazione Sidecar qBittorrent Exporter & Scraping VictoriaMetrics [[qbittorrent-exporter-sidecar-integration]]
+- [ ] **Fase 1: Analisi e Selezione Immagine Exporter (Risoluzione Bug Auth 204)**
+  - [ ] Verificare il fallimento del login di `ghcr.io/martabal/qbittorrent-exporter:v1.12.1` dovuto al codice `HTTP 204 No Content` di qBittorrent 5.2.x.
+  - [ ] Individuare o compilare una versione aggiornata/fork dell'exporter (o container custom) che supporti HTTP 204 e il cookie `QBT_SID_<PORT>`.
+- [ ] **Fase 2: Standardizzazione nel Chart Helm (`pindaroli-arr-helm`)**
+  - [ ] Verificare o estendere il template `charts/servarr/templates/qbittorrent/` con il supporto sidecar o parametrizzazione dedicata per l'exporter delle metriche.
+  - [ ] Verificare l'esposizione della porta `metrics` (8090) nel Service `servarr-qbittorrent-web` e la risorsa `VMServiceScrape` (`monitoring.yaml`).
+  - [ ] Incrementare la versione del chart (`Chart.yaml`) secondo SemVer.
+- [ ] **Fase 3: Configurazione Cluster & GitOps (`k8s-lab`)**
+  - [ ] Aggiornare `servarr/arr-values.yaml` con l'immagine corretta, secret credentials (`servarr-api-keys`), porte e configurazioni.
+  - [ ] Verificare la Custom Resource `VMServiceScrape` `servarr-qbittorrent-metrics` nel namespace `arr`.
+- [ ] **Fase 4: Deploy & Validazione Test-Driven**
+  - [ ] Eseguire il deploy via Helm: `helm upgrade --install servarr charts/servarr -f ../k8s-lab/servarr/arr-values.yaml -n arr`.
+  - [ ] Verificare che il container sidecar sia in stato Running senza errori nei log.
+  - [ ] Eseguire test di scraping dell'endpoint `/metrics` da Pod interno.
+  - [ ] Verificare la rilevazione del target in VictoriaMetrics (`vmagent`) e la visualizzazione su Grafana.
 
 ## MinimServer Deployment
 
