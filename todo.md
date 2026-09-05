@@ -16,6 +16,21 @@
 - [x] Fase 6: Aggiornamento endpoint `serverUrl` in `mcp_config.json`.
 - [x] Fase 7: Validazione funzionale end-to-end e consolidamento Wiki.
 
+## 🚀 [ ] Out-of-Band Automation Engine: LXC su TrueNAS NFS (`oliraid`) + Semaphore + MCP Gateway [[out-of-band-automation-engine]]
+### [ ] PARTE 1: PIANO PRINCIPALE (Parent Plan)
+- [ ] Fase 1: Creazione dataset TrueNAS `oliraid/pve-shared-lxc` (ZFS Special VDEV 64K, recordsize 64K, atime=off, xattr=sa, lz4), export NFS e registrazione `truenas-nfs` su Proxmox VE.
+- [ ] Fase 2: Provisioning LXC 200 (`ansible-engine`) unprivileged con nesting su storage `truenas-nfs`, IP `10.10.10.60/24`, registrazione su Proxmox HA Manager.
+- [ ] Fase 3: Hardening LXC, creazione utente `semaphore`, virtualenv `/opt/ansible-runtime/venv`, collezioni Ansible e chiavi SSH passwordless.
+- [ ] Fase 4: Installazione binario Semaphore, configurazione BoltDB `/opt/semaphore/database.bolt`, systemd service e primo avvio.
+- [ ] Fase 5: Collaudo, acceptance test (verifica I/O Special VDEV SSD, test migrazione HA `pct migrate 200 pve2 --restart`), aggiornamento `rete.json` e `storage.json`.
+
+### [ ] PARTE 2: SOTTOPIANO SPECIFICO (K8s MCP Gateway — Modello 3 Agile)
+- [ ] Sottofase 1: Implementazione FastMCP in `scripts/semaphore-mcp/server.py`.
+- [ ] Sottofase 2: Provisioning secret SOPS `semaphore-mcp-credentials` in `mcp-system`.
+- [ ] Sottofase 3: Estensione `helm-charts/mcp-gateway` (ConfigMap mount `server.py`, bump versione semantica `Chart.yaml`, deploy `helm upgrade`).
+- [ ] Sottofase 4: Esposizione Traefik IngressRoute `https://semaphore-mcp-internal.pindaroli.org/mcp` e configurazione client `mcp_config.json`.
+- [ ] Sottofase 5: Validazione end-to-end e test del workflow agile (modifica codice -> reload in 2s).
+
 ## 🚀 [ ] Sincronizzazione & Allineamento TrueNAS NFS con storage.json [[truenas-storage-json-sync]]
 - [x] Analizzare discrepanze e duplicazioni tra TrueNAS e `storage.json`.
 - [ ] Riconciliare e snellire `storage.json` come Source of Truth per rimuovere duplicazioni e disallineamenti.
