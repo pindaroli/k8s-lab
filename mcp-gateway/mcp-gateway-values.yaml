@@ -173,6 +173,38 @@ servers:
           cpu: "50m"
           memory: "64Mi"
 
+  - name: gemini-deepsearch
+    url: "http://mcp-gemini-deepsearch-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
+    hostname: "mcp-gemini-deepsearch-mcp-proxy.mcp-system.svc.cluster.local"
+    enabled: true
+    prefix: "deepsearch_"
+    ingress:
+      enabled: true
+      host: "deepsearch-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: gemini-deepsearch-mcp
+      image: ghcr.io/pindaroli/gemini-deepsearch-mcp:latest
+      transport: stdio
+      proxyPort: 8080
+      secrets:
+        - name: gemini-deepsearch-credentials
+          key: GEMINI_API_KEY
+          targetEnvName: GEMINI_API_KEY
+      env:
+        - name: GEMINI_FLASH_MODEL
+          value: "gemini-3.5-flash"
+        - name: GEMINI_PRO_MODEL
+          value: "gemini-2.5-pro"
+      resources:
+        limits:
+          cpu: "500m"
+          memory: "1Gi"
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+
 # Configurazione MCP Inspector (Web UI e File System Access)
 inspector:
   enabled: false
