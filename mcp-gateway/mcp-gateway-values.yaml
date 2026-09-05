@@ -205,6 +205,32 @@ servers:
           cpu: "100m"
           memory: "256Mi"
 
+  - name: kubernetes
+    url: "http://mcp-kubernetes-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
+    hostname: "mcp-kubernetes-mcp-proxy.mcp-system.svc.cluster.local"
+    enabled: true
+    prefix: "k8s_"
+    ingress:
+      enabled: true
+      host: "kubernetes-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: kubernetes-mcp
+      image: ghcr.io/containers/kubernetes-mcp-server:latest
+      transport: stdio
+      proxyPort: 8080
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+    rbac:
+      enabled: true
+      clusterRole: cluster-admin
+
 # Configurazione MCP Inspector (Web UI e File System Access)
 inspector:
   enabled: false

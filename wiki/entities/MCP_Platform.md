@@ -1,6 +1,6 @@
 ---
 title: "MCP Platform (Model Context Protocol Hub & Inspector)"
-last_updated: "2026-09-04"
+last_updated: "2026-09-05"
 confidence: "High"
 tags:
   - "#mcp"
@@ -91,15 +91,15 @@ flowchart TD
 
 Ai sensi della regola aurea [[GEMINI#3. Security & Operational Policies (The Golden Rules)|HELM DEPLOYMENT & PROJECT CHARTS]]:
 - **Motivazione dell'incompatibilità upstream**: La chart ufficiale Kuadrant (`oci://ghcr.io/kuadrant/charts/mcp-gateway`) impone la presenza della Service Mesh Istio/Envoy e una dozzina di controller/CRD enterprise non presenti nel cluster.
-- **Implementazione**: Viene mantenuta la Chart di Progetto `helm-charts/mcp-gateway/` (versione semantica `0.2.6`) che aggrega sia il Broker Kuadrant, sia i server federati gestiti da ToolHive (GitHub, TrueNAS, OPNsense, Talos, Gemini DeepSearch), sia l'Inspector Web UI.
-- **Pattern di Sicurezza & Segreti**: Tutti i carichi di lavoro ToolHive adottano lo standard architetturale [[mcp-secret-projection-pattern]] (Archetipo 1 per credenziali scalari in RAM, Archetipo 2 per certificati mTLS e configurazioni proiettate come volumi di sola lettura dal Kubelet con filesystem immutabile).
+- **Implementazione**: Viene mantenuta la Chart di Progetto `helm-charts/mcp-gateway/` (versione semantica `0.2.7`) che aggrega sia il Broker Kuadrant, sia i server federati gestiti da ToolHive (GitHub, TrueNAS, OPNsense, Talos, Gemini DeepSearch, Kubernetes), sia l'Inspector Web UI.
+- **Pattern di Sicurezza & Segreti**: Tutti i carichi di lavoro ToolHive adottano lo standard architetturale [[mcp-secret-projection-pattern]] (Archetipo 1 per credenziali scalari in RAM, Archetipo 2 per certificati mTLS e configurazioni proiettate come volumi di sola lettura dal Kubelet con filesystem immutabile, e RBAC In-Cluster Native con `ClusterRoleBinding` a `cluster-admin` per il server `kubernetes`).
 - **Configurazione Centralizzata**: L'intero deployment di produzione è governato dichiarativamente dal file [mcp-gateway/mcp-gateway-values.yaml](file:///Users/olindo/prj/k8s-lab/mcp-gateway/mcp-gateway-values.yaml).
 
 ---
 
 ## 3. Storage e Volumi NFS
 
-L'Inspector monta direttamente le condivisioni NFS di primo livello da TrueNAS (`10.10.10.50`):
+L'Inspector monta direttamente le condivisioni NFS di primo livello da TrueNAS (`10.10.50`):
 * `nfs-media`: `/mnt/oliraid/arrdata/media` montato su `/mnt/media`.
 * `nfs-classical`: `/mnt/oliraid/arrdata/classical` montato su `/mnt/classical`.
 
@@ -116,5 +116,6 @@ I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `oli
 | **`opnsense-mcp`** | `ghcr.io/pindaroli/opnsense-mcp:latest` | stdio -> proxy :8080 | `https://opnsense-mcp-internal.pindaroli.org/mcp` | OPNsense Firewall API (`192.168.100.1:443`) |
 | **`talos-mcp`** | `ghcr.io/pindaroli/talos-mcp:latest` | stdio -> proxy :8080 | `https://talos-mcp-internal.pindaroli.org/mcp` | Talos Control Plane API (`10.10.20.141/142/143:50000`) |
 | **`gemini-deepsearch-mcp`** | `ghcr.io/pindaroli/gemini-deepsearch-mcp:latest` | stdio -> proxy :8080 | `https://deepsearch-mcp-internal.pindaroli.org/mcp` | Google Gemini API (Web Search Grounding) |
+| **`kubernetes-mcp`** | `ghcr.io/containers/kubernetes-mcp-server:latest` | stdio -> proxy :8080 | `https://kubernetes-mcp-internal.pindaroli.org/mcp` | Kubernetes API In-Cluster (RBAC cluster-admin) |
 
 

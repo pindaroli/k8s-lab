@@ -40,13 +40,13 @@
 - [x] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
 - [x] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
 
-## 🚀 [ ] IN PIANIFICAZIONE: Migrazione Kubernetes di Kubernetes MCP Server [[kubernetes-mcp-server-kubernetes-migration]]
-- [ ] Fase 1: Configurazione permessi RBAC (ClusterRoleBinding) o provisioning secret SOPS (`secrets-sops/kubernetes-mcp-credentials.enc.yaml`).
-- [ ] Fase 2: Integrazione server `kubernetes` nella Project Chart Helm `mcp-gateway` (ToolHive stdio -> HTTP/SSE bridge :8080).
-- [ ] Fase 3: Configurazione routing Traefik IngressRoute e alias DNS Unbound `kubernetes-mcp-internal.pindaroli.org`.
-- [ ] Fase 4: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
-- [ ] Fase 5: Validazione Test-Driven end-to-end e non-regressione.
-- [ ] Fase 6: Aggiornamento `MCP_Platform.md` e consolidamento Wiki.
+## 🚀 [x] ✅ COMPLETATO: Migrazione Kubernetes di Kubernetes MCP Server [[kubernetes-mcp-server-kubernetes-migration]]
+- [x] Fase 1: Creazione template Helm dichiarativo RBAC (`rbac.yaml`) e binding `kubernetes-mcp-sa` $\rightarrow$ `cluster-admin`.
+- [x] Fase 2: Integrazione server `kubernetes` nella Project Chart Helm `mcp-gateway` (chart v0.2.7, ToolHive stdio -> HTTP/SSE bridge :8080).
+- [x] Fase 3: Configurazione routing Traefik IngressRoute e censimento DNS Unbound `kubernetes-mcp-internal.pindaroli.org`.
+- [x] Fase 4: Aggiornamento endpoint remoto `serverUrl` in `~/.gemini/antigravity/mcp_config.json`.
+- [x] Fase 5: Validazione Test-Driven end-to-end e non-regressione su tutta la flotta MCP.
+- [x] Fase 6: Aggiornamento `MCP_Platform.md` e consolidamento Wiki.
 
 ## 🚀 [ ] Out-of-Band Automation Engine: LXC su TrueNAS NFS (`oliraid`) + Semaphore + MCP Gateway [[out-of-band-automation-engine]]
 ### [ ] PARTE 1: PIANO PRINCIPALE (Parent Plan)

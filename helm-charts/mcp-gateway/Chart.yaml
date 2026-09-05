@@ -2,5 +2,5 @@ apiVersion: v2
 name: mcp-gateway
 description: Kuadrant MCP Gateway Standalone Helm Chart for Kubernetes Homelab
 type: application
-version: 0.2.6
+version: 0.2.7
 appVersion: "0.9.0"

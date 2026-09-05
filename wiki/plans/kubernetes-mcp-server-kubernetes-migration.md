@@ -1,8 +1,10 @@
 ---
 title: "Piano: Migrazione Kubernetes di Kubernetes MCP Server"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+resolved: true
+resolved_at: 2026-09-05
 created_at: 2026-09-05
 tags:
   - "#plan"
@@ -90,7 +92,7 @@ Questo apre due opzioni architetturali per la sicurezza:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1: Configurazione RBAC e Template Helm
-- **Ultima Azione Completata**: Approvazione utente delle scelte architetturali (Opzione 1 In-Cluster RBAC + Opzione A Immagine Upstream ghcr.io/containers/kubernetes-mcp-server:latest).
-- **Prossimo Passo Operativo**: Implementazione template RBAC in `helm-charts/mcp-gateway/templates/rbac.yaml` e bump versione chart a `0.2.7`.
+- **Fase Attiva**: Completata (Tutte le Fasi 1-6 completate con successo).
+- **Ultima Azione Completata**: Migrazione a `kubernetes-mcp` cluster-native completata, test end-to-end positivi e documentazione allineata.
+- **Prossimo Passo Operativo**: Nessuno (Server MCP Kubernetes pienamente operativo in produzione su K8s).
 - **Blocchi/Decisioni Pendenti**: Nessuno.

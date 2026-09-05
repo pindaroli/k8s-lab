@@ -937,7 +937,8 @@
         "truenas-mcp-internal",
         "opnsense-mcp-internal",
         "talos-mcp-internal",
-        "deepsearch-mcp-internal"
+        "deepsearch-mcp-internal",
+        "kubernetes-mcp-internal"
       ],
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
     },
