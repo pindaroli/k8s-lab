@@ -32,6 +32,14 @@
 - [x] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
 - [x] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
 
+## 🚀 [ ] IN PIANIFICAZIONE: Migrazione Kubernetes di Gemini DeepSearch MCP [[gemini-deepsearch-mcp-kubernetes-migration]]
+- [ ] Fase 1: Consolidamento codice & Dockerfile Monorepo `docker/gemini-deepsearch-mcp/` (fix inline return answer/sources) e workflow CI.
+- [ ] Fase 2: Provisioning secret SOPS `secrets-sops/gemini-deepsearch-credentials.enc.yaml` (`GEMINI_API_KEY`) in `mcp-system`.
+- [ ] Fase 3: Integrazione server `gemini-deepsearch` nella Project Chart Helm `mcp-gateway` (ToolHive stdio -> HTTP/SSE bridge :8080 con Archetipo 1).
+- [ ] Fase 4: Configurazione routing Traefik IngressRoute e alias DNS Unbound `gemini-deepsearch-mcp-internal.pindaroli.org`.
+- [ ] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
+- [ ] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
+
 ## 🚀 [ ] Out-of-Band Automation Engine: LXC su TrueNAS NFS (`oliraid`) + Semaphore + MCP Gateway [[out-of-band-automation-engine]]
 ### [ ] PARTE 1: PIANO PRINCIPALE (Parent Plan)
 - [ ] Fase 1: Creazione dataset TrueNAS `oliraid/pve-shared-lxc` (ZFS Special VDEV 64K, recordsize 64K, atime=off, xattr=sa, lz4), export NFS e registrazione `truenas-nfs` su Proxmox VE.
