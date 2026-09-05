@@ -1,9 +1,10 @@
 ---
 title: "Piano Operativo: Integrazione RAGFlow MCP Server per Antigravity"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: "2026-08-30"
+archived_at: "2026-08-30"
 tags:
   - ragflow
   - mcp

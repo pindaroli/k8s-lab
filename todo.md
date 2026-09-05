@@ -116,21 +116,21 @@
 - [x] Inizializzazione tabelle ORM Peewee completata con successo su `postgres-main` (database `rag_flow`).
 - [x] Verifica assenza plaintext secrets su Git e archiviazione piano nel Wiki.
 
-## 🚀 [ ] Integrazione RAGFlow MCP Server per Antigravity [[ragflow-antigravity-mcp-integration]]
-### [ ] FASE 1: Generazione Credenziali & Endpoint RAGFlow
-- [ ] Generazione API Key utente su RAGFlow (`ragflow-internal.pindaroli.org`).
-- [ ] Archiviazione sicura dell'API Key in SOPS (`secrets-sops/ragflow-mcp-secrets.enc.yaml`).
-- [ ] Validazione raggiungibilità endpoint REST API (`/api/v1/datasets`, `/api/v1/retrieval`).
+## 🚀 [x] ✅ COMPLETATO: Integrazione RAGFlow MCP Server per Antigravity [[ragflow-antigravity-mcp-integration]]
+### [x] FASE 1: Generazione Credenziali & Endpoint RAGFlow
+- [x] Generazione API Key utente su RAGFlow (`ragflow-internal.pindaroli.org`).
+- [x] Archiviazione sicura dell'API Key in SOPS (`secrets-sops/ragflow-mcp-secrets.enc.yaml`).
+- [x] Validazione raggiungibilità endpoint REST API (`/api/v1/datasets`, `/api/v1/retrieval`).
 
-### [ ] FASE 2: Sviluppo del Server MCP (`scripts/mcp/ragflow_mcp_server.py`)
-- [ ] Implementazione server FastMCP (tools: `ragflow_list_datasets`, `ragflow_search`, `ragflow_ask_assistant`, `ragflow_get_document_chunks`).
+### [x] FASE 2: Sviluppo del Server MCP (`scripts/mcp/ragflow_mcp_server.py`)
+- [x] Implementazione server FastMCP (tools: `ragflow_list_datasets`, `ragflow_search`, `ragflow_ask_assistant`, `ragflow_get_document_chunks`).
 
-### [ ] FASE 3: Registrazione & Configurazione MCP in Antigravity
-- [ ] Registrazione entry in `mcpServers` e definizione schema tool.
-- [ ] Validazione caricamento MCP Server.
+### [x] FASE 3: Registrazione & Configurazione MCP in Antigravity
+- [x] Registrazione entry in `mcpServers` e definizione schema tool (`ragflow-local`).
+- [x] Validazione caricamento MCP Server.
 
-### [ ] FASE 4: Test-Driven Verification & Test RAG
-- [ ] Test recupero semantico dal dataset RAGFlow e validazione citazioni.
+### [x] FASE 4: Test-Driven Verification & Test RAG
+- [x] Test recupero semantico dal dataset RAGFlow e validazione citazioni.
 
 ## 🚀 [ ] Integrazione Suite Server MCP Standard (Antigravity & ToolHive) [[mcp-servers-suite-integration]]
 ### [ ] FASE 1: MCP Server Filesystem (Categoria: File)
@@ -489,7 +489,7 @@
 - [x] Eseguito il deploy con successo su tutti e 3 gli ipervisori Proxmox.
 
 ### [ ] Security & Automation
-- [ ] **Attivazione Licenza SongKong Premium (Normalizzatore Audio)**: [[songkong-normalizer-integration]] (In attesa del file di licenza per abilitare il salvataggio dei tag nei file audio).
+- [x] **Attivazione Licenza SongKong Premium (Normalizzatore Audio)**: [[songkong-normalizer-integration]] (Secret `songkong-license` montato nel namespace `arr`, notifiche Apprise e immagine 1.2.0 in produzione).
 - [ ] **Automazione Drain Talos su Hypervisor Shutdown**: Creare uno script/workflow automatico per effettuare il cordon e il drain del nodo Talos corrispondente prima dello spegnimento ordinato (o forzato da UPS/NUT) di un nodo hypervisor Proxmox (PVE1, PVE2, PVE3).
 - [x] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
     - [x] Sviluppo Helm-Native in `pindaroli-arr-helm` (**v1.2.3**).

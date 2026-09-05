@@ -1,9 +1,10 @@
 ---
 title: "Piano: Architettura e Deployment Enterprise per RAGFlow su Cluster Kubernetes a 3 Nodi"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-08-30
+archived_at: 2026-08-30
 tags:
   - "#plan"
   - "#ragflow"

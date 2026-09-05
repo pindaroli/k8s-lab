@@ -1,9 +1,10 @@
 ---
 title: "Piano & Analisi Alternative: Migrazione Kubernetes di Gemini DeepSearch MCP"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-09-05
+archived_at: 2026-09-05
 tags:
   - "#plan"
   - "#mcp"

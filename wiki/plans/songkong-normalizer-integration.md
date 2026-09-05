@@ -1,9 +1,10 @@
 ---
 title: "Integrazione SongKong Premium nel Normalizzatore Audio"
 type: plan
-status: active
-certified_for_ai: true
-date: 2026-07-18
+status: archived
+certified_for_ai: false
+created_at: 2026-07-18
+archived_at: 2026-07-18
 provenance:
   - "custom-docker-images/custom-normalizer/Dockerfile"
   - "custom-docker-images/custom-normalizer/normalize.sh"
