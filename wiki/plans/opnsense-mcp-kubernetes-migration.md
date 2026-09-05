@@ -1,9 +1,10 @@
 ---
 title: "Piano: Migrazione Kubernetes di OPNsense MCP Server"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-09-05
+completed_at: 2026-09-05
 tags:
   - "#plan"
   - "#opnsense"
@@ -139,7 +140,7 @@ flowchart TD
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 (Monorepo Docker & GitHub Actions Setup)
-- **Ultima Azione Completata**: Aggiornato il piano in `wiki/plans/` e l'implementation plan con l'approccio Monorepo approvato.
-- **Prossimo Passo Operativo**: Eliminare la repository `pindaroli/opnsense-mcp` temporanea e creare `docker/opnsense-mcp/Dockerfile` e `.github/workflows/docker-opnsense-mcp.yml` in `k8s-lab`.
-- **Blocchi/Decisioni Pendenti**: Attesa via libera operazione.
+- **Fase Attiva**: Completato (Archiviato)
+- **Ultima Azione Completata**: Migrazione Kubernetes completata con successo al 100%. Immagine compilata con CI GitHub Actions su GHCR, secrets SOPS applicati, ToolHive Operator e Traefik IngressRoute attivi in mcp-system, DNS Unbound registrato, endpoint remoto integrato in mcp_config.json.
+- **Prossimo Passo Operativo**: Nessuno.
+- **Blocchi/Decisioni Pendenti**: Nessuno.

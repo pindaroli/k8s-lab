@@ -49,6 +49,7 @@ flowchart TD
         TH["ToolHive Operator (Stacklok)"]
         GH["github-mcp-proxy (MCPServer)"]
         TN["truenas-mcp-proxy (MCPServer)"]
+        OPN["opnsense-mcp-proxy (MCPServer)"]
     end
 
     subgraph Storage["TrueNAS SCALE (10.10.10.50)"]
@@ -57,11 +58,16 @@ flowchart TD
         API_TN["TrueNAS REST API v2.0 (Port 443)"]
     end
 
+    subgraph Firewall["OPNsense (192.168.100.1)"]
+        API_OPN["OPNsense REST API (Port 443)"]
+    end
+
     USER --> TR_EXT & TR_INT --> INSP
     AG & HA & N8N --> GW_INT --> ROUTER
-    ROUTER --> GH & TN
-    TH -.->|Gestione Lifecycle| GH & TN
+    ROUTER --> GH & TN & OPN
+    TH -.->|Gestione Lifecycle| GH & TN & OPN
     TN -->|API Calls| API_TN
+    OPN -->|REST API| API_OPN
     Storage -->|NFS Mount| INSP
 ```
 
@@ -85,7 +91,7 @@ flowchart TD
 
 Ai sensi della regola aurea [[GEMINI#3. Security & Operational Policies (The Golden Rules)|HELM DEPLOYMENT & PROJECT CHARTS]]:
 - **Motivazione dell'incompatibilità upstream**: La chart ufficiale Kuadrant (`oci://ghcr.io/kuadrant/charts/mcp-gateway`) impone la presenza della Service Mesh Istio/Envoy e una dozzina di controller/CRD enterprise non presenti nel cluster.
-- **Implementazione**: Viene mantenuta la Chart di Progetto `helm-charts/mcp-gateway/` (versione semantica `0.2.3`) che aggrega sia il Broker Kuadrant, sia i server federati gestiti da ToolHive (GitHub, TrueNAS), sia l'Inspector Web UI.
+- **Implementazione**: Viene mantenuta la Chart di Progetto `helm-charts/mcp-gateway/` (versione semantica `0.2.4`) che aggrega sia il Broker Kuadrant, sia i server federati gestiti da ToolHive (GitHub, TrueNAS, OPNsense), sia l'Inspector Web UI.
 - **Configurazione Centralizzata**: L'intero deployment di produzione è governato dichiarativamente dal file [mcp-gateway/mcp-gateway-values.yaml](file:///Users/olindo/prj/k8s-lab/mcp-gateway/mcp-gateway-values.yaml).
 
 ---
@@ -97,3 +103,14 @@ L'Inspector monta direttamente le condivisioni NFS di primo livello da TrueNAS (
 * `nfs-classical`: `/mnt/oliraid/arrdata/classical` montato su `/mnt/classical`.
 
 I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `olindo:k8s`, export con `maproot_user="root"` e `maproot_group="wheel"`.
+
+---
+
+## 4. Catalogo dei Server MCP Attivi in Kubernetes (`mcp-system`)
+
+| Server | Immagine Container | Modalità ToolHive | Endpoint Traefik IngressRoute | Target Rete Lab |
+| :--- | :--- | :--- | :--- | :--- |
+| **`github-mcp`** | `ghcr.io/github/github-mcp-server` | stdio -> proxy :8080 | `https://github-mcp-internal.pindaroli.org/mcp` | GitHub API Cloud |
+| **`truenas-mcp`** | `ghcr.io/pindaroli/truenas-master-mcp:latest` | stdio -> proxy :8080 | `https://truenas-mcp-internal.pindaroli.org/mcp` | TrueNAS SCALE API (`10.10.10.50:443`) |
+| **`opnsense-mcp`** | `ghcr.io/pindaroli/opnsense-mcp:latest` | stdio -> proxy :8080 | `https://opnsense-mcp-internal.pindaroli.org/mcp` | OPNsense Firewall API (`192.168.100.1:443`) |
+

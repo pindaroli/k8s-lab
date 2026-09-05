@@ -98,6 +98,41 @@ servers:
           cpu: "50m"
           memory: "64Mi"
 
+  - name: opnsense
+    url: "http://mcp-opnsense-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
+    hostname: "mcp-opnsense-mcp-proxy.mcp-system.svc.cluster.local"
+    enabled: true
+    prefix: "opnsense_"
+    ingress:
+      enabled: true
+      host: "opnsense-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: opnsense-mcp
+      image: ghcr.io/pindaroli/opnsense-mcp:latest
+      transport: stdio
+      proxyPort: 8080
+      secrets:
+        - name: opnsense-mcp-api-key
+          key: OPNSENSE_API_KEY
+          targetEnvName: OPNSENSE_API_KEY
+        - name: opnsense-mcp-api-secret
+          key: OPNSENSE_API_SECRET
+          targetEnvName: OPNSENSE_API_SECRET
+      env:
+        - name: OPNSENSE_URL
+          value: "https://192.168.100.1"
+        - name: OPNSENSE_VERIFY_SSL
+          value: "false"
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+
 # Configurazione MCP Inspector (Web UI e File System Access)
 inspector:
   enabled: false
