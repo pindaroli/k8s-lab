@@ -36,7 +36,7 @@
 - [ ] Fase 1: Consolidamento codice & Dockerfile Monorepo `docker/gemini-deepsearch-mcp/` (fix inline return answer/sources) e workflow CI.
 - [ ] Fase 2: Provisioning secret SOPS `secrets-sops/gemini-deepsearch-credentials.enc.yaml` (`GEMINI_API_KEY`) in `mcp-system`.
 - [ ] Fase 3: Integrazione server `gemini-deepsearch` nella Project Chart Helm `mcp-gateway` (ToolHive stdio -> HTTP/SSE bridge :8080 con Archetipo 1).
-- [ ] Fase 4: Configurazione routing Traefik IngressRoute e alias DNS Unbound `gemini-deepsearch-mcp-internal.pindaroli.org`.
+- [ ] Fase 4: Configurazione routing Traefik IngressRoute e alias DNS Unbound `deepsearch-mcp-internal.pindaroli.org`.
 - [ ] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
 - [ ] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
 

@@ -120,7 +120,7 @@ flowchart TD
     end
 
     subgraph Cloud["Google AI Studio & Search Grounding"]
-        API["Google Gemini 2.5 Flash / Pro API\n+ Google Search Grounding"]
+        API["Google Gemini Flash / Pro API\n(Configurabili via GEMINI_FLASH_MODEL / GEMINI_PRO_MODEL)\n+ Google Search Grounding"]
     end
 
     CONF -->|HTTPS /mcp| DNS --> ING
@@ -138,7 +138,7 @@ flowchart TD
 1. Creare la directory `docker/gemini-deepsearch-mcp/` in `k8s-lab`.
 2. Copiare i sorgenti python ottimizzati da `/Users/olindo/prj/gemini-deepsearch-mcp/src/`:
    - Modificare `main.py` per restituire inline `{"answer": answer, "sources": sources}` anziché scrivere su `/tmp`.
-   - Mantenere i modelli aggiornati (`gemini-3.5-flash` / `gemini-2.5-pro`).
+   - Parametrizzare i modelli via env: `GEMINI_FLASH_MODEL` (default: `gemini-3.5-flash`) e `GEMINI_PRO_MODEL` (default: `gemini-2.5-pro`).
 3. Creare `docker/gemini-deepsearch-mcp/Dockerfile`:
    - Base `python:3.12-slim`.
    - Installazione dipendenze tramite `pip` o `uv` (`langgraph`, `langchain-google-genai`, `google-genai`, `fastmcp`, `pydantic`).
@@ -160,7 +160,8 @@ flowchart TD
    - ToolHive: `name: gemini-deepsearch-mcp`, `image: ghcr.io/pindaroli/gemini-deepsearch-mcp:latest`, `transport: stdio`, `proxyPort: 8080`.
    - Secrets: `gemini-deepsearch-credentials` $\rightarrow$ `GEMINI_API_KEY`.
    - Resources: requests `100m`/`256Mi`, limits `500m`/`1Gi` (per gestire i grafi LangGraph in memoria).
-   - Ingress: host `gemini-deepsearch-mcp-internal.pindaroli.org`.
+   - Ingress: host `deepsearch-mcp-internal.pindaroli.org`.
+   - Timeout: configurare timeout esteso a 180s per gestire le ricerche high effort.
 3. Eseguire l'upgrade dichiarativo:
    ```bash
    helm upgrade mcp-gateway helm-charts/mcp-gateway -f mcp-gateway/mcp-gateway-values.yaml -n mcp-system
@@ -168,10 +169,10 @@ flowchart TD
 4. Verificare che `gemini-deepsearch-mcp-0` e il proxy runner siano `1/1 Running`.
 
 ### Fase 4: Routing Traefik & DNS OPNsense
-1. Verificare la creazione dell'IngressRoute `gemini-deepsearch-mcp-internal`.
-2. Aggiungere l'alias `gemini-deepsearch-mcp-internal` al VIP Traefik (`10.10.20.56`) in `rete.json` ed eseguire `validate_network.py`.
+1. Verificare la creazione dell'IngressRoute `gemini-deepsearch-internal` con host `deepsearch-mcp-internal.pindaroli.org`.
+2. Aggiungere l'alias `deepsearch-mcp-internal` al VIP Traefik (`10.10.20.56`) in `rete.json` ed eseguire `validate_network.py`.
 3. Creare l'Host Override in OPNsense Unbound DNS via API:
-   - Host: `gemini-deepsearch-mcp-internal` $\rightarrow$ IP: `10.10.20.56`.
+   - Host: `deepsearch-mcp-internal` $\rightarrow$ IP: `10.10.20.56`.
 4. Riconfigurare Unbound e testare la risoluzione DNS (`dig`).
 
 ### Fase 5: Configurazione Client Antigravity
@@ -179,7 +180,7 @@ flowchart TD
    - Sostituire il comando locale `command: /Users/olindo/prj/gemini-deepsearch-mcp/.venv/bin/...` e l'API key in chiaro con:
      ```json
      "gemini-deepsearch": {
-       "serverUrl": "https://gemini-deepsearch-mcp-internal.pindaroli.org/mcp"
+       "serverUrl": "https://deepsearch-mcp-internal.pindaroli.org/mcp"
      }
      ```
 2. Rimuovere la chiave API in chiaro dal file di configurazione locale.
