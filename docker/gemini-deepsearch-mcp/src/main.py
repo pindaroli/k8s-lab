@@ -30,8 +30,8 @@ def deep_search(
     Returns:
         A dictionary containing the file path to a JSON file with the answer and sources.
     """
-    flash_model = os.getenv("GEMINI_FLASH_MODEL", "gemini-3.5-flash")
-    pro_model = os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro")
+    flash_model = os.getenv("GEMINI_FLASH_MODEL", "gemini-3.6-flash")
+    pro_model = os.getenv("GEMINI_PRO_MODEL", "gemini-3.1-pro-preview")
 
     # Set search query count, research loops and reasoning model based on effort level
     if effort == "low":

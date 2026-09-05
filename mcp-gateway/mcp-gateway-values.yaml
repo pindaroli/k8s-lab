@@ -194,9 +194,9 @@ servers:
           targetEnvName: GEMINI_API_KEY
       env:
         - name: GEMINI_FLASH_MODEL
-          value: "gemini-3.5-flash"
+          value: "gemini-3.6-flash"
         - name: GEMINI_PRO_MODEL
-          value: "gemini-2.5-pro"
+          value: "gemini-3.1-pro-preview"
       resources:
         limits:
           cpu: "500m"

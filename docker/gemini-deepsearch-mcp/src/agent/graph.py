@@ -1,7 +1,6 @@
 import os
 
 from dotenv import load_dotenv
-from google.ai.generativelanguage_v1beta.types import Tool as GenAITool
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -122,7 +121,7 @@ def web_research(state: WebSearchState, config: RunnableConfig) -> OverallState:
 
     response = llm.invoke(
         formatted_prompt,
-        tools=[GenAITool(google_search={})],
+        tools=[{"google_search": {}}],
     )
 
     # resolve the urls to short urls for saving tokens and time
