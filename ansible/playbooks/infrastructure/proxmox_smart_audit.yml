@@ -1,0 +1,298 @@
+---
+# ==============================================================================
+# Playbook: Proxmox Cluster Physical Disks SMART Audit
+# ==============================================================================
+# Funzionalità principali:
+#   1. Rileva la lista dei nodi del cluster Proxmox interrogando l'API/CLI (pvesh).
+#   2. Confronta i nodi del cluster con l'inventory Ansible (gruppo [proxmox]).
+#   3. Se rileva nodi del cluster NON presenti nell'inventory, emette un warning
+#      evidente e prosegue il lavoro sui soli nodi censiti.
+#   4. Su ciascun nodo, identifica in modo deterministico TUTTI e SOLI i dischi
+#      fisici (escludendo partizioni, loop, ram, dm/LVM e zvol ZFS virtuali).
+#   5. Esegue `smartctl -a` (e `smartctl -a -j` per l'estrazione metrica) su ogni disco.
+#   6. Produce un output a terminale completo, ordinato e strutturato:
+#      - Tabella sinottica (Executive Summary) dello stato di salute SMART.
+#      - Dettaglio completo dell'output di `smartctl -a` per singolo disco e nodo.
+#      - Salvataggio del report completo su file locale del controller.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# PLAY 1: Cluster Node Discovery & Inventory Cross-Check
+# ------------------------------------------------------------------------------
+- name: "🔍 Discovery Nodi Cluster Proxmox & Validazione Inventory"
+  hosts: proxmox
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: "Interroga lo stato del cluster Proxmox via pvesh"
+      ansible.builtin.command:
+        cmd: pvesh get /cluster/status --output-format json
+      register: pve_cluster_raw
+      changed_when: false
+      failed_when: false
+
+    - name: "Fallback: Interroga /nodes se il cluster status non è disponibile"
+      ansible.builtin.command:
+        cmd: pvesh get /nodes --output-format json
+      register: pve_nodes_raw
+      changed_when: false
+      when: pve_cluster_raw.rc != 0 or (pve_cluster_raw.stdout | default('') | trim == '')
+
+    - name: "Normalizza la lista dei nodi del cluster Proxmox"
+      ansible.builtin.set_fact:
+        pve_discovered_nodes: >-
+          {%- if pve_cluster_raw.rc == 0 and (pve_cluster_raw.stdout | trim != '') -%}
+            {{ (pve_cluster_raw.stdout | from_json) | selectattr('type', 'equalto', 'node') | list }}
+          {%- else -%}
+            {{ (pve_nodes_raw.stdout | from_json) | map('combine', {'name': item.node, 'ip': item.ip | default('')}) | list }}
+          {%- endif -%}
+
+    - name: "Inizializza liste di confronto inventory"
+      ansible.builtin.set_fact:
+        unconfigured_nodes: []
+        audit_target_hosts: []
+
+    - name: "Valida presenza di ciascun nodo cluster nell'inventory Ansible"
+      vars:
+        node_name: "{{ item.name | default(item.node) }}"
+        node_ip: "{{ item.ip | default('') }}"
+        inv_hosts: "{{ groups['proxmox'] | default([]) }}"
+        matched_host: >-
+          {%- set match = namespace(host='') -%}
+          {%- for h in inv_hosts -%}
+            {%- set h_ip = hostvars[h].ansible_host | default(h) -%}
+            {%- if h == node_name or h_ip == node_ip or h == node_ip -%}
+              {%- set match.host = h -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {{ match.host }}
+      ansible.builtin.set_fact:
+        unconfigured_nodes: "{{ unconfigured_nodes + [item] if matched_host == '' else unconfigured_nodes }}"
+        audit_target_hosts: "{{ audit_target_hosts + [matched_host] if matched_host != '' else audit_target_hosts }}"
+      loop: "{{ pve_discovered_nodes }}"
+      loop_control:
+        label: "{{ item.name | default(item.node) }}"
+
+    - name: "⚠️ WARNING: Nodi del Cluster Proxmox non configurati in Ansible"
+      ansible.builtin.debug:
+        msg:
+          - "=================================================================================="
+          - "⚠️  ATTENZIONE: RILEVATI NODI NEL CLUSTER PROXMOX NON PRESENTI IN INVENTORY ANSIBLE"
+          - "=================================================================================="
+          - "I seguenti nodi appartengono al cluster Proxmox ma non compaiono nel gruppo [proxmox]:"
+          - "{% for n in unconfigured_nodes %}  • Nodo: {{ n.name | default(n.node) }} | IP: {{ n.ip | default('N/A') }} | Online: {{ n.online | default(n.status | default('sconosciuto')) }}{% endfor %}"
+          - ""
+          - "ℹ️  Il playbook continuerà regolarmente l'ispezione SMART solo sui nodi configurati."
+          - "=================================================================================="
+      when: unconfigured_nodes | length > 0
+
+    - name: "Verifica che sia presente almeno un nodo valido su cui procedere"
+      ansible.builtin.assert:
+        that:
+          - audit_target_hosts | length > 0
+        fail_msg: "❌ Nessun nodo del cluster Proxmox corrisponde all'inventory Ansible!"
+        success_msg: "✅ Nodi cluster validati per l'audit SMART: {{ audit_target_hosts | unique | join(', ') }}"
+
+    - name: "Aggiunge dinamicamente i nodi validati al gruppo di lavoro"
+      ansible.builtin.add_host:
+        name: "{{ item }}"
+        groups: proxmox_audit_targets
+      loop: "{{ audit_target_hosts | unique }}"
+
+# ------------------------------------------------------------------------------
+# PLAY 2: Discovery Dischi Fisici & Esecuzione SMART
+# ------------------------------------------------------------------------------
+- name: "💾 Esecuzione SMART sui Dischi Fisici dei Nodi Proxmox"
+  hosts: proxmox_audit_targets
+  gather_facts: true
+  tasks:
+    - name: "Identifica TUTTI e SOLI i dischi fisici del nodo"
+      # Ispeziona sysfs (/sys/block):
+      # - Esclude percorsi in /sys/devices/virtual/ (loop, dm/LVM, zvol ZFS, ramdisk, nbd)
+      # - Esclude unità ottiche (sr*) e dispositivi con tipo SCSI CD/ROM (type 5)
+      # - Esclude le partizioni (sono analizzati solo i device radice in /sys/block)
+      # - Verifica che esista il link al bus hardware (PCIe, SATA, SAS, USB, NVMe)
+      ansible.builtin.shell: |
+        python3 - << 'EOF'
+        import os, glob
+
+        physical_disks = []
+        for block_entry in sorted(glob.glob("/sys/block/*")):
+            dev_name = os.path.basename(block_entry)
+            real_path = os.path.realpath(block_entry)
+
+            # 1. Escludi dispositivi virtuali
+            if "/devices/virtual/" in real_path:
+                continue
+
+            # 2. Escludi lettori ottici
+            if dev_name.startswith("sr"):
+                continue
+
+            # 3. Deve avere il controller fisico sottostante
+            device_link = os.path.join(block_entry, "device")
+            if not os.path.exists(device_link):
+                continue
+
+            # 4. Escludi tipo SCSI CD/DVD ROM
+            type_file = os.path.join(device_link, "type")
+            if os.path.exists(type_file):
+                try:
+                    with open(type_file, "r") as f:
+                        if f.read().strip() == "5":
+                            continue
+                except Exception:
+                    pass
+
+            dev_node = f"/dev/{dev_name}"
+            if os.path.exists(dev_node):
+                physical_disks.append(dev_node)
+
+        print(" ".join(physical_disks))
+        EOF
+      register: physical_disks_raw
+      changed_when: false
+
+    - name: "Memorizza i dischi fisici rilevati"
+      ansible.builtin.set_fact:
+        physical_disks: "{{ physical_disks_raw.stdout.split() }}"
+
+    - name: "Avviso se nessun disco fisico è stato rilevato sul nodo"
+      ansible.builtin.debug:
+        msg: "⚠️ Nessun disco fisico rilevato su {{ inventory_hostname }}."
+      when: physical_disks | length == 0
+
+    - name: "Esegui smartctl -a (output testuale completo) su ogni disco fisico"
+      ansible.builtin.command:
+        cmd: "smartctl -a {{ item }}"
+      register: smartctl_text_results
+      changed_when: false
+      failed_when: smartctl_text_results.rc in [1, 2]
+      loop: "{{ physical_disks }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: "Esegui smartctl -a -j (output JSON) per estrazione metrica"
+      ansible.builtin.command:
+        cmd: "smartctl -a -j {{ item }}"
+      register: smartctl_json_results
+      changed_when: false
+      failed_when: smartctl_json_results.rc in [1, 2]
+      loop: "{{ physical_disks }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: "Elabora metriche strutturate per tabella sinottica"
+      ansible.builtin.set_fact:
+        node_smart_data: >-
+          {%- set records = [] -%}
+          {%- for res in smartctl_json_results.results -%}
+            {%- set disk_name = res.item -%}
+            {%- set js = res.stdout | default('{}') | from_json -%}
+
+            {# Modello e Seriale #}
+            {%- set model = js.model_name | default(js.device.model_name | default(js.information.model_name | default('Sconosciuto'))) -%}
+            {%- set serial = js.serial_number | default(js.device.serial_number | default('Sconosciuto')) -%}
+
+            {# Capacità #}
+            {%- set size_bytes = js.user_capacity.bytes | default(0) -%}
+            {%- set size_gb = (size_bytes / 1000000000) | round(1) if size_bytes > 0 else 'N/A' -%}
+
+            {# Stato Salute SMART #}
+            {%- set health_passed = js.smart_status.passed | default(none) -%}
+            {%- if health_passed is sameas true -%}
+              {%- set health_str = 'PASSED' -%}
+            {%- elif health_passed is sameas false -%}
+              {%- set health_str = 'FAILED' -%}
+            {%- else -%}
+              {%- set health_str = 'UNKNOWN' -%}
+            {%- endif -%}
+
+            {# Temperatura e Ore di Accensione #}
+            {%- set temp = js.temperature.current | default(js.temperature.celsius | default('N/A')) -%}
+            {%- set poh = js.power_on_time.hours | default('N/A') -%}
+
+            {# NVMe vs SATA #}
+            {%- set is_nvme = (js.device.type | default('')) == 'nvme' or 'nvme' in disk_name -%}
+            {%- set wearout = 'N/A' -%}
+            {%- set reallocated = 'N/A' -%}
+
+            {%- if is_nvme -%}
+              {%- set p_used = js.nvme_smart_health_information_log.percentage_used | default(none) -%}
+              {%- set wearout = (p_used | string ~ '%') if p_used is not none else 'N/A' -%}
+            {%- else -%}
+              {%- for attr in js.ata_smart_attributes.table | default([]) -%}
+                {%- if attr.id == 5 -%}
+                  {%- set reallocated = attr.raw.value | default(attr.raw.string | default('0')) -%}
+                {%- elif attr.id in [231, 233, 173] and wearout == 'N/A' -%}
+                  {%- set wearout = attr.value | default('N/A') | string ~ '%' -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+
+            {%- set record = {
+                  'disk': disk_name,
+                  'type': 'NVMe' if is_nvme else 'SATA/SAS',
+                  'model': model,
+                  'serial': serial,
+                  'size': size_gb | string ~ ' GB' if size_gb != 'N/A' else 'N/A',
+                  'health': health_str,
+                  'temperature': temp | string ~ '°C' if temp != 'N/A' else 'N/A',
+                  'poh': poh | string ~ 'h' if poh != 'N/A' else 'N/A',
+                  'wearout': wearout,
+                  'reallocated': reallocated
+                } -%}
+            {%- set _ = records.append(record) -%}
+          {%- endfor -%}
+          {{ records }}
+
+    - name: "Visualizza Output Dettagliato smartctl -a per ciascun disco di questo nodo"
+      ansible.builtin.debug:
+        msg:
+          - "================================================================================"
+          - " NODO: {{ inventory_hostname }} ({{ ansible_hostname }}) | DISCO: {{ item.item }}"
+          - "================================================================================"
+          - "{{ item.stdout_lines }}"
+      loop: "{{ smartctl_text_results.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+# ------------------------------------------------------------------------------
+# PLAY 3: Tabella Sinottica Riassuntiva & Salvataggio Report
+# ------------------------------------------------------------------------------
+- name: "📊 Generazione Tabella Sinottica e Report Aggregato"
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: "Crea directory dei report se assente"
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/../../reports"
+        state: directory
+        mode: '0755'
+
+    - name: "Compila file report Markdown completo"
+      vars:
+        report_file: "{{ playbook_dir }}/../../reports/proxmox_smart_report_{{ ansible_date_time.iso8601_basic_short }}.md"
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/proxmox_smart_report.j2"
+        dest: "{{ report_file }}"
+        mode: '0644'
+
+    - name: "Visualizza Executive Summary a Terminale"
+      ansible.builtin.debug:
+        msg: |
+          =================================================================================================================================
+                                                  PROXMOX CLUSTER SMART HEALTH - EXECUTIVE SUMMARY
+          =================================================================================================================================
+          {% for h in groups['proxmox_audit_targets'] %}
+          >>> NODO: {{ h }} ({{ hostvars[h].ansible_hostname | default(h) }}) - Dischi Fisici: {{ hostvars[h].node_smart_data | default([]) | length }}
+          ---------------------------------------------------------------------------------------------------------------------------------
+          DISCO           | TIPO     | STATO   | TEMP  | MODELLO                        | SERIALE              | CAPACITÀ  | POH      | USURA
+          ----------------+----------+---------+-------+--------------------------------+----------------------+-----------+----------+-------
+          {% for d in hostvars[h].node_smart_data | default([]) %}
+          {{ '%-15s' | format(d.disk) }} | {{ '%-8s' | format(d.type) }} | {{ '%-7s' | format(d.health) }} | {{ '%-5s' | format(d.temperature) }} | {{ '%-30s' | format(d.model[:30]) }} | {{ '%-20s' | format(d.serial[:20]) }} | {{ '%-9s' | format(d.size) }} | {{ '%-8s' | format(d.poh) }} | {{ d.wearout }}
+          {% endfor %}
+          ---------------------------------------------------------------------------------------------------------------------------------
+          {% endfor %}
+          Report completo salvato in: reports/proxmox_smart_report_{{ ansible_date_time.iso8601_basic_short }}.md
+          =================================================================================================================================

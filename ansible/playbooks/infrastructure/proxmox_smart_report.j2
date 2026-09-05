@@ -1,0 +1,33 @@
+# Proxmox Cluster Physical Disks SMART Audit Report
+**Data Esecuzione**: {{ ansible_date_time.iso8601 }}
+**Cluster Nodi Verificati**: {{ groups['proxmox_audit_targets'] | join(', ') }}
+
+---
+
+## 1. Executive Summary
+
+| Nodo | Disco Fisico | Tipo | Stato Salute | Temp | Modello | Seriale | Dimensione | Ore Attive (POH) | Usura / Wear |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+{% for h in groups['proxmox_audit_targets'] %}
+{% for d in hostvars[h].node_smart_data | default([]) %}
+| **{{ h }}** (`{{ hostvars[h].ansible_hostname | default(h) }}`) | `{{ d.disk }}` | {{ d.type }} | **{{ d.health }}** | {{ d.temperature }} | {{ d.model }} | `{{ d.serial }}` | {{ d.size }} | {{ d.poh }} | {{ d.wearout }} |
+{% endfor %}
+{% endfor %}
+
+---
+
+## 2. Dettaglio Completo `smartctl -a` per Disco
+
+{% for h in groups['proxmox_audit_targets'] %}
+### Nodo: {{ h }} (`{{ hostvars[h].ansible_hostname | default(h) }}`)
+
+{% for res in hostvars[h].smartctl_text_results.results | default([]) %}
+#### Disco: `{{ res.item }}`
+
+```text
+{{ res.stdout }}
+```
+
+---
+{% endfor %}
+{% endfor %}

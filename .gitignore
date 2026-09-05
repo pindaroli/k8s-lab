@@ -73,6 +73,8 @@ scripts/kubernetes/yaml/*.yaml
 !scripts/kubernetes/yaml/job-normalizzation-template.yaml
 talos_mcp_audit*.log
 backups/
+ansible/reports/*.md
+!ansible/reports/.gitkeep
 
 # ServiceNow Discovery Token Secret
 *.secret

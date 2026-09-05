@@ -12,6 +12,7 @@ This directory contains the core automation playbooks for the Kubernetes Homelab
 | **`cleanup_old_services.yml`** | **Maintenance**. Reusable logic to decommission old services from DNS (both Cloudflare and OPNsense). |
 | **`restart_unbound.yml`** | **Utility**. Simple handler to restart the Unbound DNS service on OPNsense. |
 | **`setup_ups.yml`** | **Infrastructure**. Configures NUT on PVE1 (Master, `nutdrv_qx` driver) and TrueNAS (Client) for graceful lab shutdown. |
+| **`proxmox_smart_audit.yml`** | **Hardware/Storage Audit**. Rileva i nodi del cluster Proxmox (con warning su nodi non censiti), esegue `smartctl -a` sui soli dischi fisici reali e genera report ed executive summary tabellare. |
 
 ## DNS Synchronization Logic
 

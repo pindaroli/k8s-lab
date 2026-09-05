@@ -9,6 +9,7 @@ This directory contains Python and Shell scripts for complex validation and inte
 | **`ansible/playbooks/scripts/validate_rete_dns.py`** | Python | **Core Logic**. Parses `rete.json` to generate the authoritative list of DNS records for Ansible. Also performs validation (duplicate checks). |
 | **`sync_storage.py`** | Python | **Integration**. Connects to TrueNAS via SSH, fetches `/etc/exports`, and syncs them to `storage.json` to keep the cluster storage config up to date. |
 | **`fetch_exports.sh`** | Bash | **Helper**. Expect wrapper used by `sync_storage.py` to handle SSH password input (legacy) for fetching exports. |
+| **`infrastructure/check_proxmox_smart.sh`** | Bash | **Infrastructure Audit**. Esegue l'audit SMART hardware dei dischi fisici del cluster Proxmox (wrapper per `proxmox_smart_audit.yml`). |
 
 ## Archived
 One-off fix scripts are moved to `_OLD_ARCHIVE/`.
