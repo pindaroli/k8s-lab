@@ -16,6 +16,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **Data & Registry**: [[Network_Registry]], [[Storage_Registry]], [[Secret_Registry]].
 - **Procedure**: [[Power_Sequence]] (Shutdown/Startup), [[Certificate_Renewal]], [[truenas-backup-restore]] (Backup e Ripristino TrueNAS).
 - **Piani**: [[sops-secret-sovereignty]] (Migrazione SOPS + Age), [[recyclarr-anti-spam-automation]] (Automazione Anti-Spam), [[dual-pipeline-gitops-integration]] (Integrazione GitOps Duale Classica), [[plan-out-of-band-service-access]] (Accesso Fisico OOB), [[pve3-10g-migration-recovery]] (Migrazione 10G PVE3 & Ripristino), [[oob-hardening-validation]] (Validazione e Hardening OOB), [[pve1-upgrade-ve9.2]] (Upgrade PVE1 e Spegnimento Safe), [[pve1-hostname-rename]] (Rinomina Hostname PVE1: pve → pve1), [[opnsense-recovery-and-temporary-routing]] (Ripristino OPNsense & Rete Temporanea), [[special-vdev-optimization]] (Ottimizzazione Special VDEV oliraid: 1M → 64K), [[oliraid-expansion-special-vdev-evacuation]] (Espansione oliraid e Evacuazione Special VDEV), [[kubernetes-mcp-server-and-kubeconfig-migration]] (Configurazione Kubernetes MCP & Migrazione Kubeconfig), [[truenas-master-mcp-kubernetes-migration]] (Migrazione Kubernetes di TrueNAS Master MCP), [[minimserver-deployment]] (Deployment di MinimServer), [[proxmox-talos-watchdog]] (Proxmox Talos Intelligent Watchdog), [[truenas-baremetal-migration-pve1-reconfig]] (Migrazione TrueNAS su Bare Metal e Riconfigurazione PVE1), [[ragflow-enterprise-deployment]] (Deployment Enterprise di RAGFlow), [[out-of-band-automation-engine]] (Out-of-Band Automation Engine: LXC su TrueNAS NFS oliraid + Semaphore + MCP), [[opnsense-mcp-kubernetes-migration]] (Migrazione Kubernetes di OPNsense MCP Server), [[talos-mcp-kubernetes-migration]] (Migrazione Kubernetes di Talos MCP Server).
+- **Pattern**: [[mcp-secret-projection-pattern]] (Proiezione Segreti & Immutabilità MCP Server).
 
 - **Incidenti**: [[2026-05-03-dns-split-horizon-conflict]], [[2026-05-03-dnsbl-filtering-failure]], [[2026-05-06-google-oauth2-credential-leak]], [[2026-05-08-qbittorrent-port-forward-outage]], [[2026-05-16-dnsbl-automation-payload-mismatch]], [[2026-06-02-pve3-kernel-hang-nomodeset]], [[2026-06-03-flannel-restart-dns-cascading-failure]], [[2026-06-20-dhcp-relay-outage-symmetric-routing]], [[2026-06-24-special-mirror-degraded-replaced-disk]], [[2026-06-28-mcp-server-connection-failures-and-github-token-expiry]], [[2026-06-28-talos-cluster-quorum-loss-down]], [[2026-06-28-zshrc-kubeconfig-talosconfig-paths-update]], [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]].
 
@@ -127,6 +128,16 @@ Quando viene registrato o chiuso un incidente:
    - Modifica il file dell'incidente impostando `status: archived` e `certified_for_ai: false`.
    - Popola i campi `resolved: true` e `resolved_at: [timestamp]`.
 </ingest_workflow_incidents>
+
+<routing_rules_patterns>
+1. CONSULTAZIONE E PROPOSTA ALL'UTENTE (Pattern Consultation & Proactive Suggestion):
+   - Prima di proporre, progettare o implementare soluzioni architetturali (es. nuovi server MCP, storage NFS, segreti, routing), l'AI DEVE verificare la presenza di pattern in `wiki/patterns/` aventi `status: active` e `certified_for_ai: true`.
+   - Se esiste un pattern attivo pertinente all'ambito di intervento, l'AI DEVE **proporlo esplicitamente all'utente**, evidenziandone motivazioni, vantaggi e coerenza con il resto del lab, e **attendere le istruzioni/approvazione dell'utente prima di procedere all'adozione**.
+   - I pattern con `status: deprecated` o `certified_for_ai: false` non devono essere proposti per nuovi workload a meno di esplicite richieste di audit o analisi retrospettiva.
+
+2. TRACCIABILITÀ DELL'USO (`in_use_by` Sync):
+   - Una volta che l'utente approva l'adozione del pattern su un nuovo carico di lavoro, directory o repository, l'AI DEVE aggiornare l'elenco `in_use_by` nel frontmatter YAML del pattern corrispondente.
+</routing_rules_patterns>
 
 ---
 > [!NOTE]

@@ -18,6 +18,12 @@ spec:
       labels:
         toolhive-tool-type: mcp
         toolhive: "true"
+    {{- if .toolhive.podTemplateSpec }}
+      {{- if .toolhive.podTemplateSpec.spec }}
+    spec:
+      {{- toYaml .toolhive.podTemplateSpec.spec | nindent 6 }}
+      {{- end }}
+    {{- end }}
   {{- if .toolhive.secrets }}
   secrets:
     {{- toYaml .toolhive.secrets | nindent 4 }}

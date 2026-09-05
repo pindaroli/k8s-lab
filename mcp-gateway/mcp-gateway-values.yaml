@@ -133,6 +133,46 @@ servers:
           cpu: "50m"
           memory: "64Mi"
 
+  - name: talos
+    url: "http://mcp-talos-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
+    hostname: "mcp-talos-mcp-proxy.mcp-system.svc.cluster.local"
+    enabled: true
+    prefix: "talos_"
+    ingress:
+      enabled: true
+      host: "talos-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: talos-mcp
+      image: ghcr.io/pindaroli/talos-mcp:latest
+      transport: stdio
+      proxyPort: 8080
+      podTemplateSpec:
+        spec:
+          volumes:
+            - name: talosconfig-vol
+              secret:
+                secretName: talos-mcp-credentials
+          containers:
+            - name: mcp
+              volumeMounts:
+                - name: talosconfig-vol
+                  mountPath: /etc/talos
+                  readOnly: true
+      env:
+        - name: TALOSCONFIG
+          value: "/etc/talos/talosconfig"
+        - name: TALOS_MCP_AUDIT_LOG_PATH
+          value: "/dev/null"
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+
 # Configurazione MCP Inspector (Web UI e File System Access)
 inspector:
   enabled: false

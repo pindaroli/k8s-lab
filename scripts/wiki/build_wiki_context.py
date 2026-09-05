@@ -45,6 +45,7 @@ FRONTMATTER_RE = re.compile(r'^---\s*\n(.*?)\n---\s*\n', re.DOTALL)
 SECTION_ORDER = [
     ("root",       "📋 Documenti Fondamentali"),
     ("entities",   "🏗️ Entità Infrastrutturali"),
+    ("patterns",   "📐 Pattern Architetturali"),
     ("workflows",  "🔄 Workflow Operativi"),
     ("istruzioni", "📖 Istruzioni Tecniche"),
     ("plans",      "🗺️ Piani Attivi"),
@@ -77,18 +78,18 @@ def read_file_strip_frontmatter(path: Path) -> tuple[str, dict]:
 
 
 # ---------------------------------------------------------------------------
-# Helper: è un piano da saltare?
+# Helper: è un piano o pattern da saltare?
 # ---------------------------------------------------------------------------
 def is_plan_done(path: Path) -> bool:
-    """True se il piano ha status Concluso/Completato/Archived o certified_for_ai: false."""
+    """True se il file ha status Concluso/Completato/Archived/Deprecated o certified_for_ai: false."""
     try:
         content, meta = read_file_strip_frontmatter(path)
         # Se certified_for_ai è false, lo saltiamo
         if meta.get("certified_for_ai") == "false":
             return True
-        # Se lo status indica che è archiviato o concluso, lo saltiamo
+        # Se lo status indica che è archiviato, concluso o deprecato, lo saltiamo
         status = meta.get("status", "").lower()
-        if any(w in status for w in ["concluso", "completato", "operativo", "✅", "archived"]):
+        if any(w in status for w in ["concluso", "completato", "operativo", "✅", "archived", "deprecated", "draft"]):
             return True
         # Se non c'è frontmatter parsed, applichiamo la regex sul file completo come fallback
         if not meta:
@@ -125,9 +126,9 @@ def collect_files() -> dict[str, list[Path]]:
             # Salta incidents (non inclusi nell'order ma per sicurezza)
             if key == "incidents":
                 continue
-            # Salta piani conclusi
-            if key == "plans" and is_plan_done(f):
-                print(f"  [SKIP concluso] {f.relative_to(PROJECT_ROOT)}")
+            # Salta piani e pattern inattivi
+            if key in ("plans", "patterns") and is_plan_done(f):
+                print(f"  [SKIP {key} non attivo] {f.relative_to(PROJECT_ROOT)}")
                 continue
             sections[key].append(f)
 

@@ -24,13 +24,13 @@
 - [x] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
 - [x] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
 
-## 🚀 [ ] IN CORSO: Migrazione Kubernetes di Talos MCP Server [[talos-mcp-kubernetes-migration]]
-- [ ] Fase 1: Creazione Dockerfile monorepo `docker/talos-mcp/`, wrapper `talos_mcp_wrapper.py` e workflow CI per container `ghcr.io/pindaroli/talos-mcp:latest`.
-- [ ] Fase 2: Provisioning secret SOPS `secrets-sops/talos-mcp-credentials.enc.yaml` in `mcp-system`.
-- [ ] Fase 3: Integrazione server `talos` nella Project Chart Helm `mcp-gateway` (ToolHive stdio -> HTTP/SSE bridge :8080).
-- [ ] Fase 4: Configurazione routing Traefik IngressRoute e alias DNS Unbound `talos-mcp-internal.pindaroli.org`.
-- [ ] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
-- [ ] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
+## 🚀 [x] ✅ COMPLETATO: Migrazione Kubernetes di Talos MCP Server [[talos-mcp-kubernetes-migration]]
+- [x] Fase 1: Creazione Dockerfile monorepo `docker/talos-mcp/`, wrapper `talos_mcp_wrapper.py` e workflow CI per container `ghcr.io/pindaroli/talos-mcp:latest`.
+- [x] Fase 2: Provisioning secret SOPS `secrets-sops/talos-mcp-credentials.enc.yaml` in `mcp-system`.
+- [x] Fase 3: Integrazione server `talos` nella Project Chart Helm `mcp-gateway` (ToolHive stdio -> HTTP/SSE bridge :8080 con Archetipo 2 Kubelet volume secret projection).
+- [x] Fase 4: Configurazione routing Traefik IngressRoute e alias DNS Unbound `talos-mcp-internal.pindaroli.org`.
+- [x] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
+- [x] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
 
 ## 🚀 [ ] Out-of-Band Automation Engine: LXC su TrueNAS NFS (`oliraid`) + Semaphore + MCP Gateway [[out-of-band-automation-engine]]
 ### [ ] PARTE 1: PIANO PRINCIPALE (Parent Plan)

@@ -52,6 +52,38 @@ tags:
 ---
 ```
 
+### Pattern Architetturali (`wiki/patterns/`)
+Ogni pattern architetturale definisce una soluzione standardizzata, riutilizzabile e canonica adottata nel lab.
+Ogni pattern **DEVE** includere il seguente frontmatter YAML strutturato:
+```yaml
+---
+title: "Nome Descrittivo del Pattern"
+type: pattern
+status: active | deprecated | draft          # active: in uso nel lab; deprecated: superato; draft: in studio
+certified_for_ai: true | false              # true solo se active e pronto all'uso
+created_at: YYYY-MM-DD
+last_updated: YYYY-MM-DD
+superseded_by: [[nuovo-pattern]]            # Link al pattern successore (opzionale se deprecated)
+in_use_by:                                  # Mappa dei progetti e directory dove il pattern è applicato
+  - project: "k8s-lab"
+    paths:
+      - "helm-charts/mcp-gateway"
+tags:
+  - "#pattern"
+---
+```
+
+<routing_rules_patterns>
+1. CONSULTAZIONE E PROPOSTA ALL'UTENTE (Pattern Consultation & Proactive Suggestion):
+   - Prima di proporre, progettare o implementare soluzioni architetturali (es. nuovi server MCP, storage NFS, segreti, routing), l'AI DEVE verificare la presenza di pattern in `wiki/patterns/` aventi `status: active` e `certified_for_ai: true`.
+   - Se esiste un pattern attivo pertinente all'ambito di intervento, l'AI DEVE **proporlo esplicitamente all'utente**, evidenziandone motivazioni, vantaggi e coerenza con il resto del lab, e **attendere le istruzioni/approvazione dell'utente prima di procedere all'adozione**.
+   - I pattern con `status: deprecated` o `certified_for_ai: false` non devono essere proposti per nuovi workload a meno di esplicite richieste di audit o analisi retrospettiva.
+
+2. TRACCIABILITÀ DELL'USO (`in_use_by` Sync):
+   - Una volta che l'utente approva l'adozione del pattern su un nuovo carico di lavoro, directory o repository, l'AI DEVE aggiornare l'elenco `in_use_by` nel frontmatter YAML del pattern corrispondente.
+</routing_rules_patterns>
+
+
 ## 2. Sintassi di Collegamento (Wikilinks)
 - Utilizzare sempre i doppi bracket per collegare le entità: `[[NomeEntita]]`.
 - Non utilizzare link Markdown standard per file interni (es. `[testo](file.md)`), ma usare i wikilinks per mantenere la compatibilità con la Graph View di Obsidian.

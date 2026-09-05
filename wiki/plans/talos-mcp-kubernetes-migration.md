@@ -1,8 +1,8 @@
 ---
 title: "Piano: Migrazione Kubernetes di Talos MCP Server"
 type: plan
-status: active
-certified_for_ai: true
+status: Concluso
+certified_for_ai: false
 created_at: 2026-09-05
 tags:
   - "#plan"
@@ -144,7 +144,7 @@ flowchart TD
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1: Creazione Dockerfile Monorepo & GitHub Actions CI
-- **Ultima Azione Completata**: Approvazione del piano e persistenza del documento in `wiki/plans/talos-mcp-kubernetes-migration.md`
-- **Prossimo Passo Operativo**: Creazione di `docker/talos-mcp/Dockerfile`, `docker/talos-mcp/talos_mcp_wrapper.py`, `.github/workflows/docker-talos-mcp.yml` e aggiornamento di `GEMINI.md` e `todo.md`
-- **Blocchi/Decisioni Pendenti**: Nessuno
+- **Fase Attiva**: Piano Completato con Successo ✅
+- **Ultima Azione Completata**: Migrazione completa su Kubernetes nel namespace `mcp-system`, applicazione dell'[[mcp-secret-projection-pattern]] (Archetipo 2: Volume Secret Projection & Workload Immutability), rollout della Chart `mcp-gateway` v0.2.5, registrazione DNS Unbound `talos-mcp-internal.pindaroli.org` -> `10.10.20.56`, e aggiornamento `mcp_config.json`.
+- **Prossimo Passo Operativo**: Nessuno (carico di lavoro pienamente convergente e operativo).
+- **Blocchi/Decisioni Pendenti**: Nessuno.
