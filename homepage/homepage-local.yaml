@@ -218,6 +218,11 @@ data:
             description: Monitoring Dashboard (Internal)
             icon: grafana.png
             siteMonitor: http://victoria-monitoring-grafana.monitoring.svc.cluster.local:80/api/health
+        - Scrutiny:
+            href: http://10.10.10.50:31054
+            description: Hard Drive Health & S.M.A.R.T. Monitoring
+            icon: scrutiny.png
+            siteMonitor: http://10.10.10.50:31054
 
     - "Network Infrastructure":
         - Core Switch:
