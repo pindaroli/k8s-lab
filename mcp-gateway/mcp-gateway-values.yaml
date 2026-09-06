@@ -231,6 +231,32 @@ servers:
       enabled: true
       clusterRole: cluster-admin
 
+  - name: ollama
+    url: "http://mcp-ollama-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
+    hostname: "mcp-ollama-mcp-proxy.mcp-system.svc.cluster.local"
+    enabled: true
+    prefix: "ollama_"
+    ingress:
+      enabled: true
+      host: "ollama-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: ollama-mcp
+      image: ghcr.io/pindaroli/ollama-mcp:latest
+      transport: stdio
+      proxyPort: 8080
+      env:
+        - name: OLLAMA_HOST
+          value: "http://10.10.20.100:11434"
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+
 # Configurazione MCP Inspector (Web UI e File System Access)
 inspector:
   enabled: false
