@@ -43,6 +43,7 @@ cert-manager/cloudflare-token-secret.yaml
 __pycache__/
 downloads/plugins
 downloads/truenas-*/
+downloads/opnsense-*/
 # Tdarr
 tdarr/node/
 tdarr/logs/

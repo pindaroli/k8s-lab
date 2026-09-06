@@ -54,6 +54,12 @@
 - [ ] Fase 3: Logica di valutazione soglie critiche (settori riallocati, pending, temperatura, usura NVMe) e generazione report unificato.
 - [ ] Fase 4: Integrazione opzionale per inoltro telemetrie verso Scrutiny (InfluxDB) o esecuzione via Semaphore (`ansible-engine`).
 
+## 🚀 [x] ✅ COMPLETATO: Estrazione e Normalizzazione Documentazione OPNsense 26.1 per RAGFlow [[opnsense-documentation-extraction-and-ragflow]]
+- [x] Fase 1: Sviluppo script `scripts/ragflow/extract_opnsense_docs.py` con motore di risoluzione link semantici (`:doc:`, `:ref:`) e convertitore reST -> Markdown.
+- [x] Fase 2: Esecuzione test-driven su campioni complessi (`firewall.rst`, `aliases.rst`, `how-tos/wireguard-client.rst`).
+- [x] Fase 3: Estrazione completa del corpus OPNsense 26.1 (421 documenti Markdown) e generazione `SUMMARY.md`.
+- [x] Fase 4: Standardizzazione Text-First RAGFlow (zero rumore OCR, allineato a TrueNAS) e aggiornamento `wiki/entities/OPNsense.md`.
+
 ## 🚀 [ ] Out-of-Band Automation Engine: LXC su TrueNAS NFS (`oliraid`) + Semaphore + MCP Gateway [[out-of-band-automation-engine]]
 ### [ ] PARTE 1: PIANO PRINCIPALE (Parent Plan)
 - [ ] Fase 1: Creazione dataset TrueNAS `oliraid/pve-shared-lxc` (ZFS Special VDEV 64K, recordsize 64K, atime=off, xattr=sa, lz4), export NFS e registrazione `truenas-nfs` su Proxmox VE.

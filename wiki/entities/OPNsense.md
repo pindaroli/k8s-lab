@@ -50,7 +50,16 @@ OPNsense usa il modulo nativo di Unbound per il blocco dei domini traccianti.
 ## 5. Protezione Anti-Rebind
 Per accedere all'interfaccia web di OPNsense usando un dominio personalizzato (es. `firewall-direct.pindaroli.org`), tale dominio deve essere registrato in `System -> Settings -> Administration -> Alternate Hostnames`.
 
+## 6. Documentazione Ufficiale Offline e RAGFlow (Release 26.1)
+La documentazione ufficiale di OPNsense allineata alla versione in esecuzione nel lab (**OPNsense 26.1 "Witty Woodpecker"**) è estratta, convertita con risoluzione dei link semantici e ottimizzata per l'ingestione in RAGFlow.
+- **Script di Estrazione**: `scripts/ragflow/extract_opnsense_docs.py` (Two-Pass Symbol Indexer, inlining include ricorsivo, convertitore reST $\rightarrow$ GFM Markdown, Admonition $\rightarrow$ GitHub Alerts).
+- **Corpus Generato**: `downloads/opnsense-26.1/` (420 documenti Markdown + directory immagini sincronizzate `images/` e `manual/images/`).
+- **Master Index**: `downloads/opnsense-26.1/SUMMARY.md` (suddiviso per Core, Manual, How-Tos, Services, Firewall/NAT, Releases, Development, Troubleshooting).
+- **Piano di Riferimento**: [[opnsense-documentation-extraction-and-ragflow]].
+
 ## Relazioni Architetturali
 - Fornisce DNS a: [[Talos_Cluster]], Dispositivi Client VLAN 20
 - Bilancia traffico verso: [[Traefik]]
 - Instradamento simmetrico con: [[Ansible_Extreme_EXOS]] su rete di TRANSIT.
+- Base di conoscenza offline e RAGFlow: [[opnsense-documentation-extraction-and-ragflow]] (`downloads/opnsense-26.1/`).
+
