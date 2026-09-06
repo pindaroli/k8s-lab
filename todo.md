@@ -48,6 +48,14 @@
 - [x] Fase 5: Validazione Test-Driven end-to-end e non-regressione su tutta la flotta MCP.
 - [x] Fase 6: Aggiornamento `MCP_Platform.md` e consolidamento Wiki.
 
+## 🚀 [ ] Migrazione Kubernetes di Ollama MCP Server [[ollama-mcp-kubernetes-migration]]
+- [ ] Fase 1: Creazione packaging Monorepo (`docker/ollama-mcp/Dockerfile`) e workflow CI/CD GitHub Actions.
+- [ ] Fase 2: Configurazione ascolto di rete del demone Ollama su Mac Studio (VLAN 20: `0.0.0.0:11434`).
+- [ ] Fase 3: Integrazione server `ollama` nella Project Chart Helm `mcp-gateway` (bump `Chart.yaml` v0.2.8 e valori).
+- [ ] Fase 4: Routing Traefik IngressRoute, censimento in `rete.json` e registrazione DNS Unbound OPNsense.
+- [ ] Fase 5: Aggiornamento endpoint remoto `serverUrl` in `~/.gemini/antigravity/mcp_config.json`.
+- [ ] Fase 6: Validazione Test-Driven end-to-end e consolidamento Wiki (`MCP_Platform.md`).
+
 ## 🚀 [ ] Automazione Rilevazione Dati SMART via Ansible [[ansible-smart-telemetry-integration]]
 - [ ] Fase 1: Sviluppo playbook `ansible/playbooks/monitoring/collect_smart_data.yml` con scansione dinamica dischi (`smartctl --scan-open`).
 - [ ] Fase 2: Estrazione e parsing JSON metriche S.M.A.R.T. per drive SATA (HDD/SSD) e NVMe su TrueNAS e nodi Proxmox.
