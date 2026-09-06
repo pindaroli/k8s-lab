@@ -1,6 +1,6 @@
 ---
 title: "MCP Platform (Model Context Protocol Hub & Inspector)"
-last_updated: "2026-09-05"
+last_updated: "2026-09-06"
 confidence: "High"
 tags:
   - "#mcp"
@@ -117,5 +117,6 @@ I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `oli
 | **`talos-mcp`** | `ghcr.io/pindaroli/talos-mcp:latest` | stdio -> proxy :8080 | `https://talos-mcp-internal.pindaroli.org/mcp` | Talos Control Plane API (`10.10.20.141/142/143:50000`) |
 | **`gemini-deepsearch-mcp`** | `ghcr.io/pindaroli/gemini-deepsearch-mcp:latest` | stdio -> proxy :8080 | `https://deepsearch-mcp-internal.pindaroli.org/mcp` | Google Gemini API (Web Search Grounding) |
 | **`kubernetes-mcp`** | `ghcr.io/containers/kubernetes-mcp-server:latest` | stdio -> proxy :8080 | `https://kubernetes-mcp-internal.pindaroli.org/mcp` | Kubernetes API In-Cluster (RBAC cluster-admin) |
+| **`ollama-mcp`** | `ghcr.io/pindaroli/ollama-mcp:latest` | stdio -> proxy :8080 | `https://ollama-mcp-internal.pindaroli.org/mcp` | Demone Ollama Mac Studio (`10.10.20.100:11434`) |
 
 

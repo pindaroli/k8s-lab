@@ -1,9 +1,10 @@
 ---
 title: "Piano: Migrazione Kubernetes di Ollama MCP Server"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-09-06
+completed_at: 2026-09-06
 tags:
   - "#plan"
   - "#ollama"
@@ -184,7 +185,7 @@ flowchart TD
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 / Creazione Packaging Monorepo & CI/CD GitHub Actions
-- **Ultima Azione Completata**: Formalizzazione e persistenza del piano in `wiki/plans/ollama-mcp-kubernetes-migration.md`.
-- **Prossimo Passo Operativo**: Creazione del file `docker/ollama-mcp/Dockerfile` e del workflow `.github/workflows/docker-ollama-mcp.yml`.
-- **Blocchi/Decisioni Pendenti**: Attesa via libera operatore per procedere con la Fase 1.
+- **Fase Attiva**: Completato (Tutte le Fasi 1-6 completate con successo).
+- **Ultima Azione Completata**: Migrazione a `ollama-mcp` cluster-native completata al 100%. Immagine compilata con CI/CD su GHCR, StatefulSet `ollama-mcp-0` e proxy runner attivi in `mcp-system`, Traefik IngressRoute e DNS Unbound operativi su `10.10.20.56`, client Antigravity aggiornato su `serverUrl` e test funzionale `ollama_list` eseguito con successo.
+- **Prossimo Passo Operativo**: Nessuno (Workload MCP Ollama pienamente operativo in produzione su K8s).
+- **Blocchi/Decisioni Pendenti**: Nessuno.
