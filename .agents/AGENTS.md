@@ -27,18 +27,21 @@
 
 - **ANTI-LOOSE-YAML GUARD (Strict Helm-First Mandate)**: It is strictly forbidden to create, propose, or execute standalone/loose `.yaml` manifest files in arbitrary directories (e.g. `mcp-servers/`, `manifests/`, or ad-hoc Ingress/Service/Deployment files) via manual `kubectl apply -f`. Every workload, service, and routing entity MUST be managed by a Helm release via an upstream registry chart or a Project Chart located in `helm-charts/<app-name>/`. All configuration changes MUST be expressed strictly through declarative value overrides in `<app-name>/<app-name>-values.yaml` and parameterized Helm templates in `helm-charts/<app-name>/templates/`. If an AI agent contemplates writing a standalone YAML file for Kubernetes: **STOP IMMEDIATELY**. Locate or create the corresponding Helm Project Chart and extend its values and templates instead.
 
-- **RAGFlow Knowledge Base Policy (`k8s-lab` Dataset)**:
-  - **Scope & Purpose**: The RAGFlow knowledge base (dataset: `k8s-lab`) is the authoritative source for homelab physical hardware documentation, including vendor manuals, component datasheets, installation guides, motherboard pinouts, PCIe slot allocations/bifurcation, BIOS/UEFI/IPMI settings, chassis cabling, and power/thermal specifications (servers, Extreme switch, TrueNAS host, NICs, storage controllers, UPS).
+- **RAGFlow Knowledge Base Policy (`opnsense`, `truenas`, `k8s-lab` Datasets)**:
+  - **Scope & Purpose**: The RAGFlow knowledge bases (`https://ragflow-internal.pindaroli.org`) are the authoritative source for homelab technical and hardware documentation:
+    1. **`opnsense`**: Official OPNsense 26.1 ("Witty Woodpecker") documentation (firewall rules, NAT, policy routing, Kea DHCP, Unbound DNS, WireGuard, MVC APIs, plugins).
+    2. **`truenas`**: Official TrueNAS SCALE 25.10 documentation (ZFS storage pools, datasets, quotas, NFS/SMB shares & ACL permissions, replication tasks, snapshot retention).
+    3. **`k8s-lab`**: Homelab physical hardware documentation (vendor manuals, component datasheets, motherboard pinouts, PCIe bifurcation, Extreme switch port matrices, BIOS/UEFI/IPMI settings, UPS/NUT power specs).
   - **Intelligent Trigger Conditions (MUST query RAGFlow via `ragflow_retrieval_by_name`)**:
-    1. **Hardware Specifications & Datasheets**: Queries regarding physical component specs, power consumption, connector types, jumper settings, or hardware capabilities.
-    2. **Installation & Setup Guides**: Questions about physical mounting, internal cabling, BIOS/BMC configuration procedures, or vendor-specific troubleshooting from manuals.
-    3. **Vendor Model Inquiries**: Whenever the user references specific hardware models present in the lab (e.g., Extreme switch models, motherboard model numbers, network card chipsets).
-    4. **Local Knowledge Fallback**: If local repository files (`rete.json`, `ansible/`, `wiki/`) lack physical hardware details, query RAGFlow before declaring missing data or searching the web.
+    1. **OPNsense Procedures & Parameters**: Queries regarding firewall rules, routing policies, NAT rules, VPN tunnels, or Unbound/Kea settings.
+    2. **TrueNAS Procedures & Storage Best Practices**: Queries regarding recommended ZFS dataset properties (recordsize, sync), NFS/SMB permission schemes, or replication setups.
+    3. **Hardware Specifications & Datasheets**: Queries regarding physical component specs, power consumption, connector types, jumper settings, or hardware limits.
+    4. **Vendor Model Inquiries & Fallback**: Whenever the user references specific hardware or OS features and local repository files (`rete.json`, `storage.json`, `wiki/`) lack detailed technical manuals or official vendor guidelines.
   - **Strict Exclusions (Do NOT query RAGFlow)**:
-    - **Live Cluster Operations**: Real-time pod status, service health, live ZFS pool states, Talos cluster events, or OPNsense active firewall states -> Query live system tools directly.
+    - **Live Infrastructure Operations**: Real-time pod status, service health, live ZFS pool states (`zpool status`), Talos cluster events, or OPNsense active firewall states -> Query live system tools directly (`opnsense` MCP, `truenas-master-mcp`, `talos` MCP, `kubernetes` MCP).
     - **Git Workspace Code & Configs**: Helm values (`arr-values.yaml`), Kubernetes manifests, Ansible playbooks, and GitOps logic -> Inspect local repository files.
     - **General Programming / Syntax**: Standard Python, YAML, or bash syntax questions.
-  - **Citation Protocol**: Whenever answering based on RAGFlow retrieval, the agent MUST explicitly cite the source document name, the `k8s-lab` dataset, and the specific section or page referenced.
+  - **Citation Protocol**: Whenever answering based on RAGFlow retrieval, the agent MUST explicitly cite the source document name, the target RAGFlow dataset (`opnsense`, `truenas`, or `k8s-lab`), and the specific section or page referenced.
 
 
 
