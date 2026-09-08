@@ -815,6 +815,17 @@
       "notes": "Static DHCP reservation."
     },
     {
+      "id": "kef-lsx",
+      "label": "KEF LSX II LT",
+      "type": "Audio Speaker",
+      "brand": "KEF",
+      "model": "LSX II LT",
+      "mac": "84:17:15:07:a8:28",
+      "ip": "10.10.20.210",
+      "network": "Client (VLAN 20)",
+      "notes": "KEF Wireless HiFi Speakers connected via USB-C to Mac Studio and Wi-Fi to VLAN 20. Automated startup and wakeup via REST API."
+    },
+    {
       "id": "xray",
       "label": "OCI Proxy Server",
       "type": "Cloud Instance",
