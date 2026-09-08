@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       upstream_ref:
-        description: 'Commit SHA, branch o tag di nqrwhal/kef-mcp da compilare'
+        description: 'Commit SHA, branch o tag di nqrwhal/kef-mcp (mono-branch fallback su main)'
         required: true
         default: 'main'
       image_tag:

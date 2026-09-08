@@ -1,5 +1,6 @@
 FROM python:3.12-slim
 
+ARG TALOS_MCP_VERSION=0.3.10
 ARG TALOS_VERSION=v1.13.5
 ARG TARGETARCH=amd64
 
@@ -14,8 +15,8 @@ RUN apt-get update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Install talos-mcp-server and dependencies
-RUN pip install --no-cache-dir "talos-mcp-server==0.3.10" "mcp>=1.0.0,<2.0.0" pydantic
+# Install talos-mcp-server and dependencies (strict version pinning)
+RUN pip install --no-cache-dir "talos-mcp-server==${TALOS_MCP_VERSION}" "mcp==1.3.0" "pydantic==2.10.6"
 
 # Create non-root user and directories
 RUN useradd -u 1000 -m -s /bin/bash talos && \

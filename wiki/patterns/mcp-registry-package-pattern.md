@@ -82,19 +82,28 @@ flowchart TD
 
 ## 3. Regole Fondamentali del Pattern
 
-### 1. Strict Version Pinning (Divieto di versioni mobili)
-Nel `Dockerfile` è **tassativamente vietato** installare pacchetti senza specificare la versione esatta o usando il tag generico `@latest`.
-* **Node.js (npm)**:
-  ```dockerfile
-  RUN npm install -g @richard-stovall/opnsense-mcp-server@0.5.3
-  ```
-* **Python (pip)**:
-  ```dockerfile
-  RUN pip install --no-cache-dir "talos-mcp-server==0.3.10"
-  ```
-Questo garantisce che la build del container sia deterministicamente riproducibile nel tempo.
+### 1. Strict Version Pinning e Divieto Assoluto di `latest`
+È **tassativamente vietato** l'uso del tag `:latest` o di versioni fluttuanti a qualsiasi livello dello stack:
+* **Base Image Dockerfile**: Non utilizzare tag mobili generici; utilizzare la release stabile raccomandata.
+* **Pacchetti e Dipendenze**: Installare esclusivamente l'**ultima release stabile formalmente pubblicata** sul registro ufficiale, definita tramite build ARG esplicito (`ARG <PKG>_VERSION=<x.y.z>`).
+  - **Node.js (npm)**:
+    ```dockerfile
+    ARG OPNSENSE_MCP_VERSION=0.5.3
+    RUN npm install -g @richard-stovall/opnsense-mcp-server@${OPNSENSE_MCP_VERSION}
+    ```
+  - **Python (pip)**:
+    ```dockerfile
+    ARG TALOS_MCP_VERSION=0.3.10
+    RUN pip install --no-cache-dir "talos-mcp-server==${TALOS_MCP_VERSION}" "mcp==1.3.0" "pydantic==2.10.6"
+    ```
+* **Immagini nei Manifesti Kubernetes**: In `mcp-gateway-values.yaml` o in qualsiasi chart Helm è fatto divieto di puntare a `:latest`; utilizzare sempre il tag semantico fisso corrispondente alla release stabile (es. `ghcr.io/pindaroli/ollama-mcp:2.1.0`).
 
-### 2. Utente Non-Root Unprivileged (UID 1000)
+### 2. Clausola di Ambiguità della Versione (Scelta Utente)
+Durante la ricerca e il censimento della versione del pacchetto sul registro pubblico:
+* Qualora siano presenti versioni pre-release, tag `@beta`, `@rc`, `@next`, versioni non semantiche o vi sia ambiguità tra pacchetti/fork simili, l'agente o l'operatore **NON deve effettuare assunzioni arbitrarie**.
+* L'agente deve **fermarsi e interpellare l'utente**, esponendo l'elenco delle versioni rilevate e lasciando all'utente la selezione della versione finale da adottare.
+
+### 3. Utente Non-Root Unprivileged (UID 1000)
 Tutti i container devono obbligatoriamente rilasciare i privilegi di root e impostare un utente unprivileged con UID fisso `1000`:
 * In immagini Node alpine: `USER node` (già preconfigurato con UID 1000).
 * In immagini Python slim:
@@ -105,16 +114,17 @@ Tutti i container devono obbligatoriamente rilasciare i privilegi di root e impo
   ```
 Questo assicura la piena conformità con la policy di sicurezza `securityContext.readOnlyRootFilesystem: true` imposta dal ToolHive Operator.
 
-### 3. Supporto al Trasporto `stdio` e Wrapper di Compatibilità
+### 4. Supporto al Trasporto `stdio` e Wrapper di Compatibilità
 I server MCP pacchettizzati devono comunicare nativamente tramite `stdio`. Qualora il pacchetto richieda parametri CLI specifici, variabili d'ambiente non standard o intercettazione di log verbosi (come nel caso di `talos-mcp-server` che loggava su file locale non scrivibile), è consentito affiancare un wrapper minimale:
 * File: `docker/<app>/<app>_wrapper.py`
 * Esempio: `talos_mcp_wrapper.py` reindirizza i log su `/dev/null` per rispettare il filesystem read-only.
 
-### 4. Tag OCI Immutabili su GHCR
-La pipeline CI/CD (`.github/workflows/docker-<app>.yml`) deve taggare l'immagine su GHCR sia con la versione semantica del pacchetto (es. `ghcr.io/pindaroli/ollama-mcp:2.1.0`), sia con il floating tag `:latest` e il commit short SHA (`sha-xxxxxxx`).
+### 5. Tag OCI Immutabili su GHCR e Rilascio Controllato
+La pipeline CI/CD (`.github/workflows/docker-<app>.yml`) deve taggare e pubblicare l'immagine su GHCR prioritariamente con la versione semantica del pacchetto (es. `ghcr.io/pindaroli/ollama-mcp:2.1.0`) e il commit short SHA (`sha-xxxxxxx`). L'eventuale tag `:latest` può essere aggiornato solo ad uso informativo, ma non deve mai essere referenziato nei valori GitOps di produzione.
 
-### 5. Configurazione Dichiarativa Helm
+### 6. Configurazione Dichiarativa Helm
 Nessun manifesto loose: il container compilato viene censito in [mcp-gateway-values.yaml](file:///Users/olindo/prj/k8s-lab/mcp-gateway/mcp-gateway-values.yaml) all'interno del blocco `servers`, specificando:
 * Nome del server e prefisso Kuadrant (`prefix: "<name>_"`).
+* Immagine con tag semantico fisso (`image: ghcr.io/pindaroli/<app>:<version>`).
 * Host Ingress LAN (`<name>-mcp-internal.pindaroli.org`).
 * Risorse CPU/Memoria (`requests: 50m/64Mi`, `limits: 300m/256Mi`).

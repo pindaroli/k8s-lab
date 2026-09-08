@@ -83,15 +83,26 @@ flowchart TD
 
 ## 3. Regole Fondamentali del Pattern
 
-1. **Nessuna Build Schedulata Silente (No Cron Surprise)**:
+1. **Target Upstream Ufficiale e Divieto di Puntamento Cieco a `main`**:
+   È **tassativamente vietato** impostare ciecamente il branch principale (`main`/`master`) come target di build predefinito. Se il repository upstream dispone di tag ufficiali di release (es. `v1.2.0`, `1.0.0`) o branch di release stabili (es. `release/v1.x`), la build deve obbligatoriamente ancorarsi all'ultimo tag o branch ufficiale rilasciato.
+
+2. **Clausola di Ambiguità e Fallback Mono-Branch (Scelta Utente vs Auto-Adoption)**:
+   - **Caso Upstream Mono-Branch senza Tag**: Se la verifica sul repository upstream evidenzia l'assenza totale di tag di release ufficiali ed esiste un unico branch attivo (es. solo `main` come per `nqrwhal/kef-mcp`), la pipeline adotta automaticamente il solo branch esistente, ma l'agente o l'automazione **DEVE tassativamente emettere un warning esplicito per l'utente**, documentando il commit SHA tracciato.
+   - **Caso Ambiguità Multipla**: Se upstream presenta tag multipli non semantici, pre-release/candidate o branch concorrenti, l'agente **NON deve fare assunzioni arbitrarie** e deve obbligatoriamente richiedere all'utente la selezione esplicita del tag, branch o commit SHA.
+
+3. **Nessuna Build Schedulata Silente (No Cron Surprise)**:
    La pipeline di build **NON deve contenere trigger cron automatici** che compilano e sovrascrivono le immagini all'insaputa dell'utente.
-2. **Parametrizzazione Upstream Esplicita (`workflow_dispatch`)**:
+
+4. **Parametrizzazione Upstream Esplicita (`workflow_dispatch`)**:
    Il workflow GitHub Actions deve prevedere l'esecuzione on-demand con input espliciti:
-   * `upstream_ref`: commit SHA, branch o tag specifico da compilare (default `main`).
+   * `upstream_ref`: commit SHA, branch o tag specifico da compilare (allineato all'ultimo tag ufficiale o al branch/commit approvato).
    * `image_tag`: versione semantica da assegnare all'immagine finale su GHCR (es. `1.0.0`, `1.1.0`).
-3. **Immutabilità dei Tag OCI**:
-   In produzione su Kubernetes ([mcp-gateway-values.yaml](file:///Users/olindo/prj/k8s-lab/mcp-gateway/mcp-gateway-values.yaml)), il deployment deve puntare a tag semantici versionati (es. `1.0.0`) o commit SHA corti, evitando l'uso esclusivo di `:latest`.
-4. **Hardening del Container**:
+
+5. **Immutabilità dei Tag OCI**:
+   In produzione su Kubernetes ([mcp-gateway-values.yaml](file:///Users/olindo/prj/k8s-lab/mcp-gateway/mcp-gateway-values.yaml)), il deployment deve puntare esclusivamente a tag semantici versionati (es. `1.0.0`) o commit SHA corti, evitando in modo categorico `:latest`.
+
+6. **Hardening del Container**:
    Anche se il codice upstream gira come root, il `Dockerfile` locale deve creare un utente non-root (UID 1000 `appuser`) e garantire la conformità con `securityContext.readOnlyRootFilesystem: true` imposto da ToolHive Operator.
-5. **Adattatore di Trasporto (`entrypoint.py`)**:
+
+7. **Adattatore di Trasporto (`entrypoint.py`)**:
    I server MCP progettati per HTTP/SSE standalone devono essere dotati di un wrapper minimale che instradi lo stream su `stdio` quando avviati all'interno di ToolHive Operator.

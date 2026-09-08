@@ -1,3 +1,8 @@
+# WARNING: Upstream repository nqrwhal/kef-mcp has no formal release tags.
+# In accordance with mcp-upstream-tracking-pattern (Rule 2: Fallback Mono-Branch),
+# auto-adopting single active branch: main (latest commit: 8423b7d28a4b9dcd970cfa5434e46dcfa02a3435).
+ARG UPSTREAM_REF=8423b7d28a4b9dcd970cfa5434e46dcfa02a3435
+
 FROM python:3.12-slim
 
 WORKDIR /app

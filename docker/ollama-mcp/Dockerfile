@@ -2,8 +2,10 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Install ollama-mcp globally
-RUN npm install -g ollama-mcp@2.1.0
+ARG OLLAMA_MCP_VERSION=2.1.0
+
+# Install ollama-mcp globally (pinned to latest official stable release)
+RUN npm install -g ollama-mcp@${OLLAMA_MCP_VERSION}
 
 # Use unprivileged node user
 USER node
