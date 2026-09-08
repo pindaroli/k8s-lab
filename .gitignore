@@ -85,3 +85,6 @@ sn/*.secret
 # ServiceNow XML backups folder
 sn/backup/
 sn/backups/
+
+# Upstream temporary checkouts for container builds
+docker/kef-mcp/upstream/
