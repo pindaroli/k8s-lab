@@ -57,6 +57,7 @@ Ogni pattern architetturale definisce una soluzione standardizzata, riutilizzabi
 Ogni pattern **DEVE** includere il seguente frontmatter YAML strutturato:
 ```yaml
 ---
+id: slug-identificativo-pattern                 # Identificativo univoco kebab-case da usare nei prompt (es. mcp-registry-package)
 title: "Nome Descrittivo del Pattern"
 type: pattern
 status: active | deprecated | draft          # active: in uso nel lab; deprecated: superato; draft: in studio
@@ -74,14 +75,18 @@ tags:
 ```
 
 <routing_rules_patterns>
-1. CONSULTAZIONE E PROPOSTA ALL'UTENTE (Pattern Consultation & Proactive Suggestion):
+1. RISOLUZIONE SEMANTICA DEGLI ID NEI PROMPT:
+   - Se l'utente menziona nei prompt l'`id` di un pattern (es. `mcp-registry-package`, `mcp-upstream-tracking`, `mcp-secret-projection`), l'AI DEVE identificare e applicare immediatamente i requisiti e i vincoli definiti nel pattern corrispondente senza ambiguità.
+
+2. CONSULTAZIONE E PROPOSTA ALL'UTENTE (Pattern Consultation & Proactive Suggestion):
    - Prima di proporre, progettare o implementare soluzioni architetturali (es. nuovi server MCP, storage NFS, segreti, routing), l'AI DEVE verificare la presenza di pattern in `wiki/patterns/` aventi `status: active` e `certified_for_ai: true`.
    - Se esiste un pattern attivo pertinente all'ambito di intervento, l'AI DEVE **proporlo esplicitamente all'utente**, evidenziandone motivazioni, vantaggi e coerenza con il resto del lab, e **attendere le istruzioni/approvazione dell'utente prima di procedere all'adozione**.
    - I pattern con `status: deprecated` o `certified_for_ai: false` non devono essere proposti per nuovi workload a meno di esplicite richieste di audit o analisi retrospettiva.
 
-2. TRACCIABILITÀ DELL'USO (`in_use_by` Sync):
+3. TRACCIABILITÀ DELL'USO (`in_use_by` Sync):
    - Una volta che l'utente approva l'adozione del pattern su un nuovo carico di lavoro, directory o repository, l'AI DEVE aggiornare l'elenco `in_use_by` nel frontmatter YAML del pattern corrispondente.
 </routing_rules_patterns>
+
 
 
 ## 2. Sintassi di Collegamento (Wikilinks)

@@ -1,6 +1,8 @@
 ---
+id: mcp-upstream-tracking
 title: "Pattern: Controlled Upstream Tracking for Custom MCP Containers"
 type: pattern
+
 status: active
 certified_for_ai: true
 created_at: 2026-09-08

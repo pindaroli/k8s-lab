@@ -1,6 +1,8 @@
 ---
+id: mcp-secret-projection
 title: "Pattern: MCP Secret Projection & Workload Immutability"
 type: pattern
+
 status: active
 certified_for_ai: true
 created_at: 2026-09-05
