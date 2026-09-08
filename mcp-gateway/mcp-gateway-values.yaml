@@ -257,7 +257,42 @@ servers:
           cpu: "50m"
           memory: "64Mi"
 
+  - name: kef
+    url: "http://mcp-kef-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
+    hostname: "mcp-kef-mcp-proxy.mcp-system.svc.cluster.local"
+    enabled: true
+    prefix: ""
+    ingress:
+      enabled: true
+      host: "kef-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: kef-mcp
+      image: ghcr.io/pindaroli/kef-mcp:1.0.0
+      transport: stdio
+      proxyPort: 8080
+      env:
+        - name: KEF_HOST
+          value: "10.10.20.210"
+        - name: KEF_DEVICE_NAME
+          value: "LSX II LT"
+        - name: SPOTIFY_CLIENT_ID
+          value: ""
+        - name: SPOTIFY_CLIENT_SECRET
+          value: ""
+        - name: SPOTIFY_REFRESH_TOKEN
+          value: ""
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "256Mi"
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+
 # Configurazione MCP Inspector (Web UI e File System Access)
+
 inspector:
   enabled: false
   image:
