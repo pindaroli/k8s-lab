@@ -62,6 +62,14 @@
 - [ ] Fase 3: Logica di valutazione soglie critiche (settori riallocati, pending, temperatura, usura NVMe) e generazione report unificato.
 - [ ] Fase 4: Integrazione opzionale per inoltro telemetrie verso Scrutiny (InfluxDB) o esecuzione via Semaphore (`ansible-engine`).
 
+## 🚀 [ ] Installazione Zenarmor (Filtro Windows) e Captive Portal con Allarme Telegram e Sblocco Manuale [[zenarmor-windows-filter-and-captive-portal]]
+- [ ] Fase 0: Backup preventivo OPNsense e verifica baseline risorse (Mini PC J4125).
+- [ ] Fase 1: Installazione plugin `os-sunnyvalley` e `os-sensei` (Zenarmor).
+- [ ] Fase 2: Configurazione guidata Zenarmor (database SQLite e interfaccia TRANSIT L3 Routed Mode).
+- [ ] Fase 3: Creazione policy Zenarmor per blocco OS Windows a L7.
+- [ ] Fase 4: Configurazione Captive Portal con Allarme Telegram e Sblocco Manuale (utenti autorizzati, alias `Banned_Concurrent`, hook collisione, alert bot Telegram).
+- [ ] Fase 5: Validazione Test-Driven multi-dispositivo e stress test CPU/RAM su Mini PC J4125.
+
 ## 🚀 [x] ✅ COMPLETATO: Estrazione e Normalizzazione Documentazione OPNsense 26.1 per RAGFlow [[opnsense-documentation-extraction-and-ragflow]]
 - [x] Fase 1: Sviluppo script `scripts/ragflow/extract_opnsense_docs.py` con motore di risoluzione link semantici (`:doc:`, `:ref:`) e convertitore reST -> Markdown.
 - [x] Fase 2: Esecuzione test-driven su campioni complessi (`firewall.rst`, `aliases.rst`, `how-tos/wireguard-client.rst`).
