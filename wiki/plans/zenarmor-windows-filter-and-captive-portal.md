@@ -1,8 +1,9 @@
 ---
 title: "Piano: Installazione Zenarmor (Filtro Windows) e Captive Portal con Allarme Telegram e Sblocco Manuale"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+superseded_by: "[[opnsense-captive-portal-windows-detection]]"
 created_at: 2026-09-08
 tags:
   - "#plan"
