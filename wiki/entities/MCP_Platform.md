@@ -118,5 +118,7 @@ I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `oli
 | **`gemini-deepsearch-mcp`** | `ghcr.io/pindaroli/gemini-deepsearch-mcp:latest` | stdio -> proxy :8080 | `https://deepsearch-mcp-internal.pindaroli.org/mcp` | Google Gemini API (Web Search Grounding) |
 | **`kubernetes-mcp`** | `ghcr.io/containers/kubernetes-mcp-server:latest` | stdio -> proxy :8080 | `https://kubernetes-mcp-internal.pindaroli.org/mcp` | Kubernetes API In-Cluster (RBAC cluster-admin) |
 | **`ollama-mcp`** | `ghcr.io/pindaroli/ollama-mcp:latest` | stdio -> proxy :8080 | `https://ollama-mcp-internal.pindaroli.org/mcp` | Demone Ollama Mac Studio (`10.10.20.100:11434`) |
+| **`kef-mcp`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | stdio -> proxy :8080 | `https://kef-mcp-internal.pindaroli.org/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
+| **`nowaikit-mcp`** | `ghcr.io/pindaroli/nowaikit-mcp:4.15.1` | stdio -> proxy :8080 | `https://nowaikit-mcp-internal.pindaroli.org/mcp` | ServiceNow PDI Cloud (`dev395227.service-now.com`) |
 
 

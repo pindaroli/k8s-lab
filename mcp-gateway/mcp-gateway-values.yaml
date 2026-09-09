@@ -291,6 +291,46 @@ servers:
           cpu: "50m"
           memory: "64Mi"
 
+  - name: nowaikit
+    url: "http://mcp-nowaikit-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
+    hostname: "mcp-nowaikit-mcp-proxy.mcp-system.svc.cluster.local"
+    enabled: true
+    prefix: "nowai_"
+    ingress:
+      enabled: true
+      host: "nowaikit-mcp-internal.pindaroli.org"
+      port: 8080
+    toolhive:
+      enabled: true
+      name: nowaikit-mcp
+      image: ghcr.io/pindaroli/nowaikit-mcp:4.15.1
+      transport: stdio
+      proxyPort: 8080
+      secrets:
+        - name: nowaikit-mcp-credentials
+          key: SERVICENOW_BASIC_PASSWORD
+          targetEnvName: SERVICENOW_BASIC_PASSWORD
+      env:
+        - name: SERVICENOW_INSTANCE_URL
+          value: "https://dev395227.service-now.com"
+        - name: SERVICENOW_AUTH_METHOD
+          value: "basic"
+        - name: SERVICENOW_BASIC_USERNAME
+          value: "admin"
+        - name: WRITE_ENABLED
+          value: "false"
+        - name: CMDB_WRITE_ENABLED
+          value: "false"
+        - name: MCP_TOOL_PACKAGE
+          value: "full"
+      resources:
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+
 # Configurazione MCP Inspector (Web UI e File System Access)
 
 inspector:

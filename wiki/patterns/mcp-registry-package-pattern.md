@@ -12,9 +12,11 @@ in_use_by:
       - "docker/ollama-mcp"
       - "docker/opnsense-mcp"
       - "docker/talos-mcp"
+      - "docker/nowaikit-mcp"
       - ".github/workflows/docker-ollama-mcp.yml"
       - ".github/workflows/docker-opnsense-mcp.yml"
       - ".github/workflows/docker-talos-mcp.yml"
+      - ".github/workflows/docker-nowaikit-mcp.yml"
       - "mcp-gateway/mcp-gateway-values.yaml"
 tags:
   - "#pattern"

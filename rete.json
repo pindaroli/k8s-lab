@@ -951,7 +951,8 @@
         "deepsearch-mcp-internal",
         "kubernetes-mcp-internal",
         "ollama-mcp-internal",
-        "kef-mcp-internal"
+        "kef-mcp-internal",
+        "nowaikit-mcp-internal"
       ],
 
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
