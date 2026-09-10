@@ -218,7 +218,8 @@ servers:
       enabled: true
       name: kubernetes-mcp
       image: ghcr.io/containers/kubernetes-mcp-server:latest
-      transport: stdio
+      transport: streamable-http
+      mcpPort: 8080
       proxyPort: 8080
       resources:
         limits:
