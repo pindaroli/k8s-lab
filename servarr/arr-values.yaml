@@ -222,6 +222,18 @@ prowlarr:
       memory: 256Mi
     limits:
       memory: 512Mi
+  lifecycle:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - -c
+          - |
+            APIKEY=$(sed -n 's/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p' /config/config.xml)
+            if [ -n "$APIKEY" ]; then
+              curl -s -f -H "X-Api-Key: $APIKEY" http://localhost:9696/api/v1/indexer > /config/indexers_dump.json.tmp && \
+              mv /config/indexers_dump.json.tmp /config/indexers_dump.json
+            fi
   persistence:
     enabled: true
     storageClass: csi-nfs-stripe-arr-conf
