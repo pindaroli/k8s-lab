@@ -1,33 +1,19 @@
-FROM python:3.12-slim
+FROM alpine:3.21
 
-ARG TALOS_MCP_VERSION=0.3.10
-ARG TALOS_VERSION=v1.13.5
+ARG APP_VERSION=2.5.1
 ARG TARGETARCH=amd64
 
 WORKDIR /app
 
-# Install curl and ca-certificates
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates && \
-    curl -fsSL -o /usr/local/bin/talosctl "https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/talosctl-linux-${TARGETARCH}" && \
-    chmod +x /usr/local/bin/talosctl && \
-    apt-get purge -y curl && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+# Install ca-certificates, curl, tar, extract binary and configure non-root user
+RUN apk add --no-cache ca-certificates curl tar && \
+    curl -fsSL "https://github.com/Nosmoht/talos-mcp-server/releases/download/v${APP_VERSION}/talos-mcp-server_${APP_VERSION}_linux_${TARGETARCH}.tar.gz" | tar -xz -C /usr/local/bin talos-mcp && \
+    chmod +x /usr/local/bin/talos-mcp && \
+    apk del curl tar && \
+    rm -rf /var/cache/apk/* && \
+    adduser -D -u 1000 -h /app talos
 
-# Install talos-mcp-server and dependencies (strict version pinning)
-RUN pip install --no-cache-dir "talos-mcp-server==${TALOS_MCP_VERSION}" "mcp==1.3.0" "pydantic==2.10.6"
-
-# Create non-root user and directories
-RUN useradd -u 1000 -m -s /bin/bash talos && \
-    mkdir -p /tmp/talos && \
-    chown -R talos:talos /app /tmp/talos
-
-# Copy wrapper script
-COPY talos_mcp_wrapper.py /app/talos_mcp_wrapper.py
-RUN chown talos:talos /app/talos_mcp_wrapper.py
-
-USER talos
+USER 1000
 
 # ToolHive executes the container and communicates via stdio
-ENTRYPOINT ["python", "/app/talos_mcp_wrapper.py"]
+ENTRYPOINT ["/usr/local/bin/talos-mcp"]
