@@ -145,7 +145,7 @@ servers:
     toolhive:
       enabled: true
       name: talos-mcp
-      image: ghcr.io/pindaroli/talos-mcp:0.3.10
+      image: ghcr.io/pindaroli/talos-mcp:2.5.1
       transport: stdio
       proxyPort: 8080
       podTemplateSpec:
@@ -163,12 +163,12 @@ servers:
       env:
         - name: TALOSCONFIG
           value: "/etc/talos/talosconfig"
-        - name: TALOS_MCP_AUDIT_LOG_PATH
-          value: "/dev/null"
+        - name: TALOS_MCP_ALLOWED_PATHS
+          value: "/etc,/proc,/var/log"
       resources:
         limits:
           cpu: "300m"
-          memory: "256Mi"
+          memory: "128Mi"
         requests:
           cpu: "50m"
           memory: "64Mi"

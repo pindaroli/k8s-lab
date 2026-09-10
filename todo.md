@@ -24,11 +24,11 @@
 - [x] Fase 5: Aggiornamento endpoint remoto in `~/.gemini/antigravity/mcp_config.json`.
 - [x] Fase 6: Validazione Test-Driven end-to-end e aggiornamento `MCP_Platform.md`.
 
-## 🚀 [ ] IN CORSO: Migrazione a Nosmoht Talos MCP Server (Go) [[talos-mcp-go-migration]]
-- [ ] Fase 1: Docker Container Packaging (`docker/talos-mcp/Dockerfile` con Go binario v2.5.1, eliminazione wrapper Python).
-- [ ] Fase 2: Configurazione Kubernetes & Helm (`mcp-gateway` v0.2.12 con `ghcr.io/pindaroli/talos-mcp:2.5.1`).
-- [ ] Fase 3: Audit Client e Allineamento Nomi Tool (matrice mapping).
-- [ ] Fase 4: Validazione Test-Driven end-to-end (probe `server/discover`, handshake `initialize`, `talos_version`).
+## 🚀 [x] ✅ COMPLETATO: Migrazione a Nosmoht Talos MCP Server (Go) [[talos-mcp-go-migration]]
+- [x] Fase 1: Docker Container Packaging (`docker/talos-mcp/Dockerfile` con Go binario v2.5.1, eliminazione wrapper Python).
+- [x] Fase 2: Configurazione Kubernetes & Helm (`mcp-gateway` v0.2.12 con `ghcr.io/pindaroli/talos-mcp:2.5.1`).
+- [x] Fase 3: Audit Client e Allineamento Nomi Tool (matrice mapping).
+- [x] Fase 4: Validazione Test-Driven end-to-end (probe `server/discover`, handshake `initialize`, `talos_version`).
 
 ## 🚀 [x] ✅ ARCHIVIATO: Migrazione Kubernetes di Talos MCP Server (Python Legacy) [[talos-mcp-kubernetes-migration]]
 - [x] Fase 1: Creazione Dockerfile monorepo `docker/talos-mcp/`, wrapper `talos_mcp_wrapper.py` e workflow CI per container `ghcr.io/pindaroli/talos-mcp:latest`.

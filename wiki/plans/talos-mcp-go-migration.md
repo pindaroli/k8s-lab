@@ -1,8 +1,10 @@
 ---
 title: "Piano: Migrazione a Nosmoht Talos MCP Server (Go)"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+resolved: true
+resolved_at: 2026-09-10
 created_at: 2026-09-10
 tags:
   - "#plan"
@@ -95,7 +97,7 @@ L'implementazione nativa Go (**`Nosmoht/talos-mcp-server` v2.5.1**):
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1: Docker Container Packaging
-- **Ultima Azione Completata**: Persistenza del piano operativo nel wiki e sincronizzazione GEMINI.md/todo.md
-- **Prossimo Passo Operativo**: Modifica Dockerfile in `docker/talos-mcp/` ed eliminazione del wrapper Python
-- **Blocchi/Decisioni Pendenti**: Nessuno (Pronto per l'esecuzione del packaging Go)
+- **Fase Attiva**: Piano Completato con Successo ✅
+- **Ultima Azione Completata**: Migrazione a Nosmoht Go v2.5.1 completata, pod 1/1 Running in mcp-system, test end-to-end positivi (`talos_version`, `talos_etcd`, `talos_services`) e documentazione allineata.
+- **Prossimo Passo Operativo**: Nessuno (Server MCP Talos nativo Go pienamente operativo e stabile in produzione).
+- **Blocchi/Decisioni Pendenti**: Nessuno.
