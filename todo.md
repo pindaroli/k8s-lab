@@ -55,6 +55,12 @@
 - [x] Fase 4: Routing Traefik IngressRoute, censimento in `rete.json` e registrazione DNS Unbound OPNsense.
 - [x] Fase 5: Aggiornamento endpoint remoto `serverUrl` in `~/.gemini/antigravity/mcp_config.json`.
 - [x] Fase 6: Validazione Test-Driven end-to-end e consolidamento Wiki (`MCP_Platform.md`).
+## 🚀 [x] ✅ COMPLETATO: Architettura UPS NUT Distribuita (TrueNAS Master & Proxmox PVE1/2/3 Client) [[nut-distributed-ups-orchestration]]
+- [x] Fase 1: Bonifica totale di PVE1 (stop nut-server/driver, rimozione udev rule, eliminazione file server, purge nut-server).
+- [x] Fase 2: Configurazione e attivazione TrueNAS Master (API midclt ups.update, extrausers pvemon, rmonitor: true, HOSTSYNC 120, ignorelb con soglia software 40%).
+- [x] Fase 3: Rollout distribuito client su PVE1, PVE2, PVE3 (installazione nut-client, upsmon.conf parallelo, script atomico con polling attivo qm status max 45s).
+- [x] Fase 4: Validazione test-driven end-to-end (upsc da PVE1/2/3 verso TrueNAS, verifica live 100% ok).
+
 
 ## 🚀 [ ] Automazione Rilevazione Dati SMART via Ansible [[ansible-smart-telemetry-integration]]
 - [ ] Fase 1: Sviluppo playbook `ansible/playbooks/monitoring/collect_smart_data.yml` con scansione dinamica dischi (`smartctl --scan-open`).
@@ -160,46 +166,20 @@
 ### [x] FASE 4: Test-Driven Verification & Test RAG
 - [x] Test recupero semantico dal dataset RAGFlow e validazione citazioni.
 
-## 🚀 [ ] Integrazione Suite Server MCP Standard (Antigravity & ToolHive) [[mcp-servers-suite-integration]]
-### [ ] FASE 1: MCP Server Filesystem (Categoria: File)
-- [ ] Pacchetto: `@modelcontextprotocol/server-filesystem` (Runtime: Node.js >= 18).
-- [ ] Configurazione centralizzata in `~/.gemini/antigravity/mcp_config.json` con autorizzazione esplicita dei percorsi assoluti del workspace (`/Users/olindo/prj/k8s-lab`, `/Users/olindo/prj/pindaroli-arr-helm`).
-- [ ] Test di lettura/scrittura filesystem tramite tool MCP.
-
-### [ ] FASE 2: MCP Server Git (Categoria: Git)
-- [ ] Pacchetto: `mcp-server-git` (Runtime: Python >= 3.10 / uvx).
-- [ ] Verifica binario `git` nel PATH di sistema e configurazione percorsi repository consentiti in `~/.gemini/antigravity/mcp_config.json`.
-- [ ] Test esecuzione comandi git (status, diff, log) tramite tool MCP.
-
-### [ ] FASE 3: MCP Server Fetch (Categoria: Web)
-- [ ] Pacchetto: `@modelcontextprotocol/server-fetch` (Runtime: Node.js >= 18).
-- [ ] Configurazione in `~/.gemini/antigravity/mcp_config.json` (nessuna chiave API richiesta).
-- [ ] Test di scraping/estrazione contenuti web statici via HTTP/Markdown.
-
-### [ ] FASE 4: MCP Server Puppeteer (Categoria: Web Dinamico)
-- [ ] Pacchetto: `@modelcontextprotocol/server-puppeteer` (Runtime: Node.js >= 18).
-- [ ] Configurazione in `~/.gemini/antigravity/mcp_config.json` e verifica download/funzionamento browser headless Chromium.
-- [ ] Test di rendering pagine web dinamiche, interazione e screenshot.
-
-### [ ] FASE 5: MCP Server Brave Search (Categoria: Search)
-- [ ] Pacchetto: `@modelcontextprotocol/server-brave-search` (Runtime: Node.js >= 18).
-- [ ] Provisioning token Brave Search API e cifratura in SOPS (`secrets-sops/brave-search-mcp.enc.yaml`).
-- [ ] Configurazione env `BRAVE_API_KEY` in `~/.gemini/antigravity/mcp_config.json` e test query di ricerca web.
-
-### [ ] FASE 6: MCP Server SQLite (Categoria: Database)
-- [ ] Pacchetto: `@modelcontextprotocol/server-sqlite` (Runtime: Node.js >= 18).
-- [ ] Mappatura dei percorsi ai database locali `.db` / `.sqlite` (es. n8n SQLite, Beets DB).
-- [ ] Configurazione in `~/.gemini/antigravity/mcp_config.json` e test query SQL (introspezione schema e SELECT).
-
-### [ ] FASE 7: MCP Server PostgreSQL (Categoria: Database)
-- [ ] Pacchetto: `@modelcontextprotocol/server-postgres` (Runtime: Node.js >= 18).
-- [ ] Configurazione connection string URI verso `postgres-main` (cluster CNPG `10.10.20.56:5432`) o istanze target.
-- [ ] Cifratura credenziali con SOPS, configurazione in `~/.gemini/antigravity/mcp_config.json` e test connettività/query.
-
-### [ ] FASE 8: MCP Server GitHub (Categoria: Cloud/VCS)
-- [ ] Pacchetto: `@modelcontextprotocol/server-github` (Runtime: Node.js >= 18).
-- [ ] Verifica integrazione/allineamento con il server Kubernetes `github-mcp-internal.pindaroli.org` già attivo.
-- [ ] Verifica Personal Access Token GitHub (`GITHUB_PERSONAL_ACCESS_TOKEN`), configurazione e test API (issue, PR, repo).
+## 🚀 [x] ⏹️ ARCHIVIATO / OBSOLETO: Integrazione Suite Server MCP Standard [[mcp-servers-suite-integration]]
+- [x] **Dichiarato Obsoleto (2026-09-10)**: 
+  - GitHub MCP è già operativo in K8s via ToolHive (`github-mcp-internal.pindaroli.org`).
+  - Filesystem e Fetch sono nativi in Antigravity (`view_file`, `read_url_content`).
+  - Brave Search è superato da `gemini-deepsearch` su K8s con grounding Google Gemini.
+  - PostgreSQL e altri server futuri seguono lo standard in-cluster [[k8s-mcp-server-onboarding]].
+- [x] ~~Fase 1: MCP Server Filesystem~~ (Annullato: nativo in Antigravity).
+- [x] ~~Fase 2: MCP Server Git~~ (Annullato: gestito via shell/tool nativi).
+- [x] ~~Fase 3: MCP Server Fetch~~ (Annullato: nativo in Antigravity).
+- [x] ~~Fase 4: MCP Server Puppeteer~~ (Annullato: non prioritario).
+- [x] ~~Fase 5: MCP Server Brave Search~~ (Annullato: sostituito da Gemini DeepSearch K8s).
+- [x] ~~Fase 6: MCP Server SQLite~~ (Annullato: nessun target DB specifico attivo).
+- [x] ~~Fase 7: MCP Server PostgreSQL~~ (Annullato: demandato a onboard K8s dedicato).
+- [x] Fase 8: MCP Server GitHub (Completato: attivo su K8s via ToolHive).
 
 ## 🚀 [ ] ServiceNow & CMDB Homelab Integration Plan [[plan-servicenow-homelab-integration]]
 ### [ ] FASE 1: Foundation & Struttura Dati Fondazionale (Piattaforma)
@@ -416,15 +396,15 @@
 
 ## Radarr Upgrade
 
-### [ ] Upgrade Radarr a v6.3.0.10514 [[radarr-upgrade-6.3.0]]
+### [x] ✅ COMPLETATO: Upgrade Radarr a v6.3.0.10514 [[radarr-upgrade-6.3.0]]
 - [x] **Fase 1: Backup Preventivo**
   - [x] Eseguire backup Velero: `velero backup create backup-pre-radarr-upgrade-6.3.0-$(date +%F) --include-namespaces arr --wait`
 - [x] **Fase 2: Modifica Configurazione**
   - [x] Aggiornare `servarr/arr-values.yaml`
-- [ ] **Fase 3: Deploy & Verifiche**
-  - [ ] Eseguire dry-run e deploy
-  - [ ] Validare pod e log
-  - [ ] Controllare migrazioni database PostgreSQL
+- [x] **Fase 3: Deploy & Verifiche**
+  - [x] Eseguire dry-run e deploy
+  - [x] Validare pod e log (Pod `servarr-radarr` 2/2 Running con `ghcr.io/hotio/radarr:release-6.3.0.10514`)
+  - [x] Controllare migrazioni database PostgreSQL
 
 ### [x] ✅ COMPLETATO: Upgrade Radarr a v6.2.1.10461 [[radarr-upgrade-6.2.1]]
 - [x] **Fase 1: Backup Preventivo**
@@ -774,13 +754,6 @@ Implementare un sistema di aggregazione log centralizzato nel cluster per:
 
 ## 🔧 Manutenzione Hardware & Hypervisor
 - [ ] **PVE3: Migrazione da PCIe Passthrough a USB Device Passthrough**: Sostituire il passthrough intero del controller USB (PCI Device) con il passthrough di singole porte/dispositivi (USB Device) per le VM su PVE3. Questo permette a Proxmox di mantenere il controllo del controller madre, mantenendo attiva la tastiera locale ed evitando freeze in console locale durante l'autostart delle macchine virtuali.
-- [ ] **PVE2: Configurazione VM da Gioco (Bazzite-NVIDIA)** [[pve2-gaming-vm-configuration]]
-  - [ ] Applicare parametri kernel e caricare moduli VFIO su PVE2 host.
-  - [ ] Identificare ID PCI della RTX 4060 Ti ed effettuare binding.
-  - [ ] Creare VM 2500 con CPU pinning (CCD isolation) e ballooning disattivato.
-  - [ ] Installare Bazzite (immagine `bazzite-nvidia`) via KVM over IP.
-  - [ ] Aggiornare `rete.json` con la VM gaming e l'indirizzo IP del KVM.
-  - [ ] Sincronizzare il DNS su OPNsense.
 
 ### [ ] Integrazione Gestione Scaling App su Homepage Local via OliveTin (Iframe) [[homepage-app-scaling-buttons]]
 - [ ] Fase 1: Deployment OliveTin e configurazione Webhook n8n.

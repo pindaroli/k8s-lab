@@ -11,7 +11,7 @@ This directory contains the core automation playbooks for the Kubernetes Homelab
 | **`dhcp_reservations.yml`** | **CRITICAL**. Manages DHCP static mappings for infrastructure nodes (Talos CP, etc.) on OPNsense. |
 | **`cleanup_old_services.yml`** | **Maintenance**. Reusable logic to decommission old services from DNS (both Cloudflare and OPNsense). |
 | **`restart_unbound.yml`** | **Utility**. Simple handler to restart the Unbound DNS service on OPNsense. |
-| **`setup_ups.yml`** | **Infrastructure**. Configures NUT on PVE1 (Master, `nutdrv_qx` driver) and TrueNAS (Client) for graceful lab shutdown. |
+| **`setup_ups.yml`** | **Infrastructure**. Configures NUT on TrueNAS (Master, cavo USB collegato fisicamente, HOSTSYNC 120, soglia software 40%) and Proxmox Cluster PVE1, PVE2, PVE3 (Client/Slave paralleli) for graceful and deterministic lab shutdown. |
 | **`proxmox_smart_audit.yml`** | **Hardware/Storage Audit**. Rileva i nodi del cluster Proxmox (con warning su nodi non censiti), esegue `smartctl -a` sui soli dischi fisici reali e genera report ed executive summary tabellare. |
 
 ## DNS Synchronization Logic
@@ -29,18 +29,23 @@ The source of truth remains `rete.json`. The playbook uses a Python generator to
 - Records are cleaned up (pruned) if they no longer exist in the JSON.
 - **Goal**: Transitioning away from internal wildcards to prevent "Black Hole Routing" issues inside Kubernetes (ndots search path interference).
 
-### `setup_ups.yml` (UPS & NUT Orchestration)
-Questo playbook configura ed allinea i servizi NUT su PVE1 (Server) e TrueNAS (Client/Slave).
+### `setup_ups.yml` (UPS & NUT Distributed Orchestration)
+Questo playbook configura ed allinea i servizi NUT su TrueNAS SCALE (Server/Master con cavo USB attestato fisicamente, `HOSTSYNC: 120`, soglia cautelativa software al 40%) e su tutti i nodi Proxmox PVE1, PVE2, PVE3 (Client/Slave in parallelo).
+
+**Caratteristiche Principali:**
+1. **Master TrueNAS**: Abilita `nutdrv_qx` con `ignorelb` e `override.battery.charge.low = 40` (evitando il collasso della soglia hardware a 10.40V) e `hostsync: 120`. Monitora la caduta delle sessioni TCP client per spegnersi in anticipo.
+2. **Bonifica PVE1**: Disabilita e purga i demoni `nut-server` e `nut-driver` residui su PVE1, rimuovendo la vecchia regola udev non pertinente.
+3. **Script Parallelo Deterministico**: Distribuisce `/etc/nut/shutdown_sequence.sh` su PVE1, PVE2 e PVE3 con ciclo attivo di polling `qm status` (timeout max 45s) che evita attese cieche.
 
 **Quando è necessario eseguirlo:**
-1. **Configurazione iniziale / Cambiamento hardware**: In caso di sostituzione o modifica dell'UPS (es. se cambiano VendorID o ProductID, o per testare nuovi parametri del driver).
-2. **Reinstallazione o Upgrade Major di Proxmox su PVE1**: In caso di installazione pulita dell'OS su PVE1, le configurazioni locali di NUT, le regole udev e lo script `/etc/nut/shutdown_sequence.sh` vengono persi. Lanciare il playbook ripristina interamente lo stato autorizzativo e i file di spegnimento.
-3. **Reinstallazione o Reset di TrueNAS SCALE**: Per riapplicare e forzare tramite API i parametri energetici e la modalità Slave puntando all'IP del Master.
-4. **Modifiche alla Sequenza di Spegnimento**: Qualora cambiassero i VMID o l'ordine di shutdown del cluster (es. rientro in cluster di PVE2/PVE3), le modifiche vanno apportate nel template dello script all'interno del playbook e poi pushate lanciando il playbook.
+1. **Configurazione iniziale / Cambiamento hardware**: In caso di sostituzione o modifica dell'UPS (es. se cambiano VendorID o ProductID, o per testare nuovi parametri del driver su TrueNAS).
+2. **Reinstallazione o Reset di TrueNAS SCALE**: Per riapplicare e forzare tramite API i parametri energetici e la modalità Master con broadcast di telemetria.
+3. **Reinstallazione o Upgrade Major di Proxmox (PVE1, PVE2, PVE3)**: In caso di installazione pulita dell'OS su un nodo Proxmox, le configurazioni locali di NUT client (`upsmon`) e lo script `/etc/nut/shutdown_sequence.sh` vengono ripristinati istantaneamente.
+4. **Modifiche alla Sequenza di Spegnimento**: Qualora cambiassero i VMID o l'ordine di shutdown del cluster.
 
 **Esecuzione:**
 ```bash
-ansible-playbook -i ansible/inventory.ini ansible/playbooks/setup_ups.yml --vault-password-file .ansible/vault_pass.txt
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/setup_ups.yml --vault-password-file .ansible/vault_pass.txt
 ```
 
 ## Archived

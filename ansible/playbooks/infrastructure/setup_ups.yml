@@ -1,6 +1,106 @@
 ---
-- name: 🔌 SETUP UPS NUT CONFIGURATION (PVE1 Master & TrueNAS Client) 🔌
+- name: 🔌 SETUP UPS NUT MASTER ON TRUENAS (USB Host) 🔌
+  hosts: truenas
+  remote_user: olindo
+  gather_facts: no
+  become: yes
+
+  vars_files:
+    - ../vars/secrets.yml
+
+  vars:
+    ups_mon_pwd: "{{ vault_ups_mon_password | default('upsmon_local_secure_pwd_123') }}"
+    ups_admin_pwd: "{{ vault_ups_admin_password | default('ups_admin_secure_pwd_789') }}"
+
+  tasks:
+    - name: "TrueNAS: Configure UPS in Master mode via midclt (USB Tecnoware Exa 1000)"
+      command: >
+        midclt call ups.update '{
+          "mode": "MASTER",
+          "identifier": "ups",
+          "driver": "nutdrv_qx$(Various USB)",
+          "port": "auto",
+          "description": "Tecnoware Exa 1000",
+          "options": "vendorid = 0665\nproductid = 5161\nignorelb\noverride.battery.charge.low = 40\n",
+          "rmonitor": true,
+          "remoteport": 3493,
+          "monuser": "upsmon",
+          "monpwd": "{{ ups_mon_pwd }}",
+          "extrausers": "[pvemon]\n  password = {{ ups_mon_pwd }}\n  upsmon slave\n",
+          "shutdown": "BATT",
+          "shutdowntimer": 30,
+          "hostsync": 120,
+          "powerdown": false
+        }'
+      register: truenas_ups_config
+      changed_when: true
+
+    - name: "TrueNAS: Enable UPS service on boot"
+      command: midclt call service.update "ups" '{"enable":true}'
+      changed_when: true
+
+    - name: "TrueNAS: Restart UPS service"
+      command: midclt call service.restart "ups"
+      changed_when: true
+
+
+- name: 🧹 BONIFICA COMPONENTI SERVER NUT SU PVE1 🧹
   hosts: 10.10.10.11
+  remote_user: root
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: "PVE1: Stop & disable nut-server and nut-driver services"
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      loop:
+        - nut-server
+        - nut-driver@ups
+        - nut-driver-enumerator.path
+        - nut-driver-enumerator.service
+      ignore_errors: yes
+
+    - name: "PVE1: Remove obsolete USB udev rule (0665:5161 is on TrueNAS)"
+      file:
+        path: /etc/udev/rules.d/99-nut-ups.rules
+        state: absent
+
+    - name: "PVE1: Reload udev rules"
+      command: udevadm control --reload-rules
+      changed_when: false
+
+    - name: "PVE1: Cleanup stale server PID files"
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /run/nut/upsd.pid
+        - /run/nut/usbhid-ups-ups.pid
+        - /run/nut/nutdrv_qx-ups.pid
+      ignore_errors: yes
+
+    - name: "PVE1: Neutralize legacy server config files"
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/nut/ups.conf
+        - /etc/nut/upsd.conf
+        - /etc/nut/upsd.users
+
+    - name: "PVE1: Purge obsolete nut-server package"
+      apt:
+        name: nut-server
+        state: absent
+        purge: yes
+      ignore_errors: yes
+
+
+- name: 🔌 SETUP DISTRIBUITO NUT CLIENT SU TUTTO IL CLUSTER PROXMOX (PVE1, PVE2, PVE3) 🔌
+  hosts: proxmox
   remote_user: root
   gather_facts: no
   become: yes
@@ -10,116 +110,29 @@
     - "../../vars/system_secrets.yml"
 
   vars:
-    # Usa le variabili del vault se definite, altrimenti valori di fallback predefiniti
     ups_mon_pwd: "{{ vault_ups_mon_password | default('upsmon_local_secure_pwd_123') }}"
-    ups_truenas_pwd: "{{ vault_ups_truenas_password | default('truenas_netclient_secure_pwd_456') }}"
-    ups_admin_pwd: "{{ vault_ups_admin_password | default('ups_admin_secure_pwd_789') }}"
 
   tasks:
-    - name: "PVE1: Check for stale PID files"
-      stat:
-        path: "{{ item }}"
-      loop:
-        - /run/nut/upsd.pid
-        - /run/nut/upsmon.pid
-        - /run/nut/usbhid-ups-ups.pid
-        - /run/nut/nutdrv_qx-ups.pid
-      register: stale_pids
-
-    - name: "PVE1: Determine if cleanup is needed"
-      set_fact:
-        cleanup_needed: "{{ stale_pids.results | selectattr('stat.exists') | list | length > 0 }}"
-
-    - name: "PVE1: Cleanup - Stop existing NUT services"
-      systemd:
-        name: "{{ item }}"
-        state: stopped
-      loop:
-        - nut-server
-        - nut-client
-        - nut-driver@ups
-      when: cleanup_needed
-      ignore_errors: yes
-
-    - name: "PVE1: Cleanup - Reset failed systemd status"
-      command: systemctl reset-failed
-      when: cleanup_needed
-      ignore_errors: yes
-
-    - name: "PVE1: Cleanup - Remove stale NUT pid files"
-      file:
-        path: "{{ item.item }}"
-        state: absent
-      loop: "{{ stale_pids.results }}"
-      when: cleanup_needed and item.stat.exists
-      ignore_errors: yes
-
-    - name: "PVE1: Install NUT packages"
+    - name: "Proxmox: Ensure NUT client package is installed"
       apt:
         name:
-          - nut
-          - nut-server
           - nut-client
         state: present
         update_cache: yes
 
-    - name: "PVE1: Configure /etc/nut/nut.conf"
+    - name: "Proxmox: Configure /etc/nut/nut.conf in netclient mode"
       copy:
         content: |
-          MODE=netserver
+          MODE=netclient
         dest: /etc/nut/nut.conf
         owner: root
         group: nut
         mode: '0640'
 
-    - name: "PVE1: Configure /etc/nut/ups.conf"
+    - name: "Proxmox: Configure /etc/nut/upsmon.conf monitoring TrueNAS Master"
       copy:
         content: |
-          [ups]
-              driver = nutdrv_qx
-              port = auto
-              vendorid = 0665
-              productid = 5161
-              desc = "Technoware Exa 1000"
-        dest: /etc/nut/ups.conf
-        owner: root
-        group: nut
-        mode: '0640'
-
-    - name: "PVE1: Configure /etc/nut/upsd.conf"
-      copy:
-        content: |
-          LISTEN 127.0.0.1 3493
-          LISTEN 10.10.10.11 3493
-        dest: /etc/nut/upsd.conf
-        owner: root
-        group: nut
-        mode: '0640'
-
-    - name: "PVE1: Configure /etc/nut/upsd.users"
-      copy:
-        content: |
-          [admin]
-              password = {{ ups_admin_pwd }}
-              actions = SET
-              instcmds = ALL
-
-          [upsmon]
-              password = {{ ups_mon_pwd }}
-              upsmon master
-
-          [truenasmon]
-              password = {{ ups_truenas_pwd }}
-              upsmon slave
-        dest: /etc/nut/upsd.users
-        owner: root
-        group: nut
-        mode: '0640'
-
-    - name: "PVE1: Configure /etc/nut/upsmon.conf"
-      copy:
-        content: |
-          MONITOR ups@localhost 1 upsmon {{ ups_mon_pwd }} master
+          MONITOR ups@10.10.10.50 1 pvemon {{ ups_mon_pwd }} slave
           MINSUPPLIES 1
           SHUTDOWNCMD "/etc/nut/shutdown_sequence.sh"
           POWERDOWNFLAG /etc/killpower
@@ -132,127 +145,41 @@
         group: nut
         mode: '0640'
 
-    - name: "PVE1: Create /etc/nut/shutdown_sequence.sh script"
+    - name: "Proxmox: Deploy atomic local /etc/nut/shutdown_sequence.sh"
       copy:
         content: |
           #!/bin/bash
-          # Script di spegnimento sequenziale dell'Homelab attivato dall'UPS (NUT)
+          # Script di spegnimento locale attivato da NUT Client (Master: TrueNAS 10.10.10.50)
+          echo "[$(date)] Blackout / LOWBATT rilevato da TrueNAS! Avvio spegnimento locale..."
 
-          # Telegram Notifications Helper (se definito nel vault)
-          notify_telegram() {
-              if [ -n "{{ telegram_bot_token }}" ] && [ -n "{{ telegram_chat_id }}" ]; then
-                  curl -s -X POST "https://api.telegram.org/bot{{ telegram_bot_token }}/sendMessage" \
-                      -d "chat_id={{ telegram_chat_id }}" \
-                      -d "parse_mode=Markdown" \
-                      -d "text=$1" > /dev/null
+          {% if talos_vmid is defined %}
+          echo "[$(date)] Spegnimento pulito Talos VM {{ talos_vmid }}..."
+          qm shutdown {{ talos_vmid }} || true
+          TIMEOUT=45; COUNT=0
+          while qm status {{ talos_vmid }} 2>/dev/null | grep -q "status: running"; do
+              sleep 2; COUNT=$((COUNT+2))
+              if [ $COUNT -ge $TIMEOUT ]; then
+                  echo "[$(date)] Timeout superato, forzatura stop..."
+                  qm stop {{ talos_vmid }} || true
+                  break
               fi
-          }
+          done
+          {% endif %}
 
-          notify_telegram "⚠️ *BLACKOUT DETECTED* - Avvio procedura di spegnimento sequenziale dell'Homelab! 🔋"
+          {% if inventory_hostname == '10.10.10.21' %}
+          echo "[$(date)] Spegnimento carichi ausiliari LXC..."
+          pct shutdown 2200 || true
+          {% endif %}
 
-          # 1. Spegnimento nodi Talos (Kubernetes) su tutto il cluster
-          echo "Spegnimento Talos Control Plane..."
-          if ping -c 1 -W 1 192.168.100.21 >/dev/null 2>&1; then
-              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.21 "qm shutdown 2300" || true
-          else
-              echo "PVE2 (192.168.100.21) è offline, salto spegnimento VM 2300."
-          fi
-
-          if ping -c 1 -W 1 192.168.100.31 >/dev/null 2>&1; then
-              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.31 "qm shutdown 3200" || true
-          else
-              echo "PVE3 (192.168.100.31) è offline, salto spegnimento VM 3200."
-          fi
-          qm shutdown 1300 || true
-          sleep 30
-
-          # 2. Altri Servizi (Jellyfin LXC e Proxmox Backup Server)
-          echo "Spegnimento servizi dipendenti..."
-          if ping -c 1 -W 1 192.168.100.21 >/dev/null 2>&1; then
-              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.21 "pct shutdown 2200" || true
-          else
-              echo "PVE2 (192.168.100.21) è offline, salto spegnimento LXC Jellyfin."
-          fi
-
-          if ping -c 1 -W 1 192.168.100.31 >/dev/null 2>&1; then
-              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.31 "pct shutdown 2200" || true
-          else
-              echo "PVE3 (192.168.100.31) è offline, salto spegnimento LXC Jellyfin."
-          fi
-          pct shutdown 1400 || true
-          sleep 20
-
-          # 3. Storage principale (TrueNAS)
-          echo "Spegnimento TrueNAS Storage..."
-          qm shutdown 1100 || true
-          sleep 45
-
-          # 4. Spegnimento nodi PVE fisici satelliti
-          echo "Spegnimento nodi PVE satelliti..."
-          if ping -c 1 -W 1 192.168.100.31 >/dev/null 2>&1; then
-              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.31 "poweroff" || true
-          else
-              echo "PVE3 (192.168.100.31) è già offline."
-          fi
-
-          if ping -c 1 -W 1 192.168.100.21 >/dev/null 2>&1; then
-              ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@192.168.100.21 "poweroff" || true
-          else
-              echo "PVE2 (192.168.100.21) è già offline."
-          fi
-          sleep 10
-
-          notify_telegram "⚫ *Homelab Spegnimento Finale* - PVE1 va offline ora. Addio! 🌙"
-
-          # 5. Spegnimento finale dell'host master PVE1
+          echo "[$(date)] Spegnimento del nodo host {{ inventory_hostname }}..."
           poweroff
         dest: /etc/nut/shutdown_sequence.sh
         owner: root
         group: root
         mode: '0755'
 
-    - name: "PVE1: Restart NUT services"
+    - name: "Proxmox: Restart & enable nut-client service"
       systemd:
-        name: "{{ item }}"
+        name: nut-client
         state: restarted
         enabled: yes
-      loop:
-        - nut-driver@ups
-        - nut-server
-        - nut-client
-
-
-- name: 🔌 SETUP UPS NUT CLIENT ON TRUENAS 🔌
-  hosts: truenas
-  remote_user: olindo
-  gather_facts: no
-  become: yes
-
-  vars_files:
-    - ../vars/secrets.yml
-
-  vars:
-    # Usa le stesse variabili del vault o valori di fallback
-    ups_truenas_pwd: "{{ vault_ups_truenas_password | default('truenas_netclient_secure_pwd_456') }}"
-
-  tasks:
-    - name: "TrueNAS: Configure UPS in Client mode (SLAVE) via midclt"
-      command: >
-        midclt call ups.update '{
-          "mode": "SLAVE",
-          "remotehost": "10.10.10.11",
-          "remoteport": 3493,
-          "monuser": "truenasmon",
-          "monpwd": "{{ ups_truenas_pwd }}",
-          "identifier": "ups"
-        }'
-      register: truenas_ups_config
-      changed_when: true
-
-    - name: "TrueNAS: Enable UPS service to start on boot"
-      command: midclt call service.update "ups" '{"enable":true}'
-      changed_when: true
-
-    - name: "TrueNAS: Restart UPS service"
-      command: midclt call service.restart "ups"
-      changed_when: true

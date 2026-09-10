@@ -9,8 +9,11 @@ archived_at: 2026-06-27
 
 # Configurazione e Orchestrazione UPS Technoware Exa 1000
 
+> [!NOTE]
+> **Contesto Storico & Stato Attuale**: Questo piano riflette la configurazione iniziale in cui TrueNAS era virtualizzato su PVE1 (VM 1100). A seguito della migrazione di TrueNAS su hardware Bare Metal (vedi [[truenas-baremetal-migration-pve1-reconfig]]), il cavo USB dell'UPS Tecnoware Exa 1000 è stato attestato fisicamente su **TrueNAS** (`10.10.10.50`), che opera come **NUT Master** per l'intero homelab, mentre PVE1 e gli altri nodi Proxmox operano come **NUT Client** (vedi [[NUT_UPS]]).
+
 ## 1. Obiettivo
-Configurare in modo dichiarativo e resiliente l'UPS Technoware Exa 1000 collegato fisicamente via USB al nodo `pve1`. L'host `pve1` gestirà l'UPS come **NUT Master** e coordinerà lo spegnimento ordinato e sequenziale di tutto l'Homelab (Talos, PBS, TrueNAS, nodi PVE satelliti ed infine se stesso) per evitare perdite di dati e corruzioni nei database distribuiti. TrueNAS agirà da **NUT Client** (Slave) monitorando lo stato energetico.
+Configurare in modo dichiarativo e resiliente l'UPS Technoware Exa 1000. Storicamente collegato via USB al nodo `pve1` (ora migrato su TrueNAS bare metal). L'host gestisce l'UPS e coordina lo spegnimento ordinato e sequenziale di tutto l'Homelab (Talos, PBS, TrueNAS, nodi PVE satelliti) per evitare perdite di dati e corruzioni nei database distribuiti.
 
 ---
 

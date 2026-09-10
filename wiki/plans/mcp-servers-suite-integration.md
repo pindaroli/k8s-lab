@@ -1,9 +1,11 @@
 ---
 title: "Piano: Integrazione Suite Server MCP Standard"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-09-05
+archived_at: 2026-09-10
+archived_reason: "Piano obsoleto: GitHub MCP è già operativo in K8s (ToolHive), Filesystem e Fetch sono nativi in Antigravity, Brave Search è superato da Gemini DeepSearch, ed eventuali future integrazioni database seguiranno lo skill standard k8s-mcp-server-onboarding."
 tags:
   - "#plan"
   - "#mcp"
@@ -17,8 +19,16 @@ tags:
 **Target**: Antigravity Client & Piattaforma MCP GEMINI · **Data**: 2026-09-05  
 **Autore**: Antigravity AI Engineering
 
+> [!WARNING]
+> **PIANO OBSOLETO & ARCHIVIATO (2026-09-10)**
+> Questo piano è stato formalmente dichiarato obsoleto:
+> - **GitHub MCP**: Già operativo e containerizzato in-cluster tramite ToolHive Operator (`https://github-mcp-internal.pindaroli.org/mcp`).
+> - **Filesystem & Fetch**: Ridondanti rispetto alle primitive native integrate nell'IDE Antigravity (`view_file`, `read_url_content`, ecc.).
+> - **Brave Search**: Superato da `gemini-deepsearch` su K8s con grounding Google Gemini senza dipendenze o licenze terze parti.
+> - **PostgreSQL / Altri Server**: Eventuali futuri server MCP seguiranno la procedura standardizzata in-cluster [[k8s-mcp-server-onboarding]].
+
 > [!IMPORTANT]
-> Questo piano definisce l'integrazione, la configurazione e il collaudo della suite di 8 server standard Model Context Protocol (MCP) per estendere le capacità operative dell'agente locale e delle automazioni homelab, in conformità con la [[MCP_Platform]] e il pattern [[mcp-secret-projection-pattern]].
+> Questo piano definiva l'integrazione, la configurazione e il collaudo della suite di 8 server standard Model Context Protocol (MCP) per estendere le capacità operative dell'agente locale e delle automazioni homelab, in conformità con la [[MCP_Platform]] e il pattern [[mcp-secret-projection-pattern]].
 
 ---
 
@@ -85,7 +95,7 @@ Ai sensi delle policy di sicurezza e delle regole auree homelab:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 / Configurazione Server MCP Filesystem
-- **Ultima Azione Completata**: Formalizzazione del piano e inserimento task in `todo.md`
-- **Prossimo Passo Operativo**: Configurazione iniziale di `@modelcontextprotocol/server-filesystem` in `mcp_config.json`
-- **Blocchi/Decisioni Pendenti**: Reperimento chiavi API esterne (Brave Search) e definizione scope GitHub PAT
+- **Fase Attiva**: Archiviato / Chiuso (Obsoleto)
+- **Ultima Azione Completata**: Dichiarazione di obsolescenza e archiviazione del piano
+- **Prossimo Passo Operativo**: Nessuno (piano dismesso)
+- **Blocchi/Decisioni Pendenti**: Nessuno

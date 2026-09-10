@@ -1,6 +1,6 @@
 ---
 title: "TrueNAS (Storage & Management)"
-last_updated: "2026-05-11"
+last_updated: "2026-09-10"
 confidence: "High"
 tags:
   - "#storage"
@@ -20,6 +20,7 @@ TrueNAS è il fornitore centrale di storage per l'intera infrastruttura Lab.
 - **IP Gestione**: `10.10.10.50` (VLAN 10 Server 10G)
 - **IP OOB**: `192.168.100.50` (VLAN 99 OOB 2.5G)
 - **OS**: TrueNAS SCALE 25.10.6 (Debian-based).
+- **UPS**: Master NUT. Il cavo USB dell'UPS Tecnoware Exa 1000 è attestato fisicamente su TrueNAS (Vendor ID `0665:5161`). Driver `nutdrv_qx`, soglia software 40% (`ignorelb`), `HOSTSYNC: 120`.
 
 ## 2. Pool e Dataset
 - **oliraid**: Pool principale RAID-Z2 (5 HDD da 14-16TB) + Special VDEV Mirror (2 SSD da 960GB/2TB) per metadati/small blocks.
@@ -35,6 +36,7 @@ TrueNAS è il fornitore centrale di storage per l'intera infrastruttura Lab.
 - **NFS**: Utilizzato per montare lo storage sul [[Talos_Cluster]] e sui nodi esterni come il Mac Studio.
 - **SMB**: Utilizzato per l'accesso amministrativo da Windows/macOS.
 - **S3 (MinIO)**: Utilizzato per i backup offsite.
+- **NUT Server (UPS)**: Servizio UPS attivo in modalità Master (`10.10.10.50:3493`) per telemetria e broadcast di shutdown coordinato verso i nodi Proxmox. Monitoraggio sessioni TCP client con `HOSTSYNC 120` e soglia di sicurezza software al 40% di carica residua.
 
 ## 4. Integrazione Kubernetes
 Lo storage è collegato al cluster tramite il driver NFS CSI. I pod richiedono spazio tramite Persistent Volume Claims (PVC).
@@ -42,6 +44,7 @@ Lo storage è collegato al cluster tramite il driver NFS CSI. I pod richiedono s
 ## Relazioni
 - Fornitore di storage per: [[Talos_Cluster]] e [[Tdarr]].
 - Backup gestiti tramite: Velero e PBS.
+- Master NUT per: [[NUT_UPS]], PVE1, PVE2, PVE3.
 
 ## Note Operative: Vdev `special` di `oliraid`
 - **Configurazione attuale**: `special_small_blocks=64K` — ridotta da 1M a 64K per prevenire la saturazione futura.
