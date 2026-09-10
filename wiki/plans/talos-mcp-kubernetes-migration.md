@@ -1,8 +1,9 @@
 ---
 title: "Piano: Migrazione Kubernetes di Talos MCP Server"
 type: plan
-status: Concluso
+status: archived
 certified_for_ai: false
+superseded_by: "[[talos-mcp-go-migration]]"
 created_at: 2026-09-05
 tags:
   - "#plan"
