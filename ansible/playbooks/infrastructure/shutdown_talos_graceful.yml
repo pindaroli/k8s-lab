@@ -1,0 +1,110 @@
+---
+- name: ⚡ KUBERNETES GRACEFUL PARALLEL SHUTDOWN (Metodo B) ⚡
+  hosts: localhost
+  gather_facts: no
+  vars:
+    # IP Nodi CP
+    talos_nodes: "10.10.20.141,10.10.20.142,10.10.20.143"
+    api_endpoint: "10.10.20.141"
+
+  tasks:
+    - name: ⏱️ Registra orario di inizio
+      command: date +%s
+      register: start_time
+      changed_when: false
+
+    - name: "🔔 Notifica: Inizio Shutdown Kubernetes"
+      debug:
+        msg: "Inizio procedura di spegnimento parallelo (Metodo B)..."
+
+    # ====================================================================
+    # STEP 1: Cordon
+    # ====================================================================
+    - name: "🛡️ STEP 1: Cordon Globale (Previene rescheduling dei pod)"
+      command: kubectl cordon talos-cp-01 talos-cp-02 talos-cp-03
+      register: cordon_result
+      ignore_errors: true
+
+    - name: ⏱️ Registra orario post-cordon
+      command: date +%s
+      register: post_cordon_time
+      changed_when: false
+
+    - name: ⏱️ Diagnostica - Esito Cordon
+      debug:
+        msg: |
+          Esito Cordon:
+          {{ cordon_result.stdout_lines | default(['Fallito/Skipped']) | join('\n') }}
+          [Durata Fase Cordon: {{ (post_cordon_time.stdout | int) - (start_time.stdout | int) }} sec]
+
+    # ====================================================================
+    # STEP 2: Quiesce Database
+    # ====================================================================
+    - name: "💾 STEP 2: Quiesce/Checkpoint Database (PostgreSQL CNPG)"
+      # Esegue un checkpoint forzato per assicurare che il WAL sia flushato su TrueNAS
+      command: >
+        kubectl exec -n default -c postgres postgres-main-1 -- psql -U postgres -c "CHECKPOINT;"
+      register: pg_checkpoint
+      ignore_errors: true
+
+    - name: ⏱️ Registra orario post-checkpoint
+      command: date +%s
+      register: post_checkpoint_time
+      changed_when: false
+
+    - name: ⏱️ Diagnostica - Esito Checkpoint DB
+      debug:
+        msg: |
+          Esito Checkpoint DB:
+          {{ pg_checkpoint.stdout | default('N/A (Pod non trovato, saltato)') }}
+          [Durata Fase DB: {{ (post_checkpoint_time.stdout | int) - (post_cordon_time.stdout | int) }} sec]
+
+    # ====================================================================
+    # STEP 3: Shutdown Parallelo Talos
+    # ====================================================================
+    - name: "🔥 STEP 3: Invia Segnale di Spegnimento Parallelo Talos OS"
+      # --force: Salta il drain nativo K8s (già mitigato dal nostro cordon/checkpoint)
+      # --wait=false: Rende il comando asincrono per non bloccare Ansible se l'API cade
+      command: >
+        talosctl shutdown --nodes {{ talos_nodes }} --endpoints {{ api_endpoint }} --force --wait=false
+      register: shutdown_signal
+
+    - name: ⏱️ Diagnostica - Segnale Talos inviato
+      debug:
+        msg: |
+          Comando di shutdown inviato (Nodi: {{ talos_nodes }}).
+          Le macchine stanno inviando SIGTERM, flushando la RAM su disco e chiudendo etcd.
+
+    # ====================================================================
+    # STEP 4: Verifica Spegnimento
+    # ====================================================================
+    - name: "⏳ STEP 4: Attesa discesa effettiva dei nodi (Verifica chiusura porta API)"
+      wait_for:
+        host: "{{ item }}"
+        port: 50000
+        state: stopped
+        timeout: 90
+      loop:
+        - 10.10.20.141
+        - 10.10.20.142
+        - 10.10.20.143
+      register: nodes_down
+
+    - name: ⏱️ Registra orario di fine
+      command: date +%s
+      register: end_time
+      changed_when: false
+
+    - name: "✅ SHUTDOWN COMPLETATO - Statistiche Finali"
+      debug:
+        msg: |
+          ==================================================
+          🏁 SPEGNIMENTO CLUSTER COMPLETATO (METODO B)
+          ==================================================
+          Durata Cordon:       {{ (post_cordon_time.stdout | int) - (start_time.stdout | int) }} sec
+          Durata Checkpoint:   {{ (post_checkpoint_time.stdout | int) - (post_cordon_time.stdout | int) }} sec
+          Durata Spegnimento:  {{ (end_time.stdout | int) - (post_checkpoint_time.stdout | int) }} sec
+          --------------------------------------------------
+          ⏱️ TEMPO TOTALE:      {{ (end_time.stdout | int) - (start_time.stdout | int) }} sec
+          ==================================================
+          I 3 nodi Talos sono offline in sicurezza e pronti per lo spegnimento di TrueNAS/PVE.

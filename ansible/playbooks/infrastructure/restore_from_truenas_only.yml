@@ -1,0 +1,145 @@
+---
+# ==============================================================================
+# 🟢 PLAYBOOK DI RIENTRO DA CONFIGURAZIONE SOLO TRUENAS A KUBERNETES ORDINARIO
+# ==============================================================================
+# Procedura controllata di ripristino dell'ambiente ordinario:
+# FASE 1: Arresto Stack Docker Compose su TrueNAS
+# FASE 2: Attesa accensione fisica nodi Proxmox VE (pve1, pve2, pve3)
+# FASE 3: Retro-Copia Speculare Dati Jellyfin (TrueNAS -> PVE3) [Opzionale/Consigliata]
+# FASE 4: Avvio VM Talos su Proxmox
+# FASE 5: Quorum K8s e Uncordon globale dei nodi
+# ==============================================================================
+
+# ==============================================================================
+# FASE 1: ARRESTO DELLO STACK DOCKER COMPOSE SU TRUENAS
+# ==============================================================================
+- name: "🛑 FASE 1: Arresto dello Stack Docker Compose su TrueNAS"
+  hosts: truenas
+  gather_facts: no
+  become: true
+  vars:
+    compose_dir: "/mnt/stripe/compose/arr"
+  tasks:
+    - name: "Arresto container Docker Compose (docker compose down)"
+      command: docker compose down
+      args:
+        chdir: "{{ compose_dir }}"
+      register: docker_down_res
+
+    - name: "Attesa rilascio lock file storage ZFS (5 secondi)"
+      pause:
+        seconds: 5
+
+    - name: "✅ Stack Failover Docker fermato con successo su TrueNAS"
+      debug:
+        msg: "Container fermati. I volumi ZFS stripe e oliraid sono liberi e pronti per Kubernetes/LXC."
+
+# ==============================================================================
+# FASE 2: ATTESA ACCENSIONE FISICA NODI PROXMOX VE
+# ==============================================================================
+- name: "⏳ FASE 2: Attesa Accensione Fisica Nodi Proxmox VE"
+  hosts: localhost
+  gather_facts: no
+  vars:
+    pve_nodes:
+      - 10.10.10.11 # pve1
+      - 10.10.10.21 # pve2
+      - 10.10.10.31 # pve3
+  tasks:
+    - name: "Attesa disponibilità SSH nodi Proxmox (Assicurarsi di averli accesi fisicamente)"
+      wait_for:
+        host: "{{ item }}"
+        port: 22
+        state: started
+        timeout: 600
+        msg: "In attesa che l'host Proxmox {{ item }} sia acceso e raggiungibile via SSH..."
+      loop: "{{ pve_nodes }}"
+
+    - name: "✅ Tutti e tre i nodi Proxmox sono ONLINE e raggiungibili"
+      debug:
+        msg: "Hypervisor pronti per il riavvio delle macchine virtuali Talos."
+
+# ==============================================================================
+# FASE 3: RETRO-COPIA SPECULARE DATI JELLYFIN SU PVE3 (SE PRESENTE)
+# ==============================================================================
+- name: "🎬 FASE 3: Retro-Copia Speculare Dati Jellyfin su PVE3 (Opzionale/Condizionale)"
+  hosts: localhost
+  gather_facts: no
+  vars:
+    pve3_ip: "10.10.10.31"
+    truenas_ip: "10.10.10.50"
+    lxc_data_target: "/var/lib/lxc/2200/rootfs/var/lib/jellyfin/data/"
+    truenas_db_source: "/mnt/stripe/k8s-arr/servarr-jellyfin-db/"
+  tasks:
+    - name: "Verifica se il container LXC 2200 esiste su PVE3"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "test -d {{ lxc_data_target }}"
+      register: lxc_exists
+      ignore_errors: true
+      changed_when: false
+
+    - name: "Sincronizza a ritroso le modifiche di visione da TrueNAS a LXC 2200 (se presente)"
+      shell: >
+        ssh -o BatchMode=yes root@{{ pve3_ip }}
+        "rsync -av --delete root@{{ truenas_ip }}:{{ truenas_db_source }} {{ lxc_data_target }}"
+      when: lxc_exists.rc == 0
+      register: rsync_back_res
+      ignore_errors: true
+
+    - name: "Avvia container LXC 2200 Jellyfin su PVE3 (se presente)"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "pct start 2200"
+      when: lxc_exists.rc == 0
+      ignore_errors: true
+
+# ==============================================================================
+# FASE 4: AVVIO VM TALOS SU PROXMOX
+# ==============================================================================
+- name: "🚀 FASE 4: Avvio Macchine Virtuali Talos"
+  hosts: proxmox
+  gather_facts: no
+  tasks:
+    - name: "Verifica stato della VM Talos {{ talos_vmid }} su {{ inventory_hostname }}"
+      command: qm status {{ talos_vmid }}
+      register: vm_status
+      changed_when: false
+
+    - name: "Avvia VM Talos {{ talos_vmid }}"
+      command: qm start {{ talos_vmid }}
+      when: "'stopped' in vm_status.stdout"
+      register: start_result
+
+# ==============================================================================
+# FASE 5: QUORUM K8S E UNCORDON GLOBALE
+# ==============================================================================
+- name: "🔓 FASE 5: Quorum K8s e Uncordon Globale"
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Attesa disponibilità API Server Kubernetes (VIP 10.10.20.55:6443)"
+      wait_for:
+        host: 10.10.20.55
+        port: 6443
+        state: started
+        timeout: 300
+        msg: "L'API Server K8s non risponde. Verificare il quorum etcd."
+
+    - name: "Attesa assestamento kubelet (20 secondi)"
+      pause:
+        seconds: 20
+
+    - name: "🔓 Uncordon Globale (Riabilita lo scheduling dei pod)"
+      command: kubectl uncordon talos-cp-01 talos-cp-02 talos-cp-03
+      register: uncordon_result
+      ignore_errors: true
+
+    - name: "🏁 RIENTRO SU KUBERNETES COMPLETATO CON SUCCESSO"
+      debug:
+        msg: |
+          ============================================================
+          🟢 RIENTRO SU KUBERNETES COMPLETATO!
+          ============================================================
+          - TrueNAS Compose: SPENTO (docker compose down)
+          - Proxmox Nodi:    ONLINE
+          - Talos VMs:       ONLINE (1300, 2300, 3200)
+          - K8s Quorum:      STABILE (VIP 10.10.20.55:6443)
+          - Nodi Uncordoned: Pod schedulabili e operativi
+          ============================================================

@@ -1,0 +1,185 @@
+services:
+  # ==========================================
+  # INIT CONTAINER (One-shot Bootstrap, Security & K8s Guardrail)
+  # ==========================================
+  init-arr-bootstrap:
+    image: busybox:latest
+    container_name: init-arr-bootstrap
+    restart: "no"
+    command:
+      - sh
+      - -c
+      - |
+        echo "[INIT] 0. Guardrail di sicurezza: verifica stato cluster Kubernetes (Traefik Ingress)..."
+        K8S_ACTIVE=0
+        ENDPOINTS="https://prowlarr-internal.pindaroli.org https://qbittorrent-internal.pindaroli.org https://jellyfin-internal.pindaroli.org"
+
+        for ep in $$ENDPOINTS; do
+          echo "[INIT] Probing $$ep ..."
+          OUTPUT=$$(wget -S --spider --no-check-certificate -T 2 "$$ep" 2>&1)
+          if echo "$$OUTPUT" | grep -qE "HTTP/[0-9]"; then
+            echo "[ABORT] Endpoint Kubernetes $$ep è ATTIVO e RISPONDE!"
+            echo "$$OUTPUT" | grep "HTTP/" | head -n 1
+            K8S_ACTIVE=1
+          fi
+        done
+
+        if [ "$$K8S_ACTIVE" -eq 1 ]; then
+          echo "======================================================================"
+          echo "[FATAL ERROR] Cluster Kubernetes o Traefik Ingress ancora ATTIVO!"
+          echo "Lo stack Docker Compose NON può avviarsi per evitare split-brain e"
+          echo "conflitti di scrittura simultanea su storage ZFS (/mnt/stripe e /mnt/oliraid)."
+          echo "Arrestare i pod Kubernetes o spegnere i nodi Talos prima del failover."
+          echo "======================================================================"
+          exit 1
+        fi
+        echo "[INIT] 0b. Guardrail di sicurezza: verifica stato nodi Proxmox e LXC Jellyfin..."
+        PVE_NODES="10.10.10.11 10.10.10.21 10.10.10.31 10.10.20.32"
+        for ip in $$PVE_NODES; do
+          echo "[INIT] Probing PVE/LXC $$ip ..."
+          if ping -c 1 -W 1 "$$ip" >/dev/null 2>&1; then
+            echo "======================================================================"
+            echo "[FATAL ERROR] L'host $$ip è ATTIVO e RISPONDE al ping!"
+            echo "Lo stack Failover NON può avviarsi se il cluster Proxmox o l'LXC sono attivi."
+            echo "Altrimenti corromperesti il DB SQLite di Jellyfin con doppie scritture su ZFS/NFS."
+            echo "======================================================================"
+            exit 1
+          fi
+        done
+        echo "[INIT] Nessun endpoint Kubernetes attivo. Procedo con la preparazione dello storage..."
+
+        echo "[INIT] 1. Preparazione sottocartella SQLite per Prowlarr e pre-seeding API Key..."
+        mkdir -p /mnt/prowlarr-root/sqlite
+        if [ ! -f "/mnt/prowlarr-root/sqlite/config.xml" ]; then
+          APIKEY=""
+          if [ -f "/mnt/prowlarr-root/config.xml" ]; then
+            APIKEY=$$(sed -n 's/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p' /mnt/prowlarr-root/config.xml)
+          fi
+          if [ -z "$$APIKEY" ]; then
+            APIKEY="fad287a6fe814e1b885f1ba0a8f95179"
+          fi
+          printf '<Config>\n  <Port>9696</Port>\n  <UrlBase></UrlBase>\n  <BindAddress>*</BindAddress>\n  <ApiKey>%s</ApiKey>\n  <AuthenticationMethod>None</AuthenticationMethod>\n  <LogLevel>info</LogLevel>\n  <Branch>master</Branch>\n  <LaunchBrowser>False</LaunchBrowser>\n  <UpdateMechanism>BuiltIn</UpdateMechanism>\n</Config>\n' "$$APIKEY" > /mnt/prowlarr-root/sqlite/config.xml
+          echo "[INIT] sqlite/config.xml pre-popolato con successo (ApiKey allineata a Kubernetes)."
+        fi
+        chown -R 1000:1000 /mnt/prowlarr-root/sqlite
+        chmod 775 /mnt/prowlarr-root/sqlite
+        chmod 664 /mnt/prowlarr-root/sqlite/config.xml
+
+        echo "[INIT] 2. Patch di sicurezza qBittorrent per accesso LAN diretto..."
+        CONF="/mnt/qbittorrent-config/qBittorrent/qBittorrent.conf"
+        if [ -f "$$CONF" ]; then
+          sed -i '/WebUI\\CSRFProtection/d; /WebUI\\HostHeaderValidation/d; /WebUI\\AuthSubnetWhitelist/d' "$$CONF"
+          sed -i '/\[Preferences\]/a WebUI\\AuthSubnetWhitelist=10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8\nWebUI\\AuthSubnetWhitelistEnabled=true\nWebUI\\CSRFProtection=false\nWebUI\\HostHeaderValidation=false' "$$CONF"
+          chown 1000:1000 "$$CONF"
+          echo "[INIT] qBittorrent.conf patchato con successo."
+        fi
+        echo "[INIT] Bootstrap completato con successo."
+    volumes:
+      - /mnt/stripe/k8s-arr/servarr-prowlarr:/mnt/prowlarr-root
+      - /mnt/stripe/k8s-arr/servarr-qbittorrent:/mnt/qbittorrent-config
+
+  # ==========================================
+  # QBITTORRENT
+  # ==========================================
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.2.3_v2.0.13-ls468
+    container_name: qbittorrent
+    restart: unless-stopped
+    depends_on:
+      init-arr-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - WEBUI_BYPASS_AUTH_SUBNET_WHITELIST_ENABLED=true
+      - WEBUI_AUTH_SUBNET_WHITELIST=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    volumes:
+      - /mnt/stripe/k8s-arr/servarr-qbittorrent:/config
+      - /mnt/stripe/qb_temp:/data/incomplete
+      - /mnt/oliraid/arrdata/media:/media
+    ports:
+      - "8080:8080"
+      - "30661:30661"
+      - "30661:30661/udp"
+    networks:
+      - arr_net
+
+  # ==========================================
+  # JELLYFIN
+  # ==========================================
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:10.10.7
+    container_name: jellyfin
+    restart: unless-stopped
+    depends_on:
+      init-arr-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-config:/config
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-db:/config/data
+      - /mnt/oliraid/arrdata/media:/media
+
+    ports:
+      - "8096:8096"
+      - "7359:7359/udp"
+    networks:
+      - arr_net
+
+  # ==========================================
+  # PROWLARR (SQLite Failover)
+  # ==========================================
+  prowlarr:
+    image: ghcr.io/hotio/prowlarr:release-2.5.2.5491
+    container_name: prowlarr
+    restart: unless-stopped
+    depends_on:
+      init-arr-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+    volumes:
+      - /mnt/stripe/k8s-arr/servarr-prowlarr/sqlite:/config
+      - /mnt/stripe/k8s-arr/servarr-prowlarr:/backup:ro
+      - /mnt/oliraid/arrdata/media:/media
+    ports:
+      - "9696:9696"
+    networks:
+      - arr_net
+
+  # ==========================================
+  # PROWLARR INDEXERS LOADER (One-shot Sync from JSON dump)
+  # ==========================================
+  prowlarr-indexers-loader:
+    image: python:3.12-alpine
+    container_name: prowlarr-indexers-loader
+    restart: "no"
+    depends_on:
+      prowlarr:
+        condition: service_started
+    volumes:
+      - /mnt/stripe/k8s-arr/servarr-prowlarr:/backup:ro
+      - /mnt/stripe/k8s-arr/servarr-prowlarr/sqlite:/config:ro
+      - ./load_indexers.py:/app/load_indexers.py:ro
+    environment:
+      - PROWLARR_URL=http://prowlarr:9696
+      - CONFIG_XML=/config/config.xml
+      - DUMP_FILE=/backup/indexerrs_dump.json
+    command: ["python3", "/app/load_indexers.py"]
+    networks:
+      - arr_net
+
+networks:
+  arr_net:
+    name: arr_net
+    driver: bridge

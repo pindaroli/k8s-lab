@@ -68,6 +68,13 @@
 - [x] Fase 4: Validazione test-driven end-to-end (upsc da PVE1/2/3 verso TrueNAS, verifica live 100% ok).
 
 
+## 🚀 [ ] Migrazione a Configurazione Solo TrueNAS (Failover & Disaster Recovery) [[truenas-only-migration-failover]]
+- [x] Fase 0: Definizione architettura, gate di sbarramento, snapshot ZFS preventivo e mirror sync Jellyfin (`wiki/plans/truenas-only-migration-failover.md`).
+- [x] Fase 1: Creazione playbook Ansible orchestratore `ansible/playbooks/infrastructure/migrate_to_truenas_only.yml`.
+- [x] Fase 2: Creazione playbook Ansible di ripristino/switch-back `ansible/playbooks/infrastructure/restore_from_truenas_only.yml`.
+- [x] Fase 3: Sintassi check, linting e validazione Ansible (`--syntax-check` superato su entrambi i playbook).
+- [ ] Fase 4: Esecuzione di prova controllata su finestra programmata con validazione test-driven.
+
 ## 🚀 [ ] Automazione Rilevazione Dati SMART via Ansible [[ansible-smart-telemetry-integration]]
 - [ ] Fase 1: Sviluppo playbook `ansible/playbooks/monitoring/collect_smart_data.yml` con scansione dinamica dischi (`smartctl --scan-open`).
 - [ ] Fase 2: Estrazione e parsing JSON metriche S.M.A.R.T. per drive SATA (HDD/SSD) e NVMe su TrueNAS e nodi Proxmox.

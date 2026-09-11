@@ -1,0 +1,85 @@
+---
+# ==============================================================================
+# 🟢 KUBERNETES GRACEFUL STARTUP SEQUENCE
+# ==============================================================================
+- name: "🖥️ FASE 1: Verifica Operatività TrueNAS"
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "🔔 Notifica: Inizio Startup Kubernetes"
+      debug:
+        msg: "Avvio della sequenza di startup. In attesa di TrueNAS..."
+
+    - name: "🔎 Attesa disponibilità servizio NFS su TrueNAS (Porta TCP 2049)"
+      # Controlla la porta TCP di NFS. È il segnale perfetto che lo storage
+      # ZFS è importato e pronto per montare i Volumi Kubernetes.
+      wait_for:
+        host: 10.10.10.50
+        port: 2049
+        state: started
+        timeout: 600
+        msg: "Timeout! Il servizio NFS su TrueNAS (10.10.10.50) non è raggiungibile."
+      register: truenas_status
+
+    - name: ⏱️ Diagnostica
+      debug:
+        msg: "✅ TrueNAS è ONLINE e lo storage NFS è pienamente operativo."
+
+# ==============================================================================
+# 🚀 FASE 2: Avvio Nodi Proxmox
+# ==============================================================================
+- name: "🚀 FASE 2: Avvio Macchine Virtuali Talos"
+  hosts: proxmox
+  gather_facts: no
+  tasks:
+    - name: "Verifica stato della VM {{ talos_vmid }} su {{ inventory_hostname }}"
+      command: qm status {{ talos_vmid }}
+      register: vm_status
+      changed_when: false
+
+    - name: "Avvia VM Talos {{ talos_vmid }}"
+      command: qm start {{ talos_vmid }}
+      when: "'stopped' in vm_status.stdout"
+      register: start_result
+
+    - name: ⏱️ Diagnostica Avvio VM
+      debug:
+        msg: "✅ VM {{ talos_vmid }} avviata con successo su host {{ inventory_hostname }}."
+      when: start_result.changed
+
+# ==============================================================================
+# ⏳ FASE 3: Quorum K8s e Sblocco Cordon
+# ==============================================================================
+- name: "⏳ FASE 3: Ripristino Quorum K8s e Uncordon"
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Attesa disponibilità API Server Kubernetes (VIP 10.10.20.55)"
+      wait_for:
+        host: 10.10.20.55
+        port: 6443
+        state: started
+        timeout: 300
+        msg: "L'API Server K8s non sta rispondendo. Il quorum etcd potrebbe non essersi formato."
+
+    - name: "Attesa assestamento dei Kubelet (20 secondi)"
+      pause:
+        seconds: 20
+
+    - name: "🔓 Uncordon Globale (Riabilita lo scheduling dei pod)"
+      command: kubectl uncordon talos-cp-01 talos-cp-02 talos-cp-03
+      register: uncordon_result
+      ignore_errors: true
+
+    - name: "✅ STARTUP COMPLETATO"
+      debug:
+        msg: |
+          ==================================================
+          🟢 RIPARTENZA CLUSTER COMPLETATA
+          ==================================================
+          Esito Sblocco Nodi:
+          {{ uncordon_result.stdout_lines | default(['Errore Uncordon']) | join('\n') }}
+          --------------------------------------------------
+          Il cluster Kubernetes è di nuovo ONLINE, con accesso
+          allo storage TrueNAS confermato, e pronto all'uso!
+          ==================================================

@@ -1,0 +1,3879 @@
+[
+  {
+    "indexerUrls": [
+      "https://16mag.net/"
+    ],
+    "legacyUrls": [
+      "https://0magnet.com/",
+      "https://9mag.net/",
+      "https://0magnet.co/",
+      "https://13mag.net/"
+    ],
+    "definitionName": "0magnet",
+    "description": "ØMagnet is a CHINESE Public tracker for Asian 3X (JAV)",
+    "language": "zh-CN",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 6000,
+          "name": "XXX",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [],
+      "movieSearchParams": [],
+      "musicSearchParams": [],
+      "bookSearchParams": []
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-15T21:09:00Z",
+    "sortName": "0magnet",
+    "name": "0Magnet",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "0magnet",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://13mag.net/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#0magnet",
+    "tags": [
+      1
+    ],
+    "id": 33
+  },
+  {
+    "indexerUrls": [
+      "https://acg.rip/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "acgrip",
+    "description": "ACG.RIP is a CHINESE Public torrent tracker for the latest anime and Japanese related torrents",
+    "language": "zh-CN",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [],
+      "musicSearchParams": [],
+      "bookSearchParams": []
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-15T21:12:27Z",
+    "sortName": "acg rip",
+    "name": "ACG.RIP",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "acgrip",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://acg.rip/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#acgrip",
+    "tags": [
+      1
+    ],
+    "id": 35
+  },
+  {
+    "indexerUrls": [
+      "https://bitru.org/"
+    ],
+    "legacyUrls": [
+      "http://bitru.org/"
+    ],
+    "definitionName": "bitru",
+    "description": "BitRu is a RUSSIAN Public Torrent Tracker for MOVIES / TV / GENERAL",
+    "language": "ru-RU",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 2000,
+          "name": "Movies",
+          "subCategories": []
+        },
+        {
+          "id": 145460,
+          "name": "Movie",
+          "subCategories": []
+        },
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": []
+        },
+        {
+          "id": 156912,
+          "name": "Serial",
+          "subCategories": []
+        },
+        {
+          "id": 3000,
+          "name": "Audio",
+          "subCategories": [
+            {
+              "id": 3030,
+              "name": "Audio/Audiobook",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100314,
+          "name": "Music",
+          "subCategories": []
+        },
+        {
+          "id": 4000,
+          "name": "PC",
+          "subCategories": [
+            {
+              "id": 4050,
+              "name": "PC/Games",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 141165,
+          "name": "Game",
+          "subCategories": []
+        },
+        {
+          "id": 129931,
+          "name": "Software",
+          "subCategories": []
+        },
+        {
+          "id": 7000,
+          "name": "Books",
+          "subCategories": []
+        },
+        {
+          "id": 141199,
+          "name": "Literature",
+          "subCategories": []
+        },
+        {
+          "id": 147385,
+          "name": "Audiobook",
+          "subCategories": []
+        },
+        {
+          "id": 147871,
+          "name": "Movies",
+          "subCategories": []
+        },
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 130222,
+          "name": "Image",
+          "subCategories": []
+        },
+        {
+          "id": 6000,
+          "name": "XXX",
+          "subCategories": []
+        },
+        {
+          "id": 103510,
+          "name": "xxx",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "bookSearchParams": [
+        "q"
+      ]
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T20:49:46Z",
+    "sortName": "bitru",
+    "name": "BitRu",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "bitru",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://bitru.org/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": true,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "stripcyrillic",
+        "label": "Strip Cyrillic Letters",
+        "value": true,
+        "type": "checkbox",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "addrussiantotitle",
+        "label": "Add RUS to end of all titles to improve language detection by Sonarr and Radarr. Will cause English-only results to be misidentified.",
+        "value": false,
+        "type": "checkbox",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "adverts",
+        "label": "Include Advertising",
+        "value": true,
+        "type": "checkbox",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "sort",
+        "label": "Sort requested from site",
+        "value": 0,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "created",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "seeders",
+            "order": 0
+          },
+          {
+            "value": 2,
+            "name": "size",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#bitru",
+    "tags": [
+      1,
+      2
+    ],
+    "id": 2
+  },
+  {
+    "indexerUrls": [
+      "https://bt.etree.org/"
+    ],
+    "legacyUrls": [
+      "http://bt.etree.org/"
+    ],
+    "definitionName": "btetree",
+    "description": "BT.etree is a Public Tracker dedicated to Bootleg FLAC MUSIC",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 3000,
+          "name": "Audio",
+          "subCategories": [
+            {
+              "id": 3040,
+              "name": "Audio/Lossless",
+              "subCategories": []
+            }
+          ]
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [],
+      "movieSearchParams": [],
+      "musicSearchParams": [
+        "q",
+        "artist"
+      ],
+      "bookSearchParams": []
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T20:54:10Z",
+    "sortName": "bt etree",
+    "name": "BT.etree",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "btetree",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://bt.etree.org/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "info_flaresolverr",
+        "label": "FlareSolverr Info",
+        "helpLink": "https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers",
+        "value": "This site may use Cloudflare DDoS Protection, therefore Prowlarr requires <a href=\"https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers\" target=\"_blank\" rel=\"noreferrer\">FlareSolverr</a> to access it.",
+        "type": "info",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "sort",
+        "label": "Sort requested from site",
+        "value": 0,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "created",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "title",
+            "order": 0
+          },
+          {
+            "value": 2,
+            "name": "seeders",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#btetree",
+    "tags": [
+      1,
+      2
+    ],
+    "id": 4
+  },
+  {
+    "indexerUrls": [
+      "https://damag.net/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "damagnet",
+    "description": "DaMagNet is a Public DHT Crawler",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 127246,
+          "name": "Other",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "bookSearchParams": [
+        "q"
+      ]
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T20:55:53Z",
+    "sortName": "damagnet",
+    "name": "DaMagNet",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "damagnet",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://damag.net/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "info_category_8000",
+        "label": "About DaMagNet Categories",
+        "helpLink": "https://wiki.servarr.com/prowlarr/faq#prowlarr-will-not-sync-x-indexer-to-app",
+        "value": "DaMagNet does not return categories in its search results. To sync to your apps, include 8000(Other) in your Apps' Sync Categories.",
+        "type": "info",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "info_flaresolverr",
+        "label": "FlareSolverr Info",
+        "helpLink": "https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers",
+        "value": "This site may use Cloudflare DDoS Protection, therefore Prowlarr requires <a href=\"https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers\" target=\"_blank\" rel=\"noreferrer\">FlareSolverr</a> to access it.",
+        "type": "info",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#damagnet",
+    "tags": [
+      1
+    ],
+    "id": 5
+  },
+  {
+    "indexerUrls": [
+      "https://share.dmhy.org/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "dmhy",
+    "description": "dmhy is a TAIWANESE Public magnet tracker for ANIME",
+    "language": "zh-TW",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": [
+            {
+              "id": 5070,
+              "name": "TV/Anime",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100002,
+          "name": "動畫 (Anime)",
+          "subCategories": []
+        },
+        {
+          "id": 100031,
+          "name": "季度全集 (Quarterly Complete)",
+          "subCategories": []
+        },
+        {
+          "id": 7000,
+          "name": "Books",
+          "subCategories": [
+            {
+              "id": 7030,
+              "name": "Books/Comics",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100003,
+          "name": "漫畫 (Manga)",
+          "subCategories": []
+        },
+        {
+          "id": 100041,
+          "name": "港台原版 (Hong Kong and Taiwan original)",
+          "subCategories": []
+        },
+        {
+          "id": 100042,
+          "name": "日文原版 (Japanese original)",
+          "subCategories": []
+        },
+        {
+          "id": 3000,
+          "name": "Audio",
+          "subCategories": []
+        },
+        {
+          "id": 100004,
+          "name": "音樂 (Music)",
+          "subCategories": []
+        },
+        {
+          "id": 100043,
+          "name": "動漫音樂 (Anime Music)",
+          "subCategories": []
+        },
+        {
+          "id": 100044,
+          "name": "同人音樂 (Fan Music)",
+          "subCategories": []
+        },
+        {
+          "id": 100015,
+          "name": "流行音樂 (Pop Music)",
+          "subCategories": []
+        },
+        {
+          "id": 100006,
+          "name": "日劇 (Japanese TV drama)",
+          "subCategories": []
+        },
+        {
+          "id": 100007,
+          "name": "RAW",
+          "subCategories": []
+        },
+        {
+          "id": 4000,
+          "name": "PC",
+          "subCategories": [
+            {
+              "id": 4050,
+              "name": "PC/Games",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100009,
+          "name": "遊戲 (games)",
+          "subCategories": []
+        },
+        {
+          "id": 100017,
+          "name": "電腦遊戲 (computer games)",
+          "subCategories": []
+        },
+        {
+          "id": 1000,
+          "name": "Console",
+          "subCategories": []
+        },
+        {
+          "id": 100018,
+          "name": "電視遊戲 (video games)",
+          "subCategories": []
+        },
+        {
+          "id": 100019,
+          "name": "掌機遊戲 (console games)",
+          "subCategories": []
+        },
+        {
+          "id": 100020,
+          "name": "網絡遊戲 (online games)",
+          "subCategories": []
+        },
+        {
+          "id": 100021,
+          "name": "遊戲周邊 (game periphery)",
+          "subCategories": []
+        },
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": [
+            {
+              "id": 8010,
+              "name": "Other/Misc",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100012,
+          "name": "特攝 (special photo)",
+          "subCategories": []
+        },
+        {
+          "id": 100001,
+          "name": "其他 (other)",
+          "subCategories": []
+        },
+        {
+          "id": 2000,
+          "name": "Movies",
+          "subCategories": [
+            {
+              "id": 2020,
+              "name": "Movies/Other",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100002,
+          "name": "動畫 (Anime)",
+          "subCategories": []
+        },
+        {
+          "id": 100031,
+          "name": "季度全集 (Quarterly Complete)",
+          "subCategories": []
+        },
+        {
+          "id": 100007,
+          "name": "RAW",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "bookSearchParams": [
+        "q"
+      ]
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T21:13:28Z",
+    "sortName": "dmhy",
+    "name": "dmhy",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "dmhy",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://share.dmhy.org/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": true,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "info_flaresolverr",
+        "label": "FlareSolverr Info",
+        "helpLink": "https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers",
+        "value": "This site may use Cloudflare DDoS Protection, therefore Prowlarr requires <a href=\"https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers\" target=\"_blank\" rel=\"noreferrer\">FlareSolverr</a> to access it.",
+        "type": "info",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#dmhy",
+    "tags": [
+      1
+    ],
+    "id": 17
+  },
+  {
+    "indexerUrls": [
+      "https://e-hentai.org/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "ehentai",
+    "description": "E-Hentai is a Public site for Hentai doujinshi, manga.",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": [
+            {
+              "id": 5070,
+              "name": "TV/Anime",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100001,
+          "name": "Anime",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [],
+      "musicSearchParams": [],
+      "bookSearchParams": []
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-15T21:19:23Z",
+    "sortName": "e黑tai",
+    "name": "E-Hentai",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "ehentai",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://e-hentai.org/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#ehentai",
+    "tags": [
+      1
+    ],
+    "id": 38
+  },
+  {
+    "indexerUrls": [
+      "https://filemood.com/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "filemood",
+    "description": "FileMood is a Public BitTorrent DHT search engine.",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "bookSearchParams": [
+        "q"
+      ]
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2026-07-24T11:50:43Z",
+    "sortName": "filemood",
+    "name": "FileMood",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "filemood",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://filemood.com/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "info_category_8000",
+        "label": "About FileMood Categories",
+        "helpLink": "https://wiki.servarr.com/prowlarr/faq#prowlarr-will-not-sync-x-indexer-to-app",
+        "value": "FileMood does not return categories in its search results. To sync to your apps, include 8000(Other) in your Apps' Sync Categories.",
+        "type": "info",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#filemood",
+    "tags": [],
+    "id": 1
+  },
+  {
+    "indexerUrls": [
+      "https://archive.org/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "internetarchive",
+    "description": "Internet Archive is a non-profit digital library offering free universal access to books, movies & music, as well as 406 billion archived web pages",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 3000,
+          "name": "Audio",
+          "subCategories": []
+        },
+        {
+          "id": 127296,
+          "name": "audio",
+          "subCategories": []
+        },
+        {
+          "id": 154563,
+          "name": "etree",
+          "subCategories": []
+        },
+        {
+          "id": 2000,
+          "name": "Movies",
+          "subCategories": []
+        },
+        {
+          "id": 112696,
+          "name": "movies",
+          "subCategories": []
+        },
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": []
+        },
+        {
+          "id": 112696,
+          "name": "movies",
+          "subCategories": []
+        },
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": [
+            {
+              "id": 8010,
+              "name": "Other/Misc",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 130222,
+          "name": "image",
+          "subCategories": []
+        },
+        {
+          "id": 7000,
+          "name": "Books",
+          "subCategories": []
+        },
+        {
+          "id": 130440,
+          "name": "texts",
+          "subCategories": []
+        },
+        {
+          "id": 4000,
+          "name": "PC",
+          "subCategories": []
+        },
+        {
+          "id": 133225,
+          "name": "software",
+          "subCategories": []
+        },
+        {
+          "id": 133994,
+          "name": "web",
+          "subCategories": []
+        },
+        {
+          "id": 114112,
+          "name": "collection",
+          "subCategories": []
+        },
+        {
+          "id": 108394,
+          "name": "account",
+          "subCategories": []
+        },
+        {
+          "id": 131905,
+          "name": "data",
+          "subCategories": []
+        },
+        {
+          "id": 138096,
+          "name": "other",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "bookSearchParams": [
+        "q"
+      ]
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T20:59:36Z",
+    "sortName": "internet archive",
+    "name": "Internet Archive",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "internetarchive",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://archive.org/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": true,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "titleOnly",
+        "label": "Search only in title",
+        "value": true,
+        "type": "checkbox",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "noMagnet",
+        "label": "Download using .torrent only. No Magnets.",
+        "value": false,
+        "type": "checkbox",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "sort",
+        "label": "Sort requested from site",
+        "value": 2,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "downloads",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "size",
+            "order": 0
+          },
+          {
+            "value": 2,
+            "name": "created",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "type",
+        "label": "Order requested from site",
+        "value": 1,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "asc",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "desc",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#internetarchive",
+    "tags": [
+      1,
+      2
+    ],
+    "id": 8
+  },
+  {
+    "indexerUrls": [
+      "https://kickass.ws/",
+      "https://kickasstorrents.bz/",
+      "https://kkickass.com/",
+      "https://kkat.net/",
+      "https://kick4ss.com/",
+      "https://kickasst.net/",
+      "https://kickasstorrents.id/",
+      "https://thekat.cc/",
+      "https://kattracker.com/"
+    ],
+    "legacyUrls": [
+      "https://kickass.gg/",
+      "https://katcr.io/",
+      "https://thekat.nz/",
+      "https://thekat.se/",
+      "https://kat.how/",
+      "https://kat.li/",
+      "https://katcr.to/",
+      "https://kickasstorrent.cr/",
+      "https://kickasstorrents.unblockninja.com/",
+      "https://kickass-kat.com/",
+      "https://kickass.sh/",
+      "https://kickasshydra.dev/"
+    ],
+    "definitionName": "kickasstorrents-ws",
+    "description": "kickasstorrents.ws is a Public KickAssTorrent clone for MOVIES / TV / GENERAL",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 4000,
+          "name": "PC",
+          "subCategories": []
+        },
+        {
+          "id": 165524,
+          "name": "Apps",
+          "subCategories": []
+        },
+        {
+          "id": 7000,
+          "name": "Books",
+          "subCategories": []
+        },
+        {
+          "id": 160714,
+          "name": "Books",
+          "subCategories": []
+        },
+        {
+          "id": 1000,
+          "name": "Console",
+          "subCategories": []
+        },
+        {
+          "id": 110205,
+          "name": "Games",
+          "subCategories": []
+        },
+        {
+          "id": 2000,
+          "name": "Movies",
+          "subCategories": []
+        },
+        {
+          "id": 112696,
+          "name": "Movies",
+          "subCategories": []
+        },
+        {
+          "id": 3000,
+          "name": "Audio",
+          "subCategories": []
+        },
+        {
+          "id": 100314,
+          "name": "Music",
+          "subCategories": []
+        },
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 138096,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": []
+        },
+        {
+          "id": 103583,
+          "name": "TV",
+          "subCategories": []
+        },
+        {
+          "id": 6000,
+          "name": "XXX",
+          "subCategories": []
+        },
+        {
+          "id": 103510,
+          "name": "XXX",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "bookSearchParams": [
+        "q"
+      ]
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2026-07-24T12:18:09Z",
+    "sortName": "kickasstorrents ws",
+    "name": "kickasstorrents.ws",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "kickasstorrents-ws",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://kickasstorrents.bz/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "sort",
+        "label": "Sort requested from site",
+        "value": 2,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "seeders",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "size",
+            "order": 0
+          },
+          {
+            "value": 2,
+            "name": "created",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "type",
+        "label": "Order requested from site",
+        "value": 1,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "asc",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "desc",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "info_flaresolverr",
+        "label": "FlareSolverr Info",
+        "helpLink": "https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers",
+        "value": "This site may use Cloudflare DDoS Protection, therefore Prowlarr requires <a href=\"https://wiki.servarr.com/prowlarr/faq#can-i-use-flaresolverr-indexers\" target=\"_blank\" rel=\"noreferrer\">FlareSolverr</a> to access it.",
+        "type": "info",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#kickasstorrents-ws",
+    "tags": [
+      1
+    ],
+    "id": 6
+  },
+  {
+    "indexerUrls": [
+      "https://www.limetorrents.fun/",
+      "https://limetorrents.unblockninja.com/",
+      "https://limetorrents.ninjaproxy1.com/",
+      "https://limetorrents.proxyninja.org/",
+      "https://limetorrents.proxyninja.net/",
+      "https://limetorrents.torrentbay.st/",
+      "https://limetorrents.torrentsbay.org/"
+    ],
+    "legacyUrls": [
+      "https://limetorrents.mrunblock.bond/",
+      "https://limetorrents.nocensor.cloud/",
+      "https://limetorrents.abcproxy.org/",
+      "https://limetorrents.unblockit.download/",
+      "https://www.limetorrents.lol/"
+    ],
+    "definitionName": "limetorrents",
+    "description": "LimeTorrents is a Public general torrent index with mostly verified torrents",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": [
+            {
+              "id": 5070,
+              "name": "TV/Anime",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 112972,
+          "name": "TV shows",
+          "subCategories": []
+        },
+        {
+          "id": 2000,
+          "name": "Movies",
+          "subCategories": []
+        },
+        {
+          "id": 100467,
+          "name": "Movies",
+          "subCategories": []
+        },
+        {
+          "id": 3000,
+          "name": "Audio",
+          "subCategories": []
+        },
+        {
+          "id": 104627,
+          "name": "Music",
+          "subCategories": []
+        },
+        {
+          "id": 1000,
+          "name": "Console",
+          "subCategories": []
+        },
+        {
+          "id": 136409,
+          "name": "Games",
+          "subCategories": []
+        },
+        {
+          "id": 4000,
+          "name": "PC",
+          "subCategories": [
+            {
+              "id": 4010,
+              "name": "PC/0day",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 151062,
+          "name": "Applications",
+          "subCategories": []
+        },
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 127246,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 146065,
+          "name": "Anime",
+          "subCategories": []
+        },
+        {
+          "id": 7000,
+          "name": "Books",
+          "subCategories": [
+            {
+              "id": 7020,
+              "name": "Books/EBook",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 121527,
+          "name": "E-books",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "bookSearchParams": [
+        "q"
+      ]
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T21:01:28Z",
+    "sortName": "limetorrents",
+    "name": "LimeTorrents",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "limetorrents",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://www.limetorrents.lol/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": true,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "primarydownloadlink",
+        "label": "Primary Download link",
+        "value": 1,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "iTorrents",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "magnet",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "fallbackdownloadlink",
+        "label": "Fallback Download link",
+        "value": 0,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "iTorrents",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "magnet",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "info_download",
+        "label": "About the Download links",
+        "value": "As the .torrent download links on this site are known to fail from time to time, you can optionally set as a fallback an automatic alternate link.",
+        "type": "info",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "sort",
+        "label": "Sort requested from site",
+        "value": 0,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "created",
+            "order": 0
+          },
+          {
+            "value": 1,
+            "name": "seeders",
+            "order": 0
+          },
+          {
+            "value": 2,
+            "name": "size",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "info_category_8000",
+        "label": "About LimeTorrents Categories",
+        "value": "LimeTorrents only returns category <b>Other</b> in its <i>Keywordless</i> search results page.</br>To pass your apps' indexer TEST you will need to include the 8000(Other) category.",
+        "type": "info",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#limetorrents",
+    "tags": [
+      1
+    ],
+    "id": 9
+  },
+  {
+    "indexerUrls": [
+      "https://linuxtracker.org/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "linuxtracker",
+    "description": "LinuxTracker is a Public Linux ISO Torrent Repository",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 100000,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 4000,
+          "name": "PC",
+          "subCategories": [
+            {
+              "id": 4020,
+              "name": "PC/ISO",
+              "subCategories": []
+            }
+          ]
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [],
+      "movieSearchParams": [],
+      "musicSearchParams": [],
+      "bookSearchParams": []
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-15T21:53:38Z",
+    "sortName": "linuxtracker",
+    "name": "LinuxTracker",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "linuxtracker",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://linuxtracker.org/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": true,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#linuxtracker",
+    "tags": [
+      1
+    ],
+    "id": 49
+  },
+  {
+    "indexerUrls": [
+      "https://www.torrentmac.net/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "mactorrentsdownload",
+    "description": "Mac Torrents Download is a Public tracker for Mac software",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 4000,
+          "name": "PC",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [],
+      "movieSearchParams": [],
+      "musicSearchParams": [],
+      "bookSearchParams": []
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T21:02:43Z",
+    "sortName": "mac torrents download",
+    "name": "Mac Torrents Download",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "mactorrentsdownload",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://www.torrentmac.net/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": true,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#mactorrentsdownload",
+    "tags": [
+      1
+    ],
+    "id": 10
+  },
+  {
+    "indexerUrls": [
+      "https://mikanani.me/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "mikan",
+    "description": "Mikan is a CHINESE Public torrent tracker for ANIME",
+    "language": "zh-CN",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [],
+      "musicSearchParams": [],
+      "bookSearchParams": []
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T21:16:45Z",
+    "sortName": "mikan",
+    "name": "Mikan",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "mikan",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://mikanani.me/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#mikan",
+    "tags": [
+      1
+    ],
+    "id": 20
+  },
+  {
+    "indexerUrls": [
+      "https://thepiratebay.org/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "thepiratebay",
+    "description": "The Pirate Bay (TPB) is the galaxy’s most resilient Public BitTorrent site",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 2000,
+          "name": "Movies",
+          "subCategories": []
+        },
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": []
+        },
+        {
+          "id": 3000,
+          "name": "Audio",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ],
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "bookSearchParams": [
+        "q"
+      ]
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-04T21:09:39Z",
+    "sortName": "pirate bay",
+    "name": "The Pirate Bay",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "thepiratebay",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://thepiratebay.org/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": true,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 0,
+        "name": "apiurl",
+        "label": "API URL",
+        "value": "apibay.org",
+        "type": "textbox",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "top100",
+        "label": "Top100",
+        "value": 6,
+        "type": "select",
+        "advanced": false,
+        "selectOptions": [
+          {
+            "value": 6,
+            "name": "All",
+            "order": 0
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#thepiratebay",
+    "tags": [
+      1,
+      2
+    ],
+    "id": 15
+  },
+  {
+    "indexerUrls": [
+      "https://yts.gg/",
+      "https://yts.mx/"
+    ],
+    "legacyUrls": [],
+    "definitionName": "yts",
+    "description": "YTS is a Public torrent site specialising in HD movies of small size",
+    "language": "en-US",
+    "encoding": "Unicode (UTF-8)",
+    "enable": true,
+    "redirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "supportsRedirect": false,
+    "supportsPagination": false,
+    "appProfileId": 1,
+    "protocol": "torrent",
+    "privacy": "public",
+    "capabilities": {
+      "limitsMax": 100,
+      "limitsDefault": 100,
+      "categories": [
+        {
+          "id": 2000,
+          "name": "Movies",
+          "subCategories": []
+        }
+      ],
+      "supportsRawSearch": false,
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "tvSearchParams": [],
+      "movieSearchParams": [
+        "q",
+        "imdbId"
+      ],
+      "musicSearchParams": [],
+      "bookSearchParams": []
+    },
+    "priority": 25,
+    "downloadClientId": 0,
+    "added": "2025-08-15T20:57:14Z",
+    "sortName": "yts",
+    "name": "YTS",
+    "fields": [
+      {
+        "order": 0,
+        "name": "definitionFile",
+        "value": "yts",
+        "type": "textbox",
+        "advanced": false,
+        "hidden": "hidden",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 1,
+        "name": "baseUrl",
+        "label": "Base Url",
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "value": "https://yts.mx/",
+        "type": "select",
+        "advanced": false,
+        "selectOptionsProviderAction": "getUrls",
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 2,
+        "name": "baseSettings.queryLimit",
+        "label": "Query Limit",
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 3,
+        "name": "baseSettings.grabLimit",
+        "label": "Grab Limit",
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 4,
+        "name": "baseSettings.limitsUnit",
+        "label": "Limits Unit",
+        "helpText": "The unit of time for counting limits per indexer",
+        "value": 0,
+        "type": "select",
+        "advanced": true,
+        "selectOptions": [
+          {
+            "value": 0,
+            "name": "Day",
+            "order": 0,
+            "hint": "(0)"
+          },
+          {
+            "value": 1,
+            "name": "Hour",
+            "order": 1,
+            "hint": "(1)"
+          }
+        ],
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 5,
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "label": "Apps Minimum Seeders",
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 6,
+        "name": "torrentBaseSettings.seedRatio",
+        "label": "Seed Ratio",
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "type": "number",
+        "advanced": false,
+        "privacy": "normal",
+        "isFloat": true
+      },
+      {
+        "order": 7,
+        "name": "torrentBaseSettings.seedTime",
+        "label": "Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 8,
+        "name": "torrentBaseSettings.packSeedTime",
+        "label": "Pack Seed Time",
+        "unit": "minutes",
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "type": "number",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      },
+      {
+        "order": 9,
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "label": "Prefer Magnet URL",
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "value": false,
+        "type": "checkbox",
+        "advanced": true,
+        "privacy": "normal",
+        "isFloat": false
+      }
+    ],
+    "implementationName": "Cardigann",
+    "implementation": "Cardigann",
+    "configContract": "CardigannSettings",
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#yts",
+    "tags": [
+      1
+    ],
+    "id": 27
+  }
+]
