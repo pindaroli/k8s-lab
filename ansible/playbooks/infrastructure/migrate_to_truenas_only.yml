@@ -238,7 +238,7 @@
   become: true
   vars:
     compose_dir: "/mnt/stripe/compose/arr"
-    repo_compose_local_path: "../../servarr/compose/"
+    repo_compose_local_path: "{{ playbook_dir }}/../../../servarr/compose/"
   tasks:
     - name: "Verifica stato pool ZFS su TrueNAS (stripe & oliraid)"
       command: zpool status -x
