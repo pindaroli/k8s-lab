@@ -132,6 +132,8 @@ def main():
         except urllib.error.HTTPError as e:
             err_body = e.read().decode("utf-8", errors="ignore")
             print(f"[FAIL] Errore aggiunta '{name}': HTTP {e.code} - {err_body}")
+        except Exception as e:
+            print(f"[FAIL] Errore timeout/connessione '{name}': {e}")
 
     print(f"[DONE] Importazione completata con successo: {added_count} indexer registrati su Prowlarr.")
 

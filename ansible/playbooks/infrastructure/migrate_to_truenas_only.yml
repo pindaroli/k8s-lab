@@ -159,6 +159,10 @@
       register: snap_verify
       failed_when: snap_verify.rc != 0
 
+    - name: "🔧 Assicura che i dataset ZFS di Jellyfin abbiano readonly=off"
+      command: zfs set readonly=off stripe/k8s-arr/servarr-jellyfin-db
+      ignore_errors: true
+
     - name: "✅ Gate 3 Superato: Paracadute ZFS attivo"
       debug:
         msg: "Snapshot ZFS di sicurezza registrato: {{ snap_verify.stdout }} (Rollback istantaneo disponibile in caso di imprevisti)."
