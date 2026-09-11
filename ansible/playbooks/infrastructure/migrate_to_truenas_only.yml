@@ -44,6 +44,7 @@
       command: >
         talosctl shutdown --nodes {{ talos_nodes }} --endpoints {{ api_endpoint }} --force --wait=false
       register: shutdown_signal
+      ignore_errors: true
 
     # Step 1.4: Gate 1 - Attesa discesa porte API Talos
     - name: "⏳ Gate 1.1: Attesa chiusura porte API Talos (Porta 50000)"
@@ -85,12 +86,9 @@
   gather_facts: no
   vars:
     pve3_ip: "10.10.10.31"
-    truenas_ip: "10.10.10.50"
     lxc_id: "2200"
-    lxc_data_path: "/var/lib/lxc/2200/rootfs/var/lib/jellyfin/data/"
-    lxc_etc_path: "/var/lib/lxc/2200/rootfs/etc/jellyfin/"
-    truenas_db_target: "/mnt/stripe/k8s-arr/servarr-jellyfin-db/"
-    truenas_conf_target: "/mnt/stripe/k8s-arr/servarr-jellyfin-config/"
+    lxc_data_path: "/rpool/data/jellyfin-db/"
+    nfs_db_target: "/mnt/pve/k8s-arr/servarr-jellyfin-db/"
   tasks:
     - name: "Verifica se il container LXC {{ lxc_id }} è presente su PVE3"
       shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "pct status {{ lxc_id }}"
@@ -98,7 +96,7 @@
       ignore_errors: true
       changed_when: false
 
-    - name: "Gestione arresto e copia speculare Jellyfin LXC"
+    - name: "Gestione arresto Jellyfin LXC (se in esecuzione)"
       when:
         - lxc_status.rc == 0
         - "'status: running' in lxc_status.stdout"
@@ -122,25 +120,16 @@
           retries: 15
           delay: 2
 
-        - name: "🔄 Mirror Sync: Copia speculare cartella data (jellyfin.db) da PVE3 a TrueNAS"
-          shell: >
-            ssh -o BatchMode=yes root@{{ pve3_ip }}
-            "rsync -av --delete {{ lxc_data_path }} root@{{ truenas_ip }}:{{ truenas_db_target }}"
-          register: rsync_data_res
+    - name: "🔄 Mirror Sync: Copia speculare cartella data (jellyfin.db) su TrueNAS NFS"
+      shell: ssh -o BatchMode=yes root@{{ pve3_ip }} "rsync -av --delete {{ lxc_data_path }} {{ nfs_db_target }}"
+      register: rsync_data_res
 
-        - name: "🔄 Mirror Sync: Copia file di configurazione XML da PVE3 a TrueNAS"
-          shell: >
-            ssh -o BatchMode=yes root@{{ pve3_ip }}
-            "rsync -av {{ lxc_etc_path }} root@{{ truenas_ip }}:{{ truenas_conf_target }}"
-          register: rsync_conf_res
-          ignore_errors: true
-
-    - name: "🔧 Assicura permessi corretti UID/GID 1000 su TrueNAS per Jellyfin"
-      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ truenas_ip }} "chown -R 1000:1000 {{ truenas_db_target }} {{ truenas_conf_target }} && chmod -R 775 {{ truenas_db_target }} {{ truenas_conf_target }}"
+    - name: "🔧 Assicura permessi corretti UID/GID 1000 su TrueNAS per Jellyfin DB"
+      shell: ssh -o BatchMode=yes root@{{ pve3_ip }} "chown -R 1000:1000 {{ nfs_db_target }} && chmod -R 775 {{ nfs_db_target }}"
       ignore_errors: true
 
     - name: "⏳ Gate 2: Verifica presenza e integrità jellyfin.db su TrueNAS"
-      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ truenas_ip }} "test -f {{ truenas_db_target }}jellyfin.db && ls -lh {{ truenas_db_target }}jellyfin.db"
+      shell: ssh -o BatchMode=yes root@{{ pve3_ip }} "test -f {{ nfs_db_target }}jellyfin.db && ls -lh {{ nfs_db_target }}jellyfin.db"
       register: db_check
       failed_when: db_check.rc != 0
 

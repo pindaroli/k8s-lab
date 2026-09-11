@@ -67,20 +67,17 @@
   gather_facts: no
   vars:
     pve3_ip: "10.10.10.31"
-    truenas_ip: "10.10.10.50"
-    lxc_data_target: "/var/lib/lxc/2200/rootfs/var/lib/jellyfin/data/"
-    truenas_db_source: "/mnt/stripe/k8s-arr/servarr-jellyfin-db/"
+    lxc_data_target: "/rpool/data/jellyfin-db/"
+    nfs_db_source: "/mnt/pve/k8s-arr/servarr-jellyfin-db/"
   tasks:
-    - name: "Verifica se il container LXC 2200 esiste su PVE3"
+    - name: "Verifica se la directory Jellyfin DB locale esiste su PVE3"
       shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "test -d {{ lxc_data_target }}"
       register: lxc_exists
       ignore_errors: true
       changed_when: false
 
-    - name: "Sincronizza a ritroso le modifiche di visione da TrueNAS a LXC 2200 (se presente)"
-      shell: >
-        ssh -o BatchMode=yes root@{{ pve3_ip }}
-        "rsync -av --delete root@{{ truenas_ip }}:{{ truenas_db_source }} {{ lxc_data_target }}"
+    - name: "Sincronizza a ritroso le modifiche di visione da TrueNAS NFS a PVE3"
+      shell: ssh -o BatchMode=yes root@{{ pve3_ip }} "rsync -av --delete {{ nfs_db_source }} {{ lxc_data_target }}"
       when: lxc_exists.rc == 0
       register: rsync_back_res
       ignore_errors: true
