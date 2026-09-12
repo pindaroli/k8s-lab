@@ -5,7 +5,7 @@
 # Procedura controllata di ripristino dell'ambiente ordinario:
 # FASE 1: Arresto Stack Docker Compose su TrueNAS
 # FASE 2: Attesa accensione fisica nodi Proxmox VE (pve1, pve2, pve3)
-# FASE 3: Retro-Copia Speculare Dati Jellyfin (TrueNAS -> PVE3) [Opzionale/Consigliata]
+# FASE 3: Riavvio Cold Start Container Jellyfin 12 (LXC 2200) su PVE3
 # FASE 4: Avvio VM Talos su Proxmox
 # FASE 5: Quorum K8s e Uncordon globale dei nodi
 # ==============================================================================
@@ -60,32 +60,31 @@
         msg: "Hypervisor pronti per il riavvio delle macchine virtuali Talos."
 
 # ==============================================================================
-# FASE 3: RETRO-COPIA SPECULARE DATI JELLYFIN SU PVE3 (SE PRESENTE)
+# FASE 3: RIAVVIO COLD START CONTAINER JELLYFIN 12 (LXC 2200) SU PVE3
 # ==============================================================================
-- name: "🎬 FASE 3: Retro-Copia Speculare Dati Jellyfin su PVE3 (Opzionale/Condizionale)"
+- name: "🎬 FASE 3: Riavvio Cold Start Jellyfin 12 (LXC 2200) su PVE3"
   hosts: localhost
   gather_facts: no
   vars:
     pve3_ip: "10.10.10.31"
-    lxc_data_target: "/rpool/data/jellyfin-db/"
-    nfs_db_source: "/mnt/pve/k8s-arr/servarr-jellyfin-db/"
+    lxc_id: "2200"
   tasks:
-    - name: "Verifica se la directory Jellyfin DB locale esiste su PVE3"
-      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "test -d {{ lxc_data_target }}"
-      register: lxc_exists
+    - name: "Verifica stato container LXC {{ lxc_id }} su PVE3"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "pct status {{ lxc_id }}"
+      register: lxc_status
       ignore_errors: true
       changed_when: false
 
-    - name: "Sincronizza a ritroso le modifiche di visione da TrueNAS NFS a PVE3"
-      shell: ssh -o BatchMode=yes root@{{ pve3_ip }} "rsync -av --delete {{ nfs_db_source }} {{ lxc_data_target }}"
-      when: lxc_exists.rc == 0
-      register: rsync_back_res
-      ignore_errors: true
+    - name: "ℹ️ Nota architetturale: nessuna retro-copia da TrueNAS a PVE3"
+      debug:
+        msg: "Le modifiche effettuate su TrueNAS durante il failover restano isolate nei percorsi -truenas e vengono scartate. Jellyfin LXC riparte dal proprio storage NVMe locale incontaminato (/rpool/data/jellyfin-db/)."
 
-    - name: "Avvia container LXC 2200 Jellyfin su PVE3 (se presente)"
-      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "pct start 2200"
-      when: lxc_exists.rc == 0
-      ignore_errors: true
+    - name: "🚀 Avvio container LXC {{ lxc_id }} Jellyfin 12 su PVE3 (se spento)"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "pct start {{ lxc_id }}"
+      when:
+        - lxc_status.rc == 0
+        - "'status: stopped' in lxc_status.stdout"
+      register: pct_start_res
 
 # ==============================================================================
 # FASE 4: AVVIO VM TALOS SU PROXMOX

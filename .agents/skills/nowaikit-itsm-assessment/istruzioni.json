@@ -1,0 +1,67 @@
+{
+  "3.1 Installazione e Moduli Attivi": {
+    "tool": "default_api:query_records",
+    "parameters": {
+      "table": "v_plugin",
+      "query": "active=true^idINcom.snc.incident,com.snc.change_request,com.snc.problem,com.snc.service_portal,com.snc.asset_management",
+      "fields": "name,id,active,version"
+    },
+    "description": "Verifica quali moduli principali ITSM sono attivi sull'istanza per popolare lo stato attuale dell'installazione."
+  },
+  "3.2 Release e Patching": {
+    "tool": "default_api:get_system_property",
+    "parameters": {
+      "name": "glide.buildname"
+    },
+    "description": "Recupera la versione attuale della release di ServiceNow (es. Washington, Xanadu) per la sezione Release e Patching."
+  },
+  "3.3 Tabelle e modello dati": {
+    "tool": "default_api:query_records",
+    "parameters": {
+      "table": "sys_db_object",
+      "query": "nameSTARTSWITHu_^sys_scope=global",
+      "limit": 100,
+      "fields": "name,label"
+    },
+    "description": "Estrae l'elenco delle tabelle custom create a livello globale per valutare l'aderenza al modello dati standard (CSDM)."
+  },
+  "3.4 Analisi Customizzazioni": {
+    "tool": "default_api:query_records",
+    "parameters": {
+      "table": "sys_security_acl",
+      "query": "sys_customer_update=true",
+      "limit": 100,
+      "fields": "name,operation"
+    },
+    "description": "Verifica il numero e il tipo di ACL customizzate per valutare l'impatto sulla manutenzione e la sicurezza."
+  },
+  "3.5 CMDB: stato e governance": {
+    "tool": "default_api:query_records",
+    "parameters": {
+      "table": "cmdb_ci",
+      "query": "",
+      "limit": 1,
+      "fields": "sys_class_name"
+    },
+    "description": "Verifica il popolamento generale della CMDB. Può essere esteso interrogando cmdb_health_result per le metriche di salute."
+  },
+  "4.1 Service Portal": {
+    "tool": "default_api:query_records",
+    "parameters": {
+      "table": "sp_portal",
+      "query": "active=true",
+      "fields": "title,url_suffix"
+    },
+    "description": "Estrae i portali attivi per valutare l'interfaccia utente a disposizione dei dipendenti."
+  },
+  "6.1 Utenti / HR": {
+    "tool": "default_api:query_records",
+    "parameters": {
+      "table": "sys_user",
+      "query": "active=true^sourceISNOTEMPTY",
+      "limit": 10,
+      "fields": "sys_id,source"
+    },
+    "description": "Verifica se gli utenti sono sincronizzati da fonti esterne (es. Active Directory/LDAP) controllando il campo source."
+  }
+}

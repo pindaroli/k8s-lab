@@ -1,0 +1,13 @@
+- "OOB Management":
+    - OPNsense OOB:
+        - href: https://192.168.100.1
+          icon: opnsense.png
+    - TrueNAS OOB:
+        - href: https://192.168.100.50
+          icon: https://www.svgrepo.com/show/331613/truenas.svg
+    - PBS OOB:
+        - href: https://192.168.100.100:8007
+          icon: proxmox.png
+    - Extreme Switch OOB:
+        - href: http://192.168.100.2
+          icon: mdi-switch

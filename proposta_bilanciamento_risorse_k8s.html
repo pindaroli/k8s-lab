@@ -148,7 +148,7 @@
                     <td><strong>PVE2</strong> (<code>10.10.10.21</code>)</td>
                     <td>Ryzen 9 7945HX (16C/32T Zen 4)</td>
                     <td><strong>64 GB</strong></td>
-                    <td>VM 2300 (<code>talos-cp-02</code>) + VM 2500 (Gaming, 16GB)</td>
+                    <td>Solo VM 2300 (<code>talos-cp-02</code>)</td>
                     <td><strong>4 vCPU / 16 GB RAM</strong></td>
                     <td><span class="tag-free">~52 GB Liberi</span></td>
                 </tr>
@@ -179,7 +179,7 @@
             <p>Uniforma le dimensioni delle 3 VM per garantire resilienza identica in caso di failover:</p>
             <ul>
                 <li><strong><code>talos-cp-01</code> (PVE1)</strong>: <strong>8 vCPU</strong> / <strong>32 GB RAM</strong> <em>(consumo PVE1: 32 GB su 96 GB &rarr; 64 GB liberi)</em></li>
-                <li><strong><code>talos-cp-02</code> (PVE2)</strong>: <strong>8 vCPU</strong> / <strong>24 GB RAM</strong> <em>(consumo PVE2: 24 GB su 64 GB &rarr; rimangono 40 GB liberi per la VM Gaming)</em></li>
+                <li><strong><code>talos-cp-02</code> (PVE2)</strong>: <strong>8 vCPU</strong> / <strong>24 GB RAM</strong> <em>(consumo PVE2: 24 GB su 64 GB &rarr; 40 GB liberi)</em></li>
                 <li><strong><code>talos-cp-03</code> (PVE3)</strong>: <strong>8 vCPU</strong> / <strong>24 GB RAM</strong> <em>(consumo PVE3: 24 GB su 64 GB &rarr; 40 GB liberi)</em></li>
             </ul>
             <p><strong>Totale Cluster K8s</strong>: <strong>24 vCPU</strong> e <strong>80 GB RAM</strong> allocati all'intero cluster.</p>

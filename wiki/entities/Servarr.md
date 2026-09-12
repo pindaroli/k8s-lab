@@ -57,6 +57,7 @@ Lo stack Servarr è governato tramite il server MCP `arrstack-mcp` (in `scripts/
 - Namespace: `arr`
 - Dipendenze Database: `postgres-main` ([[Talos_Cluster]]).
 - Storage: [[TrueNAS]] (`oliraid/arrdata/media/music`).
+- Media Server: [[Jellyfin]] (LXC 2200 su PVE3 via `jellyfin-external-svc`).
 - Transcodifica: Inviata a [[Tdarr]].
 - Strategia Classica: [[classical-music-strategy]].
 - Orchestrazione Classica (Prefect): [[prefect-beets-adaptation]].

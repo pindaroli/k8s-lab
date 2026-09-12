@@ -49,17 +49,22 @@ Lo stack entra in funzione **esclusivamente quando il cluster Kubernetes (Talos)
 - I download completati finiscono sul pool di massa (`/mnt/oliraid/arrdata/media:/media`).
 - **Esito**: Quando il cluster K8s si riaccende, qBittorrent ritrova tutti i torrent attivi e lo stato di avanzamento al 100% allineato.
 
-### C. Jellyfin: SQLite su ZFS e Transcodifica Hardware AMD
-- Jellyfin utilizza il database SQLite nativo memorizzato in `/mnt/stripe/k8s-arr/servarr-jellyfin-config`.
-- Lo stato dei file visti e le impostazioni sono istantaneamente condivisi tra Docker Compose e Kubernetes.
-- Passthrough del device `/dev/dri:/dev/dri` per sfruttare la GPU integrata AMD Radeon Vega della CPU Ryzen 5 PRO 5650G di TrueNAS per la transcodifica video VAAPI.
+### C. Jellyfin 12.0: Database Unificato EF Core, Segregazione Storage e VA-API AMD Vega
+- **Jellyfin 12.0 Core**: Adotta il database relazionale unificato `jellyfin.db` gestito da Entity Framework Core sotto `data/` (`library.db` è formalmente dismesso).
+- **Segregazione Percorsi (Zero Rischi di Contesa)**: L'istanza Docker su TrueNAS opera esclusivamente su percorsi isolati usa-e-getta:
+  - `/mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas:/config`
+  - `/mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas:/config/data`
+- **Tuning Hardware Silicio AMD Vega**: La CPU Ryzen 5 PRO 5650G (Cezanne APU) integra grafica Radeon Vega 8 (VCN 2.2). Supporta decodifica/codifica H.264, HEVC 10-bit, VP9 e Tone Mapping HDR, ma **NON supporta AV1**. Il file `encoding.xml` viene generato specificamente con VA-API `/dev/dri/renderD128` e AV1 disabilitato.
+- **Risoluzione Blocco 403 Forbidden su Subnet L3**: Il file `network.xml` viene pre-configurato con `<EnableRemoteAccess>true</EnableRemoteAccess>` e `<LocalNetworkSubnets>10.10.0.0/16</LocalNetworkSubnets>`, abilitando la navigazione trasparente dai client su VLAN 20 verso TrueNAS (VLAN 10).
+- **Nessuna Retro-Copia al Rientro**: Le cartelle `-truenas` sono usa-e-getta. Al ripristino di Proxmox, Jellyfin su LXC 2200 esegue un Cold Start dal proprio disco locale NVMe (`rpool/data/jellyfin-db/`), preservando l'integrità assoluta dell'ambiente di produzione Intel QSV.
 
 ### D. Pattern Init Container in Docker Compose
 Per garantire l'avvio idempotente e sicuro senza dover eseguire comandi manuali da shell TrueNAS, lo stack integra un **Init Container** (`init-arr-bootstrap`):
-1. Esegue il probe pre-flight degli endpoint Traefik di Kubernetes (`prowlarr`, `qbittorrent`, `jellyfin`) e abortisce l'avvio se il cluster è ancora attivo.
+1. Esegue il probe pre-flight degli endpoint Traefik di Kubernetes (`prowlarr`, `qbittorrent`, `jellyfin`) e nodi PVE/LXC (`10.10.10.11`, `10.10.10.21`, `10.10.10.31`, `10.10.20.32`) e abortisce l'avvio se il cluster è ancora attivo.
 2. Crea automaticamente la sottocartella `/mnt/stripe/k8s-arr/servarr-prowlarr/sqlite` e ne pre-popola il file `config.xml` estraendo l'ApiKey dalla configurazione di produzione Kubernetes (evitando token casuali o race-condition al primo avvio) con permessi `1000:1000` (chmod 775).
 3. Applica la patch di sicurezza su `qBittorrent.conf` (whitelist subnet LAN `10.0.0.0/8`, `192.168.0.0/16` e bypass CSRF/HostHeader), replicando fedelmente l'initContainer K8s.
-4. Utilizza `restart: "no"` e la direttiva `depends_on: { init-arr-bootstrap: { condition: service_completed_successfully } }` su tutti i servizi principali.
+4. Prepara le directory segregate `/mnt/stripe/k8s-arr/servarr-jellyfin-*-truenas` assicurando ownership `1000:1000` e permessi `0775`.
+5. Utilizza `restart: "no"` e la direttiva `depends_on: { init-arr-bootstrap: { condition: service_completed_successfully } }` su tutti i servizi principali.
 
 ### E. Anti-Split-Brain Guardrail & Pre-Flight Probe Traefik
 Per scongiurare categoricamente corruzioni di dati o accessi concorrenti non coordinati sullo storage ZFS condiviso (`stripe` e `oliraid`), l'`init-arr-bootstrap` implementa una sonda pre-flight attiva:
@@ -80,18 +85,26 @@ Poiché su Kubernetes Prowlarr risiede su PostgreSQL (`postgres-main`), la sua i
   2. Per ciascun indexer del dump non presente, azzera l'`id` a `0`, sanitizza i tag non ancora censiti e invia una chiamata `POST /api/v1/indexer`.
   3. L'azione opera come container one-shot avviato in automatico dopo Prowlarr (`prowlarr-indexers-loader`), ma è anche invocabile on-demand in qualsiasi momento via CLI.
 
+### G. Dashboard Failover Centralizzata Homepage su TrueNAS (Porta 3000)
+- Durante il failover K8s, i container Homepage ordinari (`homepage` e `homepage-local` su Talos) sono spenti.
+- Viene integrata un'istanza dedicata di Homepage (`ghcr.io/gethomepage/homepage:v1.4.5`) esposta su `http://10.10.10.50:3000`.
+- **Configurazione Segregata**: Residente in `servarr/compose/homepage-config-truenas/` e sincronizzata su `/mnt/stripe/compose/arr/homepage-config-truenas/`.
+- **Perimetro di Monitoraggio Esclusivo**: Mostra esclusivamente gli endpoint fisici statici del lab (Switch Extreme `192.168.2.1`, switch 2.5G, AP, OPNsense `10.10.20.1`, PBS `10.10.10.100:8007`, host PVE) e i servizi attivi su TrueNAS (Jellyfin 12, qBittorrent, Prowlarr, TrueNAS UI). Tutte le entità K8s e i widget cluster sono esclusi.
+
 ---
 
 ## 3. Matrice Storage: ZFS Nativo su TrueNAS
 
 | Servizio | Path Fisico su TrueNAS | Mount Container | Pool ZFS | Note |
 | :--- | :--- | :--- | :--- | :--- |
+| **Homepage** | `./homepage-config-truenas` | `/app/config` | `stripe` (NVMe) | File YAML dashboard failover |
 | **qBittorrent** | `/mnt/stripe/k8s-arr/servarr-qbittorrent` | `/config` | `stripe` (NVMe) | Configurazione e `.fastresume` |
-| | `/mnt/stripe/qb_temp` | `/data/incomplete` | `stripe` (NVMe) | Temp download NVMe (ex `pvc-incomplete-dw`) |
+| | `/mnt/stripe/qb_temp` | `/data/incomplete` | `stripe` (NVMe) | Temp download NVMe |
 | | `/mnt/oliraid/arrdata/media` | `/media` | `oliraid` (HDD) | Mass storage libreria (`downloads/`, `movies/`, ecc.) |
-| **Jellyfin** | `/mnt/stripe/k8s-arr/servarr-jellyfin-config` | `/config` | `stripe` (NVMe) | DB SQLite Jellyfin e cache |
-| | `/mnt/oliraid/arrdata/media` | `/media` | `oliraid` (HDD) | Libreria multimediale |
-| | `/dev/dri` | `/dev/dri` | Host | Driver VAAPI AMD Radeon Vega |
+| **Jellyfin 12** | `/mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas` | `/config` | `stripe` (NVMe) | **Segregato usa-e-getta**: `encoding.xml` Vega, `network.xml` LAN |
+| | `/mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas` | `/config/data` | `stripe` (NVMe) | **Segregato usa-e-getta**: `jellyfin.db` SQLite unificato EF Core |
+| | `/mnt/oliraid/arrdata/media` | `/mnt/media` e `/media` | `oliraid` (HDD) | Doppia mappatura per parità assoluta path DB EF Core |
+| | `/dev/dri` | `/dev/dri` | Host | Driver VAAPI AMD Radeon Vega (`renderD128`) |
 | **Prowlarr** | `/mnt/stripe/k8s-arr/servarr-prowlarr/sqlite` | `/config` | `stripe` (NVMe) | **Subdirectory ad-hoc**: DB SQLite locale e config isolata |
 | | `/mnt/oliraid/arrdata/media` | `/media` | `oliraid` (HDD) | Cartella media condivisa |
 
@@ -101,6 +114,7 @@ Poiché su Kubernetes Prowlarr risiede su PostgreSQL (`postgres-main`), la sua i
 
 Durante il failover, Traefik e MetalLB sono inattivi. L'accesso avviene direttamente sull'IP del NAS o tramite il record DNS `truenas.pindaroli.org`:
 
+* **Homepage Failover Dashboard**: `http://10.10.10.50:3000`
 * **qBittorrent WebUI**: `http://10.10.10.50:8080`
 * **qBittorrent BitTorrent Port**: `30661` (TCP e UDP, allineata al port-forward OPNsense)
 * **Jellyfin WebUI / Smart TV App**: `http://10.10.10.50:8096`
@@ -128,17 +142,17 @@ services:
         K8S_ACTIVE=0
         ENDPOINTS="https://prowlarr-internal.pindaroli.org https://qbittorrent-internal.pindaroli.org https://jellyfin-internal.pindaroli.org"
 
-        for ep in $ENDPOINTS; do
-          echo "[INIT] Probing $ep ..."
-          OUTPUT=$(wget -S --spider --no-check-certificate -T 2 "$ep" 2>&1)
-          if echo "$OUTPUT" | grep -qE "HTTP/[0-9]"; then
-            echo "[ABORT] Endpoint Kubernetes $ep è ATTIVO e RISPONDE!"
-            echo "$OUTPUT" | grep "HTTP/" | head -n 1
+        for ep in $$ENDPOINTS; do
+          echo "[INIT] Probing $$ep ..."
+          OUTPUT=$$(wget -S --spider --no-check-certificate -T 2 "$$ep" 2>&1)
+          if echo "$$OUTPUT" | grep -qE "HTTP/[0-9]"; then
+            echo "[ABORT] Endpoint Kubernetes $$ep è ATTIVO e RISPONDE!"
+            echo "$$OUTPUT" | grep "HTTP/" | head -n 1
             K8S_ACTIVE=1
           fi
         done
 
-        if [ "$K8S_ACTIVE" -eq 1 ]; then
+        if [ "$$K8S_ACTIVE" -eq 1 ]; then
           echo "======================================================================"
           echo "[FATAL ERROR] Cluster Kubernetes o Traefik Ingress ancora ATTIVO!"
           echo "Lo stack Docker Compose NON può avviarsi per evitare split-brain e"
@@ -147,6 +161,19 @@ services:
           echo "======================================================================"
           exit 1
         fi
+        echo "[INIT] 0b. Guardrail di sicurezza: verifica stato nodi Proxmox e LXC Jellyfin..."
+        PVE_NODES="10.10.10.11 10.10.10.21 10.10.10.31 10.10.20.32"
+        for ip in $$PVE_NODES; do
+          echo "[INIT] Probing PVE/LXC $$ip ..."
+          if ping -c 1 -W 1 "$$ip" >/dev/null 2>&1; then
+            echo "======================================================================"
+            echo "[FATAL ERROR] L'host $$ip è ATTIVO e RISPONDE al ping!"
+            echo "Lo stack Failover NON può avviarsi se il cluster Proxmox o l'LXC sono attivi."
+            echo "Altrimenti corromperesti il DB SQLite di Jellyfin con doppie scritture su ZFS/NFS."
+            echo "======================================================================"
+            exit 1
+          fi
+        done
         echo "[INIT] Nessun endpoint Kubernetes attivo. Procedo con la preparazione dello storage..."
 
         echo "[INIT] 1. Preparazione sottocartella SQLite per Prowlarr e pre-seeding API Key..."
@@ -154,24 +181,12 @@ services:
         if [ ! -f "/mnt/prowlarr-root/sqlite/config.xml" ]; then
           APIKEY=""
           if [ -f "/mnt/prowlarr-root/config.xml" ]; then
-            APIKEY=$(sed -n 's/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p' /mnt/prowlarr-root/config.xml)
+            APIKEY=$$(sed -n 's/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p' /mnt/prowlarr-root/config.xml)
           fi
-          if [ -z "$APIKEY" ]; then
+          if [ -z "$$APIKEY" ]; then
             APIKEY="fad287a6fe814e1b885f1ba0a8f95179"
           fi
-          cat <<EOF > /mnt/prowlarr-root/sqlite/config.xml
-<Config>
-  <Port>9696</Port>
-  <UrlBase></UrlBase>
-  <BindAddress>*</BindAddress>
-  <ApiKey>${APIKEY}</ApiKey>
-  <AuthenticationMethod>None</AuthenticationMethod>
-  <LogLevel>info</LogLevel>
-  <Branch>master</Branch>
-  <LaunchBrowser>False</LaunchBrowser>
-  <UpdateMechanism>BuiltIn</UpdateMechanism>
-</Config>
-EOF
+          printf '<Config>\n  <Port>9696</Port>\n  <UrlBase></UrlBase>\n  <BindAddress>*</BindAddress>\n  <ApiKey>%s</ApiKey>\n  <AuthenticationMethod>None</AuthenticationMethod>\n  <LogLevel>info</LogLevel>\n  <Branch>master</Branch>\n  <LaunchBrowser>False</LaunchBrowser>\n  <UpdateMechanism>BuiltIn</UpdateMechanism>\n</Config>\n' "$$APIKEY" > /mnt/prowlarr-root/sqlite/config.xml
           echo "[INIT] sqlite/config.xml pre-popolato con successo (ApiKey allineata a Kubernetes)."
         fi
         chown -R 1000:1000 /mnt/prowlarr-root/sqlite
@@ -180,16 +195,22 @@ EOF
 
         echo "[INIT] 2. Patch di sicurezza qBittorrent per accesso LAN diretto..."
         CONF="/mnt/qbittorrent-config/qBittorrent/qBittorrent.conf"
-        if [ -f "$CONF" ]; then
-          sed -i '/WebUI\\CSRFProtection/d; /WebUI\\HostHeaderValidation/d; /WebUI\\AuthSubnetWhitelist/d' "$CONF"
-          sed -i '/\[Preferences\]/a WebUI\\AuthSubnetWhitelist=10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8\nWebUI\\AuthSubnetWhitelistEnabled=true\nWebUI\\CSRFProtection=false\nWebUI\\HostHeaderValidation=false' "$CONF"
-          chown 1000:1000 "$CONF"
+        if [ -f "$$CONF" ]; then
+          sed -i '/WebUI\\CSRFProtection/d; /WebUI\\HostHeaderValidation/d; /WebUI\\AuthSubnetWhitelist/d' "$$CONF"
+          sed -i '/\[Preferences\]/a WebUI\\AuthSubnetWhitelist=10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8\nWebUI\\AuthSubnetWhitelistEnabled=true\nWebUI\\CSRFProtection=false\nWebUI\\HostHeaderValidation=false' "$$CONF"
+          chown 1000:1000 "$$CONF"
           echo "[INIT] qBittorrent.conf patchato con successo."
         fi
+        echo "[INIT] 3. Preparazione directory Jellyfin TrueNAS Failover..."
+        mkdir -p /mnt/jellyfin-config /mnt/jellyfin-db
+        chown -R 1000:1000 /mnt/jellyfin-config /mnt/jellyfin-db
+        chmod -R 775 /mnt/jellyfin-config /mnt/jellyfin-db
         echo "[INIT] Bootstrap completato con successo."
     volumes:
       - /mnt/stripe/k8s-arr/servarr-prowlarr:/mnt/prowlarr-root
       - /mnt/stripe/k8s-arr/servarr-qbittorrent:/mnt/qbittorrent-config
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas:/mnt/jellyfin-config
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas:/mnt/jellyfin-db
 
   # ==========================================
   # QBITTORRENT
@@ -224,7 +245,7 @@ EOF
   # JELLYFIN
   # ==========================================
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:10.10.7
+    image: lscr.io/linuxserver/jellyfin:12.0ubu2604-ls48
     container_name: jellyfin
     restart: unless-stopped
     depends_on:
@@ -236,8 +257,13 @@ EOF
       - TZ=Europe/Rome
     devices:
       - /dev/dri:/dev/dri
+    group_add:
+      - "video"
+      - "render"
     volumes:
-      - /mnt/stripe/k8s-arr/servarr-jellyfin-config:/config
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas:/config
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas:/config/data
+      - /mnt/oliraid/arrdata/media:/mnt/media
       - /mnt/oliraid/arrdata/media:/media
     ports:
       - "8096:8096"
@@ -261,6 +287,7 @@ EOF
       - TZ=Europe/Rome
     volumes:
       - /mnt/stripe/k8s-arr/servarr-prowlarr/sqlite:/config
+      - /mnt/stripe/k8s-arr/servarr-prowlarr:/backup:ro
       - /mnt/oliraid/arrdata/media:/media
     ports:
       - "9696:9696"
@@ -286,6 +313,27 @@ EOF
       - CONFIG_XML=/config/config.xml
       - DUMP_FILE=/backup/indexerrs_dump.json
     command: ["python3", "/app/load_indexers.py"]
+    networks:
+      - arr_net
+
+  # ==========================================
+  # HOMEPAGE (Failover Dashboard)
+  # ==========================================
+  homepage:
+    image: ghcr.io/gethomepage/homepage:v1.4.5
+    container_name: homepage
+    restart: unless-stopped
+    depends_on:
+      init-arr-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+    volumes:
+      - ./homepage-config-truenas:/app/config
+    ports:
+      - "3000:3000"
     networks:
       - arr_net
 

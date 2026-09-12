@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Jellyfin 12.0 Clean Slate su Proxmox VE (RDNA 3.5 & NFS) [[jellyfin-12-clean-slate-rdna35]]
+- [x] Fase 1: Backup di sicurezza, arresto del servizio su LXC 2200 e snapshot ZFS atomici su pve3.
+- [x] Fase 2: Aggiornamento repository APT deb822 noble e installazione Jellyfin 12.0 + jellyfin-ffmpeg8.
+- [x] Fase 3: Primo avvio pulito e validazione transcodifica hardware AMD Radeon 890M (VA-API HEVC 10-bit / AV1).
+- [x] Fase 4: Configurazione wizard WebUI, generazione API Key e allineamento notifica Connect in Radarr.
+- [x] Fase 5: Verifica healthcheck su Homepage e routing Traefik Ingress.
+
 ## 🚀 [x] ✅ RISOLTO: Bonifica e Rotazione API Key OPNsense (Leakage Mitigation)
 - [x] Generare una nuova coppia di API Key su OPNsense per l'utente `root`.
 - [x] Sostituire le chiavi in `ansible/vars/opnsense_secrets.yml` e cifrare il file con Ansible Vault.
@@ -68,12 +75,13 @@
 - [x] Fase 4: Validazione test-driven end-to-end (upsc da PVE1/2/3 verso TrueNAS, verifica live 100% ok).
 
 
-## 🚀 [ ] Migrazione a Configurazione Solo TrueNAS (Failover & Disaster Recovery) [[truenas-only-migration-failover]]
+## ⏸️ [ ] IN SOSPESO (Da Rivedere): Migrazione a Configurazione Solo TrueNAS (Failover & Disaster Recovery) [[truenas-only-migration-failover]]
+- **Nota**: In sospeso per approfondimento architetturale su sincronizzazione bidirezionale Jellyfin (LXC Intel vs Docker AMD).
 - [x] Fase 0: Definizione architettura, gate di sbarramento, snapshot ZFS preventivo e mirror sync Jellyfin (`wiki/plans/truenas-only-migration-failover.md`).
 - [x] Fase 1: Creazione playbook Ansible orchestratore `ansible/playbooks/infrastructure/migrate_to_truenas_only.yml`.
 - [x] Fase 2: Creazione playbook Ansible di ripristino/switch-back `ansible/playbooks/infrastructure/restore_from_truenas_only.yml`.
 - [x] Fase 3: Sintassi check, linting e validazione Ansible (`--syntax-check` superato su entrambi i playbook).
-- [ ] Fase 4: Esecuzione di prova controllata su finestra programmata con validazione test-driven.
+- [ ] Fase 4: Esecuzione di prova controllata su finestra programmata con validazione test-driven (SOSPESA).
 
 ## 🚀 [ ] Automazione Rilevazione Dati SMART via Ansible [[ansible-smart-telemetry-integration]]
 - [ ] Fase 1: Sviluppo playbook `ansible/playbooks/monitoring/collect_smart_data.yml` con scansione dinamica dischi (`smartctl --scan-open`).

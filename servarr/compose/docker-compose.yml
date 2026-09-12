@@ -73,10 +73,16 @@ services:
           chown 1000:1000 "$$CONF"
           echo "[INIT] qBittorrent.conf patchato con successo."
         fi
+        echo "[INIT] 3. Preparazione directory Jellyfin TrueNAS Failover..."
+        mkdir -p /mnt/jellyfin-config /mnt/jellyfin-db
+        chown -R 1000:1000 /mnt/jellyfin-config /mnt/jellyfin-db
+        chmod -R 775 /mnt/jellyfin-config /mnt/jellyfin-db
         echo "[INIT] Bootstrap completato con successo."
     volumes:
       - /mnt/stripe/k8s-arr/servarr-prowlarr:/mnt/prowlarr-root
       - /mnt/stripe/k8s-arr/servarr-qbittorrent:/mnt/qbittorrent-config
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas:/mnt/jellyfin-config
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas:/mnt/jellyfin-db
 
   # ==========================================
   # QBITTORRENT
@@ -111,7 +117,7 @@ services:
   # JELLYFIN
   # ==========================================
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:10.10.7
+    image: lscr.io/linuxserver/jellyfin:12.0ubu2604-ls48
     container_name: jellyfin
     restart: unless-stopped
     depends_on:
@@ -123,11 +129,14 @@ services:
       - TZ=Europe/Rome
     devices:
       - /dev/dri:/dev/dri
+    group_add:
+      - "video"
+      - "render"
     volumes:
-      - /mnt/stripe/k8s-arr/servarr-jellyfin-config:/config
-      - /mnt/stripe/k8s-arr/servarr-jellyfin-db:/config/data
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas:/config
+      - /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas:/config/data
+      - /mnt/oliraid/arrdata/media:/mnt/media
       - /mnt/oliraid/arrdata/media:/media
-
     ports:
       - "8096:8096"
       - "7359:7359/udp"
@@ -176,6 +185,27 @@ services:
       - CONFIG_XML=/config/config.xml
       - DUMP_FILE=/backup/indexerrs_dump.json
     command: ["python3", "/app/load_indexers.py"]
+    networks:
+      - arr_net
+
+  # ==========================================
+  # HOMEPAGE (Failover Dashboard)
+  # ==========================================
+  homepage:
+    image: ghcr.io/gethomepage/homepage:v1.4.5
+    container_name: homepage
+    restart: unless-stopped
+    depends_on:
+      init-arr-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+    volumes:
+      - ./homepage-config-truenas:/app/config
+    ports:
+      - "3000:3000"
     networks:
       - arr_net
 

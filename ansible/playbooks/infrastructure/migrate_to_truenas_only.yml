@@ -4,10 +4,10 @@
 # ==============================================================================
 # Procedura dichiarativa e deterministica con gate bloccanti sequenziali:
 # FASE 1: Shutdown Graceful Kubernetes (Talos) e verifica gate
-# FASE 2: Arresto Graceful LXC Jellyfin (2200) & Mirror Sync (Copia Speculare) su TrueNAS
-# FASE 3: Snapshot ZFS Preventivo di Sicurezza su TrueNAS (Paracadute Rollback)
+# FASE 2: Arresto Graceful LXC Jellyfin 12 (2200) su PVE3 e Allineamento DB
+# FASE 3: Preparazione Storage Isolato Jellyfin 12 (-truenas) e Tuning AMD Vega / LAN
 # FASE 4: Shutdown Graceful Cluster Fisico Proxmox VE (pve3, pve2, pve1)
-# FASE 5: Sincronizzazione e Avvio Stack Docker Compose Failover su TrueNAS
+# FASE 5: Sincronizzazione Stack con Homepage Failover e Avvio Docker Compose su TrueNAS
 # ==============================================================================
 
 # ==============================================================================
@@ -138,34 +138,88 @@
         msg: "Database Jellyfin pronto su TrueNAS: {{ db_check.stdout }}"
 
 # ==============================================================================
-# FASE 3: SNAPSHOT ZFS PREVENTIVO DI SICUREZZA (PARACADUTE ROLLBACK)
+# FASE 3: PREPARAZIONE STORAGE ISOLATO JELLYFIN 12 E TUNING HARDWARE TRUENAS
 # ==============================================================================
-- name: "🛡️ FASE 3: Snapshot ZFS Preventivo di Sicurezza su TrueNAS"
+- name: "🛡️ FASE 3: Preparazione Storage Isolato Jellyfin 12 (-truenas) e Tuning AMD Vega / LAN"
   hosts: truenas
   gather_facts: no
   become: true
   tasks:
-    - name: "Genera timestamp univoco per lo snapshot"
-      command: date +%F_%H%M%S
-      register: snap_ts
+    - name: "🧹 Clean-Slate: rimozione preventiva directory temporanee Jellyfin Failover precedenti"
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas
+        - /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas
+
+    - name: "📋 Copia locale rapida da produzione a directory segregate TrueNAS"
+      command: "{{ item }}"
+      loop:
+        - "cp -a /mnt/stripe/k8s-arr/servarr-jellyfin-config /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas"
+        - "cp -a /mnt/stripe/k8s-arr/servarr-jellyfin-db /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas"
+
+    - name: "🎬 Adattamento encoding.xml per GPU AMD Radeon Vega (VA-API /dev/dri/renderD128, AV1 disabilitato)"
+      copy:
+        dest: /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas/encoding.xml
+        owner: "1000"
+        group: "1000"
+        mode: "0664"
+        content: |
+          <?xml version="1.0" encoding="utf-8"?>
+          <EncodingOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <HardwareAccelerationType>vaapi</HardwareAccelerationType>
+            <VaapiDevice>/dev/dri/renderD128</VaapiDevice>
+            <EnableDecodingColorDepth10Hevc>true</EnableDecodingColorDepth10Hevc>
+            <EnableDecodingColorDepth10Vp9>true</EnableDecodingColorDepth10Vp9>
+            <EnableDecodingColorDepth10Av1>false</EnableDecodingColorDepth10Av1>
+            <EnableEnhancedNvdecDecoder>false</EnableEnhancedNvdecDecoder>
+            <EnableTonemapping>true</EnableTonemapping>
+            <EnableVppTonemapping>false</EnableVppTonemapping>
+          </EncodingOptions>
+
+    - name: "🌐 Adattamento network.xml (Abilita Remote Access e Subnet LAN 10.10.0.0/16 anti-403)"
+      copy:
+        dest: /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas/network.xml
+        owner: "1000"
+        group: "1000"
+        mode: "0664"
+        content: |
+          <?xml version="1.0" encoding="utf-8"?>
+          <NetworkConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <InternalHttpPort>8096</InternalHttpPort>
+            <InternalHttpsPort>8920</InternalHttpsPort>
+            <PublicHttpPort>8096</PublicHttpPort>
+            <PublicHttpsPort>8920</PublicHttpsPort>
+            <EnableRemoteAccess>true</EnableRemoteAccess>
+            <LocalNetworkSubnets>
+              <string>10.10.0.0/16</string>
+            </LocalNetworkSubnets>
+          </NetworkConfiguration>
+
+    - name: "🔧 Normalizzazione permessi e proprietà (1000:1000 / 0775) sui percorsi isolati TrueNAS"
+      file:
+        path: "{{ item }}"
+        owner: "1000"
+        group: "1000"
+        mode: "0775"
+        recurse: yes
+      loop:
+        - /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas
+        - /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas
+
+    - name: "⏳ Gate 3: Verifica esistenza file di configurazione e database Jellyfin Failover"
+      command: >
+        test -f /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas/jellyfin.db &&
+        test -f /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas/encoding.xml &&
+        test -f /mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas/network.xml
+      register: jellyfin_failover_check
+      failed_when: jellyfin_failover_check.rc != 0
       changed_when: false
 
-    - name: "📸 Creazione Snapshot ZFS preventivo su stripe/k8s-arr"
-      command: "zfs snapshot stripe/k8s-arr@pre-failover-{{ snap_ts.stdout }}"
-      register: snap_res
-
-    - name: "⏳ Gate 3: Verifica esistenza dello snapshot preventivo su TrueNAS"
-      command: "zfs list -t snapshot -H -o name stripe/k8s-arr@pre-failover-{{ snap_ts.stdout }}"
-      register: snap_verify
-      failed_when: snap_verify.rc != 0
-
-    - name: "🔧 Assicura che i dataset ZFS di Jellyfin abbiano readonly=off"
-      command: zfs set readonly=off stripe/k8s-arr/servarr-jellyfin-db
-      ignore_errors: true
-
-    - name: "✅ Gate 3 Superato: Paracadute ZFS attivo"
+    - name: "✅ Gate 3 Superato: Storage segregato Jellyfin 12 pronto e adattato per AMD Vega"
       debug:
-        msg: "Snapshot ZFS di sicurezza registrato: {{ snap_verify.stdout }} (Rollback istantaneo disponibile in caso di imprevisti)."
+        msg: "Directory servarr-jellyfin-*-truenas pronte e isolate. Nessuna modifica verrà applicata allo storage di produzione."
 
 # ==============================================================================
 # FASE 4: SHUTDOWN ORDINATO NODI FISICI PROXMOX VE (pve3, pve2, pve1)
@@ -260,6 +314,14 @@
         - { src: "{{ repo_compose_local_path }}indexers_dump.json", dest: "indexers_dump.json" }
         - { src: "{{ repo_compose_local_path }}.env.example", dest: ".env" }
 
+    - name: "Sincronizza configurazione Homepage per TrueNAS Failover"
+      copy:
+        src: "{{ repo_compose_local_path }}homepage-config-truenas/"
+        dest: "{{ compose_dir }}/homepage-config-truenas/"
+        owner: "1000"
+        group: "1000"
+        mode: "0775"
+
     - name: "🚀 Avvio Stack Docker Compose (docker compose up -d)"
       command: docker compose up -d
       args:
@@ -297,6 +359,13 @@
         state: started
         timeout: 60
 
+    - name: "⏳ Gate 5.5: Attesa disponibilità Homepage Dashboard WebUI (Porta 3000)"
+      wait_for:
+        host: 10.10.10.50
+        port: 3000
+        state: started
+        timeout: 60
+
     - name: "Attesa completamento caricatore indexer (15 secondi)"
       pause:
         seconds: 15
@@ -315,11 +384,12 @@
           ============================================================
           - Kubernetes:    OFFLINE (Cordoned & Clean Checkpoint)
           - Proxmox (PVE): OFFLINE (pve1, pve2, pve3 spenti)
-          - Storage ZFS:   Snapshot di sicurezza registrato
+          - Storage ZFS:   Percorsi -truenas isolati (Produzione intatta)
           - Failover Apps: ONLINE su TrueNAS SCALE (10.10.10.50)
           ------------------------------------------------------------
+          🔗 Homepage Dashboard: http://10.10.10.50:3000 (Failover Dashboard LAN)
           🔗 qBittorrent WebUI:  http://10.10.10.50:8080 (Porta BT: 30661)
-          🔗 Jellyfin WebUI:     http://10.10.10.50:8096 (DB allineato)
+          🔗 Jellyfin WebUI:     http://10.10.10.50:8096 (AMD Vega VAAPI)
           🔗 Prowlarr WebUI:     http://10.10.10.50:9696 (SQLite)
           ============================================================
           Dettaglio Loader Indexer:

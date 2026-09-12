@@ -1,0 +1,70 @@
+- "Failover Services (TrueNAS)":
+    - Jellyfin:
+        href: http://10.10.10.50:8096
+        description: Media Server (Jellyfin 12 - TrueNAS Failover)
+        icon: jellyfin.png
+        siteMonitor: http://10.10.10.50:8096/health
+    - qBittorrent:
+        href: http://10.10.10.50:8080
+        description: BitTorrent Downloader (TrueNAS Failover)
+        icon: qbittorrent.png
+        siteMonitor: http://10.10.10.50:8080
+    - Prowlarr:
+        href: http://10.10.10.50:9696
+        description: Indexer Management (SQLite Failover)
+        icon: prowlarr.png
+        siteMonitor: http://10.10.10.50:9696/ping
+
+- "Infrastructure Hosts":
+    - TrueNAS:
+        href: https://10.10.10.50
+        description: TrueNAS SCALE Bare Metal (Storage Engine)
+        icon: https://www.svgrepo.com/show/331613/truenas.svg
+        siteMonitor: https://10.10.10.50
+    - PBS:
+        href: https://10.10.10.100:8007
+        description: Proxmox Backup Server (KVM VM su TrueNAS)
+        icon: proxmox.png
+        siteMonitor: https://10.10.10.100:8007
+    - Proxmox pve1:
+        href: https://10.10.10.11:8006
+        description: Proxmox VE Master (10.10.10.11)
+        icon: proxmox.png
+        siteMonitor: https://10.10.10.11:8006
+    - Proxmox pve2:
+        href: https://10.10.10.21:8006
+        description: Proxmox VE Node 2 (10.10.10.21)
+        icon: proxmox.png
+        siteMonitor: https://10.10.10.21:8006
+    - Proxmox pve3:
+        href: https://10.10.10.31:8006
+        description: Proxmox VE Node 3 (10.10.10.31)
+        icon: proxmox.png
+        siteMonitor: https://10.10.10.31:8006
+
+- "Network Infrastructure":
+    - OPNsense:
+        href: https://10.10.20.1
+        description: OPNsense Core Firewall & Router
+        icon: opnsense.png
+        siteMonitor: https://10.10.20.1
+    - Core Switch:
+        href: http://192.168.2.1
+        description: Extreme Networks X620-16x (10G Core Switch)
+        icon: mdi-switch
+        siteMonitor: http://192.168.2.1
+    - Switch Letto:
+        href: http://192.168.2.2
+        description: Switch 2.5G Bed Room
+        icon: mdi-switch
+        siteMonitor: http://192.168.2.2
+    - Switch Server:
+        href: http://192.168.2.3
+        description: Switch 2.5G Server Room
+        icon: mdi-switch
+        siteMonitor: http://192.168.2.3
+    - Access Point:
+        href: http://10.10.20.103
+        description: Cudy AP11000 Wi-Fi 7 Access Point
+        icon: mdi-wifi
+        siteMonitor: http://10.10.20.103

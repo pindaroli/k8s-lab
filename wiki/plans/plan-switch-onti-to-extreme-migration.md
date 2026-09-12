@@ -1,15 +1,16 @@
 ---
 title: Migrazione Switch L3 Core — ONTi 10G ➔ Extreme Networks X620-X10
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-08-06
+completed_at: 2026-08-06
 ---
 
 # Piano Operativo: Migrazione Switch ONTi 10G ➔ Extreme Networks X620-X10
 
 > [!IMPORTANT]
-> **Stato Operativo**: **CONFIGURAZIONE SU EXTREME EXOS COMPLETATA CON SUCCESSO ✅**
-> Lo switch Extreme Networks X620-X10 (`extreme`) è stato interamente configurato via SSH (`192.168.2.1`), verificato e salvato in memoria (`primary.cfg`).
+> **Stato Operativo**: **MIGRAZIONE SU EXTREME EXOS COMPLETATA CON SUCCESSO ✅**
+> Lo switch Extreme Networks X620-X10 (`extreme`) è stato interamente configurato via SSH (`192.168.2.1`), verificato, salvato in memoria (`primary.cfg`), collaudato ed è pienamente operativo come Core Switch L3 del laboratorio.
 
 ---
 
@@ -67,6 +68,6 @@ enable bootprelay ipv4 vlan server
 
 - [x] Configurazione L2/L3 applicata ed approvata via SSH.
 - [x] Validazione automatica del file `rete.json` ed adeguamento script (`common.py`, `test_internet.sh`, `test_dns.sh`, `test_network_configs.py`).
-- [ ] Swap fisico dei cavi DAC dallo switch ONTi allo switch Extreme.
-- [ ] Verifica del link 10G sui LED delle porte 1-8.
-- [ ] Test di ping dal Mac Studio verso i Gateway: `192.168.2.1`, `10.10.10.1`, `10.10.20.1`.
+- [x] Swap fisico dei cavi DAC dallo switch ONTi allo switch Extreme.
+- [x] Verifica del link 10G sui LED delle porte 1-8.
+- [x] Test di ping dal Mac Studio verso i Gateway: `192.168.2.1`, `10.10.10.1`, `10.10.20.1`.
