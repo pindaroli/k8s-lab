@@ -45,6 +45,8 @@
     - **General Programming / Syntax**: Standard Python, YAML, or bash syntax questions.
   - **Citation Protocol**: Whenever answering based on RAGFlow retrieval, the agent MUST explicitly cite the source document name, the target RAGFlow dataset (`opnsense`, `truenas`, or `k8s-lab`), and the specific section or page referenced.
 
+- **Limiti di Autonomia e Proposte (User Decision Sovereignty)**: L'AI può proporre soluzioni, opzioni o piani d'azione, ma NON DEVE MAI decidere autonomamente al posto dell'utente. Di fronte a domande conoscitive, di verifica o di debug (es. *"perché..."*, *"come mai..."*, *"e questi?"*), l'AI deve limitarsi a spiegare i fatti e descrivere oggettivamente lo stato del sistema. L'AI può proporre alternative o azioni correttive, ma è sempre e solo l'utente a decidere se, cosa e quando modificare o cancellare. È tassativamente vietato anticipare decisioni di eliminazione/modifica o sollecitare l'esecuzione prima che l'utente abbia espresso la propria scelta specifica.
+
 
 
 

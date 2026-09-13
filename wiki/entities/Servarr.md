@@ -53,13 +53,21 @@ Lo stack Servarr è governato tramite il server MCP `arrstack-mcp` (in `scripts/
 - **qBittorrent Security & Cookie Patch**: A seguito del breaking change introdotto da qBittorrent v5.2.x (rinomina cookie da `SID` a `QBT_SID_<PORT>`), qBittorrent adotta un `initContainer` dichiarativo in Helm (`qbt-config-security` in `servarr/arr-values.yaml`) e `arrstack-mcp` implementa il matching dinamico del cookie di sessione.
 - **Incidente Correlato**: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]].
 
+## 5. Radarr & Video Ingestion (Pattern Metadati)
+L'ingestion dei film e la gestione dei file multimediali su `/media/movies/` segue rigorosamente il pattern [[movie-metadata-and-artwork-architecture]]:
+- **Radarr**: opera con il profilo metadati `Kodi (XBMC) / Emby` configurato con `movieMetadata: false` (nessun NFO generato) e `movieImages: true` (locandine `poster.jpg` e `fanart.jpg` salvate localmente).
+- **FileBot Normalizer**: script [`normalize-video.sh`](file:///Users/olindo/prj/pindaroli-arr-helm/custom-docker-images/custom-normalizer/normalize-video.sh) (immagine `custom-normalizer:1.5.0`) provvisto di rimozione automatica dei file `.nfo` post-ingestion.
+- **Incidente Correlato**: [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
+
 ## Relazioni
 - Namespace: `arr`
 - Dipendenze Database: `postgres-main` ([[Talos_Cluster]]).
 - Storage: [[TrueNAS]] (`oliraid/arrdata/media/music`).
 - Media Server: [[Jellyfin]] (LXC 2200 su PVE3 via `jellyfin-external-svc`).
+- Pattern Metadati: [[movie-metadata-and-artwork-architecture]].
 - Transcodifica: Inviata a [[Tdarr]].
 - Strategia Classica: [[classical-music-strategy]].
 - Orchestrazione Classica (Prefect): [[prefect-beets-adaptation]].
 - Bonifica Modern: [[beets-music-rescue-pipeline]].
-- Incidenti: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]].
+- Incidenti: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]], [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
+

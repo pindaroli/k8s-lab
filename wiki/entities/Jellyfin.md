@@ -63,9 +63,10 @@ Per bilanciare prestazioni SQLite e scalabilità delle librerie multimediali, lo
 | `/var/lib/jellyfin/metadata/trickplay` | Symlink locale | TrueNAS Enterprise (`/mnt/media/jellyfin-trickplay`) | File `.bif` anteprime scrubbing indirizzati al dataset ZFS dedicato |
 | `/mnt/media` | NFSv4 (`mp0`) | TrueNAS Enterprise (`/mnt/oliraid/arrdata/media`) | Librerie multimediali pure (`movies`, `music`, ecc.) |
 
-### Standard Operativo Metadati & Trickplay
-- **Save artwork into media folders**: **DISABILITATO**. Tutte le copertine e le immagini devono essere archiviate centralmente sul pool NVMe TrueNAS (`mp2`) per evitare letture casuali lente sugli HDD rotanti e non sporcare le cartelle gestite da Radarr.
-- **Metadata Savers (NFO)**: **DISABILITATO**. I metadati risiedono esclusivamente nel database SQLite NVMe.
+### Standard Operativo Metadati & Artwork (Pattern: [[movie-metadata-and-artwork-architecture]])
+- **Architettura Metadati Ibrida**: Governa l'ingestion sinergica tra Radarr, FileBot e Jellyfin. Vedere pattern [[movie-metadata-and-artwork-architecture]].
+- **Metadata Savers (NFO)**: **DISABILITATO**. È categoricamente vietata la presenza di file `.nfo` sul filesystem. Jellyfin memorizza i metadati unicamente nel database SQLite locale (`jellyfin.db`) interrogando TMDb online via ID cartella/file. Questo risolve i conflitti documentati nell'incidente [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
+- **Artwork Locali**: Jellyfin legge prioritariamente le immagini locali (`folder.jpg`, `backdrop.jpg`, `logo.png`) depositate da Radarr o FileBot.
 - **Save trickplay images next to media**: **DISABILITATO**. I file `.bif` vengono instradati tramite symlink verso `/mnt/media/jellyfin-trickplay`, sfruttando il dataset dedicato ZFS con recordsize 1M e compressione zstd.
 
 ---

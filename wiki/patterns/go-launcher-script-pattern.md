@@ -11,6 +11,7 @@ tags:
 in_use_by:
   - "scripts/infrastructure/shutdown_k8s.sh"
   - "scripts/infrastructure/startup_k8s.sh"
+  - "scripts/servarr/audit_movie_duplicates.sh"
 ---
 
 # Pattern: Go Launcher Script Integration
