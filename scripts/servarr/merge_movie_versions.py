@@ -250,11 +250,9 @@ def plan_merges(base_dir):
             master_title = canonical_folder_entry["display_title"] or group[0]["display_title"]
 
             # Prefisso comune obbligatorio per Jellyfin multi-versioning:
-            # Film (Anno) [tmdbid-ID] - [Versione].ext
-            if master_tmdb:
-                base_prefix = f"{master_title} ({master_year}) [tmdbid-{master_tmdb}]"
-            else:
-                base_prefix = f"{master_title} ({master_year})"
+            # Per la regola ufficiale Jellyfin, il prefisso del file DEVE coincidere carattere per carattere
+            # con il nome esatto della cartella padre.
+            base_prefix = master_dir.name
 
             plan_items = []
             used_labels = set()
