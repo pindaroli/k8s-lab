@@ -519,6 +519,7 @@
 
 ### [ ] Security & Automation
 - [x] **Attivazione Licenza SongKong Premium (Normalizzatore Audio)**: [[songkong-normalizer-integration]] (Secret `songkong-license` montato nel namespace `arr`, notifiche Apprise e immagine 1.2.0 in produzione).
+- [x] **Disaccoppiamento Radarr / FileBot e Normalizzatore Video 1.3.0**: [[radarr-video-normalizer-decoupling]] (Rimozione trigger automatico Radarr, introduzione categoria `video-filebot`, fix runtime Java/licenza non-root e immagine `custom-normalizer:1.3.0`).
 - [ ] **Automazione Drain Talos su Hypervisor Shutdown**: Creare uno script/workflow automatico per effettuare il cordon e il drain del nodo Talos corrispondente prima dello spegnimento ordinato (o forzato da UPS/NUT) di un nodo hypervisor Proxmox (PVE1, PVE2, PVE3).
 - [x] **Integrazione Recyclarr (Anti-Spam)**: [[recyclarr-anti-spam-automation]]
     - [x] Sviluppo Helm-Native in `pindaroli-arr-helm` (**v1.2.3**).

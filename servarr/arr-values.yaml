@@ -58,6 +58,7 @@ qbittorrent:
     - readarr
     - autobrr-classical
     - lidarr-classical
+    - video-filebot
 
   triggerJob:
     enabled: true
@@ -66,7 +67,7 @@ qbittorrent:
     filters:
       autobrr-classical: "classical audio"
       lidarr-classical: "classical audio"
-      radarr: "movies video"
+      video-filebot: "movies video"
   initContainers:
     - name: qbt-config-security
       image: busybox:latest
