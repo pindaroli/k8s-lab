@@ -56,7 +56,7 @@ Lo stack Servarr è governato tramite il server MCP `arrstack-mcp` (in `scripts/
 ## 5. Radarr & Video Ingestion (Pattern Metadati)
 L'ingestion dei film e la gestione dei file multimediali su `/media/movies/` segue rigorosamente il pattern [[movie-metadata-and-artwork-architecture]]:
 - **Radarr**: opera con il profilo metadati `Kodi (XBMC) / Emby` configurato con `movieMetadata: false` (nessun NFO generato) e `movieImages: true` (locandine `poster.jpg` e `fanart.jpg` salvate localmente).
-- **FileBot Normalizer**: script [`normalize-video.sh`](file:///Users/olindo/prj/pindaroli-arr-helm/custom-docker-images/custom-normalizer/normalize-video.sh) (immagine `custom-normalizer:1.5.0`) provvisto di rimozione automatica dei file `.nfo` post-ingestion.
+- **FileBot Normalizer**: script [`normalize-video.sh`](file:///Users/olindo/prj/pindaroli-arr-helm/custom-docker-images/custom-normalizer/normalize-video.sh) (immagine `custom-normalizer:1.5.2`) provvisto di rimozione automatica dei file `.nfo` post-ingestion.
 - **Incidente Correlato**: [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
 
 ## Relazioni

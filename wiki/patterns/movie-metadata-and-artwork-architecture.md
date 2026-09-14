@@ -97,7 +97,7 @@ Per garantire un caricamento istantaneo dell'interfaccia di Jellyfin e la totale
 Jellyfin è l'unica autorità per la memorizzazione dei dati testuali:
 - L'associazione univoca avviene leggendo l'identificativo TheMovieDb incorporato direttamente nel nome della cartella o del file:
   - Formato Radarr: `Titolo (Anno) {tmdb-XXXXX}`
-  - Formato FileBot: `Titolo (Anno) [tmdbid-XXXXX]`
+  - Formato FileBot: `Titolo (Anno) {tmdb-XXXXX}` (con parentesi quadre `[...]` riservate esclusivamente a versione, codec e gruppo nel nome file)
 - Jellyfin interroga le API di TheMovieDb (TMDb) online e scrive trame, registi, attori, generi e voti nel proprio database SQLite interno (`jellyfin.db`), posizionato su storage NVMe locale del nodo PVE3 (`rpool/data/jellyfin-db`).
 
 ---
@@ -126,7 +126,7 @@ filebot -script fn:amc "$src" \
     -non-strict \
     --lang it \
     --def movieDB=TheMovieDB \
-    --def "movieFormat={n} ({y}) [tmdbid-{id}]/{n} ({y}) [tmdbid-{id}]{ ' [' + edition + ']' } - [{ any{source + ' '}{''} }{vf} {vc}]{ ' [' + group + ']' }" \
+    --def "movieFormat={n} ({y}) {'{tmdb-' + id + '}'}/{n} ({y}) {'{tmdb-' + id + '}'}{ ' [' + edition + ']' } - [{ any{source + ' '}{''} }{vf} {vc}]{ ' [' + group + ']' }" \
     --def artwork=y \
     --def ignore="subrip,sample,trickplay"
 
