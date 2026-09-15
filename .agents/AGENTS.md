@@ -47,6 +47,9 @@
 
 - **Limiti di Autonomia e Proposte (User Decision Sovereignty)**: L'AI può proporre soluzioni, opzioni o piani d'azione, ma NON DEVE MAI decidere autonomamente al posto dell'utente. Di fronte a domande conoscitive, di verifica o di debug (es. *"perché..."*, *"come mai..."*, *"e questi?"*), l'AI deve limitarsi a spiegare i fatti e descrivere oggettivamente lo stato del sistema. L'AI può proporre alternative o azioni correttive, ma è sempre e solo l'utente a decidere se, cosa e quando modificare o cancellare. È tassativamente vietato anticipare decisioni di eliminazione/modifica o sollecitare l'esecuzione prima che l'utente abbia espresso la propria scelta specifica.
 
+- **Video Ingestor Skill (`.agents/skills/video-ingestor/`)**: Ogni volta che l'utente scrive *"fai ingestion di <nome film>"*, *"ingestion di <nome film>"*, o richiede l'ingestion/normalizzazione di film scaricati in qBittorrent (categoria `video-filebot` o cartelle manuali) verso `/media/movies/`, l'agente DEVE obbligatoriamente attivare ed eseguire la skill dedicata `video-ingestor` (innesco atomico del Job Kubernetes FileBot AMC tramite `/scripts/trigger-job.sh`, monitoraggio dei log e verifica finale di hardlink e artwork).
+
+
 
 
 
