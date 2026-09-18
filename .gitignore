@@ -20,6 +20,13 @@ ansible/OPNsense.internal_root_apikey.txt
 
 # Local Environment & Secrets
 xray_secrets.yml
+.env
+.env.*
+!*.example
+*.psm
+*.properties
+homepage-config/
+homepage-configmap.yaml
 
 
 # Backups & Archives

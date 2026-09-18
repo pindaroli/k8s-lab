@@ -1,9 +1,9 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
 ## 🚀 [ ] Migrazione Definitiva Servarr: K8s -> Docker su TrueNAS [[servarr-truenas-permanent-migration]]
-- [ ] Fase 1: Creazione dataset e verifica ZFS Replication Tasks.
-- [ ] Fase 2: Configurazione Jellyfin (GPU Vega 8), qBittorrent, Prowlarr (SQLite) e Webhook Sidecar su TrueNAS Docker Compose.
-- [ ] Fase 3: Riconfigurazione K8s (Traefik IngressRoute per TrueNAS) e spegnimento vecchi Pod.
+- [x] Fase 1: Creazione dataset e verifica ZFS Replication Tasks.
+- [x] Fase 2: Configurazione Jellyfin (GPU Vega 8), qBittorrent, Prowlarr (SQLite) e Webhook Sidecar su TrueNAS Docker Compose.
+- [x] Fase 3: Riconfigurazione K8s (Traefik IngressRoute per TrueNAS) e spegnimento vecchi Pod.
 - [ ] Fase 4: Smantellamento vecchio LXC 2200 e pulizia codice/Ansible.
 
 ## 🚀 [x] ✅ COMPLETATO: Jellyfin 12.0 Clean Slate su Proxmox VE (RDNA 3.5 & NFS) [[jellyfin-12-clean-slate-rdna35]]

@@ -52,6 +52,7 @@ sonarr:
 
 
 qbittorrent:
+  enabled: false
   categories:
     - radarr
     - lidarr
@@ -197,6 +198,7 @@ flaresolverr:
 
 
 prowlarr:
+  enabled: false
   initContainers:
     - name: wait-for-db
       image: busybox:1.36.1

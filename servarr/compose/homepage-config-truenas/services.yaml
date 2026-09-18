@@ -44,10 +44,10 @@
 
 - "Network Infrastructure":
     - OPNsense:
-        href: https://10.10.20.1
+        href: https://192.168.100.1
         description: OPNsense Core Firewall & Router
         icon: opnsense.png
-        siteMonitor: https://10.10.20.1
+        siteMonitor: https://192.168.100.1
     - Core Switch:
         href: http://192.168.2.1
         description: Extreme Networks X620-16x (10G Core Switch)

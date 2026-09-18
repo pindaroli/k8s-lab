@@ -1,26 +1,37 @@
 ---
 # ==============================================================================
-# 🟢 PLAYBOOK DI RIENTRO DA CONFIGURAZIONE SOLO TRUENAS A KUBERNETES ORDINARIO
+# 🟢 PLAYBOOK DI RIENTRO DA REGIME MONONODO TRUENAS A CLUSTER KUBERNETES/PROXMOX
 # ==============================================================================
-# Procedura controllata di ripristino dell'ambiente ordinario:
-# FASE 1: Arresto Stack Docker Compose su TrueNAS
+# Procedura reversibile di ripristino dell'ambiente ordinario ad alta disponibilità:
+# FASE 1: Checkpoint DB SQLite e Arresto Stack Docker Compose su TrueNAS
 # FASE 2: Attesa accensione fisica nodi Proxmox VE (pve1, pve2, pve3)
-# FASE 3: Riavvio Cold Start Container Jellyfin 12 (LXC 2200) su PVE3
+# FASE 3: Retro-sincronizzazione atomica Jellyfin 12 DB e Avvio LXC 2200 su PVE3
 # FASE 4: Avvio VM Talos su Proxmox
 # FASE 5: Quorum K8s e Uncordon globale dei nodi
 # ==============================================================================
 
 # ==============================================================================
-# FASE 1: ARRESTO DELLO STACK DOCKER COMPOSE SU TRUENAS
+# FASE 1: CHECKPOINT DB E ARRESTO DELLO STACK DOCKER COMPOSE SU TRUENAS
 # ==============================================================================
-- name: "🛑 FASE 1: Arresto dello Stack Docker Compose su TrueNAS"
+- name: "🛑 FASE 1: Checkpoint WAL e Arresto Stack Docker Compose su TrueNAS"
   hosts: truenas
   gather_facts: no
   become: true
   vars:
     compose_dir: "/mnt/stripe/compose/arr"
+    jellyfin_db_file: "/mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas/jellyfin.db"
   tasks:
-    - name: "Arresto container Docker Compose (docker compose down)"
+    - name: "Arresto controllato container Jellyfin (per flush transazioni)"
+      command: docker compose stop jellyfin
+      args:
+        chdir: "{{ compose_dir }}"
+      ignore_errors: true
+
+    - name: "Checkpoint esplicito SQLite WAL su jellyfin.db (Consolida storico visioni e preferiti)"
+      command: sqlite3 {{ jellyfin_db_file }} "PRAGMA wal_checkpoint(TRUNCATE);"
+      ignore_errors: true
+
+    - name: "Arresto completo container Docker Compose (docker compose down)"
       command: docker compose down
       args:
         chdir: "{{ compose_dir }}"
@@ -30,9 +41,9 @@
       pause:
         seconds: 5
 
-    - name: "✅ Stack Failover Docker fermato con successo su TrueNAS"
+    - name: "✅ Stack Mononodo fermato con successo su TrueNAS"
       debug:
-        msg: "Container fermati. I volumi ZFS stripe e oliraid sono liberi e pronti per Kubernetes/LXC."
+        msg: "Container fermati e WAL consolidato. I volumi ZFS stripe e oliraid sono liberi e pronti per il rientro su Kubernetes/LXC."
 
 # ==============================================================================
 # FASE 2: ATTESA ACCENSIONE FISICA NODI PROXMOX VE
@@ -43,31 +54,36 @@
   vars:
     pve_nodes:
       - 10.10.10.11 # pve1
-      - 10.10.10.21 # pve2
+      - 10.10.20.21 # pve2
       - 10.10.10.31 # pve3
   tasks:
-    - name: "Attesa disponibilità SSH nodi Proxmox (Assicurarsi di averli accesi fisicamente)"
+    - name: "Attesa disponibilità SSH nodi Proxmox (Accesi manualmente, via WoL o smart plug)"
       wait_for:
         host: "{{ item }}"
         port: 22
         state: started
         timeout: 600
         msg: "In attesa che l'host Proxmox {{ item }} sia acceso e raggiungibile via SSH..."
-      loop: "{{ pve_nodes }}"
+      loop:
+        - 10.10.10.11
+        - 10.10.10.21
+        - 10.10.10.31
 
     - name: "✅ Tutti e tre i nodi Proxmox sono ONLINE e raggiungibili"
       debug:
-        msg: "Hypervisor pronti per il riavvio delle macchine virtuali Talos."
+        msg: "Hypervisor pronti per la retro-sincronizzazione e il riavvio delle macchine virtuali Talos."
 
 # ==============================================================================
-# FASE 3: RIAVVIO COLD START CONTAINER JELLYFIN 12 (LXC 2200) SU PVE3
+# FASE 3: RETRO-SINCRONIZZAZIONE ATOMICA JELLYFIN 12 DB E AVVIO LXC 2200 SU PVE3
 # ==============================================================================
-- name: "🎬 FASE 3: Riavvio Cold Start Jellyfin 12 (LXC 2200) su PVE3"
+- name: "🎬 FASE 3: Retro-sincronizzazione Jellyfin 12 DB e Avvio LXC (2200) su PVE3"
   hosts: localhost
   gather_facts: no
   vars:
     pve3_ip: "10.10.10.31"
     lxc_id: "2200"
+    nfs_db_source: "/mnt/pve/k8s-arr/servarr-jellyfin-db-truenas/jellyfin.db"
+    lxc_db_target: "/rpool/data/jellyfin-db/jellyfin.db"
   tasks:
     - name: "Verifica stato container LXC {{ lxc_id }} su PVE3"
       shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "pct status {{ lxc_id }}"
@@ -75,16 +91,29 @@
       ignore_errors: true
       changed_when: false
 
-    - name: "ℹ️ Nota architetturale: nessuna retro-copia da TrueNAS a PVE3"
-      debug:
-        msg: "Le modifiche effettuate su TrueNAS durante il failover restano isolate nei percorsi -truenas e vengono scartate. Jellyfin LXC riparte dal proprio storage NVMe locale incontaminato (/rpool/data/jellyfin-db/)."
+    - name: "🔄 Retro-copia atomica: sincronizzazione modifiche jellyfin.db da TrueNAS a PVE3"
+      shell: |
+        ssh -o BatchMode=yes root@{{ pve3_ip }} "rsync -av --no-owner --no-group {{ nfs_db_source }} {{ lxc_db_target }}"
+      register: rsync_back_res
 
-    - name: "🚀 Avvio container LXC {{ lxc_id }} Jellyfin 12 su PVE3 (se spento)"
+    - name: "🔧 Ripristino permessi POSIX UID shifting LXC su PVE3 (100105:100110)"
+      shell: |
+        ssh -o BatchMode=yes root@{{ pve3_ip }} "chown 100105:100110 {{ lxc_db_target }} && chmod 664 {{ lxc_db_target }}"
+      ignore_errors: true
+
+    - name: "🚀 Avvio container LXC {{ lxc_id }} Jellyfin 12 su PVE3"
       shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve3_ip }} "pct start {{ lxc_id }}"
       when:
         - lxc_status.rc == 0
         - "'status: stopped' in lxc_status.stdout"
       register: pct_start_res
+
+    - name: "Attesa disponibilità porta WebUI Jellyfin su PVE3 (10.10.20.32:8096)"
+      wait_for:
+        host: 10.10.20.32
+        port: 8096
+        state: started
+        timeout: 60
 
 # ==============================================================================
 # FASE 4: AVVIO VM TALOS SU PROXMOX

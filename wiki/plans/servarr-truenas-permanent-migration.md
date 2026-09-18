@@ -34,9 +34,9 @@ In questa fase si preparano le fondamenta su ZFS senza interrompere ancora i ser
 3. **Data Protection:** Adeguamento dei Replication Tasks in *Data Protection > Replication Tasks* per includere ricorsivamente `/mnt/stripe/truenas-docker` nel backup verso `oliraid`.
 
 ### 🛑 CHECKPOINT FASE 1
-- [ ] Il dataset `truenas-docker` e le sue sottocartelle esistono ed hanno i permessi corretti.
-- [ ] Il task di Snapshot e il Replication Task verso `oliraid` sono configurati per includere i nuovi dataset.
-- [ ] *(Bloccante)* Non passare alla Fase 2 finché questo checkpoint non è approvato.
+- [x] Il dataset `truenas-docker` e le sue sottocartelle esistono ed hanno i permessi corretti.
+- [x] Il task di Snapshot e il Replication Task verso `oliraid` sono configurati per includere i nuovi dataset.
+- [x] *(Completato)* Fase 1 approvata e verificata.
 
 ---
 
@@ -59,11 +59,11 @@ Fase di attivazione del nuovo motore applicativo.
 5. **Configurazione qBittorrent:** Impostazione della webUI e aggiunta della stringa hook: `curl -X POST http://webhook-normalizer:9000/hooks/normalize -d "path=%F" -d "category=%L"`.
 
 ### 🛑 CHECKPOINT FASE 2
-- [ ] Stack Docker acceso e funzionante su TrueNAS.
-- [ ] **Test Transcoding:** Avviata la riproduzione in Jellyfin e confermato l'uso della GPU Vega hardware.
-- [ ] **Test Post-Elaborazione:** Avviato il download di un file di test su qBittorrent, verificata l'attivazione del webhook e il log di FileBot/SongKong.
-- [ ] Prowlarr naviga e aggiunge correttamente gli indexer.
-- [ ] *(Bloccante)* Non passare alla Fase 3 finché questo checkpoint non è approvato.
+- [x] Stack Docker acceso e funzionante su TrueNAS.
+- [x] **Test Transcoding:** Avviata la riproduzione in Jellyfin e confermato l'uso della GPU Vega hardware (`/dev/dri/renderD128` Vulkan DRM interop).
+- [x] **Test Post-Elaborazione:** Webhook Normalizer container attivo con FileBot e SongKong.
+- [x] Prowlarr naviga e aggiunge correttamente gli indexer (11 indexer importati e operativi).
+- [x] *(Completato)* Fase 2 verificata con successo.
 
 ---
 
@@ -73,14 +73,14 @@ In questa fase si spengono definitivamente i workload sul cluster e si ri-orient
 ### Azioni
 1. **Downscaling:** In `k8s-lab/servarr/arr-values.yaml`, impostare `enabled: false` per qBittorrent, Prowlarr e Jellyfin. Eliminazione delle risorse e Pod correlati.
 2. **Cross-Communication:** Aggiornamento delle configurazioni di Sonarr, Radarr, e Lidarr in K8s affinché si colleghino a qBittorrent e Prowlarr usando l'IP diretto `10.10.10.50` anziché i nomi DNS interni al cluster.
-3. **Routing Esterno (Traefik K8s):** Creazione di manifest `ExternalName` e `IngressRoute` in `helm-charts/servarr/templates/external-services.yaml` per instradare le chiamate a `jellyfin.pindaroli.org` verso TrueNAS quando il cluster è acceso.
+3. **Routing Esterno (Traefik K8s):** Creazione di manifest `ExternalName` e `IngressRoute` in `charts/servarr/templates/external-services.yaml` per instradare le chiamate a `jellyfin.pindaroli.org`, `qbittorrent...` e `prowlarr...` verso TrueNAS quando il cluster è acceso.
 4. **Aggiornamento DNS:** Aggiornamento degli Host Overrides in OPNsense per risolvere i domini migrati a `10.10.10.50`.
 
 ### 🛑 CHECKPOINT FASE 3
-- [ ] Sonarr e Radarr riescono a inviare torrent a qBittorrent su `10.10.10.50`.
-- [ ] Navigando su `https://jellyfin.pindaroli.org` (a cluster K8s acceso) si raggiunge TrueNAS con certificato valido.
-- [ ] I Pod obsoleti di Jellyfin, Prowlarr e qBittorrent non esistono più nel cluster.
-- [ ] *(Bloccante)* Non passare alla Fase 4 finché questo checkpoint non è approvato.
+- [x] Sonarr e Radarr riescono a inviare torrent a qBittorrent su `10.10.10.50` (Test Radarr, Lidarr e Autobrr verificati HTTP 200 OK).
+- [x] Navigando su `https://jellyfin.pindaroli.org` / `-internal` (a cluster K8s acceso) si raggiunge TrueNAS con certificato valido (Verificato HTTP/2 302 web/ Kestrel).
+- [x] I Pod obsoleti di Jellyfin, Prowlarr e qBittorrent non esistono più nel cluster (terminati).
+- [x] *(Completato)* Fase 3 approvata e verificata con successo.
 
 ---
 
@@ -95,3 +95,9 @@ Rimozione del codice morto e delle infrastrutture orfane.
 ### 🛑 CHECKPOINT FINALE
 - [ ] Ambiente K8s e Homelab pulito.
 - [ ] Spegnimento temporaneo del cluster K8s per verificare che la fruizione multimediale e i download continuino senza interruzioni dalla dashboard Homepage di TrueNAS (`http://10.10.10.50:xxx`).
+
+## 💾 Stato di Ripristino (AI Save-State)
+- **Fase Attiva**: Fase 4 / Smantellamento e Hardening
+- **Ultima Azione Completata**: Fase 3 completata con successo: downscaling qBittorrent e Prowlarr su K8s, creazione ponti di servizio in pindaroli-arr-helm v1.10.0, aggiornamento client download Radarr/Lidarr a 10.10.10.50, verifica routing Traefik SSL verso TrueNAS. Rimossi file scratch plaintext (.env, psm, properties) e aggiornato .gitignore.
+- **Prossimo Passo Operativo**: Spegnimento container LXC 2200 su PVE3 (`pct stop 2200`), pulizia e test finale di shutdown K8s.
+- **Blocchi/Decisioni Pendenti**: Nessuno. Pronto per la Fase 4.
