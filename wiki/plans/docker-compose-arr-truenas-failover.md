@@ -1,30 +1,31 @@
 ---
-title: "Stack Docker Compose Failover su TrueNAS (qBittorrent, Jellyfin, Prowlarr)"
+title: "Stack Docker Compose Mononodo TrueNAS (Risparmio Energetico & Switch Reversibile)"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+superseded_by: [[servarr-truenas-permanent-migration]]
 created_at: 2026-09-10
 tags:
   - "#arr"
   - "#truenas"
-  - "#failover"
+  - "#dual-regime"
+  - "#energy-saving"
   - "#storage"
   - "#jellyfin"
   - "#qbittorrent"
   - "#prowlarr"
 ---
 
-# Piano: Stack Docker Compose Failover su TrueNAS (ZFS Nativo, SQLite & Init Container)
+# Piano: Stack Docker Compose Mononodo TrueNAS (ZFS Nativo, SQLite & Init Container)
 
 ## 1. Obiettivo e Scenario Operativo
-Questo piano definisce l'architettura e l'implementazione di uno stack **Docker Compose autonomo e auto-inizializzante su TrueNAS SCALE** contenente **qBittorrent**, **Jellyfin** e **Prowlarr**.
+Questo piano definisce l'architettura e l'implementazione dello stack **Docker Compose autonomo e auto-inizializzante su TrueNAS SCALE** contenente **Homepage**, **qBittorrent**, **Jellyfin 12** e **Prowlarr**.
 
-### Scenario d'uso: Disaster Recovery & Manutenzione Programmata
-Lo stack entra in funzione **esclusivamente quando il cluster Kubernetes (Talos) è SPENTO**:
-- Finestre di manutenzione hardware sui nodi Proxmox (`pve1`, `pve2`, `pve3`).
-- Aggiornamenti del sistema operativo Talos o Proxmox VE.
-- Situazioni di emergenza energetica o blackout prolungato (nodi Talos spenti per preservare l'autonomia dell'UPS, mantenendo attivo solo il NAS).
-- Manutenzioni del cluster database CloudNativePG `postgres-main`.
+### Scenario d'uso: Cambio Regime On-Demand per Risparmio Energetico (Green / Eco Mode)
+Lo stack entra in funzione **su richiesta esplicita dell'operatore quando i nodi fisici Proxmox (`pve1`, `pve2`, `pve3`) e il cluster Kubernetes (Talos) vengono spenti**:
+- **Risparmio Energetico Programmato**: Ridurre al minimo i consumi elettrici, la rumorosità e il carico termico del rack quando le funzionalità distribuite ad alta disponibilità del cluster K8s non sono strettamente necessarie (ore notturne, periodi di assenza, mesi caldi estivi, o semplice fruizione multimediale locale).
+- **Manutenzioni Hardware e OS Proxmox**: Interventi controllati sui nodi fisici Proxmox (upgrade kernel, sostituzione dischi, manutenzione hardware) preservando la disponibilità dello streaming Jellyfin e dei download qBittorrent.
+- **Continuità Operativa Reversibile**: Garantire la persistenza dei dati e consentire il rientro simmetrico verso il cluster K8s/Proxmox senza alcuna perdita di stato o dello storico visioni.
 
 ---
 

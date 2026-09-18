@@ -1,29 +1,35 @@
 ---
-title: "Piano: Migrazione a Configurazione Solo TrueNAS (Failover & Disaster Recovery)"
+title: "Piano: Cambio Regime di Funzionamento On-Demand (Cluster Proxmox/K8s ↔ Mononodo TrueNAS)"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+superseded_by: [[servarr-truenas-permanent-migration]]
 created_at: 2026-09-11
 tags:
   - "#ansible"
-  - "#failover"
   - "#truenas"
   - "#proxmox"
   - "#talos"
   - "#jellyfin"
-  - "#disaster-recovery"
+  - "#dual-regime"
+  - "#energy-saving"
+  - "#green-ops"
   - "#storage"
 ---
 
-# Piano: Migrazione a Configurazione Solo TrueNAS (Failover & Disaster Recovery)
+# Piano: Cambio Regime di Funzionamento On-Demand (Cluster Proxmox/K8s ↔ Mononodo TrueNAS)
 
 ## 1. Obiettivo e Scenario Operativo
-Questo piano definisce l'architettura, la sequenza temporale e l'implementazione del playbook Ansible unificato (`ansible/playbooks/infrastructure/migrate_to_truenas_only.yml`) e di rientro (`ansible/playbooks/infrastructure/restore_from_truenas_only.yml`) per eseguire la transizione controllata dell'infrastruttura Homelab da configurazione standard (Kubernetes su hypervisor Proxmox) a **configurazione "Solo TrueNAS"** (Docker Compose Failover con Homepage, qBittorrent, Jellyfin 12 e Prowlarr).
 
-### Scenari d'Uso
-1. **Manutenzioni Hardware e OS Proxmox**: Interventi sui nodi fisici `pve1`, `pve2`, `pve3` (upgrade del kernel, sostituzione componenti, test di rete) mantenendo i servizi multimediali attivi.
-2. **Risparmio Energetico / Emergenza UPS**: Blackout prolungato o necessità di ridurre drasticamente il consumo elettrico del rack, spegnendo i 3 server Proxmox e lasciando acceso esclusivamente TrueNAS Bare Metal.
-3. **Manutenzione del Database o Rete K8s**: Riconfigurazioni del cluster PostgreSQL CNPG o delle policy di rete del cluster Talos.
+Questo piano definisce l'architettura a **regime duale (Dual-Regime Architecture)** e l'orchestrazione automatizzata Ansible (`ansible/playbooks/infrastructure/migrate_to_truenas_only.yml` per lo spegnimento e `ansible/playbooks/infrastructure/restore_from_truenas_only.yml` per il rientro) per eseguire un **cambio di regime di funzionamento controllato, reversibile e su intervento dell'operatore**:
+
+- **NON è uno switch definitivo**: il cluster Kubernetes su Proxmox VE rimane l'infrastruttura primaria ad alta disponibilità del laboratorio.
+- **NON è una procedura di Disaster Recovery (DR)**: non interviene a seguito di guasti o incidenti, ma opera su nodi sani per decisione gestionale dell'operatore.
+- **È un Cambio di Regime Reversibile On-Demand per Risparmio Energetico**:
+  - **Scopo Primario — Risparmio Energetico (Green / Eco Mode)**: Ridurre drasticamente il consumo elettrico, la rumorosità e la dissipazione termica del rack **quando le piene funzionalità del cluster Kubernetes (ridondanza, quorum etcd, database distribuiti, microservizi ausiliari) e degli hypervisor Proxmox non sono strettamente necessarie** (ad esempio durante le ore notturne, periodi di assenza da casa, mesi estivi caldi o normale fruizione multimediale che richiede solo storage e riproduzione).
+  - **Accensione e Spegnimento dei 3 Nodi Proxmox a Richiesta**:
+    - **Regime Mononodo TrueNAS (Low-Power Mode)**: I 3 nodi fisici Proxmox (`pve1`, `pve2`, `pve3`) vengono spenti in modo pulito e coordinato. TrueNAS SCALE Bare Metal (`10.10.10.50`) rimane l'unico server di calcolo attivo nel rack, erogando lo stack essenziale: Homepage (porta `3000`), qBittorrent (`8080`), Jellyfin 12 (`8096` con GPU AMD Vega) e Prowlarr (`9696` con SQLite).
+    - **Regime Cluster Ordinario (High-Availability Mode)**: Quando l'operatore necessita nuovamente dell'intera flotta di servizi o della piena potenza di calcolo, riaccende i 3 nodi Proxmox. Il rientro è completamente simmetrico e automatico, ripristinando il cluster Kubernetes e l'LXC Jellyfin **senza alcuna perdita di dati o dello storico visioni generato durante il periodo su TrueNAS**.
 
 ---
 
@@ -193,23 +199,34 @@ flowchart TD
 
 ---
 
-## 5. Procedura Simmetrica di Rientro su Kubernetes (Switch-Back)
+## 5. Procedura Simmetrica di Rientro su Kubernetes (Switch-Back Reversibile)
 
-Quando la finestra di manutenzione o l'emergenza energetica termina, il rientro alla configurazione ordinaria avviene in totale sicurezza:
-1. **Arresto dello Stack Docker su TrueNAS**:
-   ```bash
-   cd /mnt/stripe/compose/arr && docker compose down
-   ```
-2. **Nessuna Retro-Copia Jellyfin (Cold Start LXC)**:
-   Le cartelle `servarr-jellyfin-*-truenas` sono usa-e-getta e vengono abbandonate (verranno sovrascritte al successivo failover). Nessuna retro-copia viene eseguita verso `pve3`.
-3. **Accensione Fisica Nodi Proxmox**:
-   Accensione manuale/PDU dei server fisici `pve1`, `pve2`, `pve3`.
-4. **Riavvio Cold Start Jellyfin 12 (LXC 2200)**:
-   Il playbook [`restore_from_truenas_only.yml`](file:///Users/olindo/prj/k8s-lab/ansible/playbooks/infrastructure/restore_from_truenas_only.yml) avvia semplicemente il container LXC (`pct start 2200`), che riparte dal proprio storage locale NVMe incontaminato (`/rpool/data/jellyfin-db/`) con GPU Intel QSV intatta.
+Quando l'operatore decide di terminare il periodo a basso consumo e ripristinare il **Regime Cluster Ordinario**, il rientro avviene in modo controllato preservando tutti i dati generati:
+
+1. **Arresto dello Stack Docker su TrueNAS e Consolidamento Transazioni**:
+   - Stop del container Jellyfin su TrueNAS.
+   - Checkpoint forzato del database SQLite per riversare le pagine WAL nel file principale:
+     ```bash
+     sqlite3 /mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas/jellyfin.db "PRAGMA wal_checkpoint(TRUNCATE);"
+     ```
+   - Chiusura completa dello stack: `cd /mnt/stripe/compose/arr && docker compose down`.
+2. **Accensione dei Nodi Proxmox VE**:
+   - Accensione manuale (pulsante fisico) o da remoto (Wake-on-LAN / Smart PDU) dei server `pve1`, `pve2`, `pve3`.
+   - Il playbook `restore_from_truenas_only.yml` attende la disponibilità della porta SSH 22 su tutti e tre i nodi.
+3. **Retro-Sincronizzazione Atomica Jellyfin 12 (TrueNAS → PVE3)**:
+   - Copia selettiva del solo `jellyfin.db` consolidato da TrueNAS NFS verso il filesystem NVMe locale di `pve3`:
+     ```bash
+     rsync -av --no-owner --no-group /mnt/pve/k8s-arr/servarr-jellyfin-db-truenas/jellyfin.db /rpool/data/jellyfin-db/jellyfin.db
+     ```
+   - **Isolamento Hardware Preservato**: `encoding.xml` (tarato su AMD Radeon 890M RDNA 3.5 con AV1) e `network.xml` su `pve3` rimangono intatti e non vengono sovrascritti.
+   - Normalizzazione dei permessi POSIX per l'utente `jellyfin` all'interno del container LXC (`pct exec 2200 -- chown -R jellyfin:jellyfin /var/lib/jellyfin/data`).
+4. **Avvio Container Jellyfin 12 (LXC 2200)**:
+   - Avvio del container su `pve3`: `pct start 2200`.
+   - Jellyfin riparte con tutti i nuovi progressi di visione, segnalibri e preferiti registrati durante la modalità TrueNAS.
 5. **Avvio VM Talos & Quorum K8s**:
-   - Avvio VM Talos `1300`, `2300`, `3200` su Proxmox.
-   - Attesa quorum etcd (porta 6443 su VIP `10.10.20.55`).
-   - Uncordon globale dei 3 nodi Talos.
+   - Avvio coordinato delle VM Talos `1300`, `2300`, `3200` su Proxmox.
+   - Attesa quorum etcd e raggiungibilità API Server K8s (porta 6443 su VIP `10.10.20.55`).
+   - Uncordon globale dei 3 nodi Talos per riattivare lo scheduling dei pod.
 
 ---
 
@@ -221,7 +238,7 @@ Quando la finestra di manutenzione o l'emergenza energetica termina, il rientro 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Completata e Validata
-- **Ultima Azione Completata**: Implementazione playbook Ansible `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`, packaging configurazione `servarr/compose/homepage-config-truenas/`, adattamento Jellyfin 12 AMD Vega e sincronizzazione documentazione Wiki.
-- **Prossimo Passo Operativo**: Esecuzione on-demand dei playbook Ansible in occasione di finestre di manutenzione PVE o blackout programmato.
-- **Blocchi/Decisioni Pendenti**: Nessuno. Piano attivo e operativo.
+- **Fase Attiva**: Riformulazione Completata (Pronto al Collaudo Controllato)
+- **Ultima Azione Completata**: Formalizzato lo scopo primario di risparmio energetico on-demand (Green / Eco Mode), integrata la sincronizzazione bidirezionale di Jellyfin 12.0 nel piano e allineata l'architettura a regime duale reversibile.
+- **Prossimo Passo Operativo**: Allineamento del playbook Ansible `restore_from_truenas_only.yml` con il task di checkpoint e retro-copia atomica di `jellyfin.db`.
+- **Blocchi/Decisioni Pendenti**: Nessuno. Piano attivo e approvato dall'operatore.

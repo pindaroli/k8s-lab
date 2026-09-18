@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [ ] Migrazione Definitiva Servarr: K8s -> Docker su TrueNAS [[servarr-truenas-permanent-migration]]
+- [ ] Fase 1: Creazione dataset e verifica ZFS Replication Tasks.
+- [ ] Fase 2: Configurazione Jellyfin (GPU Vega 8), qBittorrent, Prowlarr (SQLite) e Webhook Sidecar su TrueNAS Docker Compose.
+- [ ] Fase 3: Riconfigurazione K8s (Traefik IngressRoute per TrueNAS) e spegnimento vecchi Pod.
+- [ ] Fase 4: Smantellamento vecchio LXC 2200 e pulizia codice/Ansible.
+
 ## 🚀 [x] ✅ COMPLETATO: Jellyfin 12.0 Clean Slate su Proxmox VE (RDNA 3.5 & NFS) [[jellyfin-12-clean-slate-rdna35]]
 - [x] Fase 1: Backup di sicurezza, arresto del servizio su LXC 2200 e snapshot ZFS atomici su pve3.
 - [x] Fase 2: Aggiornamento repository APT deb822 noble e installazione Jellyfin 12.0 + jellyfin-ffmpeg8.
@@ -75,13 +81,6 @@
 - [x] Fase 4: Validazione test-driven end-to-end (upsc da PVE1/2/3 verso TrueNAS, verifica live 100% ok).
 
 
-## ⏸️ [ ] IN SOSPESO (Da Rivedere): Migrazione a Configurazione Solo TrueNAS (Failover & Disaster Recovery) [[truenas-only-migration-failover]]
-- **Nota**: In sospeso per approfondimento architetturale su sincronizzazione bidirezionale Jellyfin (LXC Intel vs Docker AMD).
-- [x] Fase 0: Definizione architettura, gate di sbarramento, snapshot ZFS preventivo e mirror sync Jellyfin (`wiki/plans/truenas-only-migration-failover.md`).
-- [x] Fase 1: Creazione playbook Ansible orchestratore `ansible/playbooks/infrastructure/migrate_to_truenas_only.yml`.
-- [x] Fase 2: Creazione playbook Ansible di ripristino/switch-back `ansible/playbooks/infrastructure/restore_from_truenas_only.yml`.
-- [x] Fase 3: Sintassi check, linting e validazione Ansible (`--syntax-check` superato su entrambi i playbook).
-- [ ] Fase 4: Esecuzione di prova controllata su finestra programmata con validazione test-driven (SOSPESA).
 
 ## 🚀 [ ] Automazione Rilevazione Dati SMART via Ansible [[ansible-smart-telemetry-integration]]
 - [ ] Fase 1: Sviluppo playbook `ansible/playbooks/monitoring/collect_smart_data.yml` con scansione dinamica dischi (`smartctl --scan-open`).
