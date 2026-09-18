@@ -98,6 +98,6 @@ Rimozione del codice morto e delle infrastrutture orfane.
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: Fase 4 / Smantellamento e Hardening
-- **Ultima Azione Completata**: Risolti EndpointSlices orfani su K8s (INC-2026-09-19) e riallineati i volumi in `docker-compose.yaml` su TrueNAS (`/mnt/oliraid/arrdata/media:/media` e `/mnt/oliraid/arrdata/media/downloads:/data/downloads`), aggiornato hook AutoRun a `webhook-normalizer:9000`. Tutti gli 848 torrent verificati con successo (usciti da `missingFiles`).
+- **Ultima Azione Completata**: Risolti EndpointSlices orfani su K8s (INC-2026-09-19) e volumi su TrueNAS. Esposta porta 30661 TCP/UDP su TrueNAS docker-compose.yaml e riallineata regola Destination NAT su OPNsense verso 10.10.10.50 (stato qBittorrent ripristinato a 'connected' con upload attivo).
 - **Prossimo Passo Operativo**: Spegnimento container LXC 2200 su PVE3 (`pct stop 2200`), pulizia e test finale di shutdown K8s.
 - **Blocchi/Decisioni Pendenti**: Nessuno. Pronto per la Fase 4.

@@ -56,7 +56,7 @@
             source_port: ""
             destination_net: "any"
             destination_port: "30661"
-            target: "10.10.20.60"
+            target: "10.10.10.50"
             local-port: "30661"
             pass: "rule"
             associated-rule-id: ""
