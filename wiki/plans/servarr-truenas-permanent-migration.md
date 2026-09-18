@@ -98,6 +98,6 @@ Rimozione del codice morto e delle infrastrutture orfane.
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: Fase 4 / Smantellamento e Hardening
-- **Ultima Azione Completata**: Fase 3 completata con successo: downscaling qBittorrent e Prowlarr su K8s, creazione ponti di servizio in pindaroli-arr-helm v1.10.0, aggiornamento client download Radarr/Lidarr a 10.10.10.50, verifica routing Traefik SSL verso TrueNAS. Rimossi file scratch plaintext (.env, psm, properties) e aggiornato .gitignore.
+- **Ultima Azione Completata**: Risolti EndpointSlices orfani su K8s (INC-2026-09-19) e riallineati i volumi in `docker-compose.yaml` su TrueNAS (`/mnt/oliraid/arrdata/media:/media` e `/mnt/oliraid/arrdata/media/downloads:/data/downloads`), aggiornato hook AutoRun a `webhook-normalizer:9000`. Tutti gli 848 torrent verificati con successo (usciti da `missingFiles`).
 - **Prossimo Passo Operativo**: Spegnimento container LXC 2200 su PVE3 (`pct stop 2200`), pulizia e test finale di shutdown K8s.
 - **Blocchi/Decisioni Pendenti**: Nessuno. Pronto per la Fase 4.
