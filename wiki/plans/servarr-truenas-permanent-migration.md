@@ -88,16 +88,18 @@ In questa fase si spengono definitivamente i workload sul cluster e si ri-orient
 Rimozione del codice morto e delle infrastrutture orfane.
 
 ### Azioni
-1. [x] **Distruzione LXC:** Spegnimento definitivo, rimozione (`pct destroy 2200 --purge`) e distruzione del dataset associato `rpool/data/jellyfin-db` su PVE3.
-2. [ ] **Pulizia Git:** Rimozione dello script K8s Job (`trigger-job.sh`) dal repository Helm.
-3. [x] **Pulizia Ansible:** Creazione del playbook depurato `ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml` e rimozione di `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`.
+1. [x] **Distruzione LXC:** Spegnimento definitivo, rimozione (`pct destroy 2200 --purge`) e distruzione del dataset associato `rpool/data/jellyfin-db` su PVE3 (recuperati 5 GB NVMe).
+2. [x] **Decisione Architetturale Script Git:** Mantenimento quiescente dello script K8s Job (`trigger-job.sh`) e relativo template nel repository Helm `pindaroli-arr-helm` per garantire totale reversibilità futura (nessun impatto o consumo di risorse con `qbittorrent.enabled: false`).
+3. [x] **Pulizia e Ottimizzazione Ansible:** Creazione del playbook depurato `ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml` e rimozione dei vecchi script di failover `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`.
 
 ### 🛑 CHECKPOINT FINALE
-- [ ] Ambiente K8s e Homelab pulito.
+- [x] Ambiente K8s, PVE e Homelab pulito.
 - [ ] Spegnimento temporaneo del cluster K8s per verificare che la fruizione multimediale e i download continuino senza interruzioni dalla dashboard Homepage di TrueNAS (`http://10.10.10.50:3000`).
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 4 / Smantellamento e Hardening
-- **Ultima Azione Completata**: Distrutto LXC 2200 ed eliminato dataset `rpool/data/jellyfin-db` su PVE3. Creato e validato playbook `shutdown_to_truenas_only.yml`, rimossi vecchi playbook di failover `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`.
-- **Prossimo Passo Operativo**: Pulizia di `trigger-job.sh` in `pindaroli-arr-helm` (o test del playbook di shutdown per validazione standalone).
-- **Blocchi/Decisioni Pendenti**: Nessuno. Pronto per la conclusione della Fase 4.
+- **Fase Attiva**: Fase 4 / Smantellamento e Hardening (Checkpoint Finale)
+- **Ultima Azione Completata**: Distrutto LXC 2200 ed eliminato dataset `rpool/data/jellyfin-db` su PVE3. Creato e validato sintatticamente il playbook depurato `shutdown_to_truenas_only.yml`, rimossi i vecchi playbook `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`. Confermato mantenimento quiescente di `trigger-job.sh` in Helm per reversibilità.
+- **Prossimo Passo Operativo**: Esecuzione del test di spegnimento on-demand K8s/PVE con il comando:
+  `ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml`
+  e verifica della completa indipendenza dei carichi multimediali da Homepage su TrueNAS (`http://10.10.10.50:3000`).
+- **Blocchi/Decisioni Pendenti**: Nessuno. Stato consolidato e pronto per la ripresa del Checkpoint Finale.
