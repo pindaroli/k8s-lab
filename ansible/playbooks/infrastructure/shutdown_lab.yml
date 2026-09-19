@@ -93,9 +93,8 @@
     # -------------------------------------------------------------
     # PHASE 2: DEPENDENT SERVICES (Jellyfin, PBS)
     # -------------------------------------------------------------
-    - name: "Phase 2: Shutdown Dependent VMs (Jellyfin, PBS)"
+    - name: "Phase 2: Shutdown Dependent VMs (PBS)"
       shell: |
-        ssh -o ConnectTimeout=3 root@10.10.10.21 "pct shutdown 2200 --forceStop 0" || true
         ssh -o ConnectTimeout=3 root@10.10.10.11 "pct shutdown 1400 --forceStop 0" || true
       ignore_errors: true
 

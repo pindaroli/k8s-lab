@@ -166,11 +166,6 @@
           done
           {% endif %}
 
-          {% if inventory_hostname == '10.10.10.21' %}
-          echo "[$(date)] Spegnimento carichi ausiliari LXC..."
-          pct shutdown 2200 || true
-          {% endif %}
-
           echo "[$(date)] Spegnimento del nodo host {{ inventory_hostname }}..."
           poweroff
         dest: /etc/nut/shutdown_sequence.sh

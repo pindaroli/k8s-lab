@@ -23,7 +23,7 @@ import urllib.error
 from pathlib import Path
 
 MEDIA_DIR = os.environ.get("MEDIA_DIR", "/mnt/oliraid/arrdata/media/movies")
-JELLYFIN_URL = os.environ.get("JELLYFIN_URL", "http://10.10.20.32:8096")
+JELLYFIN_URL = os.environ.get("JELLYFIN_URL", "http://10.10.10.50:8096")
 JELLYFIN_TOKEN = os.environ.get("JELLYFIN_TOKEN", "7c80240c7a9b4326a8690ce140265a14")
 
 VIDEO_EXTS = {".mkv", ".mp4", ".avi", ".ts", ".m4v", ".m2ts"}
