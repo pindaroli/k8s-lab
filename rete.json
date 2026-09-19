@@ -892,18 +892,6 @@
       "host_node_sticky": true
     },
     {
-      "id": "jellyfin-srv",
-      "label": "Jellyfin Media Server",
-      "type": "LXC",
-      "vm_id": "2200",
-      "host_node": "pve3",
-      "ip": "10.10.20.32",
-      "role": "Media Server",
-      "os": "Debian",
-      "network": "VLAN 20 (vmbr20)",
-      "notes": "Consumes media from TrueNAS via NFS. Protected by wait-for-truenas hook."
-    },
-    {
       "id": "traefik-lb",
       "label": "Traefik LoadBalancer VIP",
       "type": "VIP",

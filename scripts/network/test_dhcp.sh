@@ -234,7 +234,7 @@ EOF
 echo ""
 echo -e "${BOLD}[4] Ping — Verifica raggiungibilità host noti${RESET}"
 
-HOSTS="talos-cp-01:10.10.20.141 talos-cp-02:10.10.20.142 talos-cp-03:10.10.20.143 mac-studio:10.10.20.100 ap11000:10.10.20.103 jellyfin-srv:10.10.20.32 pve1:10.10.10.11 pve3:10.10.10.31 truenas:10.10.10.50"
+HOSTS="talos-cp-01:10.10.20.141 talos-cp-02:10.10.20.142 talos-cp-03:10.10.20.143 mac-studio:10.10.20.100 ap11000:10.10.20.103 pve1:10.10.10.11 pve3:10.10.10.31 truenas:10.10.10.50"
 
 for item in ${HOSTS}; do
   hostname="${item%%:*}"
