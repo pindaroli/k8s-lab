@@ -29,6 +29,7 @@ spec:
   entryPoints:
     - websecure
   routes:
+    # External / Public: OAuth Protected
     - match: Host(`jellyfin.pindaroli.org`)
       kind: Rule
       services:
@@ -37,5 +38,11 @@ spec:
       middlewares:
         - name: oauth2-auth
           namespace: traefik
+    # Internal / Short: Direct Access (LAN fidata, no Basic Auth, no OAuth2)
+    - match: Host(`jellyfin`) || Host(`jellyfin-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: jellyfin-external-svc
+          port: 8096
   tls:
     secretName: pindaroli-wildcard-tls
