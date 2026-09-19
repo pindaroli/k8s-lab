@@ -1,14 +1,14 @@
 ---
 name: video-ingestor
 type: skill
-description: "Procedura rapida e deterministica per l'ingestion immediata di film (categoria video-filebot o percorsi manuali) nella libreria /media/movies tramite Job Kubernetes FileBot AMC. Trigger: 'fai ingestion di <nome film>', 'ingestion di <nome film>'."
+description: "Procedura rapida e deterministica per l'ingestion immediata di film (categoria video-filebot o percorsi manuali) nella libreria /media/movies tramite TrueNAS webhook-normalizer (FileBot AMC). Trigger: 'fai ingestion di <nome film>', 'ingestion di <nome film>'."
 when_to_use: "Quando l'utente richiede 'fai ingestion di <nome film>', 'ingestion di <nome film>', 'esegui ingestion di <nome film>' o chiede di normalizzare/importare film scaricati (categoria video-filebot o percorsi manuali) verso la libreria cinematografica /media/movies."
 status: active
 tags:
   - servarr
   - filebot
   - ingestion
-  - kubernetes
+  - truenas
   - jellyfin
 ---
 
@@ -26,31 +26,39 @@ Lo skill si attiva automaticamente quando l'utente utilizza espressioni come:
 ---
 
 ## 🎯 Obiettivo
-Eseguire l'ingestion immediata, automatica e verificata di filmati nella libreria ufficiale `/media/movies/` (pool ZFS `oliraid`), delegando il parsing del titolo, l'estrazione TMDb, la creazione di hardlink e il download degli artwork a **FileBot AMC** isolato in un Job Kubernetes non privilegiato (`UID 1000`).
+Eseguire l'ingestion immediata, automatica e verificata di filmati nella libreria ufficiale `/media/movies/` (pool ZFS `oliraid` su TrueNAS Bare Metal `10.10.10.50`), delegando il parsing del titolo, l'estrazione TMDb, la creazione di hardlink e il download degli artwork a **FileBot AMC** in esecuzione isolata nel container Docker `webhook-normalizer` (porta 9000).
 
 La skill applica rigorosamente il pattern architetturale [[movie-metadata-and-artwork-architecture]]:
 1. **Hardlink ZFS**: Nessun consumo aggiuntivo di storage e conservazione del seeding in qBittorrent.
-2. **Artwork offline**: Persistenza di `poster.jpg`, `folder.jpg`, `fanart.jpg` (e `logo.png`/`disc.png` se disponibili).
-3. **Divieto NFO**: Eliminazione automatica di tutti i file `.nfo` per prevenire duplicati e delegare la gestione dei dati a Jellyfin.
+2. **Artwork offline**: Persistenza di `poster.jpg`, `folder.jpg`, `fanart.jpg`, `logo.png` e `disc.png`.
+3. **Divieto NFO**: Eliminazione automatica di tutti i file `.nfo` per prevenire conflitti di schede e delegare la gestione metadati testuali a Jellyfin.
 
 ---
 
 ## ⚡ Workflow Rapido di Esecuzione (Fast-Path)
 
 ### 1. Individuazione del Percorso Sorgente
-Verificare il nome esatto della cartella del film all'interno del volume:
+Verificare il nome esatto della cartella del film all'interno del volume o tramite il client torrent:
 
 ```bash
-kubectl exec -n arr deploy/servarr-radarr -c radarr -- ls -1 "/media/downloads/video-filebot"
+ssh -o BatchMode=yes olindo@10.10.10.50 "ls -1 /mnt/oliraid/arrdata/media/downloads/video-filebot"
 ```
+*(Oppure interrogare qBittorrent tramite tool MCP `qbt_list_torrents` / `qbt_torrent_details`)*.
 
 ---
 
-### 2. Innesco Atomico del Job K8s
-Eseguire lo script di trigger all'interno del pod `servarr-qbittorrent` passando il path assoluto della sorgente e la categoria `video-filebot`:
+### 2. Innesco Atomico della Normalizzazione
+Eseguire lo script CLI dedicato `scripts/servarr/trigger_normalization.sh` passando il nome della cartella o il path assoluto:
 
 ```bash
-kubectl exec -n arr deploy/servarr-qbittorrent -c servarr -- /scripts/trigger-job.sh "/media/downloads/video-filebot/<NOME_CARTELLA_O_FILE>" "video-filebot"
+./scripts/servarr/trigger_normalization.sh "<NOME_CARTELLA_O_FILE>" "video-filebot"
+```
+
+*In alternativa, tramite chiamata HTTP diretta a TrueNAS:*
+```bash
+curl -s -X POST http://10.10.10.50:9000/hooks/normalize \
+    --data-urlencode "path=/media/downloads/video-filebot/<NOME_CARTELLA_O_FILE>" \
+    --data-urlencode "category=video-filebot"
 ```
 
 > **Nota di Sicurezza**: Le virgolette doppie racchiudono in modo sicuro percorsi contenenti spazi, parentesi o apici singoli (es. `L'Ordine Del Tempo...`).
@@ -58,17 +66,20 @@ kubectl exec -n arr deploy/servarr-qbittorrent -c servarr -- /scripts/trigger-jo
 ---
 
 ### 3. Streaming e Monitoraggio dei Log
-Identificare il Job generato (prefisso `video-normalizer-`) e seguire l'elaborazione in tempo reale:
+Seguire l'elaborazione di FileBot AMC in tempo reale sui log del container Docker di TrueNAS:
 
 ```bash
-kubectl logs -n arr -l app.kubernetes.io/name=audio-normalizer --tail=50 -f
+ssh -o BatchMode=yes olindo@10.10.10.50 "sudo -n docker logs -f --tail=30 webhook-normalizer"
 ```
 
 L'elaborazione si conclude positivamente quando il log riporta:
 ```text
+==========================================================
 🎉 ELABORAZIONE COMPLETATA!
 Elementi elaborati : 1
 Errori riscontrati : 0
+Directory finale   : '/media/movies'
+==========================================================
 ```
 
 ---
@@ -77,19 +88,11 @@ Errori riscontrati : 0
 Verificare la corretta materializzazione della scheda e dei file in `/media/movies/`:
 
 ```bash
-kubectl exec -n arr deploy/servarr-radarr -c radarr -- ls -la "/media/movies/<Titolo Identificato>*/"
+ssh -o BatchMode=yes olindo@10.10.10.50 "ls -la '/mnt/oliraid/arrdata/media/movies/<Titolo Identificato>*/'"
 ```
 
 #### Checklist di Validazione:
 - [ ] **Hardlink verificato**: Contatore link video `>= 2` (`ls -l`).
-- [ ] **Artwork presenti**: Presenti `folder.jpg` / `poster.jpg` e `fanart.jpg`.
+- [ ] **Artwork presenti**: Presenti `folder.jpg` / `poster.jpg`, `fanart.jpg` (e `logo.png`/`disc.png`).
 - [ ] **Zero NFO**: Nessun file `.nfo` presente nella directory del film.
-
----
-
-## 🗂️ Elaborazione Batch Multipla (Opzionale)
-Se devono essere processati contemporaneamente più film o un'intera directory di download:
-
-```bash
-./scripts/kubernetes/batch-normalization.sh "/media/downloads/video-filebot" "/media/movies" --type video
-```
+- [ ] **Zero Consumo Spazio**: Il file punta allo stesso inode del file scaricato in seeding.

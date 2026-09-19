@@ -89,7 +89,7 @@ Rimozione del codice morto e delle infrastrutture orfane.
 
 ### Azioni
 1. [x] **Distruzione LXC:** Spegnimento definitivo, rimozione (`pct destroy 2200 --purge`) e distruzione del dataset associato `rpool/data/jellyfin-db` su PVE3 (recuperati 5 GB NVMe).
-2. [x] **Decisione Architetturale Script Git:** Mantenimento quiescente dello script K8s Job (`trigger-job.sh`) e relativo template nel repository Helm `pindaroli-arr-helm` per garantire totale reversibilità futura (nessun impatto o consumo di risorse con `qbittorrent.enabled: false`).
+2. [x] **Modernizzazione Script Normalizzazione:** Creato script CLI di trigger universale `scripts/servarr/trigger_normalization.sh` e server webhook `webhook_server.py` su TrueNAS (`10.10.10.50:9000`), aggiornata la skill `video-ingestor`, rimosso il vecchio `batch-normalization.sh` e modernizzato `trigger-job.sh` in Helm v1.10.1. Verificata con successo la normalizzazione reale di *"The Neon Demon"* con hardlink ZFS e artwork completi.
 3. [x] **Pulizia e Ottimizzazione Ansible:** Creazione del playbook depurato `ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml` e rimozione dei vecchi script di failover `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`.
 
 ### 🛑 CHECKPOINT FINALE
@@ -98,8 +98,8 @@ Rimozione del codice morto e delle infrastrutture orfane.
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: Fase 4 / Smantellamento e Hardening (Checkpoint Finale)
-- **Ultima Azione Completata**: Distrutto LXC 2200 ed eliminato dataset `rpool/data/jellyfin-db` su PVE3. Creato e validato sintatticamente il playbook depurato `shutdown_to_truenas_only.yml`, rimossi i vecchi playbook `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`. Confermato mantenimento quiescente di `trigger-job.sh` in Helm per reversibilità.
+- **Ultima Azione Completata**: Modernizzata l'infrastruttura di normalizzazione (creato `trigger_normalization.sh`, aggiornato `webhook_server.py` su TrueNAS con target `/media/movies` di default, rimossi script obsoleti e aggiornata skill `video-ingestor`). Eseguita e verificata con successo la normalizzazione di *The Neon Demon* (hardlink creato su ZFS e artwork completati).
 - **Prossimo Passo Operativo**: Esecuzione del test di spegnimento on-demand K8s/PVE con il comando:
   `ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml`
   e verifica della completa indipendenza dei carichi multimediali da Homepage su TrueNAS (`http://10.10.10.50:3000`).
-- **Blocchi/Decisioni Pendenti**: Nessuno. Stato consolidato e pronto per la ripresa del Checkpoint Finale.
+- **Blocchi/Decisioni Pendenti**: Nessuno. Pronto per la verifica finale di spegnimento a scelta dell'utente.
