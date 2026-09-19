@@ -1,0 +1,162 @@
+---
+# ==============================================================================
+# 🛑 SHUTDOWN HOMELAB: CLUSTER K8S + HYPERVISOR PVE OFF -> SOLO TRUENAS STANDALONE
+# ==============================================================================
+# Procedura deterministica per il risparmio energetico:
+# FASE 1: Shutdown Graceful Kubernetes (Talos) e flushing DB
+# FASE 2: Shutdown Fisico Hypervisor Proxmox VE (pve3, pve2, pve1)
+# FASE 3: Health-Check e validazione servizi standalone su TrueNAS Bare Metal
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# FASE 1: SHUTDOWN GRACEFUL KUBERNETES
+# ------------------------------------------------------------------------------
+- name: "⚡ FASE 1: Shutdown Graceful Cluster Kubernetes (Talos)"
+  hosts: localhost
+  gather_facts: no
+  vars:
+    talos_nodes: "10.10.20.141,10.10.20.142,10.10.20.143"
+    api_endpoint: "10.10.20.141"
+    k8s_vip: "10.10.20.55"
+    traefik_vip: "10.10.20.56"
+  tasks:
+    - name: "🔔 Notifica: Inizio procedura di spegnimento K8s e PVE"
+      debug:
+        msg: "Avvio spegnimento: salvaguardia carichi di lavoro K8s..."
+
+    - name: "🛡️ Cordon globale nodi Talos (Previene rescheduling dei pod)"
+      command: kubectl cordon talos-cp-01 talos-cp-02 talos-cp-03
+      register: cordon_result
+      ignore_errors: true
+
+    - name: "💾 Quiesce / Checkpoint Database PostgreSQL (CNPG)"
+      command: >
+        kubectl exec -n default -c postgres postgres-main-1 -- psql -U postgres -c "CHECKPOINT;"
+      register: pg_checkpoint
+      ignore_errors: true
+
+    - name: "🔥 Invia segnale di spegnimento parallelo Talos OS"
+      command: >
+        talosctl shutdown --nodes {{ talos_nodes }} --endpoints {{ api_endpoint }} --force --wait=false
+      register: shutdown_signal
+      ignore_errors: true
+
+    - name: "⏳ Gate 1.1: Attesa chiusura porte API Talos (Porta 50000)"
+      wait_for:
+        host: "{{ item }}"
+        port: 50000
+        state: stopped
+        timeout: 90
+      loop:
+        - 10.10.20.141
+        - 10.10.20.142
+        - 10.10.20.143
+
+    - name: "⏳ Gate 1.2: Verifica chiusura API Server K8s (VIP 10.10.20.55:6443)"
+      wait_for:
+        host: "{{ k8s_vip }}"
+        port: 6443
+        state: stopped
+        timeout: 30
+
+    - name: "⏳ Gate 1.3: Verifica chiusura Traefik Ingress (VIP 10.10.20.56:443)"
+      wait_for:
+        host: "{{ traefik_vip }}"
+        port: 443
+        state: stopped
+        timeout: 30
+
+    - name: "✅ Gate 1 Superato: Cluster Kubernetes e Ingress ufficialmente OFFLINE"
+      debug:
+        msg: "Kubernetes è spento in sicurezza."
+
+# ------------------------------------------------------------------------------
+# FASE 2: SHUTDOWN FISICO HYPERVISOR PROXMOX VE
+# ------------------------------------------------------------------------------
+- name: "🔌 FASE 2: Shutdown Fisico Hypervisor Proxmox VE"
+  hosts: localhost
+  gather_facts: no
+  vars:
+    pve_satellites:
+      - 10.10.10.31 # pve3
+      - 10.10.10.21 # pve2
+    pve_master: "10.10.10.11" # pve1
+  tasks:
+    - name: "Invia segnale di spegnimento ACPI ai nodi Satellite (PVE3, PVE2)"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ item }} "shutdown -h now"
+      loop: "{{ pve_satellites }}"
+      ignore_errors: true
+
+    - name: "Invia segnale di spegnimento ACPI al nodo Master (PVE1)"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve_master }} "shutdown -h now"
+      ignore_errors: true
+
+    - name: "⏳ Gate 2.1: Attesa spegnimento nodi Proxmox (Porta SSH 22 STOPPED)"
+      wait_for:
+        host: "{{ item }}"
+        port: 22
+        state: stopped
+        timeout: 120
+      loop:
+        - 10.10.10.31
+        - 10.10.10.21
+        - 10.10.10.11
+
+    - name: "⏳ Gate 2.2: Verifica spegnimento WebUI Proxmox (Porta 8006 STOPPED)"
+      wait_for:
+        host: "{{ item }}"
+        port: 8006
+        state: stopped
+        timeout: 30
+      loop:
+        - 10.10.10.31
+        - 10.10.10.21
+        - 10.10.10.11
+
+    - name: "✅ Gate 2 Superato: Tutti i 3 server fisici Proxmox sono spenti"
+      debug:
+        msg: "Hypervisor pve1, pve2 e pve3 disattivati con successo."
+
+# ------------------------------------------------------------------------------
+# FASE 3: HEALTH-CHECK E STATO STANDALONE TRUENAS
+# ------------------------------------------------------------------------------
+- name: "🛡️ FASE 3: Health-Check e Stato Standalone TrueNAS"
+  hosts: truenas
+  gather_facts: no
+  become: true
+  tasks:
+    - name: "Verifica integrità pool ZFS su TrueNAS (stripe & oliraid)"
+      command: zpool status -x
+      register: zpool_check
+      failed_when: "'all pools are healthy' not in zpool_check.stdout"
+      changed_when: false
+
+    - name: "⏳ Gate 3: Verifica porte dei servizi permanenti su TrueNAS (10.10.10.50)"
+      wait_for:
+        host: 10.10.10.50
+        port: "{{ item.port }}"
+        state: started
+        timeout: 15
+      loop:
+        - { name: "Homepage Standalone", port: 3000 }
+        - { name: "qBittorrent", port: 8080 }
+        - { name: "Jellyfin 12", port: 8096 }
+        - { name: "Prowlarr", port: 9696 }
+        - { name: "Webhook Normalizer", port: 9000 }
+
+    - name: "🏁 REGIME A RISPARMIO ENERGETICO ATTIVO"
+      debug:
+        msg: |
+          ============================================================
+          🎉 SHUTDOWN COMPLETATO: HOMELAB IN MODALITÀ SOLO TRUENAS
+          ============================================================
+          - Kubernetes:    OFFLINE (Cluster spento in sicurezza)
+          - Proxmox (PVE): OFFLINE (pve1, pve2, pve3 spenti)
+          - Storage ZFS:   ONLINE (Pool stripe & oliraid operativi)
+          - Servizi Media: ONLINE 24/7 su TrueNAS (10.10.10.50)
+          ------------------------------------------------------------
+          🔗 Homepage Dashboard LAN: http://10.10.10.50:3000
+          🔗 qBittorrent WebUI:      http://10.10.10.50:8080
+          🔗 Jellyfin WebUI:         http://10.10.10.50:8096
+          🔗 Prowlarr WebUI:         http://10.10.10.50:9696
+          ============================================================
