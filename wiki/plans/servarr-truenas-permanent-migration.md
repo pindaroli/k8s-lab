@@ -98,6 +98,6 @@ Rimozione del codice morto e delle infrastrutture orfane.
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: Fase 4 / Smantellamento e Hardening
-- **Ultima Azione Completata**: Risolti EndpointSlices orfani su K8s (INC-2026-09-19) e volumi su TrueNAS. Esposta porta 30661 TCP/UDP su TrueNAS docker-compose.yaml e riallineata regola Destination NAT su OPNsense verso 10.10.10.50 (stato qBittorrent ripristinato a 'connected' con upload attivo).
+- **Ultima Azione Completata**: Risolti EndpointSlices orfani su K8s (INC-2026-09-19) e volumi su TrueNAS. Esposta porta 30661 TCP/UDP su TrueNAS docker-compose.yaml e riallineata regola Destination NAT su OPNsense. Allineato endpoint `jellyfin-external-svc` su K8s a TrueNAS 10.10.10.50 e riavviati i deployment di Homepage, ripristinando il badge di stato verde (HTTP 200 OK, ~32ms).
 - **Prossimo Passo Operativo**: Spegnimento container LXC 2200 su PVE3 (`pct stop 2200`), pulizia e test finale di shutdown K8s.
 - **Blocchi/Decisioni Pendenti**: Nessuno. Pronto per la Fase 4.
