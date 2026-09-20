@@ -17,20 +17,21 @@ def main():
     os.environ["LLMBASE_MODEL"] = model
     os.environ["MODEL"] = model
 
-    # 2. Risoluzione dinamica della cartella di root del progetto wiki
+    # 2. Root del progetto aperto (CWD), non un path fisso.
+    #    Env WIKI_PATH / LLMWIKI_BASE_DIR vincono solo se valorizzate a una directory esistente.
+    cwd = os.getcwd()
     target_base_dir = os.getenv("WIKI_PATH") or os.getenv("LLMWIKI_BASE_DIR")
     if not target_base_dir or not os.path.isdir(target_base_dir):
-        cwd = os.getcwd()
-        if os.path.isdir(os.path.join(cwd, "wiki")) or os.path.isdir(os.path.join(cwd, "raw")):
-            target_base_dir = cwd
-        elif os.path.basename(cwd) == "wiki" and (os.path.isdir(os.path.join(cwd, "_meta")) or os.path.isdir(os.path.join(cwd, "concepts"))):
+        if os.path.basename(cwd) == "wiki" and (
+            os.path.isdir(os.path.join(cwd, "_meta")) or os.path.isdir(os.path.join(cwd, "concepts"))
+        ):
             target_base_dir = os.path.dirname(cwd)
+        elif cwd != "/" and (os.path.isdir(os.path.join(cwd, "wiki")) or os.path.isdir(os.path.join(cwd, "raw"))):
+            target_base_dir = cwd
         else:
-            canonical = "/Users/olindo/prj/k8s-lab"
-            if os.path.isdir(canonical):
-                target_base_dir = canonical
-            else:
-                target_base_dir = cwd
+            # Fallback automatico alla root del repo contenente questo script (scripts/llmwiki/ -> ../..)
+            script_repo_root = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", ".."))
+            target_base_dir = script_repo_root if os.path.isdir(script_repo_root) else cwd
 
     os.environ["WIKI_PATH"] = target_base_dir
 
