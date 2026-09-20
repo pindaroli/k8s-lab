@@ -1,0 +1,103 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:12.0ubu2604-ls48
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - HOMEPAGE_ALLOWED_HOSTS=*
+    volumes:
+      - /mnt/stripe/truenas-docker/jellyfin:/config
+      - /mnt/oliraid/arrdata/media:/media
+      - /mnt/oliraid/arrdata/media:/mnt/media
+      - /mnt/stripe/truenas-docker/jellyfin/metadata:/var/lib/jellyfin/metadata
+      - /mnt/stripe/truenas-docker/jellyfin/data/data:/var/lib/jellyfin/data
+      - /mnt/stripe/truenas-docker/jellyfin/root:/var/lib/jellyfin/root
+      - /mnt/stripe/truenas-docker/jellyfin/custom-cont-init.d:/custom-cont-init.d:ro
+    ports:
+      - 8096:8096
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.2.3_v2.0.13-ls468
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - HOMEPAGE_ALLOWED_HOSTS=*
+      - WEBUI_PORT=8080
+      - WEBUI_BYPASS_AUTH_SUBNET_WHITELIST_ENABLED=true
+      - WEBUI_AUTH_SUBNET_WHITELIST=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    volumes:
+      - /mnt/stripe/truenas-docker/qbittorrent:/config
+      - /mnt/stripe/truenas-docker/scripts/trigger-job.sh:/scripts/trigger-job.sh:ro
+      - /mnt/stripe/qb_temp:/data/incomplete
+      - /mnt/oliraid/arrdata/media:/media
+      - /mnt/oliraid/arrdata/media/downloads:/data/downloads
+    ports:
+      - 8080:8080
+      - 30661:30661
+      - 30661:30661/udp
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - HOMEPAGE_ALLOWED_HOSTS=*
+    volumes:
+      - /mnt/stripe/truenas-docker/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - HOMEPAGE_ALLOWED_HOSTS=*
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    volumes:
+      - /mnt/stripe/truenas-docker/homepage:/app/config
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+
+  webhook-normalizer:
+    image: ghcr.io/pindaroli/custom-normalizer:1.5.2
+    container_name: webhook-normalizer
+    command: ["python3", "/app/webhook_server.py"]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - HOMEPAGE_ALLOWED_HOSTS=*
+      - EMAIL_RECIPIENT=o.pindaro@gmail.com
+    env_file:
+      - .env
+    volumes:
+      - /mnt/oliraid/arrdata/media:/media
+      - /mnt/oliraid/arrdata/media/downloads:/data/downloads
+      - /mnt/oliraid/arrdata/media:/mnt/media
+      - /mnt/stripe/truenas-docker/jellyfin/metadata:/var/lib/jellyfin/metadata
+      - /mnt/stripe/truenas-docker/jellyfin/data/data:/var/lib/jellyfin/data
+      - /mnt/stripe/truenas-docker/jellyfin/root:/var/lib/jellyfin/root
+      - /mnt/stripe/truenas-docker/jellyfin/custom-cont-init.d:/custom-cont-init.d:ro
+      - /mnt/stripe/truenas-docker/webhook-normalizer/webhook_server.py:/app/webhook_server.py:ro
+      - /mnt/stripe/truenas-docker/webhook-normalizer/songkong-license.properties:/etc/songkong/license.properties:ro
+      - /mnt/stripe/truenas-docker/webhook-normalizer/filebot-license.psm:/etc/filebot/license.psm:ro
+    ports:
+      - 9000:9000
+    restart: unless-stopped

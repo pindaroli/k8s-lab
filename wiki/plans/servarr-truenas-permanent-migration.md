@@ -89,7 +89,7 @@ Rimozione del codice morto e delle infrastrutture orfane.
 
 ### Azioni
 1. [x] **Distruzione LXC:** Spegnimento definitivo, rimozione (`pct destroy 2200 --purge`) e distruzione del dataset associato `rpool/data/jellyfin-db` su PVE3 (recuperati 5 GB NVMe).
-2. [x] **Modernizzazione Script Normalizzazione:** Creato script CLI di trigger universale `scripts/servarr/trigger_normalization.sh` e server webhook `webhook_server.py` su TrueNAS (`10.10.10.50:9000`), aggiornata la skill `video-ingestor`, rimosso il vecchio `batch-normalization.sh` e modernizzato `trigger-job.sh` in Helm v1.10.1. Verificata con successo la normalizzazione reale di *"The Neon Demon"* con hardlink ZFS e artwork completi.
+2. [x] **Modernizzazione Script Normalizzazione & Trigger Automatico qBittorrent:** Creato script CLI di trigger universale `scripts/servarr/trigger_normalization.sh` e server webhook `webhook_server.py` su TrueNAS (`10.10.10.50:9000`), aggiornata la skill `video-ingestor`. Dichiarato e montato lo script permanente `trigger-job.sh` nel `docker-compose.yaml` di qBittorrent (`/scripts/trigger-job.sh:ro`) con log su `/config/qBittorrent/logs/trigger.log`. Verificata con successo la normalizzazione automatica e manuale reale (*"The Neon Demon"* e *"La Grazia"* con hardlink ZFS, artwork completi e scan Jellyfin).
 3. [x] **Pulizia e Ottimizzazione Ansible:** Creazione del playbook depurato `ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml` e rimozione dei vecchi script di failover `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`.
 
 ### 🛑 CHECKPOINT FINALE
@@ -98,7 +98,7 @@ Rimozione del codice morto e delle infrastrutture orfane.
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: Fase 4 / Smantellamento e Hardening (Checkpoint Finale)
-- **Ultima Azione Completata**: Modernizzata l'infrastruttura di normalizzazione (creato `trigger_normalization.sh`, aggiornato `webhook_server.py` su TrueNAS con target `/media/movies` di default, rimossi script obsoleti e aggiornata skill `video-ingestor`). Eseguita e verificata con successo la normalizzazione di *The Neon Demon* (hardlink creato su ZFS e artwork completati).
+- **Ultima Azione Completata**: Ingestione di *"La Grazia (2025)"* completata con successo (hardlink ZFS, artwork, scan Jellyfin). Ripristinato e validato il trigger automatico permanente in qBittorrent Docker su TrueNAS tramite volume mount in `docker-compose.yaml` e versione Git dichiarativa in `scripts/servarr/trigger-job.sh`.
 - **Prossimo Passo Operativo**: Esecuzione del test di spegnimento on-demand K8s/PVE con il comando:
   `ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml`
   e verifica della completa indipendenza dei carichi multimediali da Homepage su TrueNAS (`http://10.10.10.50:3000`).
