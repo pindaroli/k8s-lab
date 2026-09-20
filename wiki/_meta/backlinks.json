@@ -4,10 +4,13 @@
     "opnsense-configd-architecture",
     "opnsense-shell-script-creation"
   ],
-  "opnsense-システム-アウトソーシング": [
-    "opnsense-cron-job-scheduling",
-    "opnsense-configd-architecture",
-    "opnsense-shell-script-creation"
+  "gitops-provisioning-autobrr": [
+    "servicenow-k8s-discovery",
+    "gitops-methodology-autobrr-implementation"
+  ],
+  "gitops-methodology-autobrr-implementation": [
+    "servicenow-k8s-discovery",
+    "gitops-provisioning-autobrr"
   ],
   "opnsense-configd-architecture": [
     "opnsense-system-automation"
@@ -15,52 +18,10 @@
   "opnsense-shell-script-creation": [
     "opnsense-system-automation"
   ],
-  "opnsense-shell-脚本创建": [
+  "opnsense-cron-job-scheduling": [
     "opnsense-system-automation"
   ],
-  "opnsense-configd-アーキテクチャ": [
-    "opnsense-system-automation"
-  ],
-  "opnsense-シェル-スクリプト作成": [
-    "opnsense-system-automation"
-  ],
-  "gitops-api-configuration-patterns": [
+  "servicenow-k8s-discovery": [
     "gitops-provisioning-autobrr"
-  ],
-  "secret-management-in-gitops": [
-    "gitops-provisioning-autobrr"
-  ],
-  "kubernetes-job-patterns": [
-    "gitops-provisioning-autobrr"
-  ],
-  "postgresql-database-seeding": [
-    "gitops-provisioning-autobrr"
-  ],
-  "gitops-api配置模式": [
-    "gitops-provisioning-autobrr"
-  ],
-  "gitops中的密钥管理": [
-    "gitops-provisioning-autobrr"
-  ],
-  "kubernetes任务模式": [
-    "gitops-provisioning-autobrr"
-  ],
-  "postgresql数据库播种": [
-    "gitops-provisioning-autobrr"
-  ],
-  "gitops-api-設定パターン": [
-    "gitops-provisioning-autobrr"
-  ],
-  "gitopsでのシークレット管理": [
-    "gitops-provisioning-autobrr"
-  ],
-  "kubernetesジョブ-パターン": [
-    "gitops-provisioning-autobrr"
-  ],
-  "postgresqlデータベース-シード": [
-    "gitops-provisioning-autobrr"
-  ],
-  "gitops-provisioning-autobrr": [
-    "gitops-methodology-autobrr-implementation"
   ]
 }

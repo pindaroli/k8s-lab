@@ -24,7 +24,7 @@ Configd is the backbone of command-line integration and automation scheduling in
 
 The architecture ensures seamless integration between command-line operations and the graphical interface, allowing scripts to be scheduled natively within OPNsense.
 
-[[OPNsense System Automation]]
+[[opnsense-system-automation|OPNsense System Automation]]
 
 ## 中文
 
@@ -36,7 +36,7 @@ configd 是 OPNsense 命令行集成和自动化调度的核心架构。它主�
 
 该架构实现了命令行操作与图形界面之间的无缝集成，使脚本能够原生地在 OPNsense 中进行调度。
 
-[[OPNsense 系统自动化]]
+[[opnsense-system-automation|OPNsense 系统自动化]]
 
 ## 日本語
 
@@ -48,4 +48,4 @@ Configd は、OPNsense のコマンドライン統合と自動化スケジュー
 
 このアーキテクチャは、コマンドライン操作とグラフィカル インターフェース間のシームレスな統合を可能にし、OPNsense 環境内でのネイティブ スケジューリングを実現します。
 
-[[OPNsense システム アウトソーシング]]
+[[opnsense-system-automation|OPNsense システム アウトソーシング]]

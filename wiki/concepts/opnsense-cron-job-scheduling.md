@@ -27,7 +27,7 @@ Important notes:
 - Clear browser cache (`Ctrl + F5`) after adding new actions to ensure they appear in the GUI.
 - Test commands in CLI before scheduling them in WebGUI.
 
-[[OPNsense System Automation]]
+[[opnsense-system-automation|OPNsense System Automation]]
 
 ## 中文
 
@@ -43,7 +43,7 @@ OPNsense 提供了一个基于 Web 的界面来配置和管理 Cron 任务。以
 - 在新增动作后，清除浏览器缓存（`Ctrl + F5`）以确保它们出现在 GUI 中。
 - 在 Web 界面安排任务前，请先在 CLI 上测试命令。
 
-[[OPNsense 系统自动化]]
+[[opnsense-system-automation|OPNsense 系统自动化]]
 
 ## 日本語
 
@@ -59,4 +59,4 @@ OPNsense は、Cron ジョブの設定と管理用に、ネイティブな WebGU
 - 新しい動作を追加した後は、ブラウザー キャッシュをクリア (`Ctrl + F5`) して GUI 上で新規項目が表示されるようにします。
 - WebGUI でのスケジューリング前に、CLI 上でのコマンドテストを実施してください。
 
-[[OPNsense システム アウトソーシング]]
+[[opnsense-system-automation|OPNsense システム アウトソーシング]]
