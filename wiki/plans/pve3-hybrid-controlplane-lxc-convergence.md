@@ -1,9 +1,10 @@
 ---
 title: "Piano: Architettura Homelab Ibrida: Ottimizzazione del Control Plane Kubernetes e Convergenza Bare-Metal LXC su PVE3"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-09-20
+archived_at: 2026-09-21
 tags:
   - "#kubernetes"
   - "#talos"
@@ -22,13 +23,13 @@ L'infrastruttura iperconvergente del cluster homelab presenta una marcata asimme
 
 Attualmente, l'allocazione su PVE3 di un'istanza virtuale monolitica KVM (`talos-cp-03`, identificativo VM `3200`) configurata come nodo ibrido Control Plane e Worker da 8 vCPU e 24 GB di RAM vincola la macchina fisica. L'esecuzione di carichi applicativi generici e di volumi persistenti ancorati localmente impedisce l'accesso diretto bare-metal ai motori hardware integrati e induce un degrado dell'efficienza termica ed energetica.
 
-Il presente piano definisce la riprogettazione strutturale del nodo PVE3: il ridimensionamento della VM Talos Linux alla soglia dimensionale minima (2 vCPU, 4 GB RAM fissa, taint perenne `node-role.kubernetes.io/control-plane:NoSchedule`) preserverà il quorum etcd e l'alta disponibilità (HA) del piano di controllo Kubernetes, restituendo oltre il 90% della memoria volatile e la quasi totalità della potenza computazionale nativa a due container LXC non-K8s dedicati all'inferenza LLM (Ollama) e al game streaming a bassissima latenza (Sunshine/Moonlight).
+Il presente piano definisce la riprogettazione strutturale del nodo PVE3: il ridimensionamento della VM Talos Linux alla soglia dimensionale minima (2 vCPU, 4 GB RAM fissa, taint perenne `node-role.kubernetes.io/control-plane:NoSchedule`) preserverà il quorum etcd e l'alta disponibilità (HA) del piano di controllo Kubernetes, restituendo oltre il 90% della memoria volatile e la quasi totalità della potenza computazionale nativa a due container LXC non-K8s dedicati all'inferenza LLM (Ollama) e al gaming Direct-HDMI (Gamescope/Steam verso KVM IP Streamer su VLAN 40).
 
 ```mermaid
 graph TD
     subgraph PVE3_Hardware ["Proxmox VE PVE3 (64 GB LPDDR5-7500 / Ryzen AI 9 HX 370)"]
         subgraph Zen5_Cluster ["Zen 5 High-Perf Cores (Threads 0-7)"]
-            CT301["LXC 301: Sunshine / Gaming (8 vCPU, 16 GB RAM)"]
+            CT301["LXC 301: Gaming Direct-HDMI (8 vCPU, 16 GB RAM)"]
         end
         subgraph Zen5c_Cluster ["Zen 5c High-Density Cores (Threads 8-23)"]
             CT300["LXC 300: Ollama LLM (12 vCPU, 38 GB RAM, Vulkan/ROCm)"]
@@ -137,7 +138,7 @@ Il SoC Ryzen AI 9 HX 370 possiede:
 
 | Workload Ospitato | Identificativo Entità | Core Fisici Assegnati | Thread Logici Mappati | Pesi Scheduler (cpuunits) | Obiettivo Architetturale |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **LXC Game Streaming** | CT 301 (Sunshine) | 4 Core Zen 5 | 0, 1, 2, 3, 4, 5, 6, 7 | 1024 | Massimizzare le prestazioni single-thread e il framerate nei giochi (120 fps) |
+| **LXC Gaming Direct-HDMI** | CT 301 (Gaming) | 4 Core Zen 5 | 0, 1, 2, 3, 4, 5, 6, 7 | 1024 | Rendering nativo Gamescope/Steam su display fisico HDMI verso KVM IP Streamer (VLAN 40) a 120 fps |
 | **LXC Inferenza LLM** | CT 300 (Ollama) | 6 Core Zen 5c | 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 | 1024 | Calcolo parallelo multithreading per elaborazione tensoriale e BLAS |
 | **Talos Control Plane** | VM 3200 (talos-cp-03) | 2 Core Zen 5c | 20, 21, 22, 23 | 2048 (Priorità Doppia) | Totale isolamento per etcd e apiserver, immunità da latenze di lock |
 
@@ -152,5 +153,18 @@ Il SoC Ryzen AI 9 HX 370 possiede:
 - **Fase 5**: Riconfigurazione Hardware della VM 3200 (talos-cp-03) a 2 vCPU, 4 GB RAM fissa, distacco `/dev/sdb`.
 - **Fase 6**: Verifica etcd quorum, rimozione cordon con taint permanente `control-plane:NoSchedule`.
 - **Fase 7**: Provisioning e Deployment del Container LXC Ollama (CT 300).
-- **Fase 8**: Provisioning e Deployment del Container LXC Sunshine / Gaming (CT 301).
+- **Fase 8**: Provisioning e Deployment del Container LXC Gaming Direct-HDMI (CT 301).
+  > [!NOTE]
+  > **Output Video Fisico & KVM IP Streamer (VLAN 40)**:
+  > Per CT 301 viene impiegato un **KVM IP Streamer hardware** dedicato attestato sulla VLAN 40 (`10.10.40.0/24`, KVM Extender Video Stream).
+  > Il container accede in modo diretto al controller KMS/DRM della Radeon 890M (`/dev/dri/card1`), pilotando l'uscita fisica HDMI con una sessione Gamescope / Steam Big Picture.
+  > Questo elimina del tutto la necessità di software di streaming di rete come Sunshine o Moonlight, abbattendo la latenza a zero ed evitando qualsiasi spreco di cicli GPU in codifica video.
 - **Fase 9**: Validazione End-to-End, collaudo prestazionale e consolidamento Wiki.
+
+## 6. Esito esecuzione (2026-09-21)
+
+Implementazione completata. Residui non bloccanti:
+- `gamescope` non è nei repository Ubuntu 24.04; CT 301 ha `steam-installer`, Mesa RADV 890M e bind NFS `/mnt/games` da `stripe/games`.
+- Disco locale `unused0` (`vm-3200-disk-1`) non distrutto.
+- `kube-state-metrics` può atterrare su `talos-cp-03` (taint tollerato dal chart Helm); footprint minimo.
+- `ContinuousArchivingFailing` su CNPG Barman è preesistente e fuori perimetro.

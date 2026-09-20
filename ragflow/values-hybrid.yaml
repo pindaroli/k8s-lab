@@ -74,7 +74,7 @@ infinity:
 redis:
   enabled: true
   storage:
-    className: "local-postgres"
+    className: "csi-nfs-stripe-arr-conf"
     capacity: 5Gi
   deployment:
     resources:

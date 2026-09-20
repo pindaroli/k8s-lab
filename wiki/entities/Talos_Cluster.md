@@ -1,6 +1,6 @@
 ---
 title: "Talos Cluster (Kubernetes Control Plane)"
-last_updated: "2026-08-30"
+last_updated: "2026-09-21"
 confidence: "High"
 tags:
   - "#compute"
@@ -37,9 +37,13 @@ La configurazione base è `talos-config/controlplane.yaml`.
 
 | Nodo | IP | Ruolo | Stato | Risorse (vCPU/RAM) | Host |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **talos-cp-01** | `10.10.20.141` | Leader / Etcd | **Ready** | **8 vCPU / 32 GB RAM** | PVE1 (VM 1300) |
-| **talos-cp-02** | `10.10.20.142` | Member / Etcd | **Ready** | **8 vCPU / 24 GB RAM** | PVE2 (VM 2300) |
-| **talos-cp-03** | `10.10.20.143` | Member / Etcd | **Ready** | **8 vCPU / 24 GB RAM** | PVE3 (VM 3200) |
+| **talos-cp-01** | `10.10.20.141` | Leader / Etcd + Worker | **Ready** | **8 vCPU / 28 GB RAM** | PVE1 (VM 1300) |
+| **talos-cp-02** | `10.10.20.142` | Member / Etcd + Worker | **Ready** | **8 vCPU / 36 GB RAM** | PVE2 (VM 2300) |
+| **talos-cp-03** | `10.10.20.143` | Member / Etcd **Control Plane Puro** | **Ready** | **2 vCPU / 4 GB RAM** (affinity 20-23, `cpuunits: 2048`) | PVE3 (VM 3200) |
+
+> [!IMPORTANT]
+> **Topologia 2 Worker + 1 Pure CP (2026-09-21)**
+> `talos-cp-03` ha taint permanente `node-role.kubernetes.io/control-plane:NoSchedule`. I workload applicativi e lo storage locale sono stati evacuati verso `talos-cp-01`/`talos-cp-02` e TrueNAS NFS. Su PVE3 convivono LXC `300` (Ollama, `10.10.20.33`) e LXC `301` (Gaming Direct-HDMI, `10.10.20.34`). Piano: [[pve3-hybrid-controlplane-lxc-convergence]].
 
 - **Virtual IP (VIP)**: `10.10.20.55` (Punto di ingresso per `kubectl`).
 

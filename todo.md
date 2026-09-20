@@ -1,16 +1,16 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## 🚀 [ ] Architettura Homelab Ibrida: Ottimizzazione Control Plane K8s & Convergenza Bare-Metal LXC su PVE3 [[pve3-hybrid-controlplane-lxc-convergence]]
+## 🚀 [x] ✅ COMPLETATO: Architettura Homelab Ibrida: Ottimizzazione Control Plane K8s & Convergenza Bare-Metal LXC su PVE3 [[pve3-hybrid-controlplane-lxc-convergence]]
 - [x] Fase 0: Documentazione Wiki-first e allineamento tracking.
-- [ ] Fase 1: Protezione piano di rete Ingress (CoreDNS, Cloudflared, MetalLB, Traefik).
-- [ ] Fase 2: Evacuazione volumi stateful (VictoriaMetrics, Grafana, Ragflow-Redis) verso TrueNAS NFS csi-nfs-stripe-arr-conf.
-- [ ] Fase 3: Migrazione a caldo della replica PostgreSQL CNPG su talos-cp-02 (PVE2) e verifica lag a 0.
-- [ ] Fase 4: Evacuazione controllata dei microservizi rimanenti e flotta MCP da talos-cp-03 via drain.
-- [ ] Fase 5: Riconfigurazione hardware VM 3200 (talos-cp-03): downscale 2 vCPU, 4 GB RAM fissa, distacco /dev/sdb.
-- [ ] Fase 6: Verifica e riallineamento etcd quorum e uncordon talos-cp-03 con taint permanente Control Plane Puro.
-- [ ] Fase 7: Provisioning CT 300 (Ollama) su PVE3 con pinning CPU Zen 5c (8-19) e pass-through iGPU Radeon 890M.
-- [ ] Fase 8: Provisioning CT 301 (Sunshine) su PVE3 con pinning CPU Zen 5 (0-7), pass-through GPU/uinput e stream 120 fps.
-- [ ] Fase 9: Validazione end-to-end e consolidamento documentale su wiki/entities/Talos_Cluster.md.
+- [x] Fase 1: Protezione piano di rete Ingress (CoreDNS, Cloudflared, MetalLB, Traefik).
+- [x] Fase 2: Evacuazione volumi stateful (VictoriaMetrics, Grafana, Ragflow-Redis) verso TrueNAS NFS csi-nfs-stripe-arr-conf.
+- [x] Fase 3: Migrazione a caldo della replica PostgreSQL CNPG su talos-cp-02 (PVE2) e verifica lag a 0.
+- [x] Fase 4: Evacuazione controllata dei microservizi rimanenti e flotta MCP da talos-cp-03 via drain.
+- [x] Fase 5: Riconfigurazione hardware VM 3200 (talos-cp-03): downscale 2 vCPU, 4 GB RAM fissa, distacco /dev/sdb.
+- [x] Fase 6: Verifica e riallineamento etcd quorum e uncordon talos-cp-03 con taint permanente Control Plane Puro.
+- [x] Fase 7: Provisioning CT 300 (Ollama) su PVE3 con pinning CPU Zen 5c (8-19) e pass-through iGPU Radeon 890M.
+- [x] Fase 8: Provisioning CT 301 (Gaming Direct-HDMI) su PVE3 con pinning CPU Zen 5 (0-7), Gamescope/Steam e KVM IP Streamer HDMI (VLAN 40).
+- [x] Fase 9: Validazione end-to-end e consolidamento documentale su wiki/entities/Talos_Cluster.md.
 
 ## 🚀 [ ] Migrazione Definitiva Servarr: K8s -> Docker su TrueNAS [[servarr-truenas-permanent-migration]]
 - [x] Fase 1: Creazione dataset e verifica ZFS Replication Tasks.

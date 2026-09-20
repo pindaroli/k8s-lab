@@ -886,10 +886,42 @@
         "k3"
       ],
       "vip": "10.10.20.55",
-      "role": "Kubernetes Control Plane",
-      "os": "Talos Linux 1.12.0",
+      "role": "Kubernetes Control Plane (pure CP / etcd only)",
+      "os": "Talos Linux 1.13.5",
       "network": "VLAN 20 (vmbr20)",
-      "host_node_sticky": true
+      "host_node_sticky": true,
+      "resources": "2 vCPU / 4 GB RAM (affinity 20-23, cpuunits 2048)",
+      "notes": "Control Plane puro con taint node-role.kubernetes.io/control-plane:NoSchedule. Disco locale /dev/sdb evacuato."
+    },
+    {
+      "id": "lxc-ollama",
+      "label": "LXC Ollama LLM Inference",
+      "type": "LXC",
+      "host_node": "pve3",
+      "vm_id": "300",
+      "ip": "10.10.20.33",
+      "mac": "bc:24:11:92:75:97",
+      "role": "Local LLM inference (Ollama / Vulkan RADV / Radeon 890M)",
+      "os": "Ubuntu 24.04 LTS",
+      "network": "VLAN 20 (vmbr20)",
+      "resources": "12 vCPU pinned 8-19 / 38 GB RAM",
+      "host_node_sticky": true,
+      "notes": "Ollama 0.34.2 on :11434 with OLLAMA_IGPU_ENABLE=1, HSA_OVERRIDE_GFX_VERSION=11.5.0. Vulkan RADV GFX1150 ~31.7 GiB."
+    },
+    {
+      "id": "lxc-gaming-hdmi",
+      "label": "LXC Gaming Direct-HDMI",
+      "type": "LXC",
+      "host_node": "pve3",
+      "vm_id": "301",
+      "ip": "10.10.20.34",
+      "mac": "bc:24:11:23:b1:91",
+      "role": "Steam on physical HDMI via KVM IP Streamer (VLAN 40)",
+      "os": "Ubuntu 24.04 LTS",
+      "network": "VLAN 20 (vmbr20)",
+      "resources": "8 vCPU pinned 0-7 / 16 GB RAM",
+      "host_node_sticky": true,
+      "notes": "Mesa RADV 890M + steam-installer + NFS /mnt/games (stripe/games). gamescope assente nei repo Ubuntu 24.04; Steam Big Picture su HDMI nativo. Nessun Sunshine/Moonlight."
     },
     {
       "id": "traefik-lb",

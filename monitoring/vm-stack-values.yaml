@@ -3,7 +3,7 @@
 # Homelab: pindaroli / Talos Linux v1.12.0
 # Chart: vm/victoria-metrics-k8s-stack v0.72.5 (VM v1.138.0)
 # Namespace: monitoring
-# Storage: local-postgres (rancher.io/local-path) on talos-cp-03
+# Storage: csi-nfs-stripe-arr-conf (TrueNAS stripe NVMe) — evacuated from talos-cp-03
 # Retention: 30 days
 # ============================================================
 
@@ -92,8 +92,7 @@ defaultRules:
 
 # ============================================================
 # VMSINGLE — storage delle metriche (single-node mode)
-# Pinned su talos-cp-03 tramite nodeSelector
-# Upgrade path: VMSingle -> VMCluster quando PVE3 torna online
+# Persistenza su TrueNAS stripe NVMe via NFS CSI (evacuato da talos-cp-03)
 # ============================================================
 vmsingle:
   enabled: true
@@ -101,10 +100,6 @@ vmsingle:
     port: "8428"
     retentionPeriod: "30d"
     replicaCount: 1
-    # Pin su talos-cp-03 (IP: 10.10.20.143)
-    # Dati fisicamente su disco locale di questo nodo
-    nodeSelector:
-      kubernetes.io/hostname: talos-cp-03
     # Toleration per permettere scheduling su control-plane nodes
     tolerations:
       - key: node-role.kubernetes.io/control-plane
@@ -113,7 +108,7 @@ vmsingle:
     storage:
       accessModes:
         - ReadWriteOnce
-      storageClassName: local-postgres
+      storageClassName: csi-nfs-stripe-arr-conf
       resources:
         requests:
           storage: 20Gi
@@ -262,11 +257,8 @@ grafana:
   # Persistenza Grafana (configurazioni dashboard, utenti, etc.)
   persistence:
     enabled: true
-    storageClassName: local-postgres
+    storageClassName: csi-nfs-stripe-arr-conf
     size: 5Gi
-  # nodeSelector per mettere Grafana sullo stesso nodo dei dati
-  nodeSelector:
-    kubernetes.io/hostname: talos-cp-03
   tolerations:
     - key: node-role.kubernetes.io/control-plane
       operator: Exists
