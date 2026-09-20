@@ -6,8 +6,8 @@ sources:
   url: ''
 summary: Guide to developing and registering custom shell scripts for automation tasks.
 tags:
-- shell scripting
 - opnsense
+- scripting
 - system administration
 title: Creating Custom Shell Scripts in OPNsense / OPNsense中的Shell脚本创建
 updated: '2026-08-27T04:15:00.799735+00:00'
@@ -24,7 +24,7 @@ In OPNsense, custom Shell scripts can be created and registered as automation ac
 
 Best practices include testing scripts in CLI before deployment and ensuring proper permissions.
 
-[[OPNsense System Automation]]
+[[opnsense-system-automation|OPNsense System Automation]]
 
 ## 中文
 
@@ -37,7 +37,7 @@ Best practices include testing scripts in CLI before deployment and ensuring pro
 
 建议在部署前对脚本进行 CLI 测试，并确保所有权限设置正确。
 
-[[OPNsense 系统自动化]]
+[[opnsense-system-automation|OPNsense 系统自动化]]
 
 ## 日本語
 
@@ -50,4 +50,4 @@ OPNsense では、独自のシェル スクリプトを作成し、自動化ア�
 
 スクリプトのデプロイメント前に CLI でのテストや適切なパーミッション設定を行うことをお勧めします。
 
-[[OPNsense システム アウトソーシング]]
+[[opnsense-system-automation|OPNsense システム アウトソーシング]]

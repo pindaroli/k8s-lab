@@ -81,8 +81,8 @@
     "title": "Creating Custom Shell Scripts in OPNsense / OPNsense中的Shell脚本创建",
     "summary": "Guide to developing and registering custom shell scripts for automation tasks.",
     "tags": [
-      "shell scripting",
       "opnsense",
+      "scripting",
       "system administration"
     ],
     "sources": [
@@ -95,7 +95,7 @@
   },
   {
     "slug": "opnsense-system-automation",
-    "title": "OPNsense System Automation / OPNsense系统自动化",
+    "title": "OPNsense System Automation / OPNsense系统自动化 / OPNsense システム アウトソーシング",
     "summary": "Comprehensive guide to automating system tasks in OPNsense using configd and Cron.",
     "tags": [
       "automation",

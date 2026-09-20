@@ -24,7 +24,7 @@ ServiceNow provides robust tools for managing IT operations, including integrati
 ### Key Concepts
 
 #### 1. GitOps Provisioning
-GitOps leverages Git repositories as the single source of truth for infrastructure configurations. In ServiceNow, this involves creating manifests that define desired cluster states and committing them to a repository.
+GitOps leverages Git repositories as the single source of truth for infrastructure configurations. In ServiceNow, this involves creating manifests that define desired cluster states and committing them to a repository. See [[gitops-provisioning-autobrr|GitOps Provisioning for Autobrr]] and [[gitops-methodology-autobrr-implementation|GitOps Methodology Implementation]].
 
 #### 2. Cluster Resource Inventory
 ServiceNow discovers Kubernetes clusters by interacting with resource inventories. This process involves identifying PersistentVolumes (PVs) and PersistentVolumeClaims (PVCs) managed through Container Storage Interfaces (CSI). The CSI driver handles PV allocation and lifecycle, while ServiceNow collects inventory data via REST APIs or CLI tools like Kubectl.
@@ -49,7 +49,7 @@ ServiceNow facilitates Kubernetes cluster discovery by managing resource invento
 ServiceNow 提供了强大的工具来管理IT运营，其中包括与Kubernetes的集成。指南探索了ServiceNow如何发现Kubernetes集群并使用GitOps方法进行资源管理。
 
 #### 1. GitOps配置
-GitOps通过Git仓库作为基础设施配置的唯一真实来源。在ServiceNow中，这涉及创建定义期望集群状态的手册，并将其提交到存储库中。
+GitOps通过Git仓库作为基础设施配置的唯一真实来源。在ServiceNow中，这涉及创建定义期望集群状态的手册，并将其提交到存储库中。参阅 [[gitops-provisioning-autobrr|Autobrr的GitOps配置]] 与 [[gitops-methodology-autobrr-implementation|自动化实现的GitOps方法论]]。
 
 #### 2. 集群资源清单
 ServiceNow通过与资源清单交互发现Kubernetes集群。过程包括识别PersistentVolumes（PV）和 PersistentVolumeClaims (PVC)，这些由容器存储接口（CSI）管理。
@@ -74,7 +74,7 @@ Kubernetes中的服务发现涉及自动检测服务而不需手动查找。本�
 ServiceNowは、IT運用を管理するための強力なツールです。このガイドでは、ServiceNowがKubernetesクラスターを発見し、GitOpsメソッドでリソースを管理する方法について解説します。
 
 #### 1. GitOpsプロビジョニング
-GitOpsはGitリポジトリをインフラストラクチャの定義として使用し、単一の真実源とします。ServiceNowでは、クラスター状態を定義した宣言を作成し、リポジトリにコミットします。
+GitOpsはGitリポジトリをインフラストラクチャの定義として使用し、単一の真実源とします。ServiceNowでは、クラスター状態を定義した宣言を作成し、リポジトリにコミットします。参照: [[gitops-provisioning-autobrr|Autobrr用GitOpsプロビジョニング]] および [[gitops-methodology-autobrr-implementation|GitOps方法論の実装]]。
 
 #### 2. クラスター リソース アンティテイ
 ServiceNowはKubernetesクラスターを発見するために、PV（PERSISTENTVOLUME）と PVC（PERSISTENTVOLUMECLAIM）のリソースアンティテイを使用します。これがContainderStorageInterface (CSI)により管理されます。

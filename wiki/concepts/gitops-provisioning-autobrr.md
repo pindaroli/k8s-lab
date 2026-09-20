@@ -32,10 +32,8 @@ GitOps provisioning for Autobrr involves several critical components:
 4. **Database Seeding**: Strategies for initializing PostgreSQL databases.
 
 For more details, see related articles: 
-- [[GitOps API Configuration Patterns]]
-- [[Secret Management in GitOps]]
-- [[Kubernetes Job Patterns]]
-- [[PostgreSQL Database Seeding]]
+- [[gitops-methodology-autobrr-implementation|GitOps Methodology Implementation]]
+- [[servicenow-k8s-discovery|ServiceNow Kubernetes Discovery]]
 
 ## 中文
 
@@ -50,10 +48,8 @@ Autobrr的GitOps配置涉及以下关键组件：
 4. **数据库种子策略**: 初始化PostgreSQL数据库的策略。
 
 更多详情，参阅相关文章：
-- [[GitOps API配置模式]]
-- [[GitOps中的密钥管理]]
-- [[Kubernetes任务模式]]
-- [[PostgreSQL数据库播种]]
+- [[gitops-methodology-autobrr-implementation|自动化实现的GitOps方法论]]
+- [[servicenow-k8s-discovery|服务现在Kubernetes发现]]
 
 ## 日本語
 
@@ -68,7 +64,5 @@ Autobrr用にGitOps プロビジョニング を実施する場合、以下の�
 4. **データベース シード戦略**: PostgreSQLデータベースを初期化するための方法。
 
 詳細については、以下の関連記事をご覧ください：
-- [[GitOps API 設定パターン]]
-- [[GitOpsでのシークレット管理 ]]
-- [[Kubernetesジョブ パターン]]
-- [[PostgreSQLデータベース シード]]
+- [[gitops-methodology-autobrr-implementation|GitOps Methodology Implementation / 自动化实现的GitOps方法论]]
+- [[servicenow-k8s-discovery|ServiceNow Kubernetes Discovery / 服务现在Kubernetes发现]]

@@ -13,7 +13,7 @@ tags:
 - automation
 - opnsense
 - scripting
-title: OPNsense System Automation / OPNsense系统自动化
+title: OPNsense System Automation / OPNsense系统自动化 / OPNsense システム アウトソーシング
 updated: '2026-08-27T04:18:37.848188+00:00'
 ---
 
@@ -33,7 +33,7 @@ OPNsense provides built-in automation capabilities through its **configd** frame
 - Use logging statements for easier troubleshooting.
 - Keep script paths consistent and use absolute paths wherever possible.
 
-[[OPNsense Configd Architecture]] | [[OPNsense Shell Script Creation]]
+[[opnsense-configd-architecture|OPNsense Configd Architecture]] | [[opnsense-shell-script-creation|Creating Custom Shell Scripts in OPNsense]] | [[opnsense-cron-job-scheduling|Cron Job Scheduling in OPNsense]]
 
 ## 中文
 
@@ -51,7 +51,7 @@ OPNsense 通过其 **configd** 框架和集成的 **Cron** 任务调度程序提
 - 使用日志语句以便于故障排查。
 - 保持脚本路径的一致性，并尽可能使用绝对路径。
 
-[[OPNsense 的 Configd 架构]] | [[OPNsense Shell 脚本创建]]
+[[opnsense-configd-architecture|OPNsense的Configd架构]] | [[opnsense-shell-script-creation|OPNsense中的Shell脚本创建]] | [[opnsense-cron-job-scheduling|OPNsense中的Cron任务调度]]
 
 ## 日本語
 
@@ -69,4 +69,4 @@ OPNsense は、その **configd** フレームワークと統合された **Cron
 - 故障排除を容易にするためログ メッセージを使用すること。
 - 絶対パスの使用を優先し、スクリプト パスの一致性を保持すること。
 
-[[OPNsense Configd アーキテクチャ]] | [[OPNsense シェル スクリプト作成]]
+[[opnsense-configd-architecture|OPNsense Configd アーキテクチャ]] | [[opnsense-shell-script-creation|Creating Custom Shell Scripts in OPNsense]] | [[opnsense-cron-job-scheduling|Cron Job Scheduling in OPNsense]]
