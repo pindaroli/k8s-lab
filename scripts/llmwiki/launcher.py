@@ -17,10 +17,20 @@ def main():
     os.environ["LLMBASE_MODEL"] = model
     os.environ["MODEL"] = model
 
-    # 2. Risoluzione dinamica della cartella wiki del progetto attivo (CWD)
-    cwd = os.getcwd()
-    wiki_subpath = os.path.join(cwd, "wiki")
-    target_base_dir = wiki_subpath if os.path.isdir(wiki_subpath) else cwd
+    # 2. Risoluzione dinamica della cartella di root del progetto wiki
+    target_base_dir = os.getenv("WIKI_PATH") or os.getenv("LLMWIKI_BASE_DIR")
+    if not target_base_dir or not os.path.isdir(target_base_dir):
+        cwd = os.getcwd()
+        if os.path.isdir(os.path.join(cwd, "wiki")) or os.path.isdir(os.path.join(cwd, "raw")):
+            target_base_dir = cwd
+        elif os.path.basename(cwd) == "wiki" and (os.path.isdir(os.path.join(cwd, "_meta")) or os.path.isdir(os.path.join(cwd, "concepts"))):
+            target_base_dir = os.path.dirname(cwd)
+        else:
+            canonical = "/Users/olindo/prj/k8s-lab"
+            if os.path.isdir(canonical):
+                target_base_dir = canonical
+            else:
+                target_base_dir = cwd
 
     os.environ["WIKI_PATH"] = target_base_dir
 

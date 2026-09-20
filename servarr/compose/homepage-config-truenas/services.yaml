@@ -25,7 +25,6 @@
         href: https://10.10.10.100:8007
         description: Proxmox Backup Server (KVM VM su TrueNAS)
         icon: proxmox.png
-        siteMonitor: https://10.10.10.100:8007
     - Proxmox pve1:
         href: https://10.10.10.11:8006
         description: Proxmox VE Master (10.10.10.11)
