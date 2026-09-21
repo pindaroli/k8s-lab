@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAGFlow — report ingestion lab</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --surface: #fffcf6;
+      --ink: #1c1915;
+      --muted: #6b645a;
+      --line: #e2d8c8;
+      --p50: #2f6f4e;
+      --p95: #c47a12;
+      --wall: #6b4ea1;
+      --docs: #355f8a;
+      --stage: #8a3d3d;
+      --ok: #2f6f4e;
+      --bad: #a33b2c;
+      --shadow: 0 10px 30px rgba(28,25,21,.06);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    header {
+      padding: 36px 28px 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    header p { margin: 6px 0 0; color: var(--muted); }
+    h1 { margin: 0; font-size: 32px; letter-spacing: -.02em; }
+    main { max-width: 1180px; margin: 0 auto; padding: 28px; }
+    h2 { font-size: 22px; margin: 36px 0 8px; }
+    h3 { margin: 0 0 8px; font-size: 16px; }
+    h4 { margin: 0 0 8px; font-size: 14px; }
+    .lede { color: var(--muted); max-width: 72ch; margin: 0 0 20px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 20px 0 8px;
+    }
+    .metric, .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .metric .n { font-size: 26px; font-weight: 700; }
+    .metric .l, .muted, .note { color: var(--muted); font-size: 13px; }
+    .metric .l { line-height: 1.35; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    dl { margin: 10px 0; }
+    dl div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px dotted var(--line); }
+    dt { color: var(--muted); }
+    dd { margin: 0; text-align: right; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+    td.num { font-variant-numeric: tabular-nums; text-align: right; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+    td.ok { color: var(--ok); }
+    td.bad { color: var(--bad); font-weight: 700; }
+    td.wrap { word-break: break-word; }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 99px;
+      border: 1px solid var(--line);
+    }
+    .tag.dedicato { background: #e7f1ea; color: var(--p50); }
+    .tag.condiviso { background: #f4ead8; color: #8a5a10; }
+    .tag.esterno { background: #ece8f6; color: var(--wall); }
+    td.util { min-width: 110px; }
+    .util-n { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+    .util-p { font-size: 11px; color: var(--muted); }
+    .bar.okbar { background: var(--p50); }
+    .bar.hot { background: var(--bad); }
+    .sys-meta { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
+    .params { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 0; margin: 0 0 8px; list-style: none; }
+    .params li { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+    table.sys th { white-space: nowrap; }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .legend article { padding: 14px 16px; }
+    .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 99px; margin-right: 6px; }
+    .s-p50 { background: var(--p50); }
+    .s-p95 { background: var(--p95); }
+    .s-wall { background: var(--wall); }
+    .charts { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    @media (min-width: 960px) {
+      .charts-2 { grid-template-columns: 1fr 1fr; }
+    }
+    .chart {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .series { margin: 0 0 16px; }
+    .bar-line { display: grid; grid-template-columns: 88px 1fr 120px; gap: 8px; align-items: center; margin: 4px 0; }
+    .bar-k, .bar-v { font-size: 12px; color: var(--muted); }
+    .bar-v { text-align: right; font-variant-numeric: tabular-nums; }
+    .bar-track { background: #efe6d6; height: 12px; border-radius: 99px; overflow: hidden; }
+    .bar { display: block; height: 100%; border-radius: 99px; }
+    .bar.p50 { background: var(--p50); }
+    .bar.p95 { background: var(--p95); }
+    .bar.wall { background: var(--wall); }
+    .bar.docs { background: var(--docs); }
+    .bar.stage { background: var(--stage); }
+    .banner { padding: 12px 14px; border-radius: 12px; margin: 16px 0; }
+    .warn { background: #f8e4d4; }
+    footer { color: var(--muted); font-size: 13px; padding: 12px 0 40px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>RAGFlow · report di ingestion</h1>
+    <p>Lab GEMINI · https://ragflow-internal.pindaroli.org · snapshot 21/09/2026 16:35 · fonte solo namespace ragflow-system: Deployment ragflow + STS infinity + STS redis</p>
+  </header>
+  <main>
+    <section>
+      <h2>Dimensionamento Kubernetes</h2>
+      <p class="lede">Solo i tre workload del namespace <code>ragflow-system</code>: API+DeepDoc, Infinity, Redis. I numeri sotto sono la <strong>somma di quei tre pod</strong>. Niente Postgres condiviso, niente nodi Talos, niente share NFS padre.</p>
+      <p class="sys-meta">Come leggerli: <strong>prenotato</strong> = request Kubernetes (quanto lo scheduler tiene da parte). <strong>tetto</strong> = limit (oltre non può andare). <strong>adesso</strong> = uso live a riposo, senza ingest in corso. Disco = capienza dei due PVC (20+5 Gi); usati 13 Gi su Infinity.</p>
+      <div class="metrics">
+        <div class="metric"><div class="n">2.7 vCPU</div><div class="l">CPU prenotata<br>1.5+1.0+0.2</div></div>
+        <div class="metric"><div class="n">5.5 vCPU</div><div class="l">CPU tetto<br>3+2+0.5</div></div>
+        <div class="metric"><div class="n">5 m</div><div class="l">CPU adesso<br>3m+1m+1m</div></div>
+        <div class="metric"><div class="n">5.5 Gi</div><div class="l">RAM prenotata<br>3+2+0.5 Gi</div></div>
+        <div class="metric"><div class="n">11 Gi</div><div class="l">RAM tetto<br>6+4+1 Gi</div></div>
+        <div class="metric"><div class="n">5.3 Gi</div><div class="l">RAM adesso<br>4.8+0.6+0.0 Gi</div></div>
+        <div class="metric"><div class="n">25 Gi</div><div class="l">Disco PVC<br>20 Infinity + 5 Redis</div></div>
+        <div class="metric"><div class="n">13 Gi</div><div class="l">Disco usato<br>solo Infinity misurato</div></div>
+      </div>
+      <div style="overflow:auto">
+      <table class="sys">
+        <thead>
+          <tr>
+            <th>Servizio</th><th>Kind</th><th>Replica / nodo</th>
+            <th>CPU prenotata → tetto</th><th>CPU adesso</th>
+            <th>RAM prenotata → tetto</th><th>RAM adesso</th>
+            <th>PVC</th><th>Capienza / usato</th><th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>RAGFlow API + DeepDoc</strong><div class='muted'>infiniflow/ragflow:v0.27.1</div></td><td>Deployment<div class='muted'>ragflow-system</div></td><td>1/1<div class='muted'>talos-cp-01</div></td><td class='num'>1500m<div class='muted'>lim 3000m</div></td><td class='util'><div class='util-n'>3m</div><div class='bar-track'><span class='bar okbar' style='width:0.1%'></span></div><div class='util-p'>0% del limit CPU</div></td><td class='num'>3Gi<div class='muted'>lim 6Gi</div></td><td class='util'><div class='util-n'>4820Mi</div><div class='bar-track'><span class='bar hot' style='width:78.0%'></span></div><div class='util-p'>78% del limit RAM</div></td><td>nessuno (stateless)<div class='muted'>—</div></td><td class='num'>—<div class='muted'>usato —</div></td><td class='wrap'>RAM live al 78% del limit: è il pod che tiene DeepDoc in memoria.</td></tr><tr><td><strong>Infinity (indice vettoriale)</strong><div class='muted'>infiniflow/infinity:v0.7.3-x64-v3</div></td><td>StatefulSet<div class='muted'>ragflow-system</div></td><td>1/1<div class='muted'>talos-cp-02</div></td><td class='num'>1000m<div class='muted'>lim 2000m</div></td><td class='util'><div class='util-n'>1m</div><div class='bar-track'><span class='bar okbar' style='width:0.1%'></span></div><div class='util-p'>0% del limit CPU</div></td><td class='num'>2Gi<div class='muted'>lim 4Gi</div></td><td class='util'><div class='util-n'>645Mi</div><div class='bar-track'><span class='bar okbar' style='width:16.0%'></span></div><div class='util-p'>16% del limit RAM</div></td><td>ragflow-infinity<div class='muted'>local-postgres (NVMe)</div></td><td class='num'>20 Gi<div class='muted'>usato 13 Gi (65% del PVC)</div></td><td class='wrap'>Unica replica. Occupazione misurata su /var/infinity.</td></tr><tr><td><strong>Redis / Valkey (coda task)</strong><div class='muted'>valkey/valkey:8</div></td><td>StatefulSet<div class='muted'>ragflow-system</div></td><td>1/1<div class='muted'>talos-cp-01</div></td><td class='num'>200m<div class='muted'>lim 500m</div></td><td class='util'><div class='util-n'>1m</div><div class='bar-track'><span class='bar okbar' style='width:0.2%'></span></div><div class='util-p'>0% del limit CPU</div></td><td class='num'>512Mi<div class='muted'>lim 1Gi</div></td><td class='util'><div class='util-n'>5Mi</div><div class='bar-track'><span class='bar okbar' style='width:0.5%'></span></div><div class='util-p'>0% del limit RAM</div></td><td>redis-data-ragflow-redis-0<div class='muted'>csi-nfs-stripe-arr-conf</div></td><td class='num'>5 Gi<div class='muted'>usato non misurato sul PVC</div></td><td class='wrap'>Unica replica. --maxmemory 128mb. RAM live 5 Mi.</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3 style="margin-top:20px">Parametri applicativi</h3>
+      <ul class="params"><li><strong>DOC_ENGINE</strong> infinity</li><li><strong>DOC_BULK_SIZE</strong> 4 task paralleli</li><li><strong>EMBEDDING_BATCH_SIZE</strong> 16</li><li><strong>TZ</strong> Europe/Rome</li></ul>
+    </section>
+
+    <section>
+      <h2>PostgreSQL · cluster CNPG usato da RAGFlow</h2>
+      <p class="lede">Questo è il dimensionamento del servizio <code>postgres-main</code> (namespace <code>cnpg-system</code>), non dei tre pod RAGFlow. Il cluster è condiviso con altri database. La quota <em>netta</em> di RAGFlow è solo il database <code>rag_flow</code>.</p>
+      <div class="metrics">
+        <div class="metric"><div class="n">28 MB</div><div class="l">DB rag_flow<br>occupazione netta RAGFlow</div></div>
+        <div class="metric"><div class="n">2</div><div class="l">Istanze CNPG<br>primary + replica</div></div>
+        <div class="metric"><div class="n">186 m</div><div class="l">CPU adesso (somma 2 pod)<br>request/limit: nessuno</div></div>
+        <div class="metric"><div class="n">560 Mi</div><div class="l">RAM adesso (somma 2 pod)<br>request/limit: nessuno</div></div>
+        <div class="metric"><div class="n">100 Gi × 2</div><div class="l">PVC dati del servizio<br>4 Gi primary + 10 Gi replica</div></div>
+        <div class="metric"><div class="n">3.3 Gi</div><div class="l">Dati fisici sul primary<br>tutti i DB, non solo RAGFlow</div></div>
+      </div>
+      <p class="sys-meta">Somma logica di tutti i database sull’istanza: ~642 MB. RAGFlow è 28 MB su quel totale. Image postgresql:18.1-system-trixie. <code>spec.resources</code> del Cluster è vuoto: Kubernetes non prenota CPU/RAM a Postgres.</p>
+      <div style="overflow:auto">
+      <table class="sys">
+        <thead>
+          <tr>
+            <th>Istanza</th><th>Ruolo</th><th>Nodo</th>
+            <th>CPU adesso</th><th>RAM adesso</th>
+            <th>PVC dati</th><th>PVC WAL</th><th>Usato sul volume</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>postgres-main-3</strong></td><td>primary</td><td>talos-cp-01</td><td class='num'>177 m</td><td class='num'>378 Mi</td><td class='num'>100 Gi</td><td class='num'>4 Gi</td><td>3.3 Gi</td></tr><tr><td><strong>postgres-main-7</strong></td><td>replica</td><td>talos-cp-02</td><td class='num'>9 m</td><td class='num'>182 Mi</td><td class='num'>100 Gi</td><td class='num'>10 Gi</td><td>non isolabile (stesso NVMe di Infinity)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="metrics">
+        <div class="metric"><div class="n">679</div><div class="l">Documenti</div></div>
+        <div class="metric"><div class="n">674</div><div class="l">DONE</div></div>
+        <div class="metric"><div class="n">5</div><div class="l">FAIL</div></div>
+        <div class="metric"><div class="n">4.295</div><div class="l">Chunk</div></div>
+        <div class="metric"><div class="n">2.078.898</div><div class="l">Token indicizzati</div></div>
+        <div class="metric"><div class="n">v0.27.1</div><div class="l">Image RAGFlow</div></div>
+      </div>
+
+    </section>
+
+    <section>
+      <h2>Caratteristiche dei dataset</h2>
+      <p class="lede">Parser DeepDOC su tutti. GraphRAG/RAPTOR risultano accesi in config su alcuni dataset, ma i tempi sotto misurano solo parse → chunk → embed → index per documento, non i job di grafo.</p>
+      <div style="overflow:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Dataset</th><th>Creato</th><th>Chunk method</th><th>Layout</th>
+            <th>GraphRAG</th><th>RAPTOR</th><th>Docs</th><th>Chunk</th><th>Token</th><th>Embedding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>kef-api</strong></td><td>2026-09-08</td><td>naive</td><td>DeepDOC</td><td>sì</td><td>sì</td><td class='num'>1</td><td class='num'>6</td><td class='num'>2.073</td><td class='wrap'>bge-m3:latest@mac@Ollama</td></tr><tr><td><strong>opnsense</strong></td><td>2026-09-06</td><td>naive</td><td>DeepDOC</td><td>sì</td><td>sì</td><td class='num'>421</td><td class='num'>2.529</td><td class='num'>1.299.304</td><td class='wrap'>bge-m3:latest@mac@Ollama</td></tr><tr><td><strong>truenas</strong></td><td>2026-09-06</td><td>naive</td><td>DeepDOC</td><td>no</td><td>no</td><td class='num'>239</td><td class='num'>1.297</td><td class='num'>676.316</td><td class='wrap'>bge-m3:latest@mac@Ollama</td></tr><tr><td><strong>k8s-lab</strong></td><td>2026-08-31</td><td>manual</td><td>DeepDOC</td><td>no</td><td>no</td><td class='num'>17</td><td class='num'>393</td><td class='num'>90.279</td><td class='wrap'>bge-m3:latest@mac@Ollama</td></tr><tr><td><strong>acinque</strong></td><td>2026-08-30</td><td>manual</td><td>DeepDOC</td><td>no</td><td>no</td><td class='num'>1</td><td class='num'>70</td><td class='num'>10.926</td><td class='wrap'>bge-m3:latest@mac@Ollama</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Legenda delle metriche</h2>
+      <p class="lede">Due orologi: <strong>task</strong> è il lavoro vero letto da <code>Task done (Xs)</code> nel log; <strong>wall</strong> è <code>process_duration</code>, che include coda Redis, retry e Ollama giù.</p>
+      <div class="legend">
+        <article class="card"><h3>docs / done / fail</h3><p>Quanti file nel dataset, quanti finiti, quanti in errore. <code>other</code> sarebbe RUNNING/CANCEL; qui è 0.</p></article>
+        <article class="card"><h3><span class="swatch s-p50"></span>p50 (mediana)</h3><p>Metà dei documenti è più veloce, metà più lenta. È il tempo del file <em>tipico</em>, non distorto dai pochi PDF lunghi.</p></article>
+        <article class="card"><h3><span class="swatch s-p95"></span>p95 (coda)</h3><p>Il 95% è più veloce di questo valore; solo 1 file su 20 è peggio. Serve per dimensionare, non per descrivere il caso comune.</p></article>
+        <article class="card"><h3>avg e max</h3><p>La media sale se hai outlier (es. manuali ASUS). Il max è il singolo peggiore. Se avg &gt; p50, la distribuzione ha una coda lunga.</p></article>
+        <article class="card"><h3>task_sum</h3><p>Somma dei tempi di lavoro. Con <code>DOC_BULK_SIZE=4</code> il wall del batch è circa task_sum / 4, non la somma seriale.</p></article>
+        <article class="card"><h3><span class="swatch s-wall"></span>wall p50 / p95</h3><p>Quanto il job è rimasto aperto. Su OPNsense wall ≫ task perché 421 file aspettano in coda. Non è costo DeepDoc.</p></article>
+        <article class="card"><h3>OCR / layout / tabelle</h3><p>Fasi DeepDoc sui PDF. Assenti sui markdown (trattino). In <code>k8s-lab</code> le tabelle dominano.</p></article>
+        <article class="card"><h3>embedding / indexing</h3><p>Embedding = bge-m3 su Ollama. Indexing = scrittura su Infinity. Sui markdown l’indexing è il pezzo più lento.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Statistiche di ingestion</h2>
+      <div style="overflow:auto; margin-bottom: 18px">
+      <table>
+        <thead>
+          <tr>
+            <th>Dataset</th><th>docs</th><th>done</th><th>fail</th>
+            <th>task_sum</th><th>avg</th><th>p50</th><th>p95</th><th>max</th>
+            <th>wall p50</th><th>wall p95</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>kef-api</strong></td><td class='num'>1</td><td class='num ok'>1</td><td class='num '>0</td><td class='num'>3.65 s</td><td class='num'>3.65 s</td><td class='num'>3.65 s</td><td class='num'>3.65 s</td><td class='num'>3.65 s</td><td class='num'>7.80 s</td><td class='num'>7.80 s</td></tr><tr><td><strong>opnsense</strong></td><td class='num'>421</td><td class='num ok'>421</td><td class='num '>0</td><td class='num'>1.3 h</td><td class='num'>11.19 s</td><td class='num'>5.55 s</td><td class='num'>40.28 s</td><td class='num'>1.2 min</td><td class='num'>6.7 min</td><td class='num'>13.3 min</td></tr><tr><td><strong>truenas</strong></td><td class='num'>239</td><td class='num ok'>239</td><td class='num '>0</td><td class='num'>40.5 min</td><td class='num'>10.18 s</td><td class='num'>5.57 s</td><td class='num'>27.49 s</td><td class='num'>1.4 min</td><td class='num'>2.4 min</td><td class='num'>6.8 min</td></tr><tr><td><strong>k8s-lab</strong></td><td class='num'>17</td><td class='num ok'>12</td><td class='num bad'>5</td><td class='num'>23.4 min</td><td class='num'>2.0 min</td><td class='num'>49.61 s</td><td class='num'>6.3 min</td><td class='num'>6.9 min</td><td class='num'>3.0 min</td><td class='num'>12.0 min</td></tr><tr><td><strong>acinque</strong></td><td class='num'>1</td><td class='num ok'>1</td><td class='num '>0</td><td class='num'>27.11 s</td><td class='num'>27.11 s</td><td class='num'>27.11 s</td><td class='num'>27.11 s</td><td class='num'>27.11 s</td><td class='num'>31.34 s</td><td class='num'>31.34 s</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="charts charts-2">
+        <div class="chart">
+          <h3>Documenti per dataset</h3>
+          <div class="series"><h4>kef-api</h4><div class="bar-line"><span class="bar-k">docs</span><div class="bar-track"><span class="bar docs" style="width:2.0%"></span></div><span class="bar-v">1 · 1 done · 0 fail</span></div></div><div class="series"><h4>opnsense</h4><div class="bar-line"><span class="bar-k">docs</span><div class="bar-track"><span class="bar docs" style="width:100.0%"></span></div><span class="bar-v">421 · 421 done · 0 fail</span></div></div><div class="series"><h4>truenas</h4><div class="bar-line"><span class="bar-k">docs</span><div class="bar-track"><span class="bar docs" style="width:56.8%"></span></div><span class="bar-v">239 · 239 done · 0 fail</span></div></div><div class="series"><h4>k8s-lab</h4><div class="bar-line"><span class="bar-k">docs</span><div class="bar-track"><span class="bar docs" style="width:4.0%"></span></div><span class="bar-v">17 · 12 done · 5 fail</span></div></div><div class="series"><h4>acinque</h4><div class="bar-line"><span class="bar-k">docs</span><div class="bar-track"><span class="bar docs" style="width:2.0%"></span></div><span class="bar-v">1 · 1 done · 0 fail</span></div></div>
+        </div>
+        <div class="chart">
+          <h3>Tempo di lavoro (task) · p50 vs p95</h3>
+          <p class="muted">Scala relativa al p95 di quel dataset: la barra verde è quanto è “tipico” rispetto alla coda.</p>
+          <div class="series"><h4>kef-api</h4><div class="bar-line"><span class="bar-k">p50</span><div class="bar-track"><span class="bar p50" style="width:100.0%"></span></div><span class="bar-v">3.65 s</span></div><div class="bar-line"><span class="bar-k">p95</span><div class="bar-track"><span class="bar p95" style="width:100.0%"></span></div><span class="bar-v">3.65 s</span></div></div><div class="series"><h4>opnsense</h4><div class="bar-line"><span class="bar-k">p50</span><div class="bar-track"><span class="bar p50" style="width:13.8%"></span></div><span class="bar-v">5.55 s</span></div><div class="bar-line"><span class="bar-k">p95</span><div class="bar-track"><span class="bar p95" style="width:100.0%"></span></div><span class="bar-v">40.28 s</span></div></div><div class="series"><h4>truenas</h4><div class="bar-line"><span class="bar-k">p50</span><div class="bar-track"><span class="bar p50" style="width:20.3%"></span></div><span class="bar-v">5.57 s</span></div><div class="bar-line"><span class="bar-k">p95</span><div class="bar-track"><span class="bar p95" style="width:100.0%"></span></div><span class="bar-v">27.49 s</span></div></div><div class="series"><h4>k8s-lab</h4><div class="bar-line"><span class="bar-k">p50</span><div class="bar-track"><span class="bar p50" style="width:13.1%"></span></div><span class="bar-v">49.61 s</span></div><div class="bar-line"><span class="bar-k">p95</span><div class="bar-track"><span class="bar p95" style="width:100.0%"></span></div><span class="bar-v">6.3 min</span></div></div><div class="series"><h4>acinque</h4><div class="bar-line"><span class="bar-k">p50</span><div class="bar-track"><span class="bar p50" style="width:100.0%"></span></div><span class="bar-v">27.11 s</span></div><div class="bar-line"><span class="bar-k">p95</span><div class="bar-track"><span class="bar p95" style="width:100.0%"></span></div><span class="bar-v">27.11 s</span></div></div>
+        </div>
+        <div class="chart">
+          <h3>Coda: task p50 vs wall p50</h3>
+          <p class="muted">Se la barra viola è molto più lunga della verde, il file ha aspettato, non lavorato.</p>
+          <div class="series"><h4>kef-api</h4><div class="bar-line"><span class="bar-k">task p50</span><div class="bar-track"><span class="bar p50" style="width:46.8%"></span></div><span class="bar-v">3.65 s</span></div><div class="bar-line"><span class="bar-k">wall p50</span><div class="bar-track"><span class="bar wall" style="width:100.0%"></span></div><span class="bar-v">7.80 s</span></div></div><div class="series"><h4>opnsense</h4><div class="bar-line"><span class="bar-k">task p50</span><div class="bar-track"><span class="bar p50" style="width:2.0%"></span></div><span class="bar-v">5.55 s</span></div><div class="bar-line"><span class="bar-k">wall p50</span><div class="bar-track"><span class="bar wall" style="width:100.0%"></span></div><span class="bar-v">6.7 min</span></div></div><div class="series"><h4>truenas</h4><div class="bar-line"><span class="bar-k">task p50</span><div class="bar-track"><span class="bar p50" style="width:3.9%"></span></div><span class="bar-v">5.57 s</span></div><div class="bar-line"><span class="bar-k">wall p50</span><div class="bar-track"><span class="bar wall" style="width:100.0%"></span></div><span class="bar-v">2.4 min</span></div></div><div class="series"><h4>k8s-lab</h4><div class="bar-line"><span class="bar-k">task p50</span><div class="bar-track"><span class="bar p50" style="width:27.6%"></span></div><span class="bar-v">49.61 s</span></div><div class="bar-line"><span class="bar-k">wall p50</span><div class="bar-track"><span class="bar wall" style="width:100.0%"></span></div><span class="bar-v">3.0 min</span></div></div><div class="series"><h4>acinque</h4><div class="bar-line"><span class="bar-k">task p50</span><div class="bar-track"><span class="bar p50" style="width:86.5%"></span></div><span class="bar-v">27.11 s</span></div><div class="bar-line"><span class="bar-k">wall p50</span><div class="bar-track"><span class="bar wall" style="width:100.0%"></span></div><span class="bar-v">31.34 s</span></div></div>
+        </div>
+        <div class="chart">
+          <h3>Fasi DeepDoc / indexing (p50)</h3>
+          <div class="series"><h4>kef-api</h4><div class="bar-line"><span class="bar-k">OCR</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Layout</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Tabelle</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Embedding</span><div class="bar-track"><span class="bar stage" style="width:25.8%"></span></div><span class="bar-v">0.58 s</span></div><div class="bar-line"><span class="bar-k">Indexing</span><div class="bar-track"><span class="bar stage" style="width:100.0%"></span></div><span class="bar-v">2.25 s</span></div></div><div class="series"><h4>opnsense</h4><div class="bar-line"><span class="bar-k">OCR</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Layout</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Tabelle</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Embedding</span><div class="bar-track"><span class="bar stage" style="width:7.2%"></span></div><span class="bar-v">0.37 s</span></div><div class="bar-line"><span class="bar-k">Indexing</span><div class="bar-track"><span class="bar stage" style="width:100.0%"></span></div><span class="bar-v">5.17 s</span></div></div><div class="series"><h4>truenas</h4><div class="bar-line"><span class="bar-k">OCR</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Layout</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Tabelle</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Embedding</span><div class="bar-track"><span class="bar stage" style="width:8.3%"></span></div><span class="bar-v">0.43 s</span></div><div class="bar-line"><span class="bar-k">Indexing</span><div class="bar-track"><span class="bar stage" style="width:100.0%"></span></div><span class="bar-v">5.18 s</span></div></div><div class="series"><h4>k8s-lab</h4><div class="bar-line"><span class="bar-k">OCR</span><div class="bar-track"><span class="bar stage" style="width:53.4%"></span></div><span class="bar-v">13.73 s</span></div><div class="bar-line"><span class="bar-k">Layout</span><div class="bar-track"><span class="bar stage" style="width:15.6%"></span></div><span class="bar-v">4.00 s</span></div><div class="bar-line"><span class="bar-k">Tabelle</span><div class="bar-track"><span class="bar stage" style="width:100.0%"></span></div><span class="bar-v">25.70 s</span></div><div class="bar-line"><span class="bar-k">Embedding</span><div class="bar-track"><span class="bar stage" style="width:3.7%"></span></div><span class="bar-v">0.96 s</span></div><div class="bar-line"><span class="bar-k">Indexing</span><div class="bar-track"><span class="bar stage" style="width:16.0%"></span></div><span class="bar-v">4.12 s</span></div></div><div class="series"><h4>acinque</h4><div class="bar-line"><span class="bar-k">OCR</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Layout</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Tabelle</span><div class="bar-track"><span class="bar stage" style="width:0.0%"></span></div><span class="bar-v">—</span></div><div class="bar-line"><span class="bar-k">Embedding</span><div class="bar-track"><span class="bar stage" style="width:14.3%"></span></div><span class="bar-v">2.97 s</span></div><div class="bar-line"><span class="bar-k">Indexing</span><div class="bar-track"><span class="bar stage" style="width:100.0%"></span></div><span class="bar-v">20.81 s</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Documenti più lenti</h2>
+      <p class="lede">Ordinati per tempo di lavoro <code>task</code>. Un FAIL può comunque avere minuti di OCR alle spalle e un wall enorme per i retry.</p>
+      <div style="overflow:auto">
+      <table>
+        <thead><tr><th>task</th><th>wall</th><th>run</th><th>dataset</th><th>documento</th></tr></thead>
+        <tbody>
+          <tr><td class='num'>6.9 min</td><td class='num'>11.8 min</td><td>DONE</td><td>k8s-lab</td><td class='wrap'>E22543_TUF_GAMING_B550M_PLUS_WIFI_II_UM_v2_WEB.pdf</td></tr><tr><td class='num'>5.7 min</td><td class='num'>5.4 min</td><td>DONE</td><td>k8s-lab</td><td class='wrap'>PRIME_TUF_GAMING_B550_Series_BIOS_EM_WEB_EN.pdf</td></tr><tr><td class='num'>3.4 min</td><td class='num'>425.1 h</td><td>FAIL</td><td>k8s-lab</td><td class='wrap'>HX750-power-supply-Series-2021_QSG_AC_WW.pdf</td></tr><tr><td class='num'>3.2 min</td><td class='num'>2.7 min</td><td>DONE</td><td>k8s-lab</td><td class='wrap'>Manuale-790S7(DB790i+7L机箱)-(MP_V1.02)-2024.10.8.pdf</td></tr><tr><td class='num'>2.4 min</td><td class='num'>2.4 min</td><td>DONE</td><td>k8s-lab</td><td class='wrap'>N4 Installation Manual.pdf</td></tr><tr><td class='num'>1.7 min</td><td class='num'>1.7 min</td><td>DONE</td><td>k8s-lab</td><td class='wrap'>AP11000_V1.0_Datasheet.pdf</td></tr><tr><td class='num'>1.4 min</td><td class='num'>3.7 min</td><td>DONE</td><td>truenas</td><td class='wrap'>truenas-25.10/GettingStarted/VersionNotes.md</td></tr><tr><td class='num'>1.2 min</td><td class='num'>11.7 min</td><td>DONE</td><td>opnsense</td><td class='wrap'>opnsense-26.1/releases/CE_26.1.md</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <footer>
+      Generato da <code>scripts/ragflow/ingestion_stats.py --html</code>.
+      Namespace Kubernetes <code>ragflow-system</code>.
+      Non commettere segreti: la API key resta in variabile d'ambiente.
+    </footer>
+  </main>
+</body>
+</html>
