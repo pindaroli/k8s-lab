@@ -168,3 +168,4 @@ Implementazione completata. Residui non bloccanti:
 - Disco locale `unused0` (`vm-3200-disk-1`) non distrutto.
 - `kube-state-metrics` può atterrare su `talos-cp-03` (taint tollerato dal chart Helm); footprint minimo.
 - `ContinuousArchivingFailing` su CNPG Barman è preesistente e fuori perimetro.
+- **Passthrough Periferiche Fisiche USB & Input su CT 301**: configurato accesso cgroup major 189 (USB) e 13 (Input) con mount `/dev/bus/usb` e `/dev/input` e regole udev host `99-usb-lxc.rules` (`MODE="0666"`). Periferica NuPhy Air75 V2 su porta fisica `3-2` (Hub Genesys Logic) pienamente attiva e verificata con permessi di lettura/scrittura all'interno di `lxc-steam`.
