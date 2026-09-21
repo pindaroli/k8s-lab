@@ -169,3 +169,11 @@ Implementazione completata. Residui non bloccanti:
 - `kube-state-metrics` può atterrare su `talos-cp-03` (taint tollerato dal chart Helm); footprint minimo.
 - `ContinuousArchivingFailing` su CNPG Barman è preesistente e fuori perimetro.
 - **Passthrough Periferiche Fisiche USB & Input su CT 301**: configurato accesso cgroup major 189 (USB) e 13 (Input) con mount `/dev/bus/usb` e `/dev/input` e regole udev host `99-usb-lxc.rules` (`MODE="0666"`). Periferica NuPhy Air75 V2 su porta fisica `3-2` (Hub Genesys Logic) pienamente attiva e verificata con permessi di lettura/scrittura all'interno di `lxc-steam`.
+- **Kiosk Direct-HDMI Wayland Operativo**: installato compositor `cage`, `xwayland` e demone sessioni `seatd` (con override `SEATD_VTBOUND=0`). Creato utente di sistema `steam` (UID 1000) e configurato il servizio systemd `steam-kiosk.service` con abilitazione all'avvio (`onboot: 1`).
+- **Verifica Segnale Video KVM**: Confermato che `cage` ha acquisito il DRM Master su `/dev/dri/card1` commutando il segnale fisico sulla porta `card1-HDMI-A-1`: la console di testo di Proxmox è stata sostituita a schermo intero dall'interfaccia grafica di Steam.
+
+## 💾 Stato di Ripristino (AI Save-State)
+- **Fase Attiva**: Fase 8 / Provisioning e Deployment del Container LXC Gaming Direct-HDMI (CT 301)
+- **Ultima Azione Completata**: Attivato con successo l'ambiente grafico Kiosk (`cage` + `seatd` + `steam-gamepadui`) su `lxc-steam`. Il display HDMI collegato al KVM IP Streamer ha commutato visualizzando la schermata grafica dell'installer di Steam. Passthrough USB (tastiera/mouse NuPhy Air75 V2) e DRM Master Radeon 890M verificati.
+- **Prossimo Passo Operativo**: Completare il bootstrap del runtime di Steam (tramite interazione KVM o download automatico da CLI) e montare `/run/udev` in `301.conf` per la rilevazione dinamica a caldo dei controller di gioco.
+- **Blocchi/Decisioni Pendenti**: Nessun blocco. In attesa del completamento del primo avvio di Steam su KVM.
