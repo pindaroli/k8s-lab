@@ -909,8 +909,8 @@
       "notes": "Ollama 0.34.2 on :11434 with OLLAMA_IGPU_ENABLE=1, HSA_OVERRIDE_GFX_VERSION=11.5.0. Vulkan RADV GFX1150 ~31.7 GiB."
     },
     {
-      "id": "lxc-gaming-hdmi",
-      "label": "LXC Gaming Direct-HDMI",
+      "id": "lxc-steam",
+      "label": "LXC Steam Direct-HDMI",
       "type": "LXC",
       "host_node": "pve3",
       "vm_id": "301",

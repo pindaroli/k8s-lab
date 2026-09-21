@@ -43,7 +43,7 @@ La configurazione base è `talos-config/controlplane.yaml`.
 
 > [!IMPORTANT]
 > **Topologia 2 Worker + 1 Pure CP (2026-09-21)**
-> `talos-cp-03` ha taint permanente `node-role.kubernetes.io/control-plane:NoSchedule`. I workload applicativi e lo storage locale sono stati evacuati verso `talos-cp-01`/`talos-cp-02` e TrueNAS NFS. Su PVE3 convivono LXC `300` (Ollama, `10.10.20.33`) e LXC `301` (Gaming Direct-HDMI, `10.10.20.34`). Piano: [[pve3-hybrid-controlplane-lxc-convergence]].
+> `talos-cp-03` ha taint permanente `node-role.kubernetes.io/control-plane:NoSchedule`. I workload applicativi e lo storage locale sono stati evacuati verso `talos-cp-01`/`talos-cp-02` e TrueNAS NFS. Su PVE3 convivono LXC `300` (`lxc-ollama`, `10.10.20.33`) e LXC `301` (`lxc-steam`, `10.10.20.34`). Piano: [[pve3-hybrid-controlplane-lxc-convergence]].
 
 - **Virtual IP (VIP)**: `10.10.20.55` (Punto di ingresso per `kubectl`).
 

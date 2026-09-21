@@ -32,7 +32,7 @@ Benvenuti nel Progetto GEMINI. Questa repository utilizza il paradigma **Wiki LL
 - **PVE Cluster Status**:
   - **PVE1**: **ONLINE** (Proxmox VE 9.2, VM 1300 `talos-cp-01` attiva su `local-zfs-1tb`).
   - **PVE2**: **ONLINE** (Proxmox VE 9.2, VM 2300 `talos-cp-02` attiva).
-  - **PVE3**: **ONLINE** (Proxmox VE 9.2, VM 3200 `talos-cp-03` pure CP 2 vCPU/4 GB; LXC 300 Ollama `10.10.20.33`; LXC 301 Gaming Direct-HDMI `10.10.20.34`).
+  - **PVE3**: **ONLINE** (Proxmox VE 9.2, VM 3200 `talos-cp-03` pure CP 2 vCPU/4 GB; LXC 300 `lxc-ollama` `10.10.20.33`; LXC 301 `lxc-steam` `10.10.20.34`).
 - **Talos K8s Cluster**: **OPERATIONAL** (3/3 Control Plane Ready, etcd quorate, VIP `10.10.20.55` attivo).
 - **PBS Backup Server**: **OPERATIONAL** (VM KVM `10.10.10.100` su TrueNAS SCALE Bare Metal).
 - **Storage Maintenance**: Piano [[oliraid-expansion-special-vdev-evacuation]] e [[pbs-truenas-vm-deployment]] COMPLETATI CON SUCCESSO ✅.
