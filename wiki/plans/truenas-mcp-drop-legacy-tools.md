@@ -14,9 +14,9 @@ tags:
 
 Su TrueNAS 25.10 e 26 le app sono container Docker (`app.*`). Prima di Electric Eel (24.10) erano chart Helm sul Kubernetes interno di SCALE, e su CORE erano jail. Quei tre modelli non esistono più nel lab. Il piano li toglie dall'interfaccia MCP di `pindaroli/truenas-master-mcp`.
 
-Eseguito su `main` come `1.0.0-alpha.1` (`91c9530`). `v0.2.0` e `tn25` restano su `f2d48df`. Il cluster resta sull'immagine `0.2.0`.
+Eseguito su `main` come `1.0.0-alpha.1` (`91c9530`). `v0.2.0` e `tn25` restano su `f2d48df`. Il cluster usa `ghcr.io/pindaroli/truenas-master-mcp:1.0.0-alpha.1`.
 
-Il cluster resta su `ghcr.io/pindaroli/truenas-master-mcp:0.2.0`. Nessun `helm upgrade`. Il tag `v0.2.0` e il branch `tn25` non si spostano. `kubernetes-mcp` del cluster Talos non c'entra: è un altro server.
+Il cluster usa `ghcr.io/pindaroli/truenas-master-mcp:1.0.0-alpha.1`. Il tag `v0.2.0` e il branch `tn25` non si spostano. `kubernetes-mcp` del cluster Talos non c'entra: è un altro server.
 
 ## Si toglie
 

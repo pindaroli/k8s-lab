@@ -74,7 +74,7 @@ servers:
     toolhive:
       enabled: true
       name: truenas-mcp
-      image: ghcr.io/pindaroli/truenas-master-mcp:0.2.0
+      image: ghcr.io/pindaroli/truenas-master-mcp:1.0.0-alpha.1
       transport: stdio
       proxyPort: 8080
       secrets:
