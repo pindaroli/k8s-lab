@@ -1,9 +1,11 @@
 ---
 title: "Piano: Captive Portal con Rilevamento Windows (Livello 1), Anti-Sharing e Allarme Telegram"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+obsolete: true
 created_at: 2026-09-08
+obsolete_at: 2026-09-23
 tags:
   - "#plan"
   - "#network"
@@ -12,6 +14,9 @@ tags:
 ---
 
 # Piano: Captive Portal con Rilevamento Windows (Livello 1), Anti-Sharing e Allarme Telegram
+
+> [!WARNING]
+> **Obsoleto** (2026-09-23). Piano abbandonato, non eseguito. Nessun successore. FreeRADIUS non è installato su OPNsense. Non usare questo documento per nuove configurazioni.
 
 Questo piano descrive l'implementazione del **Captive Portal nativo di OPNsense** per il filtraggio selettivo della rete Wi-Fi/LAN client (VLAN 20), integrando il **Rilevamento Windows (Livello 1 - Browser & Client Hints)** nel template web, la protezione **Anti-Sharing con blocco a tempo indeterminato e allarme Telegram**, e il **bypass automatico per server Linux, Mac Studio e apparati IoT**.
 
@@ -127,7 +132,7 @@ graph TD
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 0 (Pre-Flight & Backup)
-- **Ultima Azione Completata**: Persistenza del nuovo piano nativo `opnsense-captive-portal-windows-detection.md` e archiviazione del piano Zenarmor.
-- **Prossimo Passo Operativo**: Avviare la Fase 0: Backup preventivo OPNsense (`config.xml`) e ispezione telemetria baseline.
-- **Blocchi/Decisioni Pendenti**: Approvazione utente per avviare la Fase 0.
+- **Fase Attiva**: Nessuna. Piano obsoleto.
+- **Ultima Azione Completata**: Marcato `status: archived`, `certified_for_ai: false`, `obsolete: true` il 2026-09-23.
+- **Prossimo Passo Operativo**: Nessuno.
+- **Blocchi/Decisioni Pendenti**: Nessuno. Nessun successore.
