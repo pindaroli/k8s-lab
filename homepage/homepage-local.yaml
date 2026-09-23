@@ -209,10 +209,11 @@ data:
             description: Proxmox server (Internal)
             icon: proxmox.png
             siteMonitor: https://pve-internal.pindaroli.org
-        - MinIO:
-            href: https://minio-internal.pindaroli.org
+        - Garage:
+            href: http://10.10.10.50:3903/health
             description: S3 Object Storage (Internal)
-            icon: minio.png
+            icon: mdi-bucket-outline
+            siteMonitor: http://10.10.10.50:3903/health
         - Grafana:
             href: https://grafana-internal.pindaroli.org
             description: Monitoring Dashboard (Internal)
