@@ -100,6 +100,12 @@
 - [ ] Fase 3: Logica di valutazione soglie critiche (settori riallocati, pending, temperatura, usura NVMe) e generazione report unificato.
 - [ ] Fase 4: Integrazione opzionale per inoltro telemetrie verso Scrutiny (InfluxDB) o esecuzione via Semaphore (`ansible-engine`).
 
+## 🚀 [ ] Blocco sul firewall dei client Windows riconosciuti in DHCP [[opnsense-windows-dhcp-prefix-block]]
+- [x] Fase 0: Su OPNsense 26.1.10 la client class della GUI matcha un’opzione da inviare, non il pool. Stop: niente regola sul pool generale.
+- [ ] Fase 1: Pool `10.10.20.224-239` solo per vendor class `MSFT 5.0`, pool generale `10.10.20.201-223`.
+- [ ] Fase 2: Alias `Windows_DHCP` e regola Block su TRANSIT, creata disabilitata.
+- [ ] Fase 3: Accensione su conferma e prove (Windows bloccato, client non Windows e host statici ancora aperti).
+
 ## 🗑️ [x] OBSOLETO: Captive Portal con Rilevamento Windows (Livello 1), Anti-Sharing e Allarme Telegram [[opnsense-captive-portal-windows-detection]]
 - [x] Piano abbandonato il 2026-09-23. Non eseguito. Nessun successore.
 
