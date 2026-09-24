@@ -10,7 +10,6 @@ tags:
   - "#scripting"
 in_use_by:
   - "scripts/infrastructure/shutdown_to_truenas_only.sh"
-  - "scripts/infrastructure/startup_k8s.sh"
   - "scripts/servarr/audit_movie_duplicates.sh"
 ---
 
