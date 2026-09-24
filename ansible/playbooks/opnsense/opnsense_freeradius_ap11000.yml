@@ -1,0 +1,10 @@
+---
+- name: FreeRADIUS AP11000 status
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Confirm radiusd is listening and only the AP is a client
+      ansible.builtin.command: >-
+        ssh -o BatchMode=yes root@192.168.100.1
+        'configctl freeradius status; grep "^client" /usr/local/etc/raddb/clients.conf'
+      changed_when: false

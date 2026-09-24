@@ -107,7 +107,11 @@
 - [ ] Fase 3: Accensione su conferma e prove (Windows bloccato, client non Windows e host statici ancora aperti).
 
 ## 🗑️ [x] OBSOLETO: Captive Portal con Rilevamento Windows (Livello 1), Anti-Sharing e Allarme Telegram [[opnsense-captive-portal-windows-detection]]
-- [x] Piano abbandonato il 2026-09-23. Non eseguito. Nessun successore.
+- [x] Piano abbandonato il 2026-09-23. Non eseguito. Percorso attuale: [[opnsense-freeradius-ap11000]].
+
+## 🚀 [ ] FreeRADIUS solo per il Wi-Fi AP11000 [[opnsense-freeradius-ap11000]]
+- [x] Firmware AP 2.5.13, plugin os-freeradius, utenti olindo/patrizia, firewall solo da 10.10.20.103, blocco seconda sessione di patrizia con Telegram.
+- [ ] Sulla GUI dell'AP: Eternal in WPA2-Enterprise verso 192.168.2.254 e SSID Eternal-Device in WPA3-SAE senza RADIUS.
 
 ## 🚀 [x] ✅ COMPLETATO: Estrazione e Normalizzazione Documentazione OPNsense 26.1 per RAGFlow [[opnsense-documentation-extraction-and-ragflow]]
 - [x] Fase 1: Sviluppo script `scripts/ragflow/extract_opnsense_docs.py` con motore di risoluzione link semantici (`:doc:`, `:ref:`) e convertitore reST -> Markdown.

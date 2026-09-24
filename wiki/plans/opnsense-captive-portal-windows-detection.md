@@ -16,7 +16,7 @@ tags:
 # Piano: Captive Portal con Rilevamento Windows (Livello 1), Anti-Sharing e Allarme Telegram
 
 > [!WARNING]
-> **Obsoleto** (2026-09-23). Piano abbandonato, non eseguito. Nessun successore. FreeRADIUS non è installato su OPNsense. Non usare questo documento per nuove configurazioni.
+> **Obsoleto** (2026-09-23). Piano abbandonato, non eseguito. Il percorso attuale è [[opnsense-freeradius-ap11000]]. Non usare questo documento per nuove configurazioni.
 
 Questo piano descrive l'implementazione del **Captive Portal nativo di OPNsense** per il filtraggio selettivo della rete Wi-Fi/LAN client (VLAN 20), integrando il **Rilevamento Windows (Livello 1 - Browser & Client Hints)** nel template web, la protezione **Anti-Sharing con blocco a tempo indeterminato e allarme Telegram**, e il **bypass automatico per server Linux, Mac Studio e apparati IoT**.
 
