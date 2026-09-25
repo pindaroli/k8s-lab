@@ -485,23 +485,12 @@
   - [ ] Eseguire test di scraping dell'endpoint `/metrics` da Pod interno.
   - [ ] Verificare la rilevazione del target in VictoriaMetrics (`vmagent`) e la visualizzazione su Grafana.
 
-## MinimServer Deployment
+## MinimServer su TrueNAS
 
-### [ ] Deployment di MinimServer nel Cluster K8s [[minimserver-deployment]]
-> **Stato**: In sospeso su richiesta dell'utente (Fase 1 approvata in data 2026-07-05).
-- [x] **Fase 1: Approvazione Piano**
-  - [x] Ottenere via libera su [[minimserver-deployment]].
-- [ ] **Fase 2: Sviluppo Helm (in pindaroli-arr-helm)**
-  - [ ] Creare i template in `charts/servarr/templates/minimserver/`.
-  - [ ] Aggiungere i default in `charts/servarr/values.yaml`.
-  - [ ] Validare localmente (`helm lint` e `helm template`).
-- [ ] **Fase 3: Configurazione K8s-Lab**
-  - [ ] Configurare l'override attivo in `servarr/arr-values.yaml`.
-  - [ ] Registrare DNS in `rete.json` ed eseguire sync DNS con Ansible.
-- [ ] **Fase 4: Deploy & Validazione**
-  - [ ] Eseguire `helm upgrade --install` di `oli-arr`.
-  - [ ] Validare pod, log, mount e discovery DLNA.
-  - [ ] Aggiungere widget MinimServer in Homepage.
+### [x] Spostamento di MinimServer da Kubernetes a Docker Compose su TrueNAS [[minimserver-truenas-migration]]
+- [x] Copia della config in `/mnt/stripe/truenas-docker/minimserver` e avvio con `network_mode: host`.
+- [x] Traefik verso `10.10.10.50:9790`, homepage Kubernetes e homepage TrueNAS.
+- [x] `minimserver.enabled: false` e Helm upgrade della release `servarr` (revisione 178).
 
 ---
 

@@ -5,6 +5,7 @@ status: archived
 certified_for_ai: false
 created_at: 2026-07-02
 archived_at: 2026-07-17
+superseded_by: [[minimserver-truenas-migration]]
 tags:
   - "#plan"
   - "#network"

@@ -576,7 +576,7 @@ autobrr:
     size: 1Gi
 
 minimserver:
-  enabled: true
+  enabled: false
   replicaCount: 1
   profile: |
     contentDir = /media/classical

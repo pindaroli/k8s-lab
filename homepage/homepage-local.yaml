@@ -161,7 +161,7 @@ data:
             href: https://minimserver-internal.pindaroli.org
             description: Audio DLNA/UPnP library server (Internal)
             icon: minimserver.png
-            siteMonitor: http://servarr-minimserver.arr.svc.cluster.local:9790
+            siteMonitor: http://minimserver-external-svc.arr.svc.cluster.local:9790
 
 
 

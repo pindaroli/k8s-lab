@@ -101,3 +101,46 @@ services:
     ports:
       - 9000:9000
     restart: unless-stopped
+
+  minimserver:
+    image: minimworld/minimserver:2.2
+    container_name: minimserver
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
+    volumes:
+      - /mnt/stripe/truenas-docker/minimserver:/opt/minimserver/data
+      - /mnt/oliraid/arrdata/media:/media:ro
+    restart: unless-stopped
+
+  minimserver-autosymlink:
+    image: alpine:3.18
+    container_name: minimserver-autosymlink
+    command:
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache file
+        while true; do
+          find /media -type f -name "*.m3u" | while read -r m3u_file; do
+            if [ -n "$$m3u_file" ]; then
+              m3u8_file="$${m3u_file}8"
+              encoding=$$(file -b --mime-encoding "$$m3u_file" 2>/dev/null)
+              if [ "$$encoding" = "utf-8" ]; then
+                if [ ! -f "$$m3u8_file" ] && [ ! -L "$$m3u8_file" ]; then
+                  target_file="./$$(basename "$$m3u_file")"
+                  ln -sf "$$target_file" "$$m3u8_file"
+                fi
+              elif [ -L "$$m3u8_file" ]; then
+                rm -f "$$m3u8_file"
+              fi
+            fi
+          done
+          sleep 30
+        done
+    volumes:
+      - /mnt/oliraid/arrdata/media:/media
+    restart: unless-stopped

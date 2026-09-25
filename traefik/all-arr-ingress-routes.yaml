@@ -254,7 +254,7 @@ spec:
     - match: Host(`minimserver.pindaroli.org`)
       kind: Rule
       services:
-        - name: servarr-minimserver
+        - name: minimserver-external-svc
           port: 9790
       middlewares:
         - name: oauth2-auth
@@ -263,7 +263,7 @@ spec:
     - match: Host(`minimserver`) || Host(`minimserver-internal.pindaroli.org`)
       kind: Rule
       services:
-        - name: servarr-minimserver
+        - name: minimserver-external-svc
           port: 9790
   tls:
     secretName: pindaroli-wildcard-tls
