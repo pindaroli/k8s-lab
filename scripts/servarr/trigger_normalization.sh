@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-TRUENAS_IP="${TRUENAS_IP:-10.10.10.50}"
+TRUENAS_IP="${TRUENAS_IP:-10.10.20.50}"
 NORMALIZER_PORT="${NORMALIZER_PORT:-9000}"
 TARGET_PATH="${1:-}"
 CATEGORY="${2:-video-filebot}"

@@ -181,7 +181,7 @@ metadata:
   namespace: arr # Same namespace as IngressRoute
 subsets:
   - addresses:
-      - ip: "10.10.10.50"
+      - ip: "10.10.20.50"
     ports:
       - port: 8096
 

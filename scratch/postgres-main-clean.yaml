@@ -17,7 +17,7 @@ spec:
   backup:
     barmanObjectStore:
       destinationPath: s3://postgres-wal/
-      endpointURL: http://10.10.10.50:9000
+      endpointURL: http://10.10.20.50:9000
       s3Credentials:
         accessKeyId:
           key: ACCESS_KEY_ID

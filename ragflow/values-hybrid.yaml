@@ -33,12 +33,12 @@ ragflow:
     minio:
       user: "<SOPS_ENCRYPTED>"
       password: "<SOPS_ENCRYPTED>"
-      host: "10.10.10.50:3900"
+      host: "10.10.20.50:3900"
       bucket: "ragflow-docs"
     s3:
       access_key: "<SOPS_ENCRYPTED>"
       secret_key: "<SOPS_ENCRYPTED>"
-      endpoint_url: "http://10.10.10.50:3900"
+      endpoint_url: "http://10.10.20.50:3900"
       bucket: "ragflow-docs"
       region: "garage"
       signature_version: "v4"

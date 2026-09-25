@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: nfs-client
   nfs:
-    server: 10.10.10.50
+    server: 10.10.20.50
     path: /mnt/stripe/k8s-n8n
 
 ---

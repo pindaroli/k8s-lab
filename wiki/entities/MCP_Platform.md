@@ -52,7 +52,7 @@ flowchart TD
         OPN["opnsense-mcp-proxy (MCPServer)"]
     end
 
-    subgraph Storage["TrueNAS SCALE (10.10.10.50)"]
+    subgraph Storage["TrueNAS SCALE (10.10.20.50)"]
         NFS_MED["/mnt/oliraid/arrdata/media -> /mnt/media"]
         NFS_CLA["/mnt/oliraid/arrdata/classical -> /mnt/classical"]
         API_TN["TrueNAS REST API v2.0 (Port 443)"]
@@ -112,7 +112,7 @@ I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `oli
 | Server | Immagine Container | Modalità ToolHive | Endpoint Traefik IngressRoute | Target Rete Lab |
 | :--- | :--- | :--- | :--- | :--- |
 | **`github-mcp`** | `ghcr.io/github/github-mcp-server` | stdio -> proxy :8080 | `https://github-mcp-internal.pindaroli.org/mcp` | GitHub API Cloud |
-| **`truenas-mcp`** | `ghcr.io/pindaroli/truenas-master-mcp:1.0.0-alpha.1` | stdio -> proxy :8080 | `https://truenas-mcp-internal.pindaroli.org/mcp` | TrueNAS SCALE API (`10.10.10.50:443`) |
+| **`truenas-mcp`** | `ghcr.io/pindaroli/truenas-master-mcp:1.0.0-alpha.1` | stdio -> proxy :8080 | `https://truenas-mcp-internal.pindaroli.org/mcp` | TrueNAS SCALE API (`10.10.20.50:443`) |
 | **`opnsense-mcp`** | `ghcr.io/pindaroli/opnsense-mcp:latest` | stdio -> proxy :8080 | `https://opnsense-mcp-internal.pindaroli.org/mcp` | OPNsense Firewall API (`192.168.100.1:443`) |
 | **`talos-mcp`** | `ghcr.io/pindaroli/talos-mcp:2.5.1` | stdio -> proxy :8080 | `https://talos-mcp-internal.pindaroli.org/mcp` | Talos Control Plane gRPC API (`10.10.20.141/142/143:50000`) |
 | **`gemini-deepsearch-mcp`** | `ghcr.io/pindaroli/gemini-deepsearch-mcp:latest` | stdio -> proxy :8080 | `https://deepsearch-mcp-internal.pindaroli.org/mcp` | Google Gemini API (Web Search Grounding) |

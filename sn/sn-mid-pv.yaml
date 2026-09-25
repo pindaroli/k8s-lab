@@ -14,5 +14,5 @@ spec:
     driver: nfs.csi.k8s.io
     volumeHandle: pv-sn-mid-cache
     volumeAttributes:
-      server: 10.10.10.50
+      server: 10.10.20.50
       share: /mnt/oliraid/k8s-sn

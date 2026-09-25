@@ -13,7 +13,7 @@ L'architettura adotta un **Container LXC non privilegiato (VMID 200, `ansible-en
 
 ## 2. Storage & NFS Configuration (`oliraid`)
 
-### Specifiche Dataset ZFS su TrueNAS (`10.10.10.50`)
+### Specifiche Dataset ZFS su TrueNAS (`10.10.20.50`)
 * **Percorso:** `/mnt/oliraid/pve-shared-lxc`
 * **Recordsize:** `64K` (allineato alla soglia del vdev Special per ottimizzare I/O random)
 * **Special Small Blocks:** `64K` (dirotta metadati e file $\le$ 64KB sul mirror SSD `mirror-2`)
@@ -34,7 +34,7 @@ L'architettura adotta un **Container LXC non privilegiato (VMID 200, `ansible-en
 Configurato a livello di cluster PVE per tutti i nodi (`pve1`, `pve2`, `pve3`):
 ```bash
 pvesm add nfs truenas-nfs \
-  --server 10.10.10.50 \
+  --server 10.10.20.50 \
   --export /mnt/oliraid/pve-shared-lxc \
   --content rootdir,images \
   --options vers=4.1,hard,intr,noatime \

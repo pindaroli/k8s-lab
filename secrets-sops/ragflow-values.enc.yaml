@@ -30,7 +30,7 @@ ragflow:
         s3:
             access_key: GKa73f49d96bda5d51199ff4b1
             secret_key: 149b3234c684c860cbeff31c14f61bd3a378b53e60ff97c39cd3b17fdeccfa2b
-            endpoint_url: http://10.10.10.50:3900
+            endpoint_url: http://10.10.20.50:3900
             bucket: ragflow-docs
             region: garage
             signature_version: v4

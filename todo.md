@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: TrueNAS e Docker sulla VLAN 20, PBS sulla VLAN 10 [[truenas-vlan20]]
+- [x] Fase 1: Piano, link e playbook `ansible/playbooks/exos_truenas_lacp_vlan20.yml`.
+- [x] Fase 2: Da OOB, `vlan10` senza IP, PBS su `vlan10`, trunk sullo switch, `bond0` a `10.10.20.50`.
+- [x] Fase 3: Collaudo L2 verso TrueNAS dalla VLAN 20 e verso PBS dalla VLAN 10.
+- [x] Fase 4: Consumatori da `10.10.10.50` a `10.10.20.50`. PBS resta `10.10.10.100`.
+
 ## 🚀 [x] ✅ COMPLETATO: TrueNAS: LACP dei due NIC sulla VLAN 10 [[truenas-lacp-vlan10]]
 - [x] Fase 1: `enp1s0f1np1` in link. FDB: porta 4 (`…f5:92`) e porta 8 (`…f5:93`).
 - [x] Fase 2: Playbook `ansible/playbooks/exos_truenas_lacp_vlan10.yml`. LAG LACP porte 4+8, `primary.cfg` salvato.

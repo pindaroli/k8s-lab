@@ -18,8 +18,8 @@ fi
 # 2. Creazione/Aggiornamento del file di mappa /etc/auto_nas
 echo "[*] Creazione/Aggiornamento del file di mappa /etc/auto_nas..."
 sudo tee /etc/auto_nas << 'EOF'
-/Volumes/classical  -rw,nosuid,nodev,resvport,tcp,soft,intr,noatime 10.10.10.50:/mnt/oliraid/arrdata/classical
-/Volumes/media      -rw,nosuid,nodev,resvport,tcp,soft,intr,noatime 10.10.10.50:/mnt/oliraid/arrdata/media
+/Volumes/classical  -rw,nosuid,nodev,resvport,tcp,soft,intr,noatime 10.10.20.50:/mnt/oliraid/arrdata/classical
+/Volumes/media      -rw,nosuid,nodev,resvport,tcp,soft,intr,noatime 10.10.20.50:/mnt/oliraid/arrdata/media
 EOF
 
 echo "[*] Impostazione dei permessi corretti per /etc/auto_nas..."

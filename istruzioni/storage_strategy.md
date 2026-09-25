@@ -7,7 +7,7 @@ This document outlines a high-efficiency storage strategy for the `k8s-lab` clus
 ## Architecture
 - **Compute**: 3x Talos Linux VMs on Proxmox (Converged Control Plane + Worker).
   - **Node Distribution**: 1 VM per Proxmox Node (`pve`, `pve2`, `pve3`).
-- **Storage Backend**: TrueNAS Scale (`truenas`, IP `10.10.10.50`).
+- **Storage Backend**: TrueNAS Scale (`truenas`, IP `10.10.20.50`).
 - **ETCD Storage**: Local VirtIO Block storage on each Proxmox node (low latency).
 - **Protocols**:
   - **NVMe over TCP** (via Proxmox): *Reserved for high-performance single-instance DBs only.*

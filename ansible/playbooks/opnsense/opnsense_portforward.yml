@@ -56,13 +56,29 @@
             source_port: ""
             destination_net: "any"
             destination_port: "30661"
-            target: "10.10.10.50"
+            target: "10.10.20.50"
             local-port: "30661"
             pass: "rule"
             associated-rule-id: ""
             descr: "qBittorrent P2P Port Forwarding"
       register: create_result
       when: qbit_rule | length == 0
+
+    - name: Point the existing qBittorrent DNAT at VLAN 20
+      uri:
+        url: "{{ opnsense_url }}/api/firewall/d_nat/setRule/{{ qbit_rule[0].uuid }}"
+        method: POST
+        user: "{{ api_key }}"
+        password: "{{ api_secret }}"
+        force_basic_auth: yes
+        validate_certs: no
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          rule:
+            target: "10.10.20.50"
+      when: qbit_rule | length > 0 and (qbit_rule[0].target | default('')) != '10.10.20.50'
 
     - name: Apply Firewall Configuration
       uri:
@@ -73,7 +89,7 @@
         force_basic_auth: yes
         validate_certs: no
         status_code: 200
-      when: qbit_rule | length == 0
+      when: qbit_rule | length == 0 or (qbit_rule[0].target | default('')) != '10.10.20.50'
 
     - name: Success message
       debug:

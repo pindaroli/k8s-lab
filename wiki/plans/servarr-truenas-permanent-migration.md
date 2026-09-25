@@ -13,7 +13,7 @@ tags:
 
 # Migrazione Definitiva Servarr: K8s -> Docker su TrueNAS
 
-Questo piano definisce la transizione **definitiva** dei carichi di lavoro Jellyfin, qBittorrent, Prowlarr e Homepage dal cluster Kubernetes a un ambiente nativo Docker Compose su TrueNAS Scale bare-metal (`10.10.10.50`), per massimizzare il risparmio energetico e spegnere il cluster K8s on-demand.
+Questo piano definisce la transizione **definitiva** dei carichi di lavoro Jellyfin, qBittorrent, Prowlarr e Homepage dal cluster Kubernetes a un ambiente nativo Docker Compose su TrueNAS Scale bare-metal (`10.10.20.50`), per massimizzare il risparmio energetico e spegnere il cluster K8s on-demand.
 
 > [!CAUTION]
 > **PROTOCOLLO DI ESECUZIONE (STRICT PHASING)**
@@ -72,12 +72,12 @@ In questa fase si spengono definitivamente i workload sul cluster e si ri-orient
 
 ### Azioni
 1. **Downscaling:** In `k8s-lab/servarr/arr-values.yaml`, impostare `enabled: false` per qBittorrent, Prowlarr e Jellyfin. Eliminazione delle risorse e Pod correlati.
-2. **Cross-Communication:** Aggiornamento delle configurazioni di Sonarr, Radarr, e Lidarr in K8s affinché si colleghino a qBittorrent e Prowlarr usando l'IP diretto `10.10.10.50` anziché i nomi DNS interni al cluster.
+2. **Cross-Communication:** Aggiornamento delle configurazioni di Sonarr, Radarr, e Lidarr in K8s affinché si colleghino a qBittorrent e Prowlarr usando l'IP diretto `10.10.20.50` anziché i nomi DNS interni al cluster.
 3. **Routing Esterno (Traefik K8s):** Creazione di manifest `ExternalName` e `IngressRoute` in `charts/servarr/templates/external-services.yaml` per instradare le chiamate a `jellyfin.pindaroli.org`, `qbittorrent...` e `prowlarr...` verso TrueNAS quando il cluster è acceso.
-4. **Aggiornamento DNS:** Aggiornamento degli Host Overrides in OPNsense per risolvere i domini migrati a `10.10.10.50`.
+4. **Aggiornamento DNS:** Aggiornamento degli Host Overrides in OPNsense per risolvere i domini migrati a `10.10.20.50`.
 
 ### 🛑 CHECKPOINT FASE 3
-- [x] Sonarr e Radarr riescono a inviare torrent a qBittorrent su `10.10.10.50` (Test Radarr, Lidarr e Autobrr verificati HTTP 200 OK).
+- [x] Sonarr e Radarr riescono a inviare torrent a qBittorrent su `10.10.20.50` (Test Radarr, Lidarr e Autobrr verificati HTTP 200 OK).
 - [x] Navigando su `https://jellyfin.pindaroli.org` / `-internal` (a cluster K8s acceso) si raggiunge TrueNAS con certificato valido (Verificato HTTP/2 302 web/ Kestrel).
 - [x] I Pod obsoleti di Jellyfin, Prowlarr e qBittorrent non esistono più nel cluster (terminati).
 - [x] *(Completato)* Fase 3 approvata e verificata con successo.
@@ -89,17 +89,17 @@ Rimozione del codice morto e delle infrastrutture orfane.
 
 ### Azioni
 1. [x] **Distruzione LXC:** Spegnimento definitivo, rimozione (`pct destroy 2200 --purge`) e distruzione del dataset associato `rpool/data/jellyfin-db` su PVE3 (recuperati 5 GB NVMe).
-2. [x] **Modernizzazione Script Normalizzazione & Trigger Automatico qBittorrent:** Creato script CLI di trigger universale `scripts/servarr/trigger_normalization.sh` e server webhook `webhook_server.py` su TrueNAS (`10.10.10.50:9000`), aggiornata la skill `video-ingestor`. Dichiarato e montato lo script permanente `trigger-job.sh` nel `docker-compose.yaml` di qBittorrent (`/scripts/trigger-job.sh:ro`) con log su `/config/qBittorrent/logs/trigger.log`. Verificata con successo la normalizzazione automatica e manuale reale (*"The Neon Demon"* e *"La Grazia"* con hardlink ZFS, artwork completi e scan Jellyfin).
+2. [x] **Modernizzazione Script Normalizzazione & Trigger Automatico qBittorrent:** Creato script CLI di trigger universale `scripts/servarr/trigger_normalization.sh` e server webhook `webhook_server.py` su TrueNAS (`10.10.20.50:9000`), aggiornata la skill `video-ingestor`. Dichiarato e montato lo script permanente `trigger-job.sh` nel `docker-compose.yaml` di qBittorrent (`/scripts/trigger-job.sh:ro`) con log su `/config/qBittorrent/logs/trigger.log`. Verificata con successo la normalizzazione automatica e manuale reale (*"The Neon Demon"* e *"La Grazia"* con hardlink ZFS, artwork completi e scan Jellyfin).
 3. [x] **Pulizia e Ottimizzazione Ansible:** Creazione del playbook depurato `ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml` e rimozione dei vecchi script di failover `migrate_to_truenas_only.yml` e `restore_from_truenas_only.yml`.
 
 ### 🛑 CHECKPOINT FINALE
 - [x] Ambiente K8s, PVE e Homelab pulito.
-- [ ] Spegnimento temporaneo del cluster K8s per verificare che la fruizione multimediale e i download continuino senza interruzioni dalla dashboard Homepage di TrueNAS (`http://10.10.10.50:3000`).
+- [ ] Spegnimento temporaneo del cluster K8s per verificare che la fruizione multimediale e i download continuino senza interruzioni dalla dashboard Homepage di TrueNAS (`http://10.10.20.50:3000`).
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: Fase 4 / Smantellamento e Hardening (Checkpoint Finale)
 - **Ultima Azione Completata**: Ingestione di *"La Grazia (2025)"* completata con successo (hardlink ZFS, artwork, scan Jellyfin). Ripristinato e validato il trigger automatico permanente in qBittorrent Docker su TrueNAS tramite volume mount in `docker-compose.yaml` e versione Git dichiarativa in `scripts/servarr/trigger-job.sh`.
 - **Prossimo Passo Operativo**: Esecuzione del test di spegnimento on-demand K8s/PVE con il comando:
   `ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml`
-  e verifica della completa indipendenza dei carichi multimediali da Homepage su TrueNAS (`http://10.10.10.50:3000`).
+  e verifica della completa indipendenza dei carichi multimediali da Homepage su TrueNAS (`http://10.10.20.50:3000`).
 - **Blocchi/Decisioni Pendenti**: Nessuno. Pronto per la verifica finale di spegnimento a scelta dell'utente.

@@ -23,7 +23,7 @@ Questo documento definisce gli obiettivi architetturali immutabili del cluster K
 - **Golden Rule DNS**: La risoluzione DNS interna è gestita da [[OPNsense]]. L'uso di record "Black Hole" (es. 0.0.0.0 su Cloudflare) è severamente vietato in quanto causa distruzione del contesto e caching asimmetrico sui client (Vedi [[2026-05-03-dns-split-horizon-conflict]]).
 
 ## 3. Gestione dello Storage
-- Il repository centrale dei dati (`arrdata`, `k8s-arr`) vive su [[TrueNAS]] (`10.10.10.50`).
+- Il repository centrale dei dati (`arrdata`, `k8s-arr`) vive su [[TrueNAS]] (`10.10.20.50`).
 - Si predilige il protocollo **NFS** per i mount nei container e sui nodi fisici.
 
 ## 4. Filosofia Operativa (Symmetrical Routing)

@@ -17,7 +17,7 @@ TrueNAS è il fornitore centrale di storage per l'intera infrastruttura Lab.
 ## 1. Dettagli Hardware e Rete
 - **Hostname**: `truenas.pindaroli.org`
 - **Hardware**: Bare Metal dedicato (AMD Ryzen 5 PRO 5650G, ASRock X570M Pro4, 32GB ECC, Intel X710 Quad 10G).
-- **IP Gestione**: `10.10.10.50/24` su `bond0` (LACP 802.3ad, hash L3+L4, rate slow). Membri `enp1s0f0np0` e `enp1s0f1np1`. Sullo switch Extreme il LAG ha master la porta 4 e membro la porta 8, access untagged VLAN server. La VM PBS è attaccata a `bond0`.
+- **IP Gestione**: `10.10.20.50/24` su `bond0` (LACP 802.3ad, hash L3+L4, rate slow), gateway `10.10.20.1`. Membri `enp1s0f0np0` e `enp1s0f1np1`. Sullo switch Extreme il LAG ha master la porta 4 e membro la porta 8: VLAN client untagged, VLAN server taggata. L'host non ha un indirizzo sulla VLAN 10. La VM PBS è attaccata a `vlan10` (tag 10, senza IP sull'host) e resta `10.10.10.100`.
 - **IP OOB**: `192.168.100.50` (VLAN 99 OOB 2.5G, `enp8s0`)
 - **OS**: TrueNAS SCALE 25.10.6 (Debian-based).
 - **UPS**: Master NUT. Il cavo USB dell'UPS Tecnoware Exa 1000 è attestato fisicamente su TrueNAS (Vendor ID `0665:5161`). Driver `nutdrv_qx`, soglia software 40% (`ignorelb`), `HOSTSYNC: 120`.
@@ -36,7 +36,7 @@ TrueNAS è il fornitore centrale di storage per l'intera infrastruttura Lab.
 - **NFS**: Utilizzato per montare lo storage sul [[Talos_Cluster]] e sui nodi esterni come il Mac Studio.
 - **SMB**: Utilizzato per l'accesso amministrativo da Windows/macOS.
 - **S3 (MinIO)**: Utilizzato per i backup offsite.
-- **NUT Server (UPS)**: Servizio UPS attivo in modalità Master (`10.10.10.50:3493`) per telemetria e broadcast di shutdown coordinato verso i nodi Proxmox. Monitoraggio sessioni TCP client con `HOSTSYNC 120` e soglia di sicurezza software al 40% di carica residua.
+- **NUT Server (UPS)**: Servizio UPS attivo in modalità Master (`10.10.20.50:3493`) per telemetria e broadcast di shutdown coordinato verso i nodi Proxmox. Monitoraggio sessioni TCP client con `HOSTSYNC 120` e soglia di sicurezza software al 40% di carica residua.
 
 ## 4. Integrazione Kubernetes
 Lo storage è collegato al cluster tramite il driver NFS CSI. I pod richiedono spazio tramite Persistent Volume Claims (PVC).

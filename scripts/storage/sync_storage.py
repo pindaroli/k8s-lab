@@ -14,7 +14,7 @@ from utils.common import PROJECT_ROOT, run_cmd
 
 STORAGE_JSON_PATH = os.path.join(PROJECT_ROOT, "storage.json")
 
-TRUENAS_IP = "10.10.10.50"
+TRUENAS_IP = "10.10.20.50"
 TRUENAS_USER = "olindo"
 TRUENAS_PASS = "REDACTED_SECRET"  # Prone to change, ideally env var
 

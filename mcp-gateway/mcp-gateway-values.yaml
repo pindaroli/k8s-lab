@@ -83,7 +83,7 @@ servers:
           targetEnvName: TRUENAS_API_KEY
       env:
         - name: TRUENAS_SERVER_URL
-          value: "https://10.10.10.50"
+          value: "https://10.10.20.50"
         - name: TRUENAS_VERIFY_SSL
           value: "false"
         - name: TRUENAS_TIMEOUT
@@ -344,11 +344,11 @@ inspector:
     ALLOWED_ORIGINS: "https://mcp-ui.pindaroli.org,https://mcp-ui-internal.pindaroli.org,http://localhost:6274,http://127.0.0.1:6274"
   nfsMounts:
     - name: nfs-media
-      server: 10.10.10.50
+      server: 10.10.20.50
       path: /mnt/oliraid/arrdata/media
       mountPath: /mnt/media
     - name: nfs-classical
-      server: 10.10.10.50
+      server: 10.10.20.50
       path: /mnt/oliraid/arrdata/classical
       mountPath: /mnt/classical
   resources:

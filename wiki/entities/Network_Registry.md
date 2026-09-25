@@ -21,8 +21,8 @@ Questo nodo del Wiki definisce le **regole** e la **governance** dell'architettu
 
 ## 1. Topologia VLAN e Routing Simmetrico L3
 L'infrastruttura è segmentata tramite lo Switch Core L3 Extreme Networks (X620-10X) e OPNsense (Symmetric Routing):
-- **VLAN 10 (Server)**: `10.10.10.0/24`. Rete di management e server. Ospita [[TrueNAS]] (`10.10.10.50` su un LAG LACP 802.3ad, porte Extreme 4 e 8) e le interfacce di gestione di Proxmox. Gateway logico L3: `10.10.10.1` (Switch Extreme L3). Rotta statica su OPNsense via TRANSIT (`192.168.2.1`).
-- **VLAN 20 (Client/K8s)**: `10.10.20.0/24`. Rete operativa. Ospita i nodi del [[Talos_Cluster]] e i dispositivi personali/client. Gateway logico L3: `10.10.20.1` (Switch Extreme L3). Rotta statica su OPNsense via TRANSIT (`192.168.2.1`). Servizio DHCP gestito da Kea su OPNsense tramite **Bootprelay / DHCP Relay**.
+- **VLAN 10 (Server)**: `10.10.10.0/24`. Rete di management e server. Ospita le interfacce di gestione di Proxmox e la VM PBS (`10.10.10.100`), attaccata al LAG TrueNAS sulla VLAN taggata. Gateway logico L3: `10.10.10.1` (Switch Extreme L3). Rotta statica su OPNsense via TRANSIT (`192.168.2.1`).
+- **VLAN 20 (Client/K8s)**: `10.10.20.0/24`. Rete operativa. Ospita i nodi del [[Talos_Cluster]], i dispositivi personali/client e [[TrueNAS]] (`10.10.20.50` su un LAG LACP 802.3ad, porte Extreme 4 e 8, VLAN 20 untagged). Gateway logico L3: `10.10.20.1` (Switch Extreme L3). Rotta statica su OPNsense via TRANSIT (`192.168.2.1`). Servizio DHCP gestito da Kea su OPNsense tramite **Bootprelay / DHCP Relay**.
 - **VLAN 40 (IP Streamer / KVM)**: `10.10.40.0/24`. Rete isolata a bassissima latenza per lo streaming video multicast KVM (AV Access 4KIP100).
 - **VLAN 99 (OOB Management)**: `192.168.100.0/24`. Rete Out-of-Band di emergenza per PVE1, PVE2, PVE3 (`nic0`), OPNsense (`igc3` LAN) e TrueNAS.
 - **Transit**: `192.168.2.0/24`. Rete punto-a-punto di interconnessione tra OPNsense (`192.168.2.254`), Switch L3 Extreme (`192.168.2.1`) e Switch 2.5G Horaco (`192.168.2.3`).

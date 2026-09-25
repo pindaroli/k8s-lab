@@ -2,8 +2,8 @@
   "nas": {
     "hostname": "truenas",
     "ips": {
-      "server_vlan": "10.10.10.50",
-      "client_vlan": "10.10.10.50"
+      "server_vlan": "10.10.20.50",
+      "client_vlan": "10.10.20.50"
     },
     "exports": {
       "k8s_arr": {

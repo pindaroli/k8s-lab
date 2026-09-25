@@ -46,8 +46,8 @@
         "s3",
         "nas-direct"
       ],
-      "management_ip": "10.10.10.50",
-      "default_gateway": "10.10.10.1",
+      "management_ip": "10.10.20.50",
+      "default_gateway": "10.10.20.1",
       "dns": "192.168.2.254, 1.1.1.1",
       "lag": {
         "protocol": "LACP",
@@ -57,9 +57,10 @@
         "switch": "extreme",
         "master_port": "4",
         "member_port": "8",
-        "vlan": "10"
+        "vlan": "20",
+        "tagged_vlan": "10"
       },
-      "notes": "LACP 802.3ad sulla VLAN 10. Un solo indirizzo 10.10.10.50 su bond0. La VLAN 20 raggiunge TrueNAS dalla SVI dello switch."
+      "notes": "LACP 802.3ad trunk. bond0 untagged sulla VLAN 20, un solo indirizzo 10.10.20.50/24, gateway 10.10.20.1. La VLAN 10 è taggata sul LAG solo per la VM PBS (vlan10 senza indirizzo sull'host)."
     },
     {
       "id": "switch10g",

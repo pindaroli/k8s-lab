@@ -53,7 +53,7 @@ Questo piano definisce la progettazione e l'implementazione di un playbook Ansib
 - [ ] Creazione template report Markdown (`ansible/templates/smart_health_report.j2`) salvato in reportistica locale.
 
 ### Fase 4: Integrazione Scrutiny / Semaphore
-- [ ] Invio opzionale delle metriche estratte all'endpoint HTTP/InfluxDB di Scrutiny (`10.10.10.50:8086`).
+- [ ] Invio opzionale delle metriche estratte all'endpoint HTTP/InfluxDB di Scrutiny (`10.10.20.50:8086`).
 - [ ] Integrazione del job nel motore di automazione Semaphore (`ansible-engine` LXC 200).
 
 ---

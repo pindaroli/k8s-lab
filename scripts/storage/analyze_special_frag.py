@@ -39,10 +39,10 @@ EOF
 """
     cmd = [
         "ssh", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=10",
-        "olindo@10.10.10.50"
+        "olindo@10.10.20.50"
     ]
 
-    print("Connecting to TrueNAS (10.10.10.50) via Passwordless SSH...")
+    print("Connecting to TrueNAS (10.10.20.50) via Passwordless SSH...")
     process = subprocess.Popen(
         cmd,
         stdin=subprocess.PIPE,

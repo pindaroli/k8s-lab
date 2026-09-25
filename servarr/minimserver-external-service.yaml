@@ -16,7 +16,7 @@ metadata:
   namespace: arr
 subsets:
   - addresses:
-      - ip: "10.10.10.50"
+      - ip: "10.10.20.50"
     ports:
       - port: 9790
 ---

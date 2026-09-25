@@ -20,7 +20,7 @@ tags:
 
 > [!IMPORTANT]
 > Questo piano definisce l'architettura distribuita di alimentazione di emergenza per l'homelab GEMINI:
-> - **TrueNAS SCALE Bare Metal** (`10.10.10.50`), con cavo USB attestato fisicamente, opera come **NUT Master**.
+> - **TrueNAS SCALE Bare Metal** (`10.10.20.50`), con cavo USB attestato fisicamente, opera come **NUT Master**.
 > - **PVE1, PVE2 e PVE3** operano in parallelo come **NUT Client (Slave)** indipendenti, spegnendo contemporaneamente le proprie VM locali (Talos CP01, CP02, CP03).
 > - **Soglia di Batteria Cautelativa Software**: Impostazione di `ignorelb` e `override.battery.charge.low = 40` su TrueNAS, ignorando la soglia hardware critica (10.40V) e scatenando `FSD` al 40% di carica residua.
 > - **Sincronizzazione Deterministica Nativa**: `HOSTSYNC 120` su TrueNAS (monitoraggio socket client su porta 3493) e **ciclo di polling attivo `qm status`** (timeout max 45s) sui nodi Proxmox. TrueNAS spegne se stesso non appena tutti i client si disconnettono (tipicamente in 25-35s), con un massimale di sicurezza garantito di 120s.
@@ -34,7 +34,7 @@ tags:
 sequenceDiagram
     autonumber
     participant UPS as UPS Tecnoware Exa 1000
-    participant TN as TrueNAS (Master USB 10.10.10.50)
+    participant TN as TrueNAS (Master USB 10.10.20.50)
     participant PVE1 as PVE1 (Client upsmon)
     participant PVE2 as PVE2 (Client upsmon)
     participant PVE3 as PVE3 (Client upsmon)
@@ -109,7 +109,7 @@ sequenceDiagram
 ### Fase 3: Rollout Distribuito Client su PVE1, PVE2, PVE3
 - Installazione di `nut-client` su tutti e tre i nodi Proxmox via Ansible.
 - Configurazione unificata di `/etc/nut/nut.conf` (`MODE=netclient`) e `/etc/nut/upsmon.conf`:
-  - `MONITOR ups@10.10.10.50 1 pvemon {{ vault_ups_mon_password }} slave`
+  - `MONITOR ups@10.10.20.50 1 pvemon {{ vault_ups_mon_password }} slave`
   - `SHUTDOWNCMD "/etc/nut/shutdown_sequence.sh"`
   - `MINSUPPLIES 1`
 - Distribuzione dello script atomico locale con ciclo attivo `/etc/nut/shutdown_sequence.sh`:
@@ -144,7 +144,7 @@ sequenceDiagram
 ---
 
 ## 4. Piano di Verifica Test-Driven
-1. `upsc ups@10.10.10.50` eseguito da PVE1, PVE2 e PVE3 (verifica lettura telemetria e soglia low battery al 40%).
+1. `upsc ups@10.10.20.50` eseguito da PVE1, PVE2 e PVE3 (verifica lettura telemetria e soglia low battery al 40%).
 2. Verifica assenza allarmi o errori nei log `journalctl -u nut-client` su tutti i nodi.
 3. Verifica stato TrueNAS: `midclt call ups.config` per confermare la persistenza di `hostsync: 120` e `ignorelb`.
 

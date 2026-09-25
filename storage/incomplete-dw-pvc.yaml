@@ -20,7 +20,7 @@ spec:
     - retrans=3
     - noresvport
   nfs:
-    server: 10.10.10.50
+    server: 10.10.20.50
     path: /mnt/stripe/qb_temp
 ---
 apiVersion: v1

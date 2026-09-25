@@ -5,7 +5,7 @@ Stack Docker Compose autonomo e auto-inizializzante per **Homepage**, **qBittorr
 - **Riferimento Piani Wiki**:
   - [`wiki/plans/docker-compose-arr-truenas-failover.md`](file:///Users/olindo/prj/k8s-lab/wiki/plans/docker-compose-arr-truenas-failover.md)
   - [`wiki/plans/truenas-only-migration-failover.md`](file:///Users/olindo/prj/k8s-lab/wiki/plans/truenas-only-migration-failover.md)
-- **Host di Esecuzione**: TrueNAS SCALE Bare Metal (`10.10.10.50`)
+- **Host di Esecuzione**: TrueNAS SCALE Bare Metal (`10.10.20.50`)
 - **Directory su TrueNAS**: `/mnt/stripe/compose/arr/`
 
 ---
@@ -28,7 +28,7 @@ Prima di avviare qualsiasi servizio applicativo, l'init container `init-arr-boot
   - Config: `/mnt/stripe/k8s-arr/servarr-jellyfin-config-truenas` montato in `/config`
   - Database: `/mnt/stripe/k8s-arr/servarr-jellyfin-db-truenas` montato in `/config/data`
 - **Accelerazione Hardware AMD Vega**: Il descrittore Compose esegue il passthrough `/dev/dri:/dev/dri` con `group_add: ["video", "render"]`. `encoding.xml` viene pre-configurato con VA-API (`/dev/dri/renderD128`), AV1 hardware disabilitato (non supportato da AMD Cezanne Vega 8), HEVC/VP9 abilitati e HDR tone mapping attivo.
-- **Risoluzione Blocco 403 Forbidden**: `network.xml` abilita `<EnableRemoteAccess>true</EnableRemoteAccess>` e definisce `<LocalNetworkSubnets>10.10.0.0/16</LocalNetworkSubnets>`, consentendo l'accesso trasparente da client su VLAN 20 verso TrueNAS (VLAN 10).
+- **Risoluzione Blocco 403 Forbidden**: `network.xml` abilita `<EnableRemoteAccess>true</EnableRemoteAccess>` e definisce `<LocalNetworkSubnets>10.10.0.0/16</LocalNetworkSubnets>`, consentendo l'accesso da client sulla VLAN 20, dove sta anche TrueNAS.
 - **Parità Percorsi Media**: I media sono montati sia su `/mnt/media` sia su `/media` per garantire perfetta corrispondenza dei path del database EF Core generato su LXC.
 
 ---
@@ -38,7 +38,7 @@ Prima di avviare qualsiasi servizio applicativo, l'init container `init-arr-boot
 ### 1. Copia dei File su TrueNAS
 ```bash
 # Eseguibile da Mac/Workstation:
-rsync -avz servarr/compose/ root@10.10.10.50:/mnt/stripe/compose/arr/
+rsync -avz servarr/compose/ root@10.10.20.50:/mnt/stripe/compose/arr/
 ```
 
 ### 2. Attivazione Failover (Tramite Playbook Ansible)
@@ -46,11 +46,11 @@ rsync -avz servarr/compose/ root@10.10.10.50:/mnt/stripe/compose/arr/
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/migrate_to_truenas_only.yml
 ```
 
-### 3. URL di Accesso Diretto (VLAN 10 / IP 10.10.10.50)
-* **Homepage Failover Dashboard**: `http://10.10.10.50:3000` (Pannello centrale LAN con dispositivi fissi e app TrueNAS)
-* **qBittorrent WebUI**: `http://10.10.10.50:8080` (Porta BT: `30661`)
-* **Jellyfin WebUI / Smart TV**: `http://10.10.10.50:8096`
-* **Prowlarr WebUI**: `http://10.10.10.50:9696`
+### 3. URL di Accesso Diretto (VLAN 20 / IP 10.10.20.50)
+* **Homepage Failover Dashboard**: `http://10.10.20.50:3000` (Pannello centrale LAN con dispositivi fissi e app TrueNAS)
+* **qBittorrent WebUI**: `http://10.10.20.50:8080` (Porta BT: `30661`)
+* **Jellyfin WebUI / Smart TV**: `http://10.10.20.50:8096`
+* **Prowlarr WebUI**: `http://10.10.20.50:9696`
 
 ---
 

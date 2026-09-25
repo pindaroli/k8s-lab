@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-TRUENAS_IP="10.10.10.50"
+TRUENAS_IP="10.10.20.50"
 TIMEOUT_SECONDS=240  # 4 Minutes
 CHECK_INTERVAL=5
 

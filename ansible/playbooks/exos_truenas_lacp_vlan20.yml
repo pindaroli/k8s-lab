@@ -1,0 +1,35 @@
+---
+- name: TrueNAS LACP trunk, VLAN 20 untagged and VLAN 10 tagged
+  hosts: switches
+  gather_facts: no
+
+  vars:
+    lag_master: "4"
+
+  tasks:
+    - name: 1. Move the LAG untagged into VLAN client
+      extreme.exos.exos_config:
+        lines:
+          - "configure vlan client add ports {{ lag_master }} untagged"
+
+    - name: 2. Add VLAN server tagged on the LAG
+      extreme.exos.exos_config:
+        lines:
+          - "configure vlan server add ports {{ lag_master }} tagged"
+
+    - name: 3. Save configuration
+      ansible.netcommon.cli_command:
+        command: save configuration primary
+        prompt: '(?i)(y/N|already exists)'
+        answer: y
+      register: config_result
+
+    - name: 4. Display configuration result
+      ansible.builtin.debug:
+        var: config_result.stdout
+
+# Rollback, non eseguito da questo play.
+# PBS spento, sessione su 192.168.100.50.
+# configure vlan server delete ports 4
+# configure vlan server add ports 4 untagged
+# save configuration primary

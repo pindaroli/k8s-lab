@@ -6,7 +6,7 @@ configuration:
       config:
         region: garage
         s3ForcePathStyle: true
-        s3Url: http://10.10.10.50:3900
+        s3Url: http://10.10.20.50:3900
   volumeSnapshotLocation:
     - name: default
       provider: aws

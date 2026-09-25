@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$ROOT_DIR"
 
-NAS_HOST="10.10.10.50"
+NAS_HOST="10.10.20.50"
 NAS_USER="olindo"
 MEDIA_DIR="/mnt/oliraid/arrdata/media/movies"
 

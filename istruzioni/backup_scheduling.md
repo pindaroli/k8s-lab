@@ -46,7 +46,7 @@ Backs up all Kubernetes resources and Persistent Volumes (PVs) via Restic/Kopia 
 
 ## 3. PostgreSQL Database Backups (CloudNativePG)
 **Engine**: `Barman` (Streaming WAL Archiving)
-**Target**: MinIO S3 Bucket `s3://postgres-wal/` (`10.10.10.50:9000`).
+**Target**: MinIO S3 Bucket `s3://postgres-wal/` (`10.10.20.50:9000`).
 
 **Strategy: Continuous Protection (PITR)**
 Instead of just "daily snapshots", the database streams every transaction (WAL) to MinIO in real-time.

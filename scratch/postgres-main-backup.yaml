@@ -5,7 +5,7 @@ metadata:
     cnpg.io/fencedInstances: '["postgres-main-2"]'
     cnpg.io/reconcile-trigger: "1777838499"
     kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"postgresql.cnpg.io/v1","kind":"Cluster","metadata":{"annotations":{},"name":"postgres-main","namespace":"cnpg-system"},"spec":{"affinity":{"enablePodAntiAffinity":true,"topologyKey":"kubernetes.io/hostname"},"backup":{"barmanObjectStore":{"destinationPath":"s3://postgres-wal/","endpointURL":"http://10.10.10.50:9000","s3Credentials":{"accessKeyId":{"key":"ACCESS_KEY_ID","name":"minio-creds"},"secretAccessKey":{"key":"SECRET_ACCESS_KEY","name":"minio-creds"}}},"retentionPolicy":"30d"},"bootstrap":{"initdb":{"database":"app","owner":"app"}},"instances":3,"managed":{"roles":[{"name":"n8n","passwordSecret":{"name":"n8n-db-password"}}]},"monitoring":{"enablePodMonitor":true},"storage":{"size":"100Gi","storageClass":"local-postgres"},"walStorage":{"size":"4Gi","storageClass":"local-postgres"}}}
+      {"apiVersion":"postgresql.cnpg.io/v1","kind":"Cluster","metadata":{"annotations":{},"name":"postgres-main","namespace":"cnpg-system"},"spec":{"affinity":{"enablePodAntiAffinity":true,"topologyKey":"kubernetes.io/hostname"},"backup":{"barmanObjectStore":{"destinationPath":"s3://postgres-wal/","endpointURL":"http://10.10.20.50:9000","s3Credentials":{"accessKeyId":{"key":"ACCESS_KEY_ID","name":"minio-creds"},"secretAccessKey":{"key":"SECRET_ACCESS_KEY","name":"minio-creds"}}},"retentionPolicy":"30d"},"bootstrap":{"initdb":{"database":"app","owner":"app"}},"instances":3,"managed":{"roles":[{"name":"n8n","passwordSecret":{"name":"n8n-db-password"}}]},"monitoring":{"enablePodMonitor":true},"storage":{"size":"100Gi","storageClass":"local-postgres"},"walStorage":{"size":"4Gi","storageClass":"local-postgres"}}}
     rebuild-trigger: "1776489341"
   creationTimestamp: "2026-01-08T10:59:06Z"
   generation: 7
@@ -21,7 +21,7 @@ spec:
   backup:
     barmanObjectStore:
       destinationPath: s3://postgres-wal/
-      endpointURL: http://10.10.10.50:9000
+      endpointURL: http://10.10.20.50:9000
       s3Credentials:
         accessKeyId:
           key: ACCESS_KEY_ID

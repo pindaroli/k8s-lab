@@ -39,7 +39,7 @@ Questa strategia bilancia la robustezza di ZFS con la flessibilità di Proxmox B
 ### 3. Postgres Backup (CloudNativePG)
 - **Method**: WAL Archiving to S3 Object Store.
 - **Backend**: **MinIO App** on TrueNAS Scale.
-  - **URL**: `http://10.10.10.50:9000` (Internal Host Network)
+  - **URL**: `http://10.10.20.50:9000` (Internal Host Network)
   - **Bucket**: `postgres-wal`
   - **Storage**: Host Path `/mnt/oliraid/cnpg-wal`
   - **User**: `minio` (UID 3000)

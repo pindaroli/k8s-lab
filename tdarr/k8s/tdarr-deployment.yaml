@@ -20,7 +20,7 @@ spec:
     driver: nfs.csi.k8s.io
     volumeHandle: pv-tdarr-config
     volumeAttributes:
-      server: 10.10.10.50
+      server: 10.10.20.50
       share: /mnt/stripe/k8s-arr/tdarr-config
 
 ---
@@ -140,9 +140,9 @@ spec:
           emptyDir: {}
         - name: media
           nfs:
-            server: 10.10.10.50
+            server: 10.10.20.50
             path: /mnt/oliraid/arrdata/media
         - name: cache
           nfs:
-            server: 10.10.10.50
+            server: 10.10.20.50
             path: /mnt/stripe/k8s-arr/tdarr-cache

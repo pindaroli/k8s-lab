@@ -26,7 +26,7 @@ Lo skill si attiva automaticamente quando l'utente utilizza espressioni come:
 ---
 
 ## 🎯 Obiettivo
-Eseguire l'ingestion immediata, automatica e verificata di filmati nella libreria ufficiale `/media/movies/` (pool ZFS `oliraid` su TrueNAS Bare Metal `10.10.10.50`), delegando il parsing del titolo, l'estrazione TMDb, la creazione di hardlink e il download degli artwork a **FileBot AMC** in esecuzione isolata nel container Docker `webhook-normalizer` (porta 9000).
+Eseguire l'ingestion immediata, automatica e verificata di filmati nella libreria ufficiale `/media/movies/` (pool ZFS `oliraid` su TrueNAS Bare Metal `10.10.20.50`), delegando il parsing del titolo, l'estrazione TMDb, la creazione di hardlink e il download degli artwork a **FileBot AMC** in esecuzione isolata nel container Docker `webhook-normalizer` (porta 9000).
 
 La skill applica rigorosamente il pattern architetturale [[movie-metadata-and-artwork-architecture]]:
 1. **Hardlink ZFS**: Nessun consumo aggiuntivo di storage e conservazione del seeding in qBittorrent.
@@ -41,7 +41,7 @@ La skill applica rigorosamente il pattern architetturale [[movie-metadata-and-ar
 Verificare il nome esatto della cartella del film all'interno del volume o tramite il client torrent:
 
 ```bash
-ssh -o BatchMode=yes olindo@10.10.10.50 "ls -1 /mnt/oliraid/arrdata/media/downloads/video-filebot"
+ssh -o BatchMode=yes olindo@10.10.20.50 "ls -1 /mnt/oliraid/arrdata/media/downloads/video-filebot"
 ```
 *(Oppure interrogare qBittorrent tramite tool MCP `qbt_list_torrents` / `qbt_torrent_details`)*.
 
@@ -56,7 +56,7 @@ Eseguire lo script CLI dedicato `scripts/servarr/trigger_normalization.sh` passa
 
 *In alternativa, tramite chiamata HTTP diretta a TrueNAS:*
 ```bash
-curl -s -X POST http://10.10.10.50:9000/hooks/normalize \
+curl -s -X POST http://10.10.20.50:9000/hooks/normalize \
     --data-urlencode "path=/media/downloads/video-filebot/<NOME_CARTELLA_O_FILE>" \
     --data-urlencode "category=video-filebot"
 ```
@@ -69,7 +69,7 @@ curl -s -X POST http://10.10.10.50:9000/hooks/normalize \
 Seguire l'elaborazione di FileBot AMC in tempo reale sui log del container Docker di TrueNAS:
 
 ```bash
-ssh -o BatchMode=yes olindo@10.10.10.50 "sudo -n docker logs -f --tail=30 webhook-normalizer"
+ssh -o BatchMode=yes olindo@10.10.20.50 "sudo -n docker logs -f --tail=30 webhook-normalizer"
 ```
 
 L'elaborazione si conclude positivamente quando il log riporta:
@@ -88,7 +88,7 @@ Directory finale   : '/media/movies'
 Verificare la corretta materializzazione della scheda e dei file in `/media/movies/`:
 
 ```bash
-ssh -o BatchMode=yes olindo@10.10.10.50 "ls -la '/mnt/oliraid/arrdata/media/movies/<Titolo Identificato>*/'"
+ssh -o BatchMode=yes olindo@10.10.20.50 "ls -la '/mnt/oliraid/arrdata/media/movies/<Titolo Identificato>*/'"
 ```
 
 #### Checklist di Validazione:

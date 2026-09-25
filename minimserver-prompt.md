@@ -47,7 +47,7 @@ E nel container sono mappate le relative porte DLNA:
 ---
 
 ### 2. Dettagli sul Mount delle Share NFS (Musica Classica & Config)
-Nel nostro cluster, la musica classica risiede sul server TrueNAS `10.10.10.50` nel dataset `/mnt/oliraid/arrdata/classical`.
+Nel nostro cluster, la musica classica risiede sul server TrueNAS `10.10.20.50` nel dataset `/mnt/oliraid/arrdata/classical`.
 Nel cluster K8s è attiva una PersistentVolumeClaim (PVC) condivisa chiamata `servarr-classical-media` (StorageClass: `csi-nfs-stripe-arr-conf`) che punta a tale share.
 
 Prendendo come esempio la configurazione di `jellyfin-classic` nel file `arr-values.yaml`:

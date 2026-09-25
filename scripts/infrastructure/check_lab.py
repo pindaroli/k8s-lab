@@ -126,8 +126,8 @@ def main():
             pbs = next((r for r in resources if r.get('vmid') == 1400), None)
 
             if truenas and truenas.get('status') == 'running':
-                if check_ping("10.10.10.50"):
-                    log_ok("TrueNAS (VM 1100)  : RUNNING e ONLINE (Ping OK a 10.10.10.50)")
+                if check_ping("10.10.20.50"):
+                    log_ok("TrueNAS (VM 1100)  : RUNNING e ONLINE (Ping OK a 10.10.20.50)")
                 else:
                     log_warn("TrueNAS (VM 1100)  : RUNNING ma NON RISPONDE AL PING (Possibile Booting)")
             else:

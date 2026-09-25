@@ -29,7 +29,7 @@ Il sistema è diviso in due componenti principali:
 Per consentire l'avvio automatico all'accesso GUI ma evitare che la chiusura manuale del terminale interrompa il nodo (causando crash da `SIGHUP` o `SIGPIPE`), lo script `start_node.sh` adotta una strategia robusta di distacco del processo:
 
 1. **Verifica Rete & Mount Automontati (Sequenziale)**:
-   * **Verifica 1 (NFS/Rete Generale)**: Effettua un controllo preventivo di ping verso il server NFS (`10.10.10.50`) con un retry loop di sicurezza (fino a 60 secondi) per attendere la prontezza della rete o l'avvio del server storage.
+   * **Verifica 1 (NFS/Rete Generale)**: Effettua un controllo preventivo di ping verso il server NFS (`10.10.20.50`) con un retry loop di sicurezza (fino a 60 secondi) per attendere la prontezza della rete o l'avvio del server storage.
    * **Verifica 2 (Tdarr Server)**: Effettua una verifica TCP sulla porta `8266` di `tdarr-api.pindaroli.org` con attese sintetiche a riga singola (fino a 60 secondi). Questo impedisce l'avvio del binario Tdarr Node e i conseguenti cicli di crash con log Axios verbosi se il Tdarr Server è momentaneamente offline, mostrando una diagnostica dettagliata di rete solo in caso di aborto definitivo.
    * **Mount NFS**: Successivamente, verifica ed esegue il mount della share NFS (`/Volumes/arrdata/media`) sfruttando i permessi `sudoers` passwordless dell'utente.
 2. **Esecuzione Detached (`nohup`)**:

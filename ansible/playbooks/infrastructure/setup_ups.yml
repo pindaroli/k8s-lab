@@ -132,7 +132,7 @@
     - name: "Proxmox: Configure /etc/nut/upsmon.conf monitoring TrueNAS Master"
       copy:
         content: |
-          MONITOR ups@10.10.10.50 1 pvemon {{ ups_mon_pwd }} slave
+          MONITOR ups@10.10.20.50 1 pvemon {{ ups_mon_pwd }} slave
           MINSUPPLIES 1
           SHUTDOWNCMD "/etc/nut/shutdown_sequence.sh"
           POWERDOWNFLAG /etc/killpower
@@ -149,7 +149,7 @@
       copy:
         content: |
           #!/bin/bash
-          # Script di spegnimento locale attivato da NUT Client (Master: TrueNAS 10.10.10.50)
+          # Script di spegnimento locale attivato da NUT Client (Master: TrueNAS 10.10.20.50)
           echo "[$(date)] Blackout / LOWBATT rilevato da TrueNAS! Avvio spegnimento locale..."
 
           {% if talos_vmid is defined %}

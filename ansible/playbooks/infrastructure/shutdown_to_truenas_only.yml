@@ -131,9 +131,9 @@
       failed_when: "'all pools are healthy' not in zpool_check.stdout"
       changed_when: false
 
-    - name: "⏳ Gate 3: Verifica porte dei servizi permanenti su TrueNAS (10.10.10.50)"
+    - name: "⏳ Gate 3: Verifica porte dei servizi permanenti su TrueNAS (10.10.20.50)"
       wait_for:
-        host: 10.10.10.50
+        host: 10.10.20.50
         port: "{{ item.port }}"
         state: started
         timeout: 15
@@ -153,10 +153,10 @@
           - Kubernetes:    OFFLINE (Cluster spento in sicurezza)
           - Proxmox (PVE): OFFLINE (pve1, pve2, pve3 spenti)
           - Storage ZFS:   ONLINE (Pool stripe & oliraid operativi)
-          - Servizi Media: ONLINE 24/7 su TrueNAS (10.10.10.50)
+          - Servizi Media: ONLINE 24/7 su TrueNAS (10.10.20.50)
           ------------------------------------------------------------
-          🔗 Homepage Dashboard LAN: http://10.10.10.50:3000
-          🔗 qBittorrent WebUI:      http://10.10.10.50:8080
-          🔗 Jellyfin WebUI:         http://10.10.10.50:8096
-          🔗 Prowlarr WebUI:         http://10.10.10.50:9696
+          🔗 Homepage Dashboard LAN: http://10.10.20.50:3000
+          🔗 qBittorrent WebUI:      http://10.10.20.50:8080
+          🔗 Jellyfin WebUI:         http://10.10.20.50:8096
+          🔗 Prowlarr WebUI:         http://10.10.20.50:9696
           ============================================================

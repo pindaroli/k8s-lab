@@ -22,7 +22,7 @@ from pathlib import Path
 from collections import defaultdict
 
 MEDIA_DIR = os.environ.get("MEDIA_DIR", "/mnt/oliraid/arrdata/media/movies")
-JELLYFIN_URL = os.environ.get("JELLYFIN_URL", "http://10.10.10.50:8096")
+JELLYFIN_URL = os.environ.get("JELLYFIN_URL", "http://10.10.20.50:8096")
 JELLYFIN_TOKEN = os.environ.get("JELLYFIN_TOKEN", "7c80240c7a9b4326a8690ce140265a14")
 
 EDITION_PATTERNS = [

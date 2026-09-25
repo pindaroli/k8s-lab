@@ -234,20 +234,20 @@ data:
             icon: proxmox.png
             siteMonitor: https://pve-internal.pindaroli.org
         - Garage:
-            href: http://10.10.10.50:3903/health
+            href: http://10.10.20.50:3903/health
             description: S3 Object Storage
             icon: mdi-bucket-outline
-            siteMonitor: http://10.10.10.50:3903/health
+            siteMonitor: http://10.10.20.50:3903/health
         - Grafana:
             href: https://grafana.pindaroli.org
             description: Monitoring Dashboard
             icon: grafana.png
             siteMonitor: http://victoria-monitoring-grafana.monitoring.svc.cluster.local:80/api/health
         - Scrutiny:
-            href: http://10.10.10.50:31054
+            href: http://10.10.20.50:31054
             description: Hard Drive Health & S.M.A.R.T. Monitoring
             icon: scrutiny.png
-            siteMonitor: http://10.10.10.50:31054
+            siteMonitor: http://10.10.20.50:31054
 
     - "Network Infrastructure":
         - Core Switch:
@@ -440,7 +440,7 @@ spec:
     secretName: pindaroli-wildcard-tls
 
 ---
-# TrueNAS su 10.10.10.50:443
+# TrueNAS su 10.10.20.50:443
 apiVersion: v1
 kind: Service
 metadata:
@@ -462,7 +462,7 @@ ports:
     protocol: TCP
 endpoints:
   - addresses:
-      - "10.10.10.50"
+      - "10.10.20.50"
     conditions:
       ready: true
 ---

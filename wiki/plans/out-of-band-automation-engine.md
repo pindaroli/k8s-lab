@@ -24,7 +24,7 @@ Il piano si articola in due parti disaccoppiate da un gate di approvazione:
 
 ## 🗺️ Mappe Concettuali e Relazioni
 - [[Proxmox]] (Cluster PVE: `pve1` 10.10.10.11, `pve2` 10.10.10.21, `pve3` 10.10.10.31)
-- [[TrueNAS]] (TrueNAS SCALE 10.10.10.50, pool `oliraid`)
+- [[TrueNAS]] (TrueNAS SCALE 10.10.20.50, pool `oliraid`)
 - [[MCP_Platform]] (Piattaforma Kuadrant & ToolHive in `mcp-system`)
 - [[Traefik]] (IngressRoute per `semaphore-mcp-internal.pindaroli.org`)
 - [[Secret_Registry]] (Gestione credenziali cifrate con SOPS)
@@ -35,7 +35,7 @@ Il piano si articola in due parti disaccoppiate da un gate di approvazione:
 
 ### 1. Parametri e Topologia (Source of Truth)
 - **Pool TrueNAS:** `oliraid` (RAID-Z2 dischi meccanici con vdev SSD Mirror Special `mirror-2`).
-- **Dataset TrueNAS:** `/mnt/oliraid/pve-shared-lxc` (Storage IP: `10.10.10.50`).
+- **Dataset TrueNAS:** `/mnt/oliraid/pve-shared-lxc` (Storage IP: `10.10.20.50`).
 - **Storage ID Proxmox:** `truenas-nfs` (abilitato sui nodi `pve1`, `pve2`, `pve3`).
 - **Container LXC:** VMID `200`, hostname `ansible-engine`.
 - **Rete:** IP statico `10.10.10.60/24`, Bridge `vmbr10`, Gateway `10.10.10.1`, DNS `192.168.2.254`.
@@ -44,7 +44,7 @@ Il piano si articola in due parti disaccoppiate da un gate di approvazione:
 ### 2. Fasi Operative del Piano Principale
 
 #### FASE 1: Storage ZFS Ottimizzato su TrueNAS e Montaggio PVE
-1. **Creazione Dataset su TrueNAS (`10.10.10.50`):**
+1. **Creazione Dataset su TrueNAS (`10.10.20.50`):**
    ```bash
    zfs create -o recordsize=64K -o special_small_blocks=64K -o atime=off -o xattr=sa -o acltype=posix -o compression=lz4 oliraid/pve-shared-lxc
    chown -R olindo:k8s /mnt/oliraid/pve-shared-lxc
@@ -54,7 +54,7 @@ Il piano si articola in due parti disaccoppiate da un gate di approvazione:
    - Percorso: `/mnt/oliraid/pve-shared-lxc`, reti ammesse `10.10.10.0/24`, `maproot_user=root`, `maproot_group=wheel`, opzione `insecure`.
 3. **Aggiunta Storage `truenas-nfs` nel Cluster Proxmox VE (da `pve1`):**
    ```bash
-   pvesm add nfs truenas-nfs --server 10.10.10.50 --export /mnt/oliraid/pve-shared-lxc --content rootdir,images --options vers=4.1,hard,intr,noatime --nodes pve1,pve2,pve3
+   pvesm add nfs truenas-nfs --server 10.10.20.50 --export /mnt/oliraid/pve-shared-lxc --content rootdir,images --options vers=4.1,hard,intr,noatime --nodes pve1,pve2,pve3
    ```
 4. **Verifica:** `pvesm status --storage truenas-nfs` -> `active` su tutti i nodi.
 

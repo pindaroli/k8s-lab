@@ -1,26 +1,26 @@
 - "Failover Services (TrueNAS)":
     - Jellyfin:
-        href: http://10.10.10.50:8096
+        href: http://10.10.20.50:8096
         description: Media Server (Jellyfin 12 - TrueNAS Failover)
         icon: jellyfin.png
-        siteMonitor: http://10.10.10.50:8096/health
+        siteMonitor: http://10.10.20.50:8096/health
     - qBittorrent:
-        href: http://10.10.10.50:8080
+        href: http://10.10.20.50:8080
         description: BitTorrent Downloader (TrueNAS Failover)
         icon: qbittorrent.png
-        siteMonitor: http://10.10.10.50:8080
+        siteMonitor: http://10.10.20.50:8080
     - Prowlarr:
-        href: http://10.10.10.50:9696
+        href: http://10.10.20.50:9696
         description: Indexer Management (SQLite Failover)
         icon: prowlarr.png
-        siteMonitor: http://10.10.10.50:9696/ping
+        siteMonitor: http://10.10.20.50:9696/ping
 
 - "Infrastructure Hosts":
     - TrueNAS:
-        href: https://10.10.10.50
+        href: https://10.10.20.50
         description: TrueNAS SCALE Bare Metal (Storage Engine)
         icon: https://www.svgrepo.com/show/331613/truenas.svg
-        siteMonitor: https://10.10.10.50
+        siteMonitor: https://10.10.20.50
     - PBS:
         href: https://10.10.10.100:8007
         description: Proxmox Backup Server (KVM VM su TrueNAS)

@@ -14,7 +14,7 @@ tags:
 
 # Traefik Alone Reverse Proxy su TrueNAS (Porta 8443)
 
-Questo piano definisce l'integrazione di un'istanza leggera di Traefik v3 su TrueNAS SCALE (`10.10.10.50`) per esporre i servizi Docker autonomi su porta HTTPS dedicata (`8443`) con certificati TLS validi (`*.pindaroli.org` via Cloudflare DNS-01) e record dedicati su OPNsense Unbound con suffisso `-alone.pindaroli.org`, preservando al 100% la configurazione nativa di TrueNAS.
+Questo piano definisce l'integrazione di un'istanza leggera di Traefik v3 su TrueNAS SCALE (`10.10.20.50`) per esporre i servizi Docker autonomi su porta HTTPS dedicata (`8443`) con certificati TLS validi (`*.pindaroli.org` via Cloudflare DNS-01) e record dedicati su OPNsense Unbound con suffisso `-alone.pindaroli.org`, preservando al 100% la configurazione nativa di TrueNAS.
 
 > [!CAUTION]
 > **PROTOCOLLO DI ESECUZIONE (STRICT PHASING & TEST-DRIVEN)**
@@ -23,18 +23,18 @@ Questo piano definisce l'integrazione di un'istanza leggera di Traefik v3 su Tru
 ---
 
 ## 🏗️ FASE 1: Configurazione DNS su OPNsense Unbound
-Registrazione degli Host Overrides locali per risolvere i domini "alone" direttamente sull'IP di TrueNAS (`10.10.10.50`), garantendo la risoluzione locale anche a cluster K8s/Proxmox spento.
+Registrazione degli Host Overrides locali per risolvere i domini "alone" direttamente sull'IP di TrueNAS (`10.10.20.50`), garantendo la risoluzione locale anche a cluster K8s/Proxmox spento.
 
 ### Azioni
 1. Creazione record Unbound in OPNsense (*Services -> Unbound DNS -> Overrides*):
-   - `homepage-alone.pindaroli.org` -> `10.10.10.50`
-   - `jellyfin-alone.pindaroli.org` -> `10.10.10.50`
-   - `qbittorrent-alone.pindaroli.org` -> `10.10.10.50`
-   - `prowlarr-alone.pindaroli.org` -> `10.10.10.50`
-   - `webhook-alone.pindaroli.org` -> `10.10.10.50`
+   - `homepage-alone.pindaroli.org` -> `10.10.20.50`
+   - `jellyfin-alone.pindaroli.org` -> `10.10.20.50`
+   - `qbittorrent-alone.pindaroli.org` -> `10.10.20.50`
+   - `prowlarr-alone.pindaroli.org` -> `10.10.20.50`
+   - `webhook-alone.pindaroli.org` -> `10.10.20.50`
 
 ### 🛑 CHECKPOINT FASE 1
-- [ ] Verifica `dig @192.168.2.254 <servizio>-alone.pindaroli.org +short` risponde con `10.10.10.50`.
+- [ ] Verifica `dig @192.168.2.254 <servizio>-alone.pindaroli.org +short` risponde con `10.10.20.50`.
 
 ---
 
