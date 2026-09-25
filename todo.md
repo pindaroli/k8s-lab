@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: TrueNAS: LACP dei due NIC sulla VLAN 10 [[truenas-lacp-vlan10]]
+- [x] Fase 1: `enp1s0f1np1` in link. FDB: porta 4 (`…f5:92`) e porta 8 (`…f5:93`).
+- [x] Fase 2: Playbook `ansible/playbooks/exos_truenas_lacp_vlan10.yml`. LAG LACP porte 4+8, `primary.cfg` salvato.
+- [x] Fase 3: `bond0` con `10.10.10.50`. PBS su `bond0`, raggiungibile su `10.10.10.100`.
+- [x] Fase 4: Allineati `rete.json`, [[TrueNAS]] e [[Network_Registry]].
+
 ## 🚀 [x] ✅ COMPLETATO: Architettura Homelab Ibrida: Ottimizzazione Control Plane K8s & Convergenza Bare-Metal LXC su PVE3 [[pve3-hybrid-controlplane-lxc-convergence]]
 - [x] Fase 0: Documentazione Wiki-first e allineamento tracking.
 - [x] Fase 1: Protezione piano di rete Ingress (CoreDNS, Cloudflared, MetalLB, Traefik).

@@ -1,0 +1,31 @@
+---
+- name: TrueNAS LACP 802.3ad on VLAN server
+  hosts: switches
+  gather_facts: no
+
+  vars:
+    lag_master: "4"
+    lag_member: "8"
+
+  tasks:
+    - name: 1. Move port 8 untagged into VLAN server
+      extreme.exos.exos_config:
+        lines:
+          - "configure vlan server add ports {{ lag_member }} untagged"
+
+    - name: 2. Enable LACP sharing on the TrueNAS ports
+      extreme.exos.exos_config:
+        lines:
+          - "enable sharing {{ lag_master }} grouping {{ lag_master }},{{ lag_member }} algorithm address-based L3_L4 lacp"
+      register: config_result
+
+    - name: 3. Save configuration
+      ansible.netcommon.cli_command:
+        command: save configuration primary
+        prompt: '(?i)(y/N|already exists)'
+        answer: y
+      register: config_result
+
+    - name: 4. Display configuration result
+      ansible.builtin.debug:
+        var: config_result.stdout

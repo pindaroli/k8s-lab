@@ -49,7 +49,17 @@
       "management_ip": "10.10.10.50",
       "default_gateway": "10.10.10.1",
       "dns": "192.168.2.254, 1.1.1.1",
-      "notes": "Single homing on VLAN 10. L3 Switch handles routing from VLAN 20 symmetrically."
+      "lag": {
+        "protocol": "LACP",
+        "hash": "L3_L4",
+        "interface": "bond0",
+        "members": ["enp1s0f0np0", "enp1s0f1np1"],
+        "switch": "extreme",
+        "master_port": "4",
+        "member_port": "8",
+        "vlan": "10"
+      },
+      "notes": "LACP 802.3ad sulla VLAN 10. Un solo indirizzo 10.10.10.50 su bond0. La VLAN 20 raggiunge TrueNAS dalla SVI dello switch."
     },
     {
       "id": "switch10g",
@@ -337,10 +347,12 @@
         },
         {
           "id": "4",
-          "role": "LAN Server (VLAN 10) - PVE3 Port 1 (enp101s0f0)",
-          "mode": "ACCESS",
+          "role": "LAG LACP TrueNAS bond0 master (enp1s0f0np0), VLAN 10",
+          "mode": "LAG",
           "speed": "10Gbs",
-          "pvid": 10
+          "pvid": 10,
+          "lag_group": "4",
+          "lag_protocol": "LACP"
         },
         {
           "id": "5",
@@ -365,10 +377,12 @@
         },
         {
           "id": "8",
-          "role": "LAN Client (VLAN 20) - Spare Client 10G DAC",
-          "mode": "ACCESS",
+          "role": "LAG LACP TrueNAS bond0 member (enp1s0f1np1), VLAN 10",
+          "mode": "LAG",
           "speed": "10Gbs",
-          "pvid": 20
+          "pvid": 10,
+          "lag_group": "4",
+          "lag_protocol": "LACP"
         },
         {
           "id": "9",

@@ -1,6 +1,6 @@
 ---
 title: "TrueNAS (Storage & Management)"
-last_updated: "2026-09-10"
+last_updated: "2026-09-25"
 confidence: "High"
 tags:
   - "#storage"
@@ -17,8 +17,8 @@ TrueNAS è il fornitore centrale di storage per l'intera infrastruttura Lab.
 ## 1. Dettagli Hardware e Rete
 - **Hostname**: `truenas.pindaroli.org`
 - **Hardware**: Bare Metal dedicato (AMD Ryzen 5 PRO 5650G, ASRock X570M Pro4, 32GB ECC, Intel X710 Quad 10G).
-- **IP Gestione**: `10.10.10.50` (VLAN 10 Server 10G)
-- **IP OOB**: `192.168.100.50` (VLAN 99 OOB 2.5G)
+- **IP Gestione**: `10.10.10.50/24` su `bond0` (LACP 802.3ad, hash L3+L4, rate slow). Membri `enp1s0f0np0` e `enp1s0f1np1`. Sullo switch Extreme il LAG ha master la porta 4 e membro la porta 8, access untagged VLAN server. La VM PBS è attaccata a `bond0`.
+- **IP OOB**: `192.168.100.50` (VLAN 99 OOB 2.5G, `enp8s0`)
 - **OS**: TrueNAS SCALE 25.10.6 (Debian-based).
 - **UPS**: Master NUT. Il cavo USB dell'UPS Tecnoware Exa 1000 è attestato fisicamente su TrueNAS (Vendor ID `0665:5161`). Driver `nutdrv_qx`, soglia software 40% (`ignorelb`), `HOSTSYNC: 120`.
 

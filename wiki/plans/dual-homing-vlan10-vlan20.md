@@ -6,6 +6,7 @@ certified_for_ai: false
 obsolete: true
 created_at: 2026-09-25
 discarded_at: 2026-09-25
+superseded_by: "[[truenas-lacp-vlan10]]"
 tags:
   - "#plan"
   - "#network"
