@@ -1,8 +1,0 @@
-- resources:
-    backend: resources
-    expanded: true
-    cpu: true
-    memory: true
-- search:
-    provider: duckduckgo
-    target: _blank

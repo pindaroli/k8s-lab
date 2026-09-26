@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Aggiornamento Homepage v2.4.0, Rimozione Git Backup & MCP Hardened [[homepage-upgrade-v2.4.0]]
+- [x] Fase 0: Rimozione fisica e git dell'implementazione di failover obsoleta `servarr/compose/`.
+- [x] Fase 1: Creazione Secret `homepage-mcp-secret`, upgrade manifest `homepage.yaml` (v2.4.0, MCP false) e `homepage-local.yaml` (v2.4.0, MCP true + token), rollout restart K8s e collaudo HTTP (200 OK internal, 302 external, probe MCP 200 con 7 tool).
+- [x] Fase 2: Upgrade `servarr/truenas-docker/docker-compose.yaml` a `v2.4.0` con MCP enabled, pull immagine su TrueNAS, sync compose e restart container, collaudo HTTP :3000 e probe MCP 200.
+- [x] Fase 3: Consolidamento documentale Wiki [[Homepage]], chiusura tracking e sync contesto.
+
 ## 🚀 [x] ✅ COMPLETATO: TrueNAS e Docker sulla VLAN 20, PBS sulla VLAN 10 [[truenas-vlan20]]
 - [x] Fase 1: Piano, link e playbook `ansible/playbooks/exos_truenas_lacp_vlan20.yml`.
 - [x] Fase 2: Da OOB, `vlan10` senza IP, PBS su `vlan10`, trunk sullo switch, `bond0` a `10.10.20.50`.
