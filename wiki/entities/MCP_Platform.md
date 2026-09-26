@@ -121,4 +121,15 @@ I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `oli
 | **`kef-mcp`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | stdio -> proxy :8080 | `https://kef-mcp-internal.pindaroli.org/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
 | **`nowaikit-mcp`** | `ghcr.io/pindaroli/nowaikit-mcp:4.15.1` | stdio -> proxy :8080 | `https://nowaikit-mcp-internal.pindaroli.org/mcp` | ServiceNow PDI Cloud (`dev395227.service-now.com`) |
 
+---
+
+## 5. Server MCP Standalone & Dashboard Bridges (`mcp_config.json`)
+
+Server MCP nativi o integrati in applicazioni terze gestiti tramite script bridge standard library in `scripts/<mcp-name>/`:
+
+| Server | Trasporto Client | Target Endpoint | Script Bridge | Funzionalità Esposte |
+| :--- | :--- | :--- | :--- | :--- |
+| **`homepage-k8s`** | Stdio (Python) | `https://home-internal.pindaroli.org/api/mcp` | `scripts/homepage-mcp/bridge.py` | Ispezione, validazione e documentazione YAML K8s Homepage |
+| **`homepage-truenas`** | Stdio (Python) | `http://10.10.20.50:3000/api/mcp` | `scripts/homepage-mcp/bridge.py` | Ispezione, validazione e documentazione YAML TrueNAS Homepage |
+
 

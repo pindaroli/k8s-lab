@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Integrazione MCP Server per le Due Homepage (K8s & TrueNAS) [[homepage-mcp-servers-integration]]
+- [x] Fase 1: Creazione bridge eseguibile `scripts/homepage-mcp/bridge.py` e collaudo test-driven JSON-RPC `initialize` e `tools/list` su entrambe le istanze.
+- [x] Fase 2: Registrazione centralizzata di `homepage-k8s` e `homepage-truenas` in `~/.gemini/antigravity/mcp_config.json` con token protetto.
+- [x] Fase 3: Validazione sintassi JSON e verifica caricamento tool.
+- [x] Fase 4: Aggiornamento documentale [[MCP_Platform]], aggiornamento `todo.md` e sync contesto.
+
 ## 🚀 [x] ✅ COMPLETATO: Aggiornamento Homepage v2.4.0, Rimozione Git Backup & MCP Hardened [[homepage-upgrade-v2.4.0]]
 - [x] Fase 0: Rimozione fisica e git dell'implementazione di failover obsoleta `servarr/compose/`.
 - [x] Fase 1: Creazione Secret `homepage-mcp-secret`, upgrade manifest `homepage.yaml` (v2.4.0, MCP false) e `homepage-local.yaml` (v2.4.0, MCP true + token), rollout restart K8s e collaudo HTTP (200 OK internal, 302 external, probe MCP 200 con 7 tool).
