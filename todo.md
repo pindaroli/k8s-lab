@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Migrazione Server MCP su Docker TrueNAS SCALE [[mcp-servers-truenas-docker-migration]]
+- [x] Fase 1: Creazione directory `/mnt/stripe/truenas-docker/mcp/{talos,kubernetes}`, secret projection SOPS in `.env` e copia read-only config Talos/Kube (`chmod 644`).
+- [x] Fase 2: Preparazione e build immagini OCI AMD64 con wrapper di rete supergateway (`truenas`, `opnsense`, `talos`, `nowaikit`, `ollama`, `github`), SSE FastMCP (`gemini-deepsearch`), Streamable HTTP Uvicorn (`kef`) e Streamable HTTP (`kubernetes`).
+- [x] Fase 3: Deployment Docker Compose dello stack di 9 container in `/mnt/stripe/truenas-docker/mcp/docker-compose.yaml` su TrueNAS (`10.10.20.50`).
+- [x] Fase 4: Collaudo LAN HTTP porte 8101-8109 (100% responsive) e aggiornamento configurazione client `~/.gemini/antigravity/mcp_config.json`.
+- [x] Fase 5: Disabilitazione dichiarativa e non distruttiva dei pod in K8s `mcp-gateway-values.yaml` (`replicas: 0`, `enabled: false`) e consolidamento [[MCP_Platform]].
+
 ## 🚀 [x] ✅ COMPLETATO: Integrazione MCP Server per le Due Homepage (K8s & TrueNAS) [[homepage-mcp-servers-integration]]
 - [x] Fase 1: Creazione bridge eseguibile `scripts/homepage-mcp/bridge.py` e collaudo test-driven JSON-RPC `initialize` e `tools/list` su entrambe le istanze.
 - [x] Fase 2: Registrazione centralizzata di `homepage-k8s` e `homepage-truenas` in `~/.gemini/antigravity/mcp_config.json` con token protetto.
@@ -441,6 +448,12 @@
 - [ ] Verificare ed eventualmente modificare la sicurezza delle credenziali (molte password coincidono con l'username/db_name).
 - [ ] Assicurarsi che i nuovi secret siano cifrati via SOPS.
 
+## [ ] Bonifica Database & Ruolo orfano lidarr_classic su postgres-main
+- [ ] Identificare il pod primario di `postgres-main` nel namespace `cnpg-system`.
+- [ ] Verificare l'assenza di dati/tabelle: `\c lidarr_classic` -> `\dt`.
+- [ ] Eseguire l'eliminazione controllata: `DROP DATABASE IF EXISTS lidarr_classic;` e `DROP ROLE IF EXISTS lidarr_classic;`.
+- [ ] Validare con `\l` e `\du` che non vi siano residui orfani.
+
 ## Vaultwarden Deployment (PAUSED)
 
 ### [ ] Deployment Vaultwarden nel Cluster K8s
@@ -728,9 +741,8 @@
 
 
 
-### [ ] Generalizzazione setup_postgres_dbs.sh per integrazione in MCP Server
-  > **Contesto**: Lo script `scripts/infrastructure/setup_postgres_dbs.sh` gestisce in modo procedurale e locale la creazione dei database e degli utenti PostgreSQL eseguendo comandi SQL via kubectl. Per permettere agli agenti AI di gestire in autonomia il provisioning dei database senza dipendere da script shell complessi, questo processo dovrebbe essere integrato in un tool di un MCP Server (es. estendendo l'MCP server postgres o kubernetes).
-  > **Obiettivo**: Riscrivere o incapsulare la logica di creazione db/utente di `setup_postgres_dbs.sh` per renderla invocabile in modo dichiarativo e parametrizzato come tool MCP.
+### [x] 🗑️ OBSOLETO: Generalizzazione setup_postgres_dbs.sh (Dismesso a favore di CloudNativePG dichiarativo)
+  > **Stato (2026-09-26)**: Lo script imperativo `setup_postgres_dbs.sh` è stato formalmente dismesso e rimosso. La gestione dei database e dei ruoli avviene esclusivamente in modo dichiarativo tramite `cluster.yaml` (`spec.managed.roles`) e secret protetti da SOPS.
 
 
 

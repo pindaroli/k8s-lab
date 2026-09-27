@@ -1,0 +1,129 @@
+services:
+  truenas-mcp:
+    container_name: mcp-truenas
+    image: local/truenas-master-mcp:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8101:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/mcp || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  opnsense-mcp:
+    container_name: mcp-opnsense
+    image: local/opnsense-mcp:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8102:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/mcp || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  talos-mcp:
+    container_name: mcp-talos
+    image: local/talos-mcp:latest
+    restart: unless-stopped
+    environment:
+      - TALOSCONFIG=/etc/talos/talosconfig
+    volumes:
+      - /mnt/stripe/truenas-docker/mcp/talos/talosconfig:/etc/talos/talosconfig:ro
+    ports:
+      - "8103:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/mcp || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  gemini-deepsearch-mcp:
+    container_name: mcp-gemini-deepsearch
+    image: ghcr.io/pindaroli/gemini-deepsearch-mcp:latest
+    restart: unless-stopped
+    entrypoint: ["python", "-c", "from gemini_deepsearch_mcp.main import mcp; mcp.run(transport='sse', host='0.0.0.0', port=8080)"]
+    env_file: .env
+    ports:
+      - "8104:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/sse', timeout=2)\" || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  kubernetes-mcp:
+    container_name: mcp-kubernetes
+    image: ghcr.io/containers/kubernetes-mcp-server:latest
+    restart: unless-stopped
+    environment:
+      - KUBECONFIG=/app/config/kubeconfig
+    volumes:
+      - /mnt/stripe/truenas-docker/mcp/kubernetes:/app/config:ro
+    command: ["--config", "/app/config/config.toml"]
+    ports:
+      - "8105:8080"
+    healthcheck:
+      test: ["CMD", "/app/kubernetes-mcp-server", "--version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  ollama-mcp:
+    container_name: mcp-ollama
+    image: local/ollama-mcp:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8106:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/mcp || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  kef-mcp:
+    container_name: mcp-kef
+    image: ghcr.io/pindaroli/kef-mcp:1.0.0
+    restart: unless-stopped
+    environment:
+      - MCP_TRANSPORT=sse
+      - MCP_PORT=8080
+      - MCP_HOST=0.0.0.0
+    env_file: .env
+    ports:
+      - "8107:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/mcp', timeout=2)\" || exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  nowaikit-mcp:
+    container_name: mcp-nowaikit
+    image: local/nowaikit-mcp:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8108:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/mcp || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  github-mcp:
+    container_name: mcp-github
+    image: local/github-mcp-server:latest
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8109:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/mcp || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

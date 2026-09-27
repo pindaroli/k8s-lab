@@ -1,26 +1,28 @@
 ---
 title: "MCP Platform (Model Context Protocol Hub & Inspector)"
-last_updated: "2026-09-06"
+last_updated: "2026-09-27"
 confidence: "High"
 tags:
   - "#mcp"
   - "#ai"
   - "#infrastructure"
-  - "#helm"
+  - "#docker"
+  - "#truenas"
 provenance:
-  - "helm-charts/mcp-gateway/"
+  - "docker/mcp/docker-compose.yaml"
+  - "/mnt/stripe/truenas-docker/mcp/"
   - "mcp-gateway/mcp-gateway-values.yaml"
-  - "mcp-servers/"
 ---
 
 # Piattaforma MCP (Model Context Protocol)
 
 ## 🎯 Visione & Obiettivo Architetturale (MCP-as-a-Service)
 
-L'obiettivo fondamentale dell'infrastruttura MCP nel cluster homelab GEMINI (`k8s-lab`) è:
-1. **Centralizzazione su Kubernetes (Provider)**: Installare, containerizzare e orchestrare tutti i Server MCP all'interno del cluster (`mcp-system`), consentendo loro l'accesso diretto e privilegiato allo storage TrueNAS (NFS), alle reti VLAN interne e ai segreti di sistema protetti da SOPS.
-2. **Accessibilità Agnostica per i Client (Consumer)**: Esporre i server tramite endpoint remoti standard (HTTP/SSE e Kuadrant Gateway) in modo che QUALSIASI **MCP Client** — come **Antigravity** su macOS, **Hermes Agent** nel cluster, flussi **n8n** o bot Telegram — possa invocare i tool via rete, eliminando la necessità di eseguire runtime locali (Python/Node), duplicare credenziali o montare share sui singoli computer degli sviluppatori.
-3. **Ruolo di MCP Inspector**: Inspector è declassato a utility opzionale di debug manuale per sviluppatori (disabilitato di default tramite `inspector.enabled: false`) e non fa parte del percorso dati dei client AI operativi.
+L'infrastruttura MCP del lab adotta un'architettura **High-Availability 24/7 su TrueNAS SCALE bare-metal (`10.10.20.50`)**:
+1. **Operatività Ininterrotta 24/7 su TrueNAS Docker (Provider Primario Attivo)**: La suite completa di 9 server MCP risiede ed è orchestrata tramite Docker Compose su TrueNAS bare-metal (`/mnt/stripe/truenas-docker/mcp/docker-compose.yaml`). Questo garantisce la piena operatività dell'agente AI (Antigravity) anche quando i nodi Proxmox e il cluster Kubernetes Talos vengono spenti per risparmio energetico (`shutdown_to_truenas_only.yml`).
+2. **Accessibilità LAN Diretta su Porte Dedicate (Opzione A)**: Ciascun server MCP è mappato su una porta host dedicata (`8101`–`8109`) sull'IP di TrueNAS (`10.10.20.50`), garantendo zero dipendenze da Ingress Traefik, certificati TLS esterni o resolver DNS Unbound.
+3. **Disabilitazione Conservativa K8s (Standby Reversibile)**: Nel namespace Kubernetes `mcp-system`, la configurazione Helm (`mcp-gateway-values.yaml`) è mantenuta intatta al 100% nel repository con `replicas: 0` ed `enabled: false`. Nessun file, chart o secret SOPS è stato eliminato.
+4. **Ruolo di MCP Inspector**: Inspector rimane opzionale per collaudo manuale.
 
 ---
 
@@ -107,19 +109,23 @@ I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `oli
 
 ---
 
-## 4. Catalogo dei Server MCP Attivi in Kubernetes (`mcp-system`)
+## 4. Catalogo Server MCP Attivi 24/7 su TrueNAS Docker (`10.10.20.50`)
 
-| Server | Immagine Container | Modalità ToolHive | Endpoint Traefik IngressRoute | Target Rete Lab |
-| :--- | :--- | :--- | :--- | :--- |
-| **`github-mcp`** | `ghcr.io/github/github-mcp-server` | stdio -> proxy :8080 | `https://github-mcp-internal.pindaroli.org/mcp` | GitHub API Cloud |
-| **`truenas-mcp`** | `ghcr.io/pindaroli/truenas-master-mcp:1.0.0-alpha.1` | stdio -> proxy :8080 | `https://truenas-mcp-internal.pindaroli.org/mcp` | TrueNAS SCALE API (`10.10.20.50:443`) |
-| **`opnsense-mcp`** | `ghcr.io/pindaroli/opnsense-mcp:latest` | stdio -> proxy :8080 | `https://opnsense-mcp-internal.pindaroli.org/mcp` | OPNsense Firewall API (`192.168.100.1:443`) |
-| **`talos-mcp`** | `ghcr.io/pindaroli/talos-mcp:2.5.1` | stdio -> proxy :8080 | `https://talos-mcp-internal.pindaroli.org/mcp` | Talos Control Plane gRPC API (`10.10.20.141/142/143:50000`) |
-| **`gemini-deepsearch-mcp`** | `ghcr.io/pindaroli/gemini-deepsearch-mcp:latest` | stdio -> proxy :8080 | `https://deepsearch-mcp-internal.pindaroli.org/mcp` | Google Gemini API (Web Search Grounding) |
-| **`kubernetes-mcp`** | `ghcr.io/containers/kubernetes-mcp-server:latest` | streamable-http -> proxy :8080 | `https://kubernetes-mcp-internal.pindaroli.org/mcp` | Kubernetes API In-Cluster (RBAC cluster-admin) |
-| **`ollama-mcp`** | `ghcr.io/pindaroli/ollama-mcp:latest` | stdio -> proxy :8080 | `https://ollama-mcp-internal.pindaroli.org/mcp` | Demone Ollama Mac Studio (`10.10.20.100:11434`) |
-| **`kef-mcp`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | stdio -> proxy :8080 | `https://kef-mcp-internal.pindaroli.org/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
-| **`nowaikit-mcp`** | `ghcr.io/pindaroli/nowaikit-mcp:4.15.1` | stdio -> proxy :8080 | `https://nowaikit-mcp-internal.pindaroli.org/mcp` | ServiceNow PDI Cloud (`dev395227.service-now.com`) |
+Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita i 9 server MCP attivi, mappati su porte dedicate:
+
+| Server MCP | Immagine Container | Transport MCP | Host Port | URL Client Antigravity | Protocollo e Target Backend |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **`truenas-master-mcp`** | `local/truenas-master-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8101`** | `http://10.10.20.50:8101/mcp` | WebSocket JSON-RPC 2.0 (`wss://10.10.20.50/api/current`) |
+| **`opnsense`** | `local/opnsense-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8102`** | `http://10.10.20.50:8102/mcp` | OPNsense Firewall REST API (`https://192.168.100.1:443`) |
+| **`talos`** | `local/talos-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8103`** | `http://10.10.20.50:8103/mcp` | Talos Control Plane gRPC API (`10.10.20.141/55:50000`) |
+| **`gemini-deepsearch`** | `ghcr.io/pindaroli/gemini-deepsearch-mcp:latest` | Nativo FastMCP SSE `/sse` | **`8104`** | `http://10.10.20.50:8104/sse` | Google Gemini Cloud API |
+| **`kubernetes`** | `ghcr.io/containers/kubernetes-mcp-server:latest` | Nativo Streamable HTTP `/mcp` | **`8105`** | `http://10.10.20.50:8105/mcp` | Kubernetes API Server VIP (`10.10.20.55:6443`) |
+| **`ollama`** | `local/ollama-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8106`** | `http://10.10.20.50:8106/mcp` | Demone Ollama Mac Studio (`10.10.20.100:11434`) |
+| **`kef`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | Nativo Uvicorn Streamable HTTP `/mcp` | **`8107`** | `http://10.10.20.50:8107/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
+| **`nowaikit`** | `local/nowaikit-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8108`** | `http://10.10.20.50:8108/mcp` | ServiceNow Cloud REST API (`dev395227.service-now.com`) |
+| **`github-mcp-server`** | `local/github-mcp-server:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8109`** | `http://10.10.20.50:8109/mcp` | GitHub Cloud REST/GraphQL API (`api.github.com`) |
+
+*(Nota: La flotta originaria su Kubernetes in `mcp-system` è mantenuta integra e pronta in standby dichiarativo con `replicas: 0` ed `enabled: false` in `mcp-gateway/mcp-gateway-values.yaml`)*.
 
 ---
 

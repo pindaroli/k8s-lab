@@ -5,7 +5,7 @@ image:
   tag: "v0.9.0"
   pullPolicy: IfNotPresent
 
-replicas: 1
+replicas: 0
 
 gateway:
   publicHost: "mcp-internal.pindaroli.org"
@@ -33,14 +33,14 @@ servers:
   - name: github
     url: "http://mcp-github-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-github-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: "github_"
     ingress:
-      enabled: true
+      enabled: false
       host: "github-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: github-mcp
       image: ghcr.io/github/github-mcp-server
       transport: stdio
@@ -65,14 +65,14 @@ servers:
   - name: truenas
     url: "http://mcp-truenas-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-truenas-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: "truenas_"
     ingress:
-      enabled: true
+      enabled: false
       host: "truenas-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: truenas-mcp
       image: ghcr.io/pindaroli/truenas-master-mcp:1.0.0-alpha.1
       transport: stdio
@@ -101,14 +101,14 @@ servers:
   - name: opnsense
     url: "http://mcp-opnsense-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-opnsense-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: "opnsense_"
     ingress:
-      enabled: true
+      enabled: false
       host: "opnsense-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: opnsense-mcp
       image: ghcr.io/pindaroli/opnsense-mcp:0.5.3
       transport: stdio
@@ -136,14 +136,14 @@ servers:
   - name: talos
     url: "http://mcp-talos-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-talos-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: "talos_"
     ingress:
-      enabled: true
+      enabled: false
       host: "talos-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: talos-mcp
       image: ghcr.io/pindaroli/talos-mcp:2.5.1
       transport: stdio
@@ -176,14 +176,14 @@ servers:
   - name: gemini-deepsearch
     url: "http://mcp-gemini-deepsearch-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-gemini-deepsearch-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: "deepsearch_"
     ingress:
-      enabled: true
+      enabled: false
       host: "deepsearch-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: gemini-deepsearch-mcp
       image: ghcr.io/pindaroli/gemini-deepsearch-mcp:latest
       transport: stdio
@@ -208,14 +208,14 @@ servers:
   - name: kubernetes
     url: "http://mcp-kubernetes-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-kubernetes-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: "k8s_"
     ingress:
-      enabled: true
+      enabled: false
       host: "kubernetes-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: kubernetes-mcp
       image: ghcr.io/containers/kubernetes-mcp-server:latest
       transport: streamable-http
@@ -229,20 +229,20 @@ servers:
           cpu: "50m"
           memory: "64Mi"
     rbac:
-      enabled: true
+      enabled: false
       clusterRole: cluster-admin
 
   - name: ollama
     url: "http://mcp-ollama-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-ollama-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: "ollama_"
     ingress:
-      enabled: true
+      enabled: false
       host: "ollama-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: ollama-mcp
       image: ghcr.io/pindaroli/ollama-mcp:2.1.0
       transport: stdio
@@ -261,14 +261,14 @@ servers:
   - name: kef
     url: "http://mcp-kef-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-kef-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: ""
     ingress:
-      enabled: true
+      enabled: false
       host: "kef-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: kef-mcp
       image: ghcr.io/pindaroli/kef-mcp:1.0.0
       transport: stdio
@@ -295,14 +295,14 @@ servers:
   - name: nowaikit
     url: "http://mcp-nowaikit-mcp-proxy.mcp-system.svc.cluster.local:8080/mcp"
     hostname: "mcp-nowaikit-mcp-proxy.mcp-system.svc.cluster.local"
-    enabled: true
+    enabled: false
     prefix: "nowai_"
     ingress:
-      enabled: true
+      enabled: false
       host: "nowaikit-mcp-internal.pindaroli.org"
       port: 8080
     toolhive:
-      enabled: true
+      enabled: false
       name: nowaikit-mcp
       image: ghcr.io/pindaroli/nowaikit-mcp:4.15.1
       transport: stdio
