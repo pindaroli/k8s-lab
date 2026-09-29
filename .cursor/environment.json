@@ -1,0 +1,5 @@
+{
+  "name": "k8s-lab homelab (IaC)",
+  "user": "ubuntu",
+  "install": "pip3 install --user --upgrade-strategy only-if-needed -r .cursor/requirements-dev.txt && ansible-galaxy collection install -r ansible/requirements.yml && pre-commit install-hooks"
+}
