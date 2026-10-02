@@ -125,6 +125,7 @@ Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita i 10 server 
 | **`nowaikit`** | `local/nowaikit-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8108`** | `http://10.10.20.50:8108/mcp` | ServiceNow Cloud REST API (`dev395227.service-now.com`) |
 | **`github-mcp-server`** | `local/github-mcp-server:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8109`** | `http://10.10.20.50:8109/mcp` | GitHub Cloud REST/GraphQL API (`api.github.com`) |
 | **`arrstack-mcp`** | `local/arrstack-mcp:latest` | Nativo FastMCP SSE `/sse` | **`8110`** | `http://10.10.20.50:8110/sse` | Radarr, Lidarr, Prowlarr, qBittorrent (`10.10.20.50` & K8s) |
+| **`ragflow-mcp`** | `local/ragflow-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8111`** | `http://10.10.20.50:8111/mcp` | RAGFlow Server (`https://ragflow-internal.pindaroli.org`) |
 
 
 *(Nota: La flotta originaria su Kubernetes in `mcp-system` è mantenuta integra e pronta in standby dichiarativo con `replicas: 0` ed `enabled: false` in `mcp-gateway/mcp-gateway-values.yaml`)*.
