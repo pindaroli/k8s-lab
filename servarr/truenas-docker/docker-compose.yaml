@@ -78,7 +78,7 @@ services:
     restart: unless-stopped
 
   webhook-normalizer:
-    image: ghcr.io/pindaroli/custom-normalizer:1.5.2
+    image: ghcr.io/pindaroli/custom-normalizer:1.6.0
     container_name: webhook-normalizer
     command: ["python3", "/app/webhook_server.py"]
     environment:
@@ -98,6 +98,7 @@ services:
       - /mnt/stripe/truenas-docker/jellyfin/root:/var/lib/jellyfin/root
       - /mnt/stripe/truenas-docker/jellyfin/custom-cont-init.d:/custom-cont-init.d:ro
       - /mnt/stripe/truenas-docker/webhook-normalizer/webhook_server.py:/app/webhook_server.py:ro
+      - /mnt/stripe/truenas-docker/webhook-normalizer/categories.yaml:/app/categories.yaml:ro
       - /mnt/stripe/truenas-docker/webhook-normalizer/songkong-license.properties:/etc/songkong/license.properties:ro
       - /mnt/stripe/truenas-docker/webhook-normalizer/filebot-license.psm:/etc/filebot/license.psm:ro
     ports:

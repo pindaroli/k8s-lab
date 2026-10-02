@@ -1,0 +1,90 @@
+[project]
+name = "ragflow-claude-mcp"
+version = "0.2.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Marius Ciepluch", email = "11855163+norandom@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp>=3.14.3",
+    "mcp>=1.28.1,<2",
+    "dspy>=2.5.0",
+    "litellm>=1.83.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.3.0",
+    "pytest-mock>=3.15.1",
+    "pytest-cov>=7.1.0",
+]
+
+[project.scripts]
+ragflow-claude-mcp = "ragflow_claude_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/**",
+    "tests/**",
+    "README.md",
+    "CONTRIBUTING.md",
+    "COMMIT_SIGNING.md",
+    "config.json.sample",
+    "pyproject.toml",
+    "uv.lock",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ragflow_claude_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "e2e: marks tests as end-to-end tests",
+]
+filterwarnings = [
+    # litellm (third-party dep of dspy) defines class-based pydantic Config; not our code.
+    "ignore::pydantic.warnings.PydanticDeprecatedSince20",
+]
+
+[tool.coverage.run]
+source = ["src"]
+relative_files = true
+omit = [
+    "*/tests/*",
+    "*/test_*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"

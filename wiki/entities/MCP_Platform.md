@@ -19,8 +19,8 @@ provenance:
 ## 🎯 Visione & Obiettivo Architetturale (MCP-as-a-Service)
 
 L'infrastruttura MCP del lab adotta un'architettura **High-Availability 24/7 su TrueNAS SCALE bare-metal (`10.10.20.50`)**:
-1. **Operatività Ininterrotta 24/7 su TrueNAS Docker (Provider Primario Attivo)**: La suite completa di 9 server MCP risiede ed è orchestrata tramite Docker Compose su TrueNAS bare-metal (`/mnt/stripe/truenas-docker/mcp/docker-compose.yaml`). Questo garantisce la piena operatività dell'agente AI (Antigravity) anche quando i nodi Proxmox e il cluster Kubernetes Talos vengono spenti per risparmio energetico (`shutdown_to_truenas_only.yml`).
-2. **Accessibilità LAN Diretta su Porte Dedicate (Opzione A)**: Ciascun server MCP è mappato su una porta host dedicata (`8101`–`8109`) sull'IP di TrueNAS (`10.10.20.50`), garantendo zero dipendenze da Ingress Traefik, certificati TLS esterni o resolver DNS Unbound.
+1. **Operatività Ininterrotta 24/7 su TrueNAS Docker (Provider Primario Attivo)**: La suite completa di 10 server MCP risiede ed è orchestrata tramite Docker Compose su TrueNAS bare-metal (`/mnt/stripe/truenas-docker/mcp/docker-compose.yaml`). Questo garantisce la piena operatività dell'agente AI (Antigravity) anche quando i nodi Proxmox e il cluster Kubernetes Talos vengono spenti per risparmio energetico (`shutdown_to_truenas_only.yml`).
+2. **Accessibilità LAN Diretta su Porte Dedicate (Opzione A)**: Ciascun server MCP è mappato su una porta host dedicata (`8101`–`8110`) sull'IP di TrueNAS (`10.10.20.50`), garantendo zero dipendenze da Ingress Traefik, certificati TLS esterni o resolver DNS Unbound.
 3. **Disabilitazione Conservativa K8s (Standby Reversibile)**: Nel namespace Kubernetes `mcp-system`, la configurazione Helm (`mcp-gateway-values.yaml`) è mantenuta intatta al 100% nel repository con `replicas: 0` ed `enabled: false`. Nessun file, chart o secret SOPS è stato eliminato.
 4. **Ruolo di MCP Inspector**: Inspector rimane opzionale per collaudo manuale.
 
@@ -111,7 +111,7 @@ I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `oli
 
 ## 4. Catalogo Server MCP Attivi 24/7 su TrueNAS Docker (`10.10.20.50`)
 
-Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita i 9 server MCP attivi, mappati su porte dedicate:
+Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita i 10 server MCP attivi, mappati su porte dedicate:
 
 | Server MCP | Immagine Container | Transport MCP | Host Port | URL Client Antigravity | Protocollo e Target Backend |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -124,6 +124,8 @@ Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita i 9 server M
 | **`kef`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | Nativo Uvicorn Streamable HTTP `/mcp` | **`8107`** | `http://10.10.20.50:8107/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
 | **`nowaikit`** | `local/nowaikit-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8108`** | `http://10.10.20.50:8108/mcp` | ServiceNow Cloud REST API (`dev395227.service-now.com`) |
 | **`github-mcp-server`** | `local/github-mcp-server:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8109`** | `http://10.10.20.50:8109/mcp` | GitHub Cloud REST/GraphQL API (`api.github.com`) |
+| **`arrstack-mcp`** | `local/arrstack-mcp:latest` | Nativo FastMCP SSE `/sse` | **`8110`** | `http://10.10.20.50:8110/sse` | Radarr, Lidarr, Prowlarr, qBittorrent (`10.10.20.50` & K8s) |
+
 
 *(Nota: La flotta originaria su Kubernetes in `mcp-system` è mantenuta integra e pronta in standby dichiarativo con `replicas: 0` ed `enabled: false` in `mcp-gateway/mcp-gateway-values.yaml`)*.
 

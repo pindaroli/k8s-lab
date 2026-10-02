@@ -1,5 +1,21 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 In Corso: Riprogettazione Reportistica ed Email Normalizzatori (Audio & Video) [[normalizer-reporting-and-email-redesign]]
+- [x] Fase 1: Riprogettazione `utils.sh` & Supporto Email HTML nativo (`apprise -i html`).
+- [x] Fase 2: Riprogettazione `normalize.sh` (Audio): esclusione `webhelp/`, cattura vero report SongKong `FixSongs*.html` ed estrazione metriche.
+- [x] Fase 3: Riprogettazione `normalize-video.sh` (Video): cattura log FileBot AMC, generazione report HTML dedicato con TMDb ID/artwork/hardlink.
+- [x] Fase 4: Validazione a caldo su TrueNAS, collaudo ricezione email Gmail e verifica allegati.
+- [ ] Fase 5: Tag release `custom-normalizer:1.6.0` su GHCR e consolidamento documentale.
+
+## 🚀 [x] ✅ COMPLETATO: Migrazione e Dockerizzazione arrstack-mcp su TrueNAS SCALE [[arrstack-mcp-truenas-docker-migration]]
+- [x] Fase 1: Creazione Packaging Container Monorepo (`docker/arrstack-mcp/Dockerfile`, `requirements.txt`, sync src).
+- [x] Fase 2: Secret Projection SOPS da `servarr-api-keys.enc.yaml` & Estensione `.env` su TrueNAS (`10.10.20.50`).
+- [x] Fase 3: Aggiornamento Stack `docker/mcp/docker-compose.yaml` (porta host 8110) e script `build-images.sh`.
+- [x] Fase 4: Deployment su TrueNAS SCALE bare-metal (`/mnt/stripe/truenas-docker/mcp/`) e avvio container `mcp-arrstack`.
+- [x] Fase 5: Validazione Test-Driven LAN (porta 8110) e aggiornamento configurazione client `~/.gemini/antigravity/mcp_config.json`.
+- [x] Fase 6: Consolidamento documentale [[MCP_Platform]], aggiornamento tracking e sync contesto.
+
+
 ## 🚀 [x] ✅ COMPLETATO: Migrazione Server MCP su Docker TrueNAS SCALE [[mcp-servers-truenas-docker-migration]]
 - [x] Fase 1: Creazione directory `/mnt/stripe/truenas-docker/mcp/{talos,kubernetes}`, secret projection SOPS in `.env` e copia read-only config Talos/Kube (`chmod 644`).
 - [x] Fase 2: Preparazione e build immagini OCI AMD64 con wrapper di rete supergateway (`truenas`, `opnsense`, `talos`, `nowaikit`, `ollama`, `github`), SSE FastMCP (`gemini-deepsearch`), Streamable HTTP Uvicorn (`kef`) e Streamable HTTP (`kubernetes`).

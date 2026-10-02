@@ -48,10 +48,11 @@ La gestione musicale è affidata a una singola istanza Lidarr.
 *(Nota: L'architettura multi-istanza con `lidarr-classic` e `jellyfin-classic` è stata dismessa per semplificare la gestione).*
 
 ## 4. MCP Server & Automazione (arrstack-mcp)
-Lo stack Servarr è governato tramite il server MCP `arrstack-mcp` (in `scripts/arrstack-mcp/server.py`), configurato centralmente in `~/.gemini/antigravity/mcp_config.json`.
+Lo stack Servarr è governato tramite il server MCP `arrstack-mcp`, migrato su TrueNAS SCALE bare-metal (`10.10.20.50:8110/sse`) tramite [[arrstack-mcp-truenas-docker-migration]] e configurato centralmente in `~/.gemini/antigravity/mcp_config.json`.
 - **Servizi Abilitati**: Radarr, Lidarr, Prowlarr, qBittorrent.
 - **qBittorrent Security & Cookie Patch**: A seguito del breaking change introdotto da qBittorrent v5.2.x (rinomina cookie da `SID` a `QBT_SID_<PORT>`), qBittorrent adotta un `initContainer` dichiarativo in Helm (`qbt-config-security` in `servarr/arr-values.yaml`) e `arrstack-mcp` implementa il matching dinamico del cookie di sessione.
 - **Incidente Correlato**: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]].
+
 
 ## 5. Radarr & Video Ingestion (Pattern Metadati)
 L'ingestion dei film e la gestione dei file multimediali su `/media/movies/` segue rigorosamente il pattern [[movie-metadata-and-artwork-architecture]]:
