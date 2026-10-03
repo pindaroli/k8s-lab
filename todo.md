@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Integrazione Dozzle nello Stack Docker su TrueNAS SCALE [[dozzle-truenas-docker-integration]]
+- [x] Fase 1: Aggiornamento dichiarativo `servarr/truenas-docker/docker-compose.yaml` (immagine `v11.1.3`, porta 8888, socket :ro).
+- [x] Fase 2: Sincronizzazione e rollout su TrueNAS (`10.10.20.50`), pull immagine e avvio `docker compose up -d dozzle`.
+- [x] Fase 3: Validazione test-driven (porta 8888, healthcheck, ispezione live).
+- [x] Fase 4: Integrazione nella dashboard Homepage e consolidamento documentale.
+
 ## 🚀 In Corso: Riprogettazione Reportistica ed Email Normalizzatori (Audio & Video) [[normalizer-reporting-and-email-redesign]]
 - [x] Fase 1: Riprogettazione `utils.sh` & Supporto Email HTML nativo (`apprise -i html`).
 - [x] Fase 2: Riprogettazione `normalize.sh` (Audio): esclusione `webhelp/`, cattura vero report SongKong `FixSongs*.html` ed estrazione metriche.

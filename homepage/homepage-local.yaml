@@ -199,6 +199,11 @@ data:
             description: TrueNAS server (Internal)
             icon: https://www.svgrepo.com/show/331613/truenas.svg
             siteMonitor: https://nas-internal.pindaroli.org
+        - Dozzle:
+            href: http://10.10.20.50:8888
+            description: TrueNAS Docker Logs & Container Monitor
+            icon: dozzle.png
+            siteMonitor: http://10.10.20.50:8888/healthcheck
         - OPNsense:
             href: https://firewall-internal.pindaroli.org
             description: OPNsense firewall (Internal)

@@ -147,3 +147,21 @@ services:
     volumes:
       - /mnt/oliraid/arrdata/media:/media
     restart: unless-stopped
+
+  dozzle:
+    image: amir20/dozzle:v11.2.0
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "8888:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /mnt/stripe/truenas-docker/dozzle:/data
+    environment:
+      - DOZZLE_NO_ANALYTICS=true
+      - DOZZLE_LEVEL=info
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
