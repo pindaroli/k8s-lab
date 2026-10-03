@@ -146,7 +146,7 @@ services:
       - QBT_PASS=${ARRSTACK_QBT_PASS}
       - MCP_ALLOWED_HOSTS=*
       - MCP_DNS_REBINDING_PROTECTION=false
-    command: ["--transport", "sse", "--host", "0.0.0.0", "--port", "8080"]
+    command: ["--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8080"]
     ports:
       - "8110:8080"
     healthcheck:
