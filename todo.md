@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Integrazione Codec PyroWave su LXC Steam e Streaming su Client macOS [[steam-pyrowave-remote-play-mac]]
+- [x] Fase 1: Passthrough hardware PVE3 (`card0`, `renderD128`, `/dev/snd`) in `/etc/pve/lxc/301.conf`.
+- [x] Fase 2: Configurazione headless compositor `labwc` accelerato GPU a risoluzione 2K QHD (2560x1440 @ 60Hz).
+- [x] Fase 3: noVNC browser console (porta 6080) e integrazione link Homepage K8s e TrueNAS.
+- [x] Fase 4: Pairing con Steam Link su macOS (Apple Silicon Mac Studio) su VLAN 20 e collaudo Big Picture 60 FPS (latenza input < 1.3 ms).
+- [x] Fase 5: Espansione storage rootfs NVMe a caldo a 564 GB (560 GB liberi) per installazione giochi AAA.
+
 ## 🚀 [x] ✅ COMPLETATO: Integrazione Dozzle nello Stack Docker su TrueNAS SCALE [[dozzle-truenas-docker-integration]]
 - [x] Fase 1: Aggiornamento dichiarativo `servarr/truenas-docker/docker-compose.yaml` (immagine `v11.1.3`, porta 8888, socket :ro).
 - [x] Fase 2: Sincronizzazione e rollout su TrueNAS (`10.10.20.50`), pull immagine e avvio `docker compose up -d dozzle`.

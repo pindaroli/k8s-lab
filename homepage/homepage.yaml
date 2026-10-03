@@ -253,6 +253,11 @@ data:
             description: Hard Drive Health & S.M.A.R.T. Monitoring
             icon: scrutiny.png
             siteMonitor: http://10.10.20.50:31054
+        - Steam Host:
+            href: http://10.10.20.34:6080/vnc.html
+            description: Steam Kiosk & Remote Play GUI (PVE3)
+            icon: steam.png
+            siteMonitor: http://10.10.20.34:6080/vnc.html
 
     - "Network Infrastructure":
         - Core Switch:

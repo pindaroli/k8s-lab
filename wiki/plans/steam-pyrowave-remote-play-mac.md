@@ -1,9 +1,10 @@
 ---
 title: "Piano: Integrazione Codec PyroWave su LXC Steam e Streaming su Client macOS"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-03
+completed_at: 2026-10-04
 tags:
   - "#steam"
   - "#pyrowave"
@@ -183,7 +184,7 @@ Poiché sia `lxc-steam` (`10.10.20.34`) sia il Mac si trovano sulla **VLAN 20** 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 / Ripristino Hardware e Configurazione PVE3 (`301.conf`)
-- **Ultima Azione Completata**: Redazione del piano di integrazione e diagnosi preliminare dello stato di `lxc-steam` (GPU Radeon 890M GFX1150 pronta, fix necessario su `card0` e passthrough `/dev/snd`).
-- **Prossimo Passo Operativo**: Presentare il piano all'utente, richiedere l'autorizzazione per la Fase 1 (aggiunta di `/dev/snd` a `301.conf` su PVE3 e fix `card0` su `steam-kiosk.service`).
-- **Blocchi/Decisioni Pendenti**: In attesa di approvazione del piano da parte dell'utente prima di qualsiasi comando di modifica.
+- **Fase Attiva**: Tutte le Fasi Completate con Successo ✅
+- **Ultima Azione Completata**: Espansione storage rootfs NVMe di `lxc-steam` a 564 GB (560 GB liberi) a caldo su PVE3; streaming 2K QHD a 60 FPS operativo verso Steam Link su Mac Studio; link web console noVNC integrati in tutte le Homepage.
+- **Prossimo Passo Operativo**: Nessun blocco; l'utente può procedere all'installazione di Far Cry 6 e al gaming ad alte prestazioni.
+- **Blocchi/Decisioni Pendenti**: Nessuno. Obiettivo completato al 100%.
