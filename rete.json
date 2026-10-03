@@ -37,8 +37,7 @@
     {
       "id": "truenas",
       "label": "TrueNAS Scale",
-      "type": "VM",
-      "vm_id": "1100",
+      "type": "Bare Metal",
       "role": "NAS",
       "hostname": "truenas",
       "domain": "pindaroli.org",
@@ -348,10 +347,10 @@
         },
         {
           "id": "4",
-          "role": "LAG LACP TrueNAS bond0 master (enp1s0f0np0), VLAN 10",
+          "role": "LAG LACP TrueNAS bond0 master (enp1s0f0np0), VLAN 20 untagged, VLAN 10 tagged",
           "mode": "LAG",
           "speed": "10Gbs",
-          "pvid": 10,
+          "pvid": 20,
           "lag_group": "4",
           "lag_protocol": "LACP"
         },
@@ -378,10 +377,10 @@
         },
         {
           "id": "8",
-          "role": "LAG LACP TrueNAS bond0 member (enp1s0f1np1), VLAN 10",
+          "role": "LAG LACP TrueNAS bond0 member (enp1s0f1np1), VLAN 20 untagged, VLAN 10 tagged",
           "mode": "LAG",
           "speed": "10Gbs",
-          "pvid": 10,
+          "pvid": 20,
           "lag_group": "4",
           "lag_protocol": "LACP"
         },
