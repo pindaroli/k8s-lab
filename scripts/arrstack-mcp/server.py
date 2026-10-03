@@ -1667,13 +1667,14 @@ def prowlarr_search(query: str, indexer_ids: str = "") -> str:
 
 
 @mcp.tool()
-def prowlarr_grab(index: int) -> str:
+def prowlarr_grab(index: int, category: str = "") -> str:
     """Grab a release from the most recent prowlarr_search results and send it to the download client (qBittorrent).
 
     Run prowlarr_search first, then use the [index] number from those results here.
 
     Args:
         index: The result number from prowlarr_search (e.g. 0 for the first result).
+        category: Optional qBittorrent category to assign (e.g. "lidarr-classical", "video-filebot", "lidarr", "radarr").
     """
     global _prowlarr_search_cache
     if not _prowlarr_search_cache:
@@ -1693,9 +1694,9 @@ def prowlarr_grab(index: int) -> str:
 
     # If it's a magnet link, send straight to qBittorrent
     if download_url.startswith("magnet:"):
-        ok, detail = _qbt_add_url(download_url)
+        ok, detail = _qbt_add_url(download_url, category=category)
         if ok:
-            return f"✅ Sent magnet to qBittorrent: {title}"
+            return f"✅ Sent magnet to qBittorrent: {title}" + (f" [category: {category}]" if category else "")
         return f"❌ Failed to add magnet to qBittorrent: {detail}"
 
     # For .torrent download URLs (nCore, etc.), download via Prowlarr proxy then send to qBittorrent
@@ -1703,14 +1704,14 @@ def prowlarr_grab(index: int) -> str:
     if kind == "error":
         return f"❌ Failed to grab release: {value}"
     if kind == "magnet":
-        ok, detail = _qbt_add_url(value)
+        ok, detail = _qbt_add_url(value, category=category)
         if ok:
-            return f"✅ Sent magnet to qBittorrent: {title}"
+            return f"✅ Sent magnet to qBittorrent: {title}" + (f" [category: {category}]" if category else "")
         return f"❌ Failed to add magnet to qBittorrent: {detail}"
     _, content = value
-    ok, detail = _qbt_add_file(f"{title}.torrent", content)
+    ok, detail = _qbt_add_file(f"{title}.torrent", content, category=category)
     if ok:
-        return f"✅ Downloaded and sent to qBittorrent: {title}"
+        return f"✅ Downloaded and sent to qBittorrent: {title}" + (f" [category: {category}]" if category else "")
     return f"❌ Failed to send torrent to qBittorrent: {detail}"
 
 
