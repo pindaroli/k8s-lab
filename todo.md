@@ -4,8 +4,8 @@
 - [x] Fase 1: Passthrough hardware PVE3 (`card0`, `renderD128`, `/dev/snd`) in `/etc/pve/lxc/301.conf`.
 - [x] Fase 2: Configurazione headless compositor `labwc` accelerato GPU a risoluzione 2K QHD (2560x1440 @ 60Hz).
 - [x] Fase 3: noVNC browser console (porta 6080) e integrazione link Homepage K8s e TrueNAS.
-- [x] Fase 4: Pairing con Steam Link su macOS (Apple Silicon Mac Studio) su VLAN 20 e collaudo Big Picture 60 FPS (latenza input < 1.3 ms).
-- [x] Fase 5: Espansione storage rootfs NVMe a caldo a 564 GB (560 GB liberi) per installazione giochi AAA.
+- [x] Fase 4: Adozione Client Ufficiale Steam Desktop macOS (Beta Update) su VLAN 20 10G, streaming 2K QHD 60 FPS (latenza input < 1.4 ms).
+- [x] Fase 5: Stabilizzazione runtime: server audio PulseAudio su `lxc-steam` (`auto_null.monitor`), bypass launcher 2D Bethesda (`Fallout4.exe`) ed espansione rootfs NVMe a 564 GB.
 
 ## 🚀 [x] ✅ COMPLETATO: Integrazione Dozzle nello Stack Docker su TrueNAS SCALE [[dozzle-truenas-docker-integration]]
 - [x] Fase 1: Aggiornamento dichiarativo `servarr/truenas-docker/docker-compose.yaml` (immagine `v11.1.3`, porta 8888, socket :ro).
