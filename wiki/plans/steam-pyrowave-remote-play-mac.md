@@ -209,8 +209,12 @@ flowchart LR
 
   - Il frame cap DXVK (`dxvk.conf`) sostituisce il VSync interno: evita il crollo a 30 mantenendo i 60 fps richiesti dal motore (fisica legata al framerate). Scelto al posto di `DXVK_FRAME_RATE=60` nelle Launch Options perché Steam in esecuzione sovrascrive `localconfig.vdf`.
 - **Verifica**: GPU 100% → **~85%**, 0 eventi `Slow framerate`, statistiche Remote Play sul Mac **60 fps stabili**.
-- **Rollback**: ripristinare `Fallout4Prefs.ini.bak-20261005` e `Fallout4.ini.bak-20261005`, eliminare `common/Fallout 4/dxvk.conf`.
-- **Tuning residuo (opzionale)**: verifica TDP/termica PVE3 (sclk ~2500 MHz vs max 2900), CPU anomala di `pipewire-pulse` (~33%) e `journald`/`rsyslog`.
+- **Gestione Profili Energetici GPU PVE3 (Mac CLI Aliases)**:
+  - Implementati in `~/.zshrc` tre alias rapidi per il controllo della Radeon 890M su PVE3 (`10.10.10.31`):
+    - `gpu-turbo`: imposta `power_dpm_force_performance_level` su `high` (forza il clock a **2900 MHz** e Infinity Fabric a 1960 MHz per eliminare ogni throttling dinamico).
+    - `gpu-eco`: ripristina la modalità `auto` a riposo per consentire il deep-sleep a 600 MHz e risparmiare 8–15W.
+    - `gpu-mode`: interroga lo stato energetico attuale e la frequenza di clock operativa.
+- **Tuning residuo (opzionale)**: indagine sul consumo CPU di `pipewire-pulse` (~33%) e `journald`/`rsyslog`.
 
 ---
 
