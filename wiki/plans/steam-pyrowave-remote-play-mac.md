@@ -175,6 +175,57 @@ flowchart LR
 
 ---
 
+### Fase 6: Risoluzione Crash Steam (AppArmor Sandbox Conflict)
+- **Obiettivo**: Prevenire il crash improvviso ("TUTTO NERO" e Segmentation Fault) del processo Steam durante l'inizializzazione del capture Vulkan.
+- **Problema**: Steam utilizza `bwrap` (Bubblewrap) per isolare l'ambiente di runtime ed eseguire la pipeline di encoding. In un container LXC *unprivileged* con le impostazioni standard di Proxmox, AppArmor bloccava la creazione dei socket necessari (`socket(AF_INET) = -1 EACCES`), causando un segmentation fault di Steam in `processpipe_posix.cpp`.
+- **Azioni su PVE3**:
+  1. Aggiunto in `/etc/pve/lxc/301.conf` il parametro per disabilitare il confinamento AppArmor:
+     ```text
+     lxc.apparmor.profile: unconfined
+     ```
+  2. Riavviato il container: `pct stop 301 && pct start 301`.
+- **Verifica**: L'avvio di Fallout 4 in streaming ora innesca correttamente la pipeline zero-copy senza crash:
+  `Encoder: Game Vulkan NV12 + VAAPI HEVC` a 1440p 60fps (~116 Mbps bitrate).
+
+---
+
+### Fase 7: Performance Tuning Fallout 4 (2026-10-05) ✅
+- **Sintomo**: gameplay bloccato a ~30 fps (streaming log: `AvgFPS 47 ± 15`, picchi `game 49 ms`).
+- **Diagnosi**:
+  1. Radeon 890M al **100%** di utilizzo (`gpu_busy_percent`), condivisa con l'encoder VAAPI HEVC.
+  2. Rendering a **2560×1440** con stream a **1920×1080** (pixel sprecati), ombre 4096 / distanza 20000, godrays Ultra.
+  3. **VSync interno double-buffered** (`iPresentInterval=1`): ogni frame > 16.6 ms dimezza a 30 fps.
+  4. Nessuna opzione grafica in-game: in FO4 sono solo nel `Fallout4Launcher.exe`, bypassato in Fase 5 → si agisce sugli `.ini`.
+- **Modifiche** (prefix Proton `compatdata/377160/pfx/.../Documents/My Games/Fallout4/`):
+
+| File | Chiave | Prima | Dopo |
+| :--- | :--- | :--- | :--- |
+| `Fallout4Prefs.ini` | `iSize W` × `iSize H` | 2560×1440 | **1920×1080** |
+| `Fallout4Prefs.ini` | `iShadowMapResolution` | 4096 | **2048** |
+| `Fallout4Prefs.ini` | `fShadowDistance` / `fDirShadowDistance` | 20000 | **3000** |
+| `Fallout4Prefs.ini` | `bVolumetricLightingEnable` | 1 | **0** |
+| `Fallout4Prefs.ini` + `Fallout4.ini` | `iPresentInterval` | 1 | **0** |
+| `common/Fallout 4/dxvk.conf` (nuovo) | `dxgi.maxFrameRate` / `d3d11.maxFrameRate` | — | **60** |
+
+  - Il frame cap DXVK (`dxvk.conf`) sostituisce il VSync interno: evita il crollo a 30 mantenendo i 60 fps richiesti dal motore (fisica legata al framerate). Scelto al posto di `DXVK_FRAME_RATE=60` nelle Launch Options perché Steam in esecuzione sovrascrive `localconfig.vdf`.
+- **Verifica**: GPU 100% → **~85%**, 0 eventi `Slow framerate`, statistiche Remote Play sul Mac **60 fps stabili**.
+- **Rollback**: ripristinare `Fallout4Prefs.ini.bak-20261005` e `Fallout4.ini.bak-20261005`, eliminare `common/Fallout 4/dxvk.conf`.
+- **Tuning residuo (opzionale)**: verifica TDP/termica PVE3 (sclk ~2500 MHz vs max 2900), CPU anomala di `pipewire-pulse` (~33%) e `journald`/`rsyslog`.
+
+---
+
+### Fase 8: Attivazione Reale di PyroWave (SteamRT3 su Host Linux) ⏸️ FACOLTATIVA / ESPLORATIVA
+- **Scoperta (2026-10-05)**: PyroWave **non era attivo**. Lo streaming negozia `Allowed Codecs: 9,5,4` e sceglie `codec 5` → `Game Vulkan NV12 + VAAPI HEVC`. Nessun riferimento a `pyrowave` in log e librerie `ubuntu12_64/*.so`.
+- **Causa**: su host Linux PyroWave richiede il client sperimentale **SteamRT3**. Attualmente `lxc-steam` gira su runtime standard (`steamrt64`).
+- **Attività svolte**:
+  1. Eseguito backup precauzionale di `config/` (`/home/steam/steam-config-bak-20261005.tar.gz`, 59 MB) e verificato.
+  2. Riavviato pulito il servizio `steam-kiosk.service`.
+  3. Verificata l'eccellente resa della pipeline **VAAPI HEVC + DXVK Cap 60 FPS**: 60.27 FPS medi, 6.7 ms game render time, 0.13 ms decode Apple Silicon, zero packet loss.
+  4. Rimosso l'archivio di backup temporaneo da 59 MB per liberare spazio su disco (pulizia completata ✅).
+- **Conclusioni architetturali**: l'attuale combinazione VAAPI HEVC con cap a 60 fps offre un gameplay fluido e costante con uso GPU ~85%. L'adozione di PyroWave (compute shader Vulkan) sottrarrebbe ulteriori risorse di calcolo alla Radeon 890M senza benefici visibili rispetto alla latenza già sub-millisecondo di decodifica macOS; la Fase 8 rimane documentata come traccia esplorativa futura.
+
+---
+
 ## 5. Matrice delle Porte di Rete e Firewall OPNsense
 
 Poiché sia `lxc-steam` (`10.10.20.34`) sia il Mac si trovano sulla **VLAN 20** (`10.10.20.0/24`), il traffico di streaming è interamente di livello 2 (L2 switching locale su Extreme Networks X620-16t), senza attraversare il firewall OPNsense e senza alcuna latenza di routing.
@@ -188,7 +239,7 @@ Poiché sia `lxc-steam` (`10.10.20.34`) sia il Mac si trovano sulla **VLAN 20** 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Tutte le Fasi Completate con Successo ✅
-- **Ultima Azione Completata**: Consolidamento del Client Ufficiale Steam Desktop macOS (Beta Update) su Mac Studio; integrazione e persistenza del server audio PulseAudio su `lxc-steam`; bypass del launcher 2D Bethesda per Fallout 4; streaming 2K QHD a 60 FPS validato con latenza input < 1.4 ms e audio sincronizzato.
-- **Prossimo Passo Operativo**: Nessun blocco; l'utente può procedere all'avvio diretto in streaming da Steam su macOS.
-- **Blocchi/Decisioni Pendenti**: Nessuno. Obiettivo completato e documentato al 100%.
+- **Fase Attiva**: Tutte le Fasi Operative Completate con Successo ✅ (Fase 8 facoltativa / esplorativa)
+- **Ultima Azione Completata**: Fase 7 — Tuning grafico e frame-cap DXVK completati e verificati: Fallout 4 gira a **60.27 FPS medi** (game render time 6.7 ms, decode macOS 0.13 ms) su streaming VAAPI HEVC senza cali. Servizio `steam-kiosk` riavviato e stabile.
+- **Prossimo Passo Operativo**: Sessione di gaming pienamente operativa. L'eventuale migrazione del client a SteamRT3 (Fase 8) resta documentata come opzione futura qualora si desideri sperimentare la compressione intra-only PyroWave rispetto a HEVC.
+- **Blocchi/Decisioni Pendenti**: Nessuno.
