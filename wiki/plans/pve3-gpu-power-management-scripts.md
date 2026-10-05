@@ -1,5 +1,5 @@
 ---
-title: "Piano: Script di Gestione Energetica GPU Radeon 890M su PVE3"
+title: "Piano: Script di Gestione Energetica GPU Radeon 890M su PVE3 e Backup Host PBS"
 type: plan
 status: active
 certified_for_ai: true
@@ -9,97 +9,128 @@ tags:
   - "#gpu"
   - "#power-management"
   - "#amdgpu"
+  - "#pbs"
+  - "#backup"
   - "#automation"
   - "#gaming"
 ---
 
-# Piano: Script di Gestione Energetica GPU Radeon 890M su PVE3
+# Piano: Script di Gestione Energetica GPU Radeon 890M su PVE3 e Backup Host PBS
 
-Il presente piano definisce l'implementazione, l'installazione e la verifica di tre script shell nativi su **PVE3** (`10.10.10.31`) per la gestione puntuale dei profili di potenza della iGPU **AMD Radeon 890M (RDNA 3.5)**:
-- `/usr/local/bin/gpu-turbo`
-- `/usr/local/bin/gpu-eco`
-- `/usr/local/bin/gpu-mode`
-
-Inoltre, il piano prevede l'allineamento degli alias locali su macOS (`~/.zshrc`) per invocare direttamente i comandi remoti standardizzati.
+Il presente piano definisce l'implementazione, l'integrazione Git, l'installazione su **PVE3** (`10.10.10.31`) e la strategia di **backup automatico su Proxmox Backup Server (PBS)** dei tre script di gestione dei profili energetici della iGPU **AMD Radeon 890M (RDNA 3.5)**:
+- `gpu-turbo`: forza la GPU a 2900 MHz (profilo `high`).
+- `gpu-eco`: ripristina la modulazione dinamica (profilo `auto`, idle a 600 MHz per risparmiare 8–15W).
+- `gpu-mode`: interroga lo stato energetico del kernel e la frequenza di clock istantanea.
 
 ---
 
-## 1. Architettura e Razionale Tecnico
+## 1. Decisioni Architetturali e Scelte Utente
 
-Su PVE3 (Proxmox VE 9.2, kernel Linux 6.8+ / Debian 13 Trixie), il driver kernel `amdgpu` espone il sottosistema Dynamic Power Management (DPM) tramite sysfs:
-- **Controllo Profilo Energetico**: `/sys/class/drm/card0/device/power_dpm_force_performance_level`
-  - `high`: forza il clock di baseline del motore grafico (`sclk`) a **2900 MHz** e il bus Infinity Fabric (`fclk`) a **1960 MHz**, eliminando la latenza di transizione energetica per carichi gaming (Fallout 4, Steam, ecc.).
-  - `auto`: ripristina la modulazione dinamica (frequenza minima 600 MHz a riposo, risparmio di 8–15 Watt continuativi).
-- **Stato Operativo Istantaneo**: `/sys/class/drm/card0/device/pp_dpm_sclk` (visualizzazione del clock attivo contraddistinto da `*`).
-
-Installare questi script in `/usr/local/bin/` su PVE3 garantisce:
-1. **Esecuzione Atomica e Nativa**: gli script risiedono direttamente sul nodo Proxmox host dove il driver amdgpu è proprietario dei device node.
-2. **Accessibilità Universale**: utilizzabili direttamente da shell PVE3, da chiamate SSH remote (Mac Studio, script di automazione) e da job di orchestrazione.
-3. **Semplicità e Manutenibilità**: niente stringhe complesse annidate negli alias del Mac.
+In accordo con le scelte architetturali concordate con l'utente:
+1. **Source of Truth su Git (Repository `k8s-lab`)**:
+   - I file sorgente risiedono stabilmente in `scripts/infrastructure/` nel repository Git.
+   - Garantisce tracciamento, versioning semantico e resilienza contro reinstallazioni disastrose bare-metal.
+2. **Deploy Atomico su PVE3 (`/usr/local/bin/`)**:
+   - I tre script vengono copiati in `/usr/local/bin/` con permessi `755` (`root:root`).
+   - La gerarchia `/usr/local/bin/` resiste al 100% ad aggiornamenti del sistema operativo, pacchetti apt e future versioni di Proxmox VE.
+3. **Backup Automatico Host su PBS (Opzione 1 Selezionata)**:
+   - Configurazione su PVE3 di un'automazione notturna basata sul client ufficiale `/usr/bin/proxmox-backup-client` verso il datastore `pbs-store` su **PBS** (`10.10.10.100`).
+   - Esegue il backup deduplicato e crittografato di `/usr/local/bin/` e delle configurazioni locali dell'host.
+   - *Scelta esclusa su indicazione dell'utente*: scartata la copia in chiaro su share NFS TrueNAS (si fa affidamento esclusivo su PBS e Git).
+4. **Semplificazione Alias macOS (`~/.zshrc`)**:
+   - Gli alias locali sul Mac Studio delegano direttamente l'invocazione degli script remoti (`ssh root@10.10.10.31 <script>`).
 
 ---
 
-## 2. Specifiche degli Script
+## 2. Specifiche dei File Sorgente
 
-### A. `/usr/local/bin/gpu-turbo`
-- **Scopo**: Attiva la modalità prestazioni massime (2900 MHz).
-- **Logica**:
-  ```bash
-  #!/bin/bash
-  set -e
-  echo high > /sys/class/drm/card0/device/power_dpm_force_performance_level
-  echo "GPU PVE3: TURBO (2900MHz / high)"
-  ```
+I sorgenti vengono collocati nel repository `k8s-lab` in `scripts/infrastructure/`:
 
-### B. `/usr/local/bin/gpu-eco`
-- **Scopo**: Ripristina il dynamic scaling a basso consumo (600 MHz in idle).
-- **Logica**:
-  ```bash
-  #!/bin/bash
-  set -e
-  echo auto > /sys/class/drm/card0/device/power_dpm_force_performance_level
-  echo "GPU PVE3: ECO (auto-scaling)"
-  ```
+### A. `scripts/infrastructure/pve3-gpu-turbo.sh`
+```bash
+#!/bin/bash
+set -e
+echo high > /sys/class/drm/card0/device/power_dpm_force_performance_level
+echo "GPU PVE3: TURBO (2900MHz / high)"
+```
 
-### C. `/usr/local/bin/gpu-mode`
-- **Scopo**: Stampa a video la modalità DPM attiva e il clock operativo in MHz.
-- **Logica**:
-  ```bash
-  #!/bin/bash
-  set -e
-  printf "GPU Mode: "
-  cat /sys/class/drm/card0/device/power_dpm_force_performance_level
-  printf "Clock: "
-  grep "*" /sys/class/drm/card0/device/pp_dpm_sclk || true
-  ```
+### B. `scripts/infrastructure/pve3-gpu-eco.sh`
+```bash
+#!/bin/bash
+set -e
+echo auto > /sys/class/drm/card0/device/power_dpm_force_performance_level
+echo "GPU PVE3: ECO (auto-scaling)"
+```
+
+### C. `scripts/infrastructure/pve3-gpu-mode.sh`
+```bash
+#!/bin/bash
+set -e
+printf "GPU Mode: "
+cat /sys/class/drm/card0/device/power_dpm_force_performance_level
+printf "Clock: "
+grep "*" /sys/class/drm/card0/device/pp_dpm_sclk || true
+```
 
 ---
 
 ## 3. Fasi Operative Dettagliate (Test-Driven Protocol)
 
-### Fase 1: Creazione e Permessi degli Script su PVE3
-- **Obiettivo**: Scrivere i 3 script in `/usr/local/bin/` su PVE3 e renderli eseguibili (`chmod 755`).
-- **Verifica**: Ispezione con `ls -la /usr/local/bin/gpu-*` per confermare permessi `rwxr-xr-x` e proprietario `root:root`.
+### Fase 1: Creazione Sorgenti in Git e Deploy su PVE3
+- **Obiettivo**: Creare i tre file in `scripts/infrastructure/` e copiarli su PVE3 in `/usr/local/bin/` con permessi `755`.
+- **Azioni**:
+  1. Scrittura dei tre file sorgente nel repository.
+  2. Deploy via SSH su PVE3 (`/usr/local/bin/gpu-turbo`, `/usr/local/bin/gpu-eco`, `/usr/local/bin/gpu-mode`).
+  3. Applicazione permessi `chmod 755 /usr/local/bin/gpu-*`.
+- **Verifica**: `ssh root@10.10.10.31 "ls -la /usr/local/bin/gpu-*"` conferma ownership `root:root` e permessi `rwxr-xr-x`.
 
-### Fase 2: Test Funzionale Individuale su PVE3
-- **Obiettivo**: Eseguire sequenzialmente i comandi in locale su PVE3 per validare il cambio di stato del kernel.
+---
+
+### Fase 2: Validazione Funzionale su PVE3
+- **Obiettivo**: Eseguire sequenzialmente i comandi per accertare il cambio di stato del driver `amdgpu`.
 - **Passi**:
-  1. Esecuzione `/usr/local/bin/gpu-turbo` → verifica: `/sys/class/drm/card0/device/power_dpm_force_performance_level` contiene `high`.
-  2. Esecuzione `/usr/local/bin/gpu-mode` → verifica: output formattato con `GPU Mode: high`.
-  3. Esecuzione `/usr/local/bin/gpu-eco` → verifica: ritorno a `auto`.
-  4. Esecuzione `/usr/local/bin/gpu-mode` → verifica: output con `GPU Mode: auto`.
+  1. Esecuzione `gpu-turbo` → verifica: `/sys/class/drm/card0/device/power_dpm_force_performance_level` contiene `high`.
+  2. Esecuzione `gpu-mode` → verifica output formattato (`GPU Mode: high`).
+  3. Esecuzione `gpu-eco` → verifica: ripristino ad `auto` e sclk minimo a 600 MHz.
+  4. Esecuzione `gpu-mode` → verifica output formattato (`GPU Mode: auto`).
 
-### Fase 3: Semplificazione Alias su macOS (`~/.zshrc`)
-- **Obiettivo**: Aggiornare gli alias nel file `~/.zshrc` del Mac Studio per invocare direttamente i comandi remoti:
-  - `alias gpu-turbo="ssh root@10.10.10.31 gpu-turbo"`
-  - `alias gpu-eco="ssh root@10.10.10.31 gpu-eco"`
-  - `alias gpu-mode="ssh root@10.10.10.31 gpu-mode"`
-- **Verifica**: Esecuzione `gpu-mode` dal Mac per confermare la corretta delega remota.
+---
+
+### Fase 3: Configurazione Backup Host Automatico su PBS (Opzione 1)
+- **Obiettivo**: Automatizzare il salvataggio notturno di `/usr/local/bin` sul datastore `pbs-store` di PBS (`10.10.10.100`).
+- **Azioni**:
+  1. Creare lo script di backup `/usr/local/bin/pve3-host-backup-pbs.sh`:
+     ```bash
+     #!/bin/bash
+     set -e
+     export PBS_REPOSITORY="root@pam@10.10.10.100:pbs-store"
+     export PBS_FINGERPRINT="93:B3:92:68:5C:04:3C:30:18:EF:CB:53:09:6B:A6:1F:0E:4C:94:F6:76:08:CC:56:13:8B:19:31:86:9C:87:EF"
+     proxmox-backup-client backup \
+       scripts.pxar:/usr/local/bin \
+       --backup-id pve3-host \
+       --backup-type host
+     ```
+  2. Creare il systemd service e timer `/etc/systemd/system/pve3-host-backup.timer` (esecuzione quotidiana alle ore 03:30).
+  3. Abilitare il timer (`systemctl enable --now pve3-host-backup.timer`).
+- **Verifica**:
+  - Esecuzione di prova manuale del backup con `pve3-host-backup-pbs.sh`.
+  - Ispezione con `proxmox-backup-client snapshot list --repository root@pam@10.10.10.100:pbs-store` per validare la presenza dello snapshot `host/pve3-host/<timestamp>`.
+
+---
+
+### Fase 4: Aggiornamento Alias macOS (`~/.zshrc`)
+- **Obiettivo**: Snellire gli alias su Mac Studio delegandoli ai nuovi comandi nativi di PVE3:
+  ```zsh
+  alias gpu-turbo="ssh root@10.10.10.31 gpu-turbo"
+  alias gpu-eco="ssh root@10.10.10.31 gpu-eco"
+  alias gpu-mode="ssh root@10.10.10.31 gpu-mode"
+  ```
+- **Verifica**: Esecuzione `gpu-mode` da Mac per validare l'invocazione pulita.
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 — Creazione e Permessi degli Script su PVE3
-- **Ultima Azione Completata**: Redazione del piano operativo e formalizzazione dei requisiti.
-- **Prossimo Passo Operativo**: Creazione dei tre script `/usr/local/bin/gpu-turbo`, `/usr/local/bin/gpu-eco`, `/usr/local/bin/gpu-mode` su PVE3 (`10.10.10.31`).
-- **Blocchi/Decisioni Pendenti**: In attesa di approvazione esplicita dell'utente per l'esecuzione della Fase 1.
+- **Fase Attiva**: In attesa di approvazione del piano aggiornato
+- **Ultima Azione Completata**: Riprogettazione del piano con sorgenti in Git, deploy in `/usr/local/bin/` e integrazione backup PBS (esclusa la copia in chiaro NFS).
+- **Prossimo Passo Operativo**: Fase 1 — Creazione dei file sorgente in `scripts/infrastructure/` e deploy su PVE3 (`10.10.10.31`).
+- **Blocchi/Decisioni Pendenti**: In attesa di istruzioni dell'utente.
