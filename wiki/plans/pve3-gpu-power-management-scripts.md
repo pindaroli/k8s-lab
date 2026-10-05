@@ -1,9 +1,10 @@
 ---
 title: "Piano: Script di Gestione Energetica GPU Radeon 890M su PVE3 e Backup Host PBS"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-05
+completed_at: 2026-10-05
 tags:
   - "#pve3"
   - "#gpu"
@@ -130,7 +131,7 @@ grep "*" /sys/class/drm/card0/device/pp_dpm_sclk || true
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: In attesa di approvazione del piano aggiornato
-- **Ultima Azione Completata**: Riprogettazione del piano con sorgenti in Git, deploy in `/usr/local/bin/` e integrazione backup PBS (esclusa la copia in chiaro NFS).
-- **Prossimo Passo Operativo**: Fase 1 — Creazione dei file sorgente in `scripts/infrastructure/` e deploy su PVE3 (`10.10.10.31`).
-- **Blocchi/Decisioni Pendenti**: In attesa di istruzioni dell'utente.
+- **Fase Attiva**: Tutte le Fasi Completate con Successo ✅
+- **Ultima Azione Completata**: Fase 3 e Fase 4 completate. Primo backup host su PBS eseguito e verificato (`host/pve3-host/2026-10-05T14:54:11Z`), systemd timer notturno (`03:30`) abilitato su PVE3. Alias in `~/.zshrc` su Mac snelliti e verificati. Autostart verificato per VM `pbs` e impostato a `unless-stopped` per App `garage` su TrueNAS SCALE.
+- **Prossimo Passo Operativo**: Nessuno, piano concluso e operativo.
+- **Blocchi/Decisioni Pendenti**: Nessuno.
