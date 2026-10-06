@@ -124,7 +124,7 @@ Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita i 10 server 
 | **`kef`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | Nativo Uvicorn Streamable HTTP `/mcp` | **`8107`** | `http://10.10.20.50:8107/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
 | **`nowaikit`** | `local/nowaikit-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8108`** | `http://10.10.20.50:8108/mcp` | ServiceNow Cloud REST API (`dev395227.service-now.com`) |
 | **`github-mcp-server`** | `local/github-mcp-server:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8109`** | `http://10.10.20.50:8109/mcp` | GitHub Cloud REST/GraphQL API (`api.github.com`) |
-| **`arrstack-mcp`** | `local/arrstack-mcp:latest` | Nativo FastMCP Streamable HTTP `/mcp` | **`8110`** | `http://10.10.20.50:8110/mcp` | Radarr, Lidarr, Prowlarr, qBittorrent (`10.10.20.50` & K8s) |
+| **`arrstack-mcp`** | `local/arrstack-mcp:latest` | Nativo FastMCP Streamable HTTP `/mcp` | **`8110`** | `http://10.10.20.50:8110/mcp` | Radarr, Lidarr, Prowlarr, qBittorrent (40 tool, 3 prompt) |
 | **`ragflow-mcp`** | `local/ragflow-mcp:latest` | Stdio -> SSE `/mcp` (Supergateway) | **`8111`** | `http://10.10.20.50:8111/mcp` | RAGFlow Server (`https://ragflow-internal.pindaroli.org`) |
 
 

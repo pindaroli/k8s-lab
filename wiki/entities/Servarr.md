@@ -48,8 +48,12 @@ La gestione musicale è affidata a una singola istanza Lidarr.
 *(Nota: L'architettura multi-istanza con `lidarr-classic` e `jellyfin-classic` è stata dismessa per semplificare la gestione).*
 
 ## 4. MCP Server & Automazione (arrstack-mcp)
-Lo stack Servarr è governato tramite il server MCP `arrstack-mcp`, migrato su TrueNAS SCALE bare-metal (`10.10.20.50:8110/sse`) tramite [[arrstack-mcp-truenas-docker-migration]] e configurato centralmente in `~/.gemini/antigravity/mcp_config.json`.
-- **Servizi Abilitati**: Radarr, Lidarr, Prowlarr, qBittorrent.
+Lo stack Servarr è governato tramite il server MCP `arrstack-mcp`, migrato su TrueNAS SCALE bare-metal (`10.10.20.50:8110/mcp`) tramite [[arrstack-mcp-truenas-docker-migration]] e configurato centralmente in `~/.gemini/antigravity/mcp_config.json`.
+- **Servizi Abilitati**: Radarr, Lidarr, Prowlarr, qBittorrent (40 tool esposti).
+- **Prompt MCP 2.0 (Template Operativi)**:
+  - `audit_downloads`: Ispezione stato download, rilevamento torrent in stallo o con errori, calcolo spazio disco libero e riassunto code.
+  - `search_and_grab`: Workflow guidato di ricerca multimediale (film/musica) tramite Prowlarr/Radarr/Lidarr e accodamento automatico su qBittorrent.
+  - `media_health_check`: Diagnosi globale di connettività, risposte API e stato di salute per tutti i componenti della stack (Radarr, Lidarr, Prowlarr, qBittorrent).
 - **qBittorrent Security & Cookie Patch**: A seguito del breaking change introdotto da qBittorrent v5.2.x (rinomina cookie da `SID` a `QBT_SID_<PORT>`), qBittorrent adotta un `initContainer` dichiarativo in Helm (`qbt-config-security` in `servarr/arr-values.yaml`) e `arrstack-mcp` implementa il matching dinamico del cookie di sessione.
 - **Incidente Correlato**: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]].
 

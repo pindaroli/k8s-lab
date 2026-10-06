@@ -2897,7 +2897,69 @@ def bookshelf_search_missing() -> str:
     result = _bookshelf("/command", method="POST", json={"name": "MissingBookSearch"})
     if isinstance(result, dict):
         return "🔍 Search triggered for all missing books."
-    return str(result)
+
+# ── MCP Prompts ──
+
+@mcp.prompt()
+def audit_downloads(client: str = "all") -> str:
+    """Ispezione e audit delle code di download su qBittorrent, SABnzbd e RDTClient per identificare torrent stallati, errori o code bloccate."""
+    return f"""Agisci come Homelab Media Manager.
+Esegui un'ispezione approfondita dei download attivi per il client '{client}'.
+
+Procedura operativa:
+1. Se client è 'qbt' o 'all':
+   - Usa `qbt_transfer_info` per conoscere velocità globali up/down e limiti.
+   - Usa `qbt_list_torrents(filter='active')` e `qbt_list_torrents(filter='errored')` per rilevare torrent in errore I/O o stallati a 0 B/s.
+2. Se client è 'rdt' o 'all':
+   - Usa `rdt_list_torrents(filter='active')` per verificare lo stato dei download Debrid.
+3. Se client è 'sab' o 'all':
+   - Usa `sab_queue` e `sab_status` per verificare lo stato di download NZB.
+4. Riepiloga lo stato delle code:
+   - Evidenzia download completati al 100% che possono essere rimossi o ripuliti.
+   - Segnala download bloccati da più di 24h con 0 seeders.
+   - Proponi eventuali azioni correttive (cambio categoria con `qbt_set_category`, re-search su Prowlarr o rimozione con `qbt_delete`)."""
+
+
+@mcp.prompt()
+def search_and_grab(title: str, media_type: str = "movie") -> str:
+    """Workflow guidato per cercare una release su Prowlarr/Radarr/Sonarr, valutare seeders e qualità, e avviare il grab."""
+    return f"""Agisci come Media Procurement Specialist.
+Obiettivo: ricercare e acquisire il titolo '{title}' (tipo: {media_type}) per la libreria multimediale.
+
+Procedura operativa:
+1. Verifica disponibilità esistente:
+   - Se media_type è 'movie': chiama `radarr_search(term='{title}')` o `radarr_list_movies` per verificare se è già monitorato/scaricato.
+   - Se media_type è 'series': chiama `sonarr_search(term='{title}')` o `sonarr_list_series`.
+   - Se media_type è 'music': chiama `lidarr_search(term='{title}')`.
+2. Se non presente o mancante:
+   - Effettua la ricerca degli indexer con `prowlarr_search(query='{title}')`.
+   - Filtra e ordina i risultati per affidabilità:
+     * Minimo 5-10 seeders.
+     * Risoluzione target (1080p o 4K a seconda della policy, codec preferito x265/HEVC o x264).
+     * Dimensione congrua (evita file sospetti < 500MB per film o fake).
+3. Riepilogo per l'utente:
+   - Mostra le 3 migliori release identificate con titolo, indexer, dimensione e seeders.
+   - Se l'utente approva, procedi all'aggiunta nell'applicazione target o esegui `prowlarr_grab` specificando l'indice corretto e la categoria appropriata (es. 'movies', 'tv', 'music')."""
+
+
+@mcp.prompt()
+def media_health_check() -> str:
+    """Verifica generale dello stato delle librerie Radarr, Sonarr, Lidarr e Prowlarr (dischi, code, avvisi di sistema)."""
+    return """Agisci come Homelab Systems Administrator.
+Esegui un controllo di salute generale dell'ecosistema Servarr e dei client di download:
+
+Procedura operativa:
+1. Prowlarr Indexer Health:
+   - Chiama `prowlarr_health` e `prowlarr_list_indexers` per accertare che gli indexer configurati rispondano correttamente.
+2. Code di Import e Processing:
+   - Controlla `radarr_queue` per individuare film in attesa di importazione o con avvisi (es. 'No space left on device', 'Sample file', 'Cannot import').
+   - Controlla `sonarr_queue` per blocchi su episodi di serie TV.
+   - Controlla `lidarr_queue` per tracce audio in sospeso.
+3. Client Torrent e Download:
+   - Verifica `qbt_transfer_info` e controlla se ci sono errori globali.
+4. Genera un report sintetico con:
+   - [OK / WARN / ERROR] per ciascun servizio.
+   - Azioni raccomandate per risolvere eventuali colli di bottiglia o file bloccati nelle code."""
 
 
 # ── Entrypoint ──
@@ -2966,8 +3028,10 @@ def main():
 
     enabled_names = [SERVICE_CONFIG[key][0] for key in SERVICE_CONFIG if key in selected]
     tool_count = len(mcp._tool_manager.list_tools())
+    prompt_count = len(mcp._prompt_manager.list_prompts())
     print(f"🎬 arrstack-mcp starting ({', '.join(enabled_names)})", file=sys.stderr)
     print(f"   Advertised tools: {tool_count}", file=sys.stderr)
+    print(f"   Advertised prompts: {prompt_count}", file=sys.stderr)
     print(f"   Transport: {args.transport}", file=sys.stderr)
     if args.transport in ("streamable-http", "sse") and not _ard_disabled():
         discovery_base = ard.normalize_public_url(ARD_PUBLIC_URL) or f"http://{args.host}:{args.port}"
