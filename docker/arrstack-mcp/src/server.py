@@ -2138,6 +2138,24 @@ def qbt_delete(torrent_hash: str, delete_files: bool = False) -> str:
 
 
 @mcp.tool()
+def qbt_set_category(torrent_hash: str, category: str) -> str:
+    """Set or change the category of an existing torrent in qBittorrent.
+
+    Args:
+        torrent_hash: The info hash of the torrent.
+        category: The category name to assign (e.g. "video-filebot", "lidarr", "radarr").
+    """
+    res = _qbt(
+        "/torrents/setCategory",
+        method="POST",
+        data={"hashes": torrent_hash, "category": category},
+    )
+    if isinstance(res, str) and res.strip() and ("failed" in res.lower() or "error" in res.lower()):
+        return f"❌ Failed to set category: {res}"
+    return f"✅ Category set to '{category}' for torrent {torrent_hash}."
+
+
+@mcp.tool()
 def qbt_transfer_info() -> str:
     """Get global qBittorrent transfer statistics (speeds, totals, connection status)."""
     info = _qbt("/transfer/info")

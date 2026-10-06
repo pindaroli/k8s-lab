@@ -39,3 +39,19 @@ def test_qbt_add_magnet_tool(mocker):
     assert "Magnet added to qBittorrent" in result
     mock_qbt.assert_called_once()
     assert mock_qbt.call_args[1]["data"]["category"] == "lidarr-classical"
+
+def test_qbt_set_category(mocker):
+    """Test qbt_set_category tool."""
+    mock_qbt = mocker.patch.object(server, "_qbt", return_value="")
+
+    result = server.qbt_set_category(
+        torrent_hash="1a6534f53067ebe9111e357e31c86d1b42290446",
+        category="video-filebot"
+    )
+
+    assert "Category set to 'video-filebot'" in result
+    mock_qbt.assert_called_once_with(
+        "/torrents/setCategory",
+        method="POST",
+        data={"hashes": "1a6534f53067ebe9111e357e31c86d1b42290446", "category": "video-filebot"}
+    )
