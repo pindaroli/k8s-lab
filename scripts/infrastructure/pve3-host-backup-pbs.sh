@@ -13,6 +13,7 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting PVE3 host scripts backup to PBS ($
 
 proxmox-backup-client backup \
   scripts.pxar:/usr/local/bin \
+  snippets.pxar:/var/lib/vz/snippets \
   --backup-id pve3-host \
   --backup-type host \
   --repository "$PBS_REPOSITORY"

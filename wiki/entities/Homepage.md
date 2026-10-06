@@ -40,7 +40,18 @@ Per visualizzare i dati del cluster (nodi, pod, ingress), Homepage utilizza un *
 - **Servizi Arrs**: Integrazione API con Sonarr/Radarr per mostrare le code di download.
 - **Monitoring**: Visualizza grafici provenienti da [[Monitoring]] (VictoriaMetrics).
 
+## 5. Controllo Workload On-Demand (LXC Steam Host)
+Homepage include un controllo interattivo per la gestione del container gaming `lxc-steam` (`CT 301` su PVE3):
+- **Architettura API**: Utilizza le API REST native di Proxmox VE (`/api2/json/nodes/pve3/lxc/301/status/...`) instradate via Traefik con middleware di riscrittura (`steam-api-rewrite`) e iniezione credenziali server-side (`steam-api-headers`).
+- **Sicurezza**: Utente dedicato `steam-ui@pve` con ruolo ristretto `SteamOperator` (`VM.PowerMgmt`, `VM.Audit`) vincolato all'oggetto `/vms/301`. Nessuna credenziale esposta nel client browser.
+- **Frontend**: Pillola nativa glassmorphism posizionata in basso a destra nella casella "Steam Host" (`custom.js` e `custom.css`):
+  - 🟢 **Spegni**: quando il container è online (cliccando arresta il container e avvia Ollama).
+  - 🔴 **Avvia**: quando il container è spento (cliccando avvia il container e arresta Ollama).
+  - 🟡 **Avvio... / Stop...**: stato transitorio con spinner.
+- Piano di riferimento: [[homepage-steam-lxc-control-button]].
+
 ## Relazioni
 - Autenticazione via: [[OAuth2_Proxy]].
 - Esposta via: [[Traefik]].
 - Monitora: [[Talos_Cluster]], [[Servarr]], [[Tdarr]].
+- Controlla on-demand: `lxc-steam` (`CT 301` su PVE3).

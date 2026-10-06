@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Pulsante di Controllo LXC Steam su Tutte le Istanze Homepage [[homepage-steam-lxc-control-button]]
+- [x] Fase 1: Creazione utente `steam-ui@pve`, ruolo `SteamOperator` e token API dedicato `steam-ui@pve!btn` su PVE3 con ACL circoscritta su `/vms/301`.
+- [x] Fase 2: Configurazione Service/EndpointSlice `proxmox-pve3` e middleware Traefik (`steam-api-rewrite`, `steam-api-headers`) su K8s con header injection e CORS.
+- [x] Fase 3: Riprogettazione UI in pillola glassmorphism (in basso a destra, selettore `.service-card`, azione diretta Spegni verde / Avvia rosso) su `homepage.yaml`, `homepage-local.yaml` e TrueNAS bare-metal.
+- [x] Fase 4: Rollout dei deployment Homepage, sincronizzazione SCP e collaudo visivo/funzionale end-to-end.
+- [x] Fase 5: Consolidamento documentale ([[Homepage]], [[homepage-steam-lxc-control-button]], `GEMINI.md`).
+
 ## 🚀 [x] ✅ COMPLETATO: Integrazione Codec PyroWave su LXC Steam e Streaming su Client macOS [[steam-pyrowave-remote-play-mac]]
 - [x] Fase 1: Passthrough hardware PVE3 (`card0`, `renderD128`, `/dev/snd`) in `/etc/pve/lxc/301.conf`.
 - [x] Fase 2: Configurazione headless compositor `labwc` accelerato GPU a risoluzione 2K QHD (2560x1440 @ 60Hz).

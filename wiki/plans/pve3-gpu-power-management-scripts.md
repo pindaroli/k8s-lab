@@ -134,4 +134,5 @@ grep "*" /sys/class/drm/card0/device/pp_dpm_sclk || true
 - **Fase Attiva**: Tutte le Fasi Completate con Successo ✅
 - **Ultima Azione Completata**: Fase 3 e Fase 4 completate. Primo backup host su PBS eseguito e verificato (`host/pve3-host/2026-10-05T14:54:11Z`), systemd timer notturno (`03:30`) abilitato su PVE3. Alias in `~/.zshrc` su Mac snelliti e verificati. Autostart verificato per VM `pbs` e impostato a `unless-stopped` per App `garage` su TrueNAS SCALE.
 - **Prossimo Passo Operativo**: Nessuno, piano concluso e operativo.
+- **Evoluzione**: Implementata l'automazione ad eventi e l'orchestrazione LXC tra Steam e Ollama documentata in [[pve3-lxc-steam-ollama-gpu-orchestration]].
 - **Blocchi/Decisioni Pendenti**: Nessuno.

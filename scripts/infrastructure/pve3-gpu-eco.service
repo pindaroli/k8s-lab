@@ -1,0 +1,12 @@
+[Unit]
+Description=Set AMD Radeon 890M GPU to ECO mode (auto-scaling) on boot
+After=systemd-modules-load.service local-fs.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/gpu-eco
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
