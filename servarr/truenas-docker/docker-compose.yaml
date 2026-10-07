@@ -78,7 +78,7 @@ services:
     restart: unless-stopped
 
   webhook-normalizer:
-    image: ghcr.io/pindaroli/custom-normalizer:1.6.0
+    image: ghcr.io/pindaroli/custom-normalizer:1.7.0
     container_name: webhook-normalizer
     command: ["python3", "/app/webhook_server.py"]
     environment:
@@ -101,6 +101,10 @@ services:
       - /mnt/stripe/truenas-docker/webhook-normalizer/categories.yaml:/app/categories.yaml:ro
       - /mnt/stripe/truenas-docker/webhook-normalizer/songkong-license.properties:/etc/songkong/license.properties:ro
       - /mnt/stripe/truenas-docker/webhook-normalizer/filebot-license.psm:/etc/filebot/license.psm:ro
+      - /mnt/stripe/truenas-docker/webhook-normalizer/normalize-video.sh:/app/normalize-video.sh:ro
+      - /mnt/stripe/truenas-docker/webhook-normalizer/sanitize_movie_folder.py:/app/sanitize_movie_folder.py:ro
+      - /mnt/stripe/truenas-docker/webhook-normalizer/normalize.sh:/app/normalize.sh:ro
+      - /mnt/stripe/truenas-docker/webhook-normalizer/utils.sh:/app/utils.sh:ro
     ports:
       - 9000:9000
     restart: unless-stopped

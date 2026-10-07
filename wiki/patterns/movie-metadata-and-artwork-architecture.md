@@ -6,15 +6,18 @@ type: pattern
 status: active
 certified_for_ai: true
 created_at: 2026-09-13
-last_updated: 2026-09-13
+last_updated: 2026-10-07
 in_use_by:
   - project: "k8s-lab"
     paths:
       - "scripts/servarr/audit_movie_duplicates.py"
+      - "scripts/servarr/sanitize_movie_folder.sh"
+      - "scripts/servarr/sanitize_movie_folder.py"
       - "scripts/kubernetes/yaml/job-normalizzation-template.yaml"
   - project: "pindaroli-arr-helm"
     paths:
       - "custom-docker-images/custom-normalizer/normalize-video.sh"
+      - "custom-docker-images/custom-normalizer/sanitize_movie_folder.py"
       - "charts/servarr"
 tags:
   - "#pattern"
@@ -99,6 +102,16 @@ Jellyfin è l'unica autorità per la memorizzazione dei dati testuali:
   - Formato Radarr: `Titolo (Anno) {tmdb-XXXXX}`
   - Formato FileBot: `Titolo (Anno) {tmdb-XXXXX}` (con parentesi quadre `[...]` riservate esclusivamente a versione, codec e gruppo nel nome file)
 - Jellyfin interroga le API di TheMovieDb (TMDb) online e scrive trame, registi, attori, generi e voti nel proprio database SQLite interno (`jellyfin.db`), posizionato su storage NVMe locale del nodo PVE3 (`rpool/data/jellyfin-db`).
+
+### Regola 4: Unificazione Versioni Multiple & Purge Artwork File-Specific
+Per garantire che Jellyfin aggreghi tutte le versioni dello stesso film in una **singola scheda con menu a tendina**:
+1. **Prefisso Obbligatorio**: Ogni file video presente nella cartella del film deve iniziare tassativamente con lo stesso identico prefisso della cartella genitore, seguito da ` - [Dettagli Versione].ext`:
+   ```text
+   Titolo (Anno) {tmdb-ID}/Titolo (Anno) {tmdb-ID} - [Versione].ext
+   ```
+2. **Sincronizzazione Sottotitoli**: Tutti i file `.srt`/`.sub` esterni devono condividere il medesimo stem del video di appartenenza (es. `... - [576p XviD].it.srt`).
+3. **Divieto Assoluto di Artwork File-Specific**: È vietata la persistenza di file grafici con prefisso video (`*-poster.jpg`, `*-backdrop.jpg`, `*-landscape.jpg`, `*-logo.png`). Jellyfin per i film multi-versione condivide la locandina master di cartella.
+4. **Sanificazione Automatica**: Lo script [`sanitize_movie_folder.sh`](file:///Users/olindo/prj/k8s-lab/scripts/servarr/sanitize_movie_folder.sh) e l'hook post-processo in [`normalize-video.sh`](file:///Users/olindo/prj/pindaroli-arr-helm/custom-docker-images/custom-normalizer/normalize-video.sh) analizzano i file preesistenti con `ffprobe` e sanificano video, sottotitoli e artwork in tempo reale.
 
 ---
 
