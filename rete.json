@@ -889,6 +889,24 @@
       "notes": "Provides Local Storage for the 'postgres-main' cluster (CloudNativePG)."
     },
     {
+      "id": "olilab-worker",
+      "label": "Ubuntu Worker VM (SSH Entrypoint)",
+      "type": "VM",
+      "host_node": "pve2",
+      "vm_id": "2400",
+      "ip": "10.10.20.70",
+      "mac": "bc:24:11:cd:3f:c0",
+      "aliases": [
+        "worker",
+        "olilab-worker"
+      ],
+      "role": "Ubuntu Worker (SSH Key Only)",
+      "os": "Ubuntu 24.04 LTS",
+      "network": "VLAN 20 (vmbr20)",
+      "resources": "2 vCPU / 2 GB RAM / 20 GB Disk",
+      "notes": "Provisioned on PVE2 via Cloud-Init. OpenSSH hardened (PasswordAuthentication no, PubkeyAuthentication yes)."
+    },
+    {
       "id": "talos-cp-03",
       "label": "Talos Control Plane 03",
       "type": "VM",
