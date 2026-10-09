@@ -141,4 +141,15 @@ Server MCP nativi o integrati in applicazioni terze gestiti tramite script bridg
 | **`homepage-k8s`** | Stdio (Python) | `https://home-internal.pindaroli.org/api/mcp` | `scripts/homepage-mcp/bridge.py` | Ispezione, validazione e documentazione YAML K8s Homepage |
 | **`homepage-truenas`** | Stdio (Python) | `http://10.10.20.50:3000/api/mcp` | `scripts/homepage-mcp/bridge.py` | Ispezione, validazione e documentazione YAML TrueNAS Homepage |
 
+---
+
+## 6. Server MCP SaaS Gestiti (`mcp_config.json`)
+
+Server MCP ufficiali gestiti da cloud provider terzi, integrati via Streamable HTTP con autenticazione via token:
+
+| Server | Trasporto Client | Target Endpoint | Autenticazione | Funzionalità Esposte |
+| :--- | :--- | :--- | :--- | :--- |
+| **`cloudflare`** | Streamable HTTP | `https://mcp.cloudflare.com/mcp` | Bearer Token SOPS (`cfut_...`) | Code Mode: gestione DNS `pindaroli.org`, Tunnels, Zone, WAF e Zero Trust |
+
+
 

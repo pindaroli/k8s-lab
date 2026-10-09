@@ -1,5 +1,19 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 In Corso: Script Controllo Aggiornamenti Immagini Docker su TrueNAS [[truenas-docker-image-updates-checker]]
+- [x] Fase 1: Analisi e Definizione Contratti Dati (TrueNAS Docker Stack)
+- [x] Fase 2: Implementazione Motore Core Python (`check_docker_registry_updates.py`)
+- [ ] Fase 3: Implementazione Wrapper Shell Bash (`check_truenas_docker_updates.sh`)
+- [ ] Fase 4: Test Operativo e Validazione End-to-End su TrueNAS
+- [ ] Fase 5: Documentazione, Sync Todo e Rigenerazione Wiki Context
+
+## 🚀 [x] ✅ COMPLETATO: Integrazione MCP Server Cloudflare (SaaS Ufficiale) [[cloudflare-mcp-integration]]
+- [x] Fase 1: Generazione & Validazione Token API Cloudflare (`cfut_...` con `user:read`, `account:read`, `zone:read`, `dns:edit`).
+- [x] Fase 2: Archiviazione Sicura Secret via SOPS (`secrets-sops/cloudflare-mcp-credentials.enc.yaml`).
+- [x] Fase 3: Configurazione Centralizzata MCP Client (`~/.gemini/antigravity/mcp_config.json`).
+- [x] Fase 4: Validazione Test-Driven End-to-End (`initialize`, `tools/list`, `whoami`, query DNS `pindaroli.org`).
+- [x] Fase 5: Consolidamento Documentale & Knowledge Base ([[MCP_Platform]], `todo.md`, `GEMINI.md`).
+
 ## 🚀 [x] ✅ COMPLETATO: Pulsante di Controllo LXC Steam su Tutte le Istanze Homepage [[homepage-steam-lxc-control-button]]
 - [x] Fase 1: Creazione utente `steam-ui@pve`, ruolo `SteamOperator` e token API dedicato `steam-ui@pve!btn` su PVE3 con ACL circoscritta su `/vms/301`.
 - [x] Fase 2: Configurazione Service/EndpointSlice `proxmox-pve3` e middleware Traefik (`steam-api-rewrite`, `steam-api-headers`) su K8s con header injection e CORS.
