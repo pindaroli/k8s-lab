@@ -1,0 +1,13 @@
+Estrai i dati salienti dal seguente documento e restituiscili esclusivamente come un oggetto JSON valido con la seguente struttura:
+{
+  "tipo_documento": "...",
+  "numero_documento": "...",
+  "data": "...",
+  "emittente": "...",
+  "totale_euro": 0.0,
+  "voci": [
+    {"descrizione": "...", "quantita": 0, "prezzo_unitario": 0.0, "totale": 0.0}
+  ]
+}
+Non aggiungere spiegazioni o testo prima o dopo il blocco JSON.
+{{image}}

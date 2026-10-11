@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: "Benchmark OCR Qwen2.5-VL 7B Native Ollama Mac"
+
+providers:
+  # Provider Nativo Ollama per Vision (supporta nativamente le immagini nel payload Ollama)
+  - id: "ollama:chat:qwen2.5vl:7b-q4_K_M"
+    label: "ollama:qwen2.5vl:7b"
+    config:
+      temperature: 0.0
+      options:
+        num_ctx: 8192
+
+prompts:
+  - |-
+    Trascrivi integralmente il seguente documento in formato Markdown pulito.
+    Preserva la struttura esatta di ogni tabella.
+    {{image}}
+
+tests:
+  - description: "OCR Fattura Elettronica - Test Accuratezza e Layout Tabellare"
+    vars:
+      image: "file://fixtures/fattura_test.png"
+    assert:
+      # Verifica presenza di elementi chiave nel testo estratto
+      - type: icontains
+        value: "FATTURA"
+      - type: icontains
+        value: "Totale Euro"
+      - type: icontains
+        value: "1464"
+      # Verifica che abbia estratto una tabella Markdown valida
+      - type: javascript
+        value: "output.includes('|') && output.includes('---')"
+
+  - description: "OCR Scontrino Commerciale - Test Riconoscimento Voci e Totale"
+    vars:
+      image: "file://fixtures/ricevuta_test.jpg"
+    assert:
+      - type: icontains
+        value: "CAFFETTERIA"
+      - type: icontains
+        value: "8.70"

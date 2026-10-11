@@ -1,0 +1,3 @@
+Trascrivi integralmente il seguente documento in formato Markdown pulito.
+Preserva la struttura esatta di ogni tabella e non omettere alcuna informazione.
+{{image}}

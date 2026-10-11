@@ -1,18 +1,34 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 Pianificato: Installazione e Configurazione Promptfoo per Benchmark OCR, Layout e JSON su Mac [[promptfoo-ocr-benchmark-evaluation]]
+- [ ] Fase 1: Verifica Prerequisiti e Installazione Promptfoo su Mac (`brew install promptfoo` / `npm install -g promptfoo`)
+- [ ] Fase 2: Creazione Scaffolding e Predisposizione Fixture di Test (`benchmarks/promptfoo-ocr/fixtures/`)
+- [ ] Fase 3: Stesura Configurazione Dichiarativa (`promptfooconfig.yaml`) e Template Prompt
+- [ ] Fase 4: Validazione Connettività verso gli Endpoint Remoti (`10.10.20.33:8081` e `10.10.20.33:11434`)
+- [ ] Fase 5: Esecuzione Benchmark di Prova ed Esportazione Report in `reports/`
+- [ ] Fase 6: Avvio Dashboard Web Interattiva (`promptfoo view`) e Allineamento Wiki
+
+## 🚀 [x] ✅ COMPLETATO: Integrazione Sidecar llama-server Vulkan (Qwen2.5-VL-7B OCR) su LXC Ollama [[lxc-ollama-llama-ocr-qwen25-sidecar]]
+- [x] Fase 1: Verifica Prerequisiti Vulkan e Preparazione Directory su CT 300
+- [x] Fase 2: Installazione Binari Ufficiali Precompilati Vulkan (`llama-server`, `llama-cli`)
+- [x] Fase 3: Download Modelli GGUF su TrueNAS NFS (`Qwen_Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf`, `mmproj-f16`)
+- [x] Fase 4: Configurazione Servizio systemd (`llama-ocr.service` su porta 8081 con `/etc/default/llama-ocr`)
+- [x] Fase 5: Validazione End-to-End, Test Vision OpenAI API e Coesistenza con Ollama
+- [x] Fase 6: Allineamento Registri (`rete.json`) e Rigenerazione Wiki Context
+
 ## 🚀 Pianificato: Test Locale, Configurazione Docker, Validazione Meross MCP Server & Widget Homepage [[meross-mcp-docker-validation]]
 - [ ] Fase 1: Test Server Meross in Locale (Connessione Cloud MQTT/TLS, tool stdio/HTTP e verifica dispositivi fisici)
 - [ ] Fase 2: Configurazione Docker Server MCP Meross (`docker/mcp/docker-compose.yaml` su porta 8112, secret SOPS `.env`)
 - [ ] Fase 3: Deployment e Test di Validazione End-to-End Container Docker (`healthz`, `/mcp`, switch e telemetria via client MCP)
 - [ ] Fase 4: Integrazione Widget Consumi su Dashboard Homepage (Widget `customapi` telemetria W/V/A su `homepage.yaml` e TrueNAS, rollout K8s)
 
-## 🚀 Pianificato: Ottimizzazione e Dimensionamento al Limite Fisico di LXC Ollama su PVE3 [[lxc-ollama-hardware-limit-optimization]]
-- [ ] Fase 1: Ispezione e Baseline Benchmark GuideLLM su `lxc-ollama`
-- [ ] Fase 2: Configurazione Parametri Kernel AMDGPU su Host PVE3 (`gttsize`)
-- [ ] Fase 3: Riconfigurazione Parametri Dimensionali di Allocazione (RAM/vCPU/Pinning)
-- [ ] Fase 4: Applicazione Ottimizzazioni di Runtime Ollama (Flash Attention, KV Cache, Keep Alive)
-- [ ] Fase 5: Validazione Empirica con GuideLLM Benchmark Post-Tuning
-- [ ] Fase 6: Allineamento Registri di Rete (`rete.json`) e Documentazione Wiki
+## 🚀 [x] ✅ COMPLETATO: Ottimizzazione e Dimensionamento al Limite Fisico di LXC Ollama su PVE3 [[lxc-ollama-hardware-limit-optimization]]
+- [x] Fase 1: Ispezione e Baseline Benchmark GuideLLM su `lxc-ollama`
+- [x] Fase 2: Configurazione Parametri Kernel AMDGPU su Host PVE3 (`gttsize: -1` dinamico)
+- [x] Fase 3: Riconfigurazione Parametri Dimensionali di Allocazione (54 GB RAM, 20 vCPU pinned 0-19)
+- [x] Fase 4: Applicazione Ottimizzazioni di Runtime Ollama (Flash Attention, KV Cache Q8, Keep Alive)
+- [x] Fase 5: Validazione Empirica con GuideLLM Benchmark Post-Tuning e Ripristino GPU Eco
+- [x] Fase 6: Allineamento Registri di Rete (`rete.json`) e Documentazione Wiki
 
 ## 🚀 [x] ✅ COMPLETATO: Registrazione Canonica dei Servizi Ollama in rete.json e Discovery Dinamica nei Benchmark [[ollama-rete-registry-integration]]
 - [x] Fase 1: Aggiornamento Dichiarativo di `rete.json` (`services` in `nodi` e `applicazioni`)

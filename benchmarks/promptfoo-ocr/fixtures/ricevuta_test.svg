@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
+  <rect width="600" height="900" fill="#fffbeb"/>
+
+  <!-- Intestazione Scontrino -->
+  <text x="300" y="70" font-family="Courier, monospace" font-size="22" font-weight="bold" text-anchor="middle" fill="#1c1917">CAFFETTERIA &amp; BISTROT</text>
+  <text x="300" y="95" font-family="Courier, monospace" font-size="14" text-anchor="middle" fill="#44403c">PIAZZA DEL MERCATO 12 - ROMA</text>
+  <text x="300" y="115" font-family="Courier, monospace" font-size="14" text-anchor="middle" fill="#44403c">P.IVA 09876543211</text>
+  <text x="300" y="145" font-family="Courier, monospace" font-size="16" font-weight="bold" text-anchor="middle" fill="#1c1917">DOCUMENTO COMMERCIALE</text>
+
+  <text x="300" y="175" font-family="Courier, monospace" font-size="13" text-anchor="middle" fill="#78716c">----------------------------------------</text>
+  <text x="50" y="200" font-family="Courier, monospace" font-size="14" fill="#292524">11/10/2026 13:45</text>
+  <text x="430" y="200" font-family="Courier, monospace" font-size="14" fill="#292524">DOC N. 0412</text>
+  <text x="300" y="220" font-family="Courier, monospace" font-size="13" text-anchor="middle" fill="#78716c">----------------------------------------</text>
+
+  <!-- Voci Scontrino -->
+  <text x="50" y="260" font-family="Courier, monospace" font-size="15" fill="#1c1917">1 CAFFE ESPRESSO</text>
+  <text x="480" y="260" font-family="Courier, monospace" font-size="15" font-weight="bold" fill="#1c1917">1.30 €</text>
+
+  <text x="50" y="300" font-family="Courier, monospace" font-size="15" fill="#1c1917">2 BRIOCHE ARTIGIANALI</text>
+  <text x="480" y="300" font-family="Courier, monospace" font-size="15" font-weight="bold" fill="#1c1917">3.40 €</text>
+
+  <text x="50" y="340" font-family="Courier, monospace" font-size="15" fill="#1c1917">1 SPREMUTA D ARANCIA</text>
+  <text x="480" y="340" font-family="Courier, monospace" font-size="15" font-weight="bold" fill="#1c1917">4.00 €</text>
+
+  <text x="300" y="400" font-family="Courier, monospace" font-size="13" text-anchor="middle" fill="#78716c">========================================</text>
+  <text x="50" y="440" font-family="Courier, monospace" font-size="20" font-weight="bold" fill="#1c1917">TOTALE COMPLESSIVO</text>
+  <text x="450" y="440" font-family="Courier, monospace" font-size="22" font-weight="bold" fill="#1c1917">8.70 €</text>
+
+  <text x="50" y="480" font-family="Courier, monospace" font-size="15" fill="#44403c">PAGAMENTO ELETTRONICO (POS)</text>
+  <text x="480" y="480" font-family="Courier, monospace" font-size="15" fill="#44403c">8.70 €</text>
+
+  <text x="300" y="520" font-family="Courier, monospace" font-size="13" text-anchor="middle" fill="#78716c">----------------------------------------</text>
+  <text x="300" y="560" font-family="Courier, monospace" font-size="14" text-anchor="middle" fill="#292524">ARRIVEDERCI E GRAZIE</text>
+  <text x="300" y="585" font-family="Courier, monospace" font-size="12" text-anchor="middle" fill="#78716c">RT MATRICOLA 99MEC87654</text>
+</svg>

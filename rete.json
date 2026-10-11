@@ -960,6 +960,17 @@
           "hardware": "AMD Radeon 890M (Vulkan RADV)",
           "status": "active",
           "notes": "Ollama 0.34.2 con 54 GB RAM, 20 vCPU (Zen 5 + Zen 5c), OLLAMA_IGPU_ENABLE=1, OLLAMA_FLASH_ATTENTION=1, OLLAMA_KV_CACHE_TYPE=q8_0 e mount NFS stripe/ollama."
+        },
+        {
+          "id": "llama-ocr",
+          "label": "Llama.cpp OCR & Vision Server (Qwen2.5-VL-7B-Instruct)",
+          "port": 8081,
+          "protocol": "HTTP",
+          "api_base": "/v1",
+          "memory": "7.5gb",
+          "hardware": "AMD Radeon 890M (Vulkan RADV)",
+          "status": "active",
+          "notes": "llama-server nativo b11559 con Vulkan RADV su :8081, modello Qwen2.5-VL-7B-Instruct Q4_K_M + mmproj F16 su TrueNAS NFS stripe/ollama per OCR/Document Understanding sidecar."
         }
       ],
       "notes": "Ollama 0.34.2 on :11434 with OLLAMA_IGPU_ENABLE=1, HSA_OVERRIDE_GFX_VERSION=11.5.0, Flash Attention, KV Cache Q8, 20 vCPU. Vulkan RADV GFX1150 ~45.1 GiB."
@@ -1137,6 +1148,18 @@
         "mac studio"
       ],
       "storage": "NFS stripe/ollama (TrueNAS SCALE 10.10.20.50)",
+      "status": "Active"
+    },
+    {
+      "id": "llama-ocr",
+      "label": "Llama.cpp OCR & Vision Sidecar",
+      "role": "Document Understanding & Vision-Language Inference Engine (Homelab)",
+      "service_id": "llama-ocr",
+      "port": 8081,
+      "nodes": [
+        "lxc-ollama"
+      ],
+      "storage": "NFS stripe/ollama/gguf (TrueNAS SCALE 10.10.20.50)",
       "status": "Active"
     }
   ],

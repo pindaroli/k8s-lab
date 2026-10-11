@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#ffffff"/>
+
+  <!-- Intestazione -->
+  <text x="50" y="80" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#1e293b">TECH SOLUTIONS S.R.L.</text>
+  <text x="50" y="110" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#64748b">Via dell'Innovazione 42 - 00100 Roma (RM)</text>
+  <text x="50" y="130" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#64748b">Partita IVA: IT01234567890 | PEC: techsolutions@pec.it</text>
+
+  <line x1="50" y1="160" x2="850" y2="160" stroke="#cbd5e1" stroke-width="2"/>
+
+  <!-- Titolo Documento -->
+  <rect x="50" y="180" width="800" height="50" fill="#f1f5f9" rx="4"/>
+  <text x="70" y="212" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="bold" fill="#0f172a">FATTURA ELETTRONICA N. FT-2026-089</text>
+  <text x="650" y="212" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#334155">Data: 11/10/2026</text>
+
+  <!-- Dati Cliente -->
+  <text x="50" y="270" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569">DESTINATARIO:</text>
+  <text x="50" y="295" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="bold" fill="#0f172a">Homelab System Services</text>
+  <text x="50" y="320" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#334155">Via dei Server 10 - 20100 Milano</text>
+  <text x="50" y="340" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#334155">Codice Fiscale: HMLSRV80A01H501U</text>
+
+  <!-- Tabella Dettaglio Merci -->
+  <!-- Intestazione Tabella -->
+  <rect x="50" y="390" width="800" height="40" fill="#0284c7"/>
+  <text x="70" y="415" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">DESCRIZIONE ARTICOLO</text>
+  <text x="500" y="415" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">Q.TÀ</text>
+  <text x="600" y="415" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">PREZZO UNIT.</text>
+  <text x="750" y="415" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">TOTALE</text>
+
+  <!-- Riga 1 -->
+  <rect x="50" y="430" width="800" height="40" fill="#f8fafc"/>
+  <text x="70" y="455" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">Mini-PC AMD Ryzen AI 9 HX 370 64GB LPDDR5</text>
+  <text x="515" y="455" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">1</text>
+  <text x="615" y="455" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">850.00 €</text>
+  <text x="755" y="455" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">850.00 €</text>
+  <line x1="50" y1="470" x2="850" y2="470" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Riga 2 -->
+  <rect x="50" y="470" width="800" height="40" fill="#ffffff"/>
+  <text x="70" y="495" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">NVMe PCIe 4.0 2TB High Endurance</text>
+  <text x="515" y="495" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">2</text>
+  <text x="615" y="495" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">150.00 €</text>
+  <text x="755" y="495" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">300.00 €</text>
+  <line x1="50" y1="510" x2="850" y2="510" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Riga 3 -->
+  <rect x="50" y="510" width="800" height="40" fill="#f8fafc"/>
+  <text x="70" y="535" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">Cavo DAC SFP+ 10G 1 metro</text>
+  <text x="515" y="535" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">2</text>
+  <text x="625" y="535" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1e293b">25.00 €</text>
+  <text x="765" y="535" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#1e293b">50.00 €</text>
+  <line x1="50" y1="550" x2="850" y2="550" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Totali -->
+  <rect x="500" y="580" width="350" height="150" fill="#f8fafc" stroke="#cbd5e1" rx="4"/>
+  <text x="520" y="610" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#475569">Imponibile Netto:</text>
+  <text x="740" y="610" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#1e293b">1200.00 €</text>
+
+  <text x="520" y="645" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#475569">IVA 22%:</text>
+  <text x="750" y="645" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#1e293b">264.00 €</text>
+  <line x1="520" y1="665" x2="830" y2="665" stroke="#94a3b8" stroke-width="1"/>
+
+  <text x="520" y="700" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="bold" fill="#0369a1">Totale Euro:</text>
+  <text x="720" y="700" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="bold" fill="#0369a1">1464.00 €</text>
+
+  <!-- Note e Pagamento -->
+  <text x="50" y="800" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569">NOTE DI PAGAMENTO:</text>
+  <text x="50" y="825" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#334155">Bonifico Bancario a vista fattura - IBAN: IT60X0542811101000000123456</text>
+  <text x="50" y="845" font-family="Helvetica, Arial, sans-serif" font-size="13" font-style="italic" fill="#64748b">Grazie per aver scelto i nostri servizi di computing avanzato.</text>
+</svg>
