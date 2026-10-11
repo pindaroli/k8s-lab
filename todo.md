@@ -1,19 +1,26 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 Pianificato: Script Shell Interattivo per Benchmark GuideLLM con Naming Pattern Standard [[guidellm-benchmark-script]]
+- [ ] Fase 1: Creazione Struttura Directory e Script Shell (`scripts/benchmarks/run_guidellm_benchmark.sh`)
+- [ ] Fase 2: Validazione della Modalità Dry-Run e Risoluzione Naming ([[guidellm-report-naming-pattern]])
+- [ ] Fase 3: Validazione Connettività e Test Interattivo
+- [ ] Fase 4: Esecuzione di Benchmark Reale di Prova
+- [ ] Fase 5: Consolidamento Documentale e Allineamento Pattern
+
 ## 🚀 [x] ✅ COMPLETATO: Automazione Startup SFP+ Porta 10 su Extreme EXOS [[exos-port10-sfp-boot-recovery]]
 - [x] Fase 1: Creazione Script Locali nel Repository (`bounce_port10.py` e `autoexec.xsf`)
 - [x] Fase 2: Implementazione ed Esecuzione Playbook Ansible Permanente (`exos_port10_boot_recovery.yml`)
 - [x] Fase 3: Validazione Test-Driven Flash e Interprete Python su EXOS (Verificato con successo)
 - [x] Fase 4: Consolidamento Documentale ([[Network_Registry]], [[2026-10-11-exos-sfp-port10-link-startup-failure]], sync wiki context)
 
-## 🚀 Pianificato: Creazione Progetto Git e Sviluppo MCP Server per Prese Meross [[meross-mcp-server-project]]
+## 🚀 [x] ✅ COMPLETATO: Creazione Progetto Git e Sviluppo MCP Server per Prese Meross [[meross-mcp-server-project]]
 - [x] Fase 1: Creazione Scaffolding Progetto Git (`/Users/olindo/prj/meross-mcp/`) e Toolchain
 - [x] Fase 2: Implementazione Core Client Asincrono Meross (`config.py`, `client.py`, `devices.py`)
 - [x] Fase 3: Implementazione Server MCP & Tools (`server.py`) con supporto Stdio e SSE
 - [x] Fase 4: Test Suite & Validazione Funzionale (Mocking pytest + smoke test)
 - [x] Fase 5: Packaging Container OCI & Dockerfile
-- [ ] Fase 6: Integrazione in Antigravity (`~/.gemini/antigravity/mcp_config.json`) e Deployment
-- [ ] Fase 7: Consolidamento Documentale & Knowledge Base Wiki
+- [x] Fase 6: Integrazione in Antigravity (`~/.gemini/antigravity/mcp_config.json`) e Deployment
+- [x] Fase 7: Consolidamento Documentale & Knowledge Base Wiki
 
 ## 🚀 [x] ✅ COMPLETATO: Storage NFS per Modelli Ollama su TrueNAS Stripe per LXC Ollama su PVE3 [[pve3-lxc-ollama-nfs-stripe-storage]]
 - [x] Fase 1: Creazione Dataset ZFS (`stripe/ollama`) ed Export NFS su TrueNAS SCALE (`10.10.20.50`)

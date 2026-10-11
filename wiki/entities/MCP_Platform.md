@@ -151,5 +151,15 @@ Server MCP ufficiali gestiti da cloud provider terzi, integrati via Streamable H
 | :--- | :--- | :--- | :--- | :--- |
 | **`cloudflare`** | Streamable HTTP | `https://mcp.cloudflare.com/mcp` | Bearer Token SOPS (`cfut_...`) | Code Mode: gestione DNS `pindaroli.org`, Tunnels, Zone, WAF e Zero Trust |
 
+---
+
+## 7. Server MCP Zero-Install & Dual Gateway ([[zero-install-executable-package-pattern]])
+
+Server autonomi distribuiti ed eseguiti on-demand come pacchetti effimeri senza installazione permanente sull'host:
+
+| Server | Progetto & Repository | Trasporto Client | Target & Architettura | Funzionalità Esposte |
+| :--- | :--- | :--- | :--- | :--- |
+| **`meross`** | [`pindaroli/meross-mcp`](https://github.com/pindaroli/meross-mcp) | Stdio (`uvx`) & HTTP/SSE porta `8112` | Meross Cloud MQTT over TLS & REST API Gateway (`/api/v1/devices`) | 6 tool MCP per controllo relè, commutazione canali e telemetria energetica ($W, V, A$) su prese e ciabatte Meross (MSS310, MSS210, MSS425E) |
+
 
 

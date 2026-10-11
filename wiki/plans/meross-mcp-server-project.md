@@ -1,9 +1,11 @@
 ---
 title: "Piano: Creazione Progetto Git Standalone & Sviluppo Meross Dual Gateway (MCP + REST API)"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-10-11
+archived_at: 2026-10-11
+completed_at: 2026-10-11
 tags:
   - "#plan"
   - "#mcp"
@@ -231,7 +233,7 @@ asyncio.run(main())
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 6 (Integrazione in Antigravity `mcp_config.json` & Validazione Zero-Install)
-- **Ultima Azione Completata**: Fase 5 completata al 100% con commit `3c4274c` su GitHub ([pindaroli/meross-mcp](https://github.com/pindaroli/meross-mcp)): pipeline CI `test.yml` e CD `publish.yml`, `Dockerfile` multi-stage unprivileged (UID 1000) e `docker-compose.yaml` rilasciati.
-- **Prossimo Passo Operativo**: Configurazione centralizzata del server `meross` in `~/.gemini/antigravity/mcp_config.json` con comando `uvx --from git+https://github.com/pindaroli/meross-mcp.git meross-mcp --transport stdio` e test di parsing JSON.
-- **Blocchi/Decisioni Pendenti**: Attesa approvazione per avviare la Fase 6.
+- **Fase Attiva**: Piano Completato con Successo ✅
+- **Ultima Azione Completata**: Tutte le 7 fasi completate: repository GitHub pubblico [pindaroli/meross-mcp](https://github.com/pindaroli/meross-mcp), packaging PEP 621, libreria asincrona, FastAPI REST API, FastMCP server, test suite (20/20 test verdi), CI/CD GitHub Actions passata, registrazione in `mcp_config.json` e consolidamento in [[MCP_Platform]].
+- **Prossimo Passo Operativo**: Nessuno (piano archiviato). Per l'uso live con Antigravity, valorizzare `MEROSS_EMAIL` e `MEROSS_PASSWORD` in `mcp_config.json`.
+- **Blocchi/Decisioni Pendenti**: Nessuno.
