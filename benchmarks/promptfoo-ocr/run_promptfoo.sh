@@ -5,6 +5,9 @@
 # ==============================================================================
 set -euo pipefail
 
+# Forza Promptfoo ad incorporare le immagini come inline data URL (evita broken image nel browser)
+export PROMPTFOO_INLINE_MEDIA=true
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 REPORTS_DIR="${WORKSPACE_ROOT}/reports"
@@ -28,6 +31,7 @@ case "${ACTION}" in
     cd "${SCRIPT_DIR}"
     promptfoo eval \
       --config "${CONFIG_FILE}" \
+      --no-cache \
       --output "${REPORT_JSON}" \
       --output "${REPORT_HTML}"
     echo "✅ Benchmark completato con successo!"

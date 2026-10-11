@@ -1,25 +1,23 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
-description: "Benchmark OCR Qwen2.5-VL 7B Native Ollama Mac"
+description: "Benchmark OCR Qwen2.5-VL 7B OpenAI Vision Data URI"
 
 providers:
-  # Provider Nativo Ollama per Vision (supporta nativamente le immagini nel payload Ollama)
-  - id: "ollama:chat:qwen2.5vl:7b-q4_K_M"
-    label: "ollama:qwen2.5vl:7b"
+  - id: "openai:chat:qwen2.5vl:7b-q4_K_M"
+    label: "mac-local:qwen2.5vl:7b"
     config:
+      apiBaseUrl: "http://127.0.0.1:11434/v1"
+      apiKey: "ollama"
       temperature: 0.0
-      options:
-        num_ctx: 8192
+      max_tokens: 4096
 
 prompts:
-  - |-
-    Trascrivi integralmente il seguente documento in formato Markdown pulito.
-    Preserva la struttura esatta di ogni tabella.
-    {{image}}
+  - "file://prompts/image_prompt.json"
 
 tests:
   - description: "OCR Fattura Elettronica - Test Accuratezza e Layout Tabellare"
     vars:
-      image: "file://fixtures/fattura_test.png"
+      question: "Trascrivi integralmente il seguente documento in formato Markdown pulito. Preserva la struttura esatta di ogni tabella."
+      image_url: "file://fixtures/fattura_test.b64"
     assert:
       # Verifica presenza di elementi chiave nel testo estratto
       - type: icontains
@@ -34,7 +32,8 @@ tests:
 
   - description: "OCR Scontrino Commerciale - Test Riconoscimento Voci e Totale"
     vars:
-      image: "file://fixtures/ricevuta_test.jpg"
+      question: "Trascrivi integralmente il seguente documento in formato Markdown pulito. Preserva la struttura esatta di ogni tabella."
+      image_url: "file://fixtures/ricevuta_test.b64"
     assert:
       - type: icontains
         value: "CAFFETTERIA"

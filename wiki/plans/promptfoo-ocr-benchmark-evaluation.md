@@ -1,9 +1,11 @@
 ---
 title: "Piano: Installazione e Configurazione Promptfoo per Benchmark OCR, Layout e JSON su Mac"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-10-11
+archived_at: 2026-10-12
+superseded_by: [[promptfoo-ocr-benchmark-script]]
 tags:
   - "#ocr"
   - "#benchmarking"
@@ -179,7 +181,7 @@ La configurazione implementa tre tipologie essenziali di validazione:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Pianificazione completata / In attesa di approvazione per Fase 1
-- **Ultima Azione Completata**: Redazione del piano architetturale `promptfoo-ocr-benchmark-evaluation.md` e censimento delle opzioni d'installazione (Homebrew vs npm vs npx).
-- **Prossimo Passo Operativo**: Presentazione del piano all'utente e richiesta di autorizzazione esplicita per procedere con la Fase 1 (Installazione `brew install promptfoo`).
-- **Blocchi/Decisioni Pendenti**: Scelta definitiva dell'utente tra `brew install promptfoo` (consigliato per le regole homelab) o `npm install -g promptfoo`.
+- **Fase Attiva**: [x] Tutte le fasi completate con successo ✅
+- **Ultima Azione Completata**: Esecuzione benchmark reale tramite `run_promptfoo.sh eval` con esito 100% PASS su tutte le asserzioni in 8s. Generati report JSON e HTML in `reports/report-lxc-ollama-ocr-promptfoo-54gb-20261012-003229.*`.
+- **Prossimo Passo Operativo**: Visualizzazione dashboard interattiva tramite `promptfoo view -p 15500` o test aggiuntivi con sidecar Vulkan remoto.
+- **Blocchi/Decisioni Pendenti**: Nessun blocco. Suite pronta all'uso.

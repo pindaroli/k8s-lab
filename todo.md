@@ -1,12 +1,19 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## 🚀 Pianificato: Installazione e Configurazione Promptfoo per Benchmark OCR, Layout e JSON su Mac [[promptfoo-ocr-benchmark-evaluation]]
-- [ ] Fase 1: Verifica Prerequisiti e Installazione Promptfoo su Mac (`brew install promptfoo` / `npm install -g promptfoo`)
-- [ ] Fase 2: Creazione Scaffolding e Predisposizione Fixture di Test (`benchmarks/promptfoo-ocr/fixtures/`)
-- [ ] Fase 3: Stesura Configurazione Dichiarativa (`promptfooconfig.yaml`) e Template Prompt
-- [ ] Fase 4: Validazione Connettività verso gli Endpoint Remoti (`10.10.20.33:8081` e `10.10.20.33:11434`)
-- [ ] Fase 5: Esecuzione Benchmark di Prova ed Esportazione Report in `reports/`
-- [ ] Fase 6: Avvio Dashboard Web Interattiva (`promptfoo view`) e Allineamento Wiki
+## 🚀 Pianificato: Script Shell Interattivo per Benchmark OCR con Promptfoo [[promptfoo-ocr-benchmark-script]]
+- [ ] Fase 1: Progettazione Architettura e Scaffolding dello Script (`scripts/benchmarks/run_promptfoo_ocr.sh`) con Naming Standard ([[guidellm-report-naming-pattern]])
+- [ ] Fase 2: Discovery Dinamica Modelli OCR ed Endpoint da `rete.json` (`llama-server` Vulkan porta 8081 vs `ollama` porta 11434)
+- [ ] Fase 3: Supporto Modalità Interattiva, CLI Flags, Fixture Picker e Dry-Run
+- [ ] Fase 4: Validazione Test-Driven End-to-End ed Esportazione Report Multi-Formato JSON/HTML in `reports/`
+- [ ] Fase 5: Consolidamento Documentale, Allineamento Wiki e Sincronizzazione Contesto
+
+## 🚀 [x] ✅ COMPLETATO: Installazione e Configurazione Promptfoo per Benchmark OCR, Layout e JSON su Mac [[promptfoo-ocr-benchmark-evaluation]]
+- [x] Fase 1: Verifica Prerequisiti e Installazione Promptfoo su Mac (`brew install promptfoo` v0.123.1)
+- [x] Fase 2: Creazione Scaffolding e Predisposizione Fixture di Test (`benchmarks/promptfoo-ocr/fixtures/`)
+- [x] Fase 3: Stesura Configurazione Dichiarativa (`promptfooconfig.yaml`, `prompts/image_prompt.json`)
+- [x] Fase 4: Validazione Connettività e Configurazione Vision Multimodale Nativa (Ollama Locale / Remoto)
+- [x] Fase 5: Esecuzione Benchmark di Prova ed Esportazione Report in `reports/` (100% PASS in 8s)
+- [x] Fase 6: Avvio Dashboard Web Interattiva (`promptfoo view`) e Allineamento Wiki
 
 ## 🚀 [x] ✅ COMPLETATO: Integrazione Sidecar llama-server Vulkan (Qwen2.5-VL-7B OCR) su LXC Ollama [[lxc-ollama-llama-ocr-qwen25-sidecar]]
 - [x] Fase 1: Verifica Prerequisiti Vulkan e Preparazione Directory su CT 300
