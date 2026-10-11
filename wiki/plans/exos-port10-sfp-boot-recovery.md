@@ -1,14 +1,14 @@
 ---
 title: "Automazione Startup SFP+ Porta 10 su Extreme EXOS"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-10-11
+archived_at: 2026-10-11
 tags:
   - "#network"
   - "#exos"
   - "#ansible"
-  - "#active"
 ---
 
 # Piano: Automazione Startup SFP+ Porta 10 su Extreme EXOS ([[exos-port10-sfp-boot-recovery]])
@@ -65,7 +65,7 @@ Allo startup dello Switch Core Extreme Networks Summit X620-10x (`192.168.2.1`),
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 3 / Validazione Test-Driven Flash e Interprete Python
-- **Ultima Azione Completata**: Playbook Ansible `exos_port10_boot_recovery.yml` eseguito con successo (6/6 task ok, `autoexec.xsf` e `bounce_port10.py` caricati su EXOS).
-- **Prossimo Passo Operativo**: Consolidamento documentale o test controllato a caldo (opzionale).
-- **Blocchi/Decisioni Pendenti**: Nessun blocco; in attesa di eventuale richiesta di test live a caldo da parte dell'utente.
+- **Fase Attiva**: Concluso / Completato
+- **Ultima Azione Completata**: Automazione distribuita e validata su EXOS con successo (6/6 task Ansible ok). Registrato report incidente [[2026-10-11-exos-sfp-port10-link-startup-failure]].
+- **Prossimo Passo Operativo**: Nessuno. Piano completato ed archiviato.
+- **Blocchi/Decisioni Pendenti**: Nessuno.
