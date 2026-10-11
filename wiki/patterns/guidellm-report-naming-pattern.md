@@ -10,6 +10,7 @@ in_use_by:
   - project: "k8s-lab"
     paths:
       - "wiki/patterns/guidellm-report-naming-pattern.md"
+      - "scripts/benchmarks/run_guidellm_benchmark.sh"
 tags:
   - "#pattern"
   - "#guidellm"

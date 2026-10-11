@@ -582,6 +582,17 @@
           "port": 8268,
           "config_file": "/Users/olindo/prj/k8s-lab/tdarr/node/start_node.sh",
           "notes": "Avviato come Elemento del Login con nohup + tail. Log: ~/Library/Logs/tdarr-node.log"
+        },
+        {
+          "id": "ollama",
+          "label": "Ollama LLM Engine (Apple Silicon Metal)",
+          "port": 11434,
+          "protocol": "HTTP",
+          "api_base": "/v1",
+          "memory": "64gb-unified",
+          "hardware": "Apple Silicon M2 Ultra",
+          "status": "active",
+          "notes": "Inferenza locale su macOS via Metal framework."
         }
       ]
     },
@@ -936,9 +947,22 @@
       "role": "Local LLM inference (Ollama / Vulkan RADV / Radeon 890M)",
       "os": "Ubuntu 24.04 LTS",
       "network": "VLAN 20 (vmbr20)",
-      "resources": "12 vCPU pinned 8-19 / 38 GB RAM",
+      "resources": "20 vCPU pinned 0-19 / 54 GB RAM",
       "host_node_sticky": true,
-      "notes": "Ollama 0.34.2 on :11434 with OLLAMA_IGPU_ENABLE=1, HSA_OVERRIDE_GFX_VERSION=11.5.0. Vulkan RADV GFX1150 ~31.7 GiB."
+      "services": [
+        {
+          "id": "ollama",
+          "label": "Ollama LLM Engine (AMD Radeon 890M APU)",
+          "port": 11434,
+          "protocol": "HTTP",
+          "api_base": "/v1",
+          "memory": "54gb",
+          "hardware": "AMD Radeon 890M (Vulkan RADV)",
+          "status": "active",
+          "notes": "Ollama 0.34.2 con 54 GB RAM, 20 vCPU (Zen 5 + Zen 5c), OLLAMA_IGPU_ENABLE=1, OLLAMA_FLASH_ATTENTION=1, OLLAMA_KV_CACHE_TYPE=q8_0 e mount NFS stripe/ollama."
+        }
+      ],
+      "notes": "Ollama 0.34.2 on :11434 with OLLAMA_IGPU_ENABLE=1, HSA_OVERRIDE_GFX_VERSION=11.5.0, Flash Attention, KV Cache Q8, 20 vCPU. Vulkan RADV GFX1150 ~45.1 GiB."
     },
     {
       "id": "lxc-steam",
@@ -1100,6 +1124,19 @@
         "host": "10.10.20.57",
         "note": "Temporaneamente su LoadBalancer IP per bypassare problemi overlay (Nodo k2 offline)"
       },
+      "status": "Active"
+    },
+    {
+      "id": "ollama",
+      "label": "Ollama Distributed LLM Inference",
+      "role": "Local LLM Inference Engine (Homelab)",
+      "service_id": "ollama",
+      "port": 11434,
+      "nodes": [
+        "lxc-ollama",
+        "mac studio"
+      ],
+      "storage": "NFS stripe/ollama (TrueNAS SCALE 10.10.20.50)",
       "status": "Active"
     }
   ],

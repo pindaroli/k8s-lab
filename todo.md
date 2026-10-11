@@ -1,11 +1,32 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## 🚀 Pianificato: Script Shell Interattivo per Benchmark GuideLLM con Naming Pattern Standard [[guidellm-benchmark-script]]
-- [ ] Fase 1: Creazione Struttura Directory e Script Shell (`scripts/benchmarks/run_guidellm_benchmark.sh`)
-- [ ] Fase 2: Validazione della Modalità Dry-Run e Risoluzione Naming ([[guidellm-report-naming-pattern]])
-- [ ] Fase 3: Validazione Connettività e Test Interattivo
-- [ ] Fase 4: Esecuzione di Benchmark Reale di Prova
-- [ ] Fase 5: Consolidamento Documentale e Allineamento Pattern
+## 🚀 Pianificato: Test Locale, Configurazione Docker, Validazione Meross MCP Server & Widget Homepage [[meross-mcp-docker-validation]]
+- [ ] Fase 1: Test Server Meross in Locale (Connessione Cloud MQTT/TLS, tool stdio/HTTP e verifica dispositivi fisici)
+- [ ] Fase 2: Configurazione Docker Server MCP Meross (`docker/mcp/docker-compose.yaml` su porta 8112, secret SOPS `.env`)
+- [ ] Fase 3: Deployment e Test di Validazione End-to-End Container Docker (`healthz`, `/mcp`, switch e telemetria via client MCP)
+- [ ] Fase 4: Integrazione Widget Consumi su Dashboard Homepage (Widget `customapi` telemetria W/V/A su `homepage.yaml` e TrueNAS, rollout K8s)
+
+## 🚀 Pianificato: Ottimizzazione e Dimensionamento al Limite Fisico di LXC Ollama su PVE3 [[lxc-ollama-hardware-limit-optimization]]
+- [ ] Fase 1: Ispezione e Baseline Benchmark GuideLLM su `lxc-ollama`
+- [ ] Fase 2: Configurazione Parametri Kernel AMDGPU su Host PVE3 (`gttsize`)
+- [ ] Fase 3: Riconfigurazione Parametri Dimensionali di Allocazione (RAM/vCPU/Pinning)
+- [ ] Fase 4: Applicazione Ottimizzazioni di Runtime Ollama (Flash Attention, KV Cache, Keep Alive)
+- [ ] Fase 5: Validazione Empirica con GuideLLM Benchmark Post-Tuning
+- [ ] Fase 6: Allineamento Registri di Rete (`rete.json`) e Documentazione Wiki
+
+## 🚀 [x] ✅ COMPLETATO: Registrazione Canonica dei Servizi Ollama in rete.json e Discovery Dinamica nei Benchmark [[ollama-rete-registry-integration]]
+- [x] Fase 1: Aggiornamento Dichiarativo di `rete.json` (`services` in `nodi` e `applicazioni`)
+- [x] Fase 2: Validazione Parsing Dinamico da CLI (`jq` / python)
+- [x] Fase 3: Refactoring di `scripts/benchmarks/run_guidellm_benchmark.sh` (Lettura dinamica da `rete.json`)
+- [x] Fase 4: Validazione Test-Driven End-to-End (Batch e Interattivo)
+- [x] Fase 5: Consolidamento Documentale e Sync Wiki Context
+
+## 🚀 [x] ✅ COMPLETATO: Script Shell Interattivo per Benchmark GuideLLM con Naming Pattern Standard [[guidellm-benchmark-script]]
+- [x] Fase 1: Creazione Struttura Directory e Script Shell (`scripts/benchmarks/run_guidellm_benchmark.sh`)
+- [x] Fase 2: Validazione della Modalità Dry-Run e Risoluzione Naming ([[guidellm-report-naming-pattern]])
+- [x] Fase 3: Validazione Connettività e Test Interattivo
+- [x] Fase 4: Esecuzione di Benchmark Reale di Prova
+- [x] Fase 5: Consolidamento Documentale e Allineamento Pattern
 
 ## 🚀 [x] ✅ COMPLETATO: Automazione Startup SFP+ Porta 10 su Extreme EXOS [[exos-port10-sfp-boot-recovery]]
 - [x] Fase 1: Creazione Script Locali nel Repository (`bounce_port10.py` e `autoexec.xsf`)
