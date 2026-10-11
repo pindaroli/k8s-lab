@@ -231,7 +231,7 @@ asyncio.run(main())
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 5 (GitHub Actions CI/CD & Packaging Container OCI)
-- **Ultima Azione Completata**: Fase 4 completata al 100% con commit `f786614` su GitHub ([pindaroli/meross-mcp](https://github.com/pindaroli/meross-mcp)): test suite con 20/20 test passati (client, REST API, FastMCP tools) e linting ruff pulito.
-- **Prossimo Passo Operativo**: Creazione dei workflow GitHub Actions (`.github/workflows/test.yml` e `publish.yml`) e packaging container OCI (`Dockerfile`, `.dockerignore`, `docker-compose.yaml`).
-- **Blocchi/Decisioni Pendenti**: Attesa approvazione per avviare la Fase 5.
+- **Fase Attiva**: Fase 6 (Integrazione in Antigravity `mcp_config.json` & Validazione Zero-Install)
+- **Ultima Azione Completata**: Fase 5 completata al 100% con commit `3c4274c` su GitHub ([pindaroli/meross-mcp](https://github.com/pindaroli/meross-mcp)): pipeline CI `test.yml` e CD `publish.yml`, `Dockerfile` multi-stage unprivileged (UID 1000) e `docker-compose.yaml` rilasciati.
+- **Prossimo Passo Operativo**: Configurazione centralizzata del server `meross` in `~/.gemini/antigravity/mcp_config.json` con comando `uvx --from git+https://github.com/pindaroli/meross-mcp.git meross-mcp --transport stdio` e test di parsing JSON.
+- **Blocchi/Decisioni Pendenti**: Attesa approvazione per avviare la Fase 6.

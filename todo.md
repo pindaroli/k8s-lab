@@ -11,7 +11,7 @@
 - [x] Fase 2: Implementazione Core Client Asincrono Meross (`config.py`, `client.py`, `devices.py`)
 - [x] Fase 3: Implementazione Server MCP & Tools (`server.py`) con supporto Stdio e SSE
 - [x] Fase 4: Test Suite & Validazione Funzionale (Mocking pytest + smoke test)
-- [ ] Fase 5: Packaging Container OCI & Dockerfile
+- [x] Fase 5: Packaging Container OCI & Dockerfile
 - [ ] Fase 6: Integrazione in Antigravity (`~/.gemini/antigravity/mcp_config.json`) e Deployment
 - [ ] Fase 7: Consolidamento Documentale & Knowledge Base Wiki
 
