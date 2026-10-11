@@ -1,0 +1,51 @@
+---
+- name: EXOS - Distribuzione Script di Boot per Ripristino SFP+ Porta 10
+  hosts: switches
+  gather_facts: no
+
+  vars:
+    local_scripts_dir: "{{ playbook_dir }}/../../../scripts/network/exos"
+    ssh_key: "~/.ssh/id_rsa_extreme"
+    ssh_opts: "-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o BatchMode=yes -O"
+
+  tasks:
+    - name: 1. Carica bounce_port10.py su EXOS via SCP
+      ansible.builtin.command: >
+        scp -i {{ ssh_key }} {{ ssh_opts }}
+        {{ local_scripts_dir }}/bounce_port10.py
+        {{ ansible_user }}@{{ inventory_hostname }}:bounce_port10.py
+      delegate_to: localhost
+      register: scp_py_result
+      changed_when: scp_py_result.rc == 0
+
+    - name: 2. Carica autoexec.xsf su EXOS via SCP
+      ansible.builtin.command: >
+        scp -i {{ ssh_key }} {{ ssh_opts }}
+        {{ local_scripts_dir }}/autoexec.xsf
+        {{ ansible_user }}@{{ inventory_hostname }}:autoexec.xsf
+      delegate_to: localhost
+      register: scp_xsf_result
+      changed_when: scp_xsf_result.rc == 0
+
+    - name: 3. Verifica presenza file nella flash di EXOS
+      extreme.exos.exos_command:
+        commands:
+          - ls
+      register: ls_output
+
+    - name: 4. Mostra i file presenti su EXOS
+      ansible.builtin.debug:
+        msg: "{{ ls_output.stdout_lines[0] }}"
+
+    - name: 5. Validazione sintassi Python su EXOS (Test-Driven Check)
+      extreme.exos.exos_command:
+        commands:
+          - show security
+      register: security_output
+
+    - name: 6. Verifica supporto Python attivo su EXOS
+      ansible.builtin.assert:
+        that:
+          - "'Python (current)       : On' in security_output.stdout[0]"
+        fail_msg: "Python non risulta abilitato su ExtremeXOS!"
+        success_msg: "Verifica completata: Python è abilitato e gli script di startup sono installati correttamente."

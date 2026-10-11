@@ -1,0 +1,4 @@
+# ExtremeXOS Autoexec Script
+# Eseguito automaticamente da EXOS all'avvio dopo il caricamento della configurazione.
+# Ripristina la sincronizzazione SerDes con il modulo SFP+ rame sulla Porta 10.
+run script bounce_port10.py

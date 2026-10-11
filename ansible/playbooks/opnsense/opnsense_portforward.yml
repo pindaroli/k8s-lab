@@ -54,8 +54,9 @@
             protocol: "tcp/udp"
             source_net: "any"
             source_port: ""
-            destination_net: "any"
-            destination_port: "30661"
+            destination:
+              network: "any"
+              port: "30661"
             target: "10.10.20.50"
             local-port: "30661"
             pass: "rule"
@@ -77,7 +78,17 @@
         body_format: json
         body:
           rule:
+            enabled: "1"
+            interface: "wan"
+            ipprotocol: "inet"
+            protocol: "tcp/udp"
+            destination:
+              network: "any"
+              port: "30661"
             target: "10.10.20.50"
+            local-port: "30661"
+            pass: "rule"
+            descr: "qBittorrent P2P Port Forwarding"
       when: qbit_rule | length > 0 and (qbit_rule[0].target | default('')) != '10.10.20.50'
 
     - name: Apply Firewall Configuration

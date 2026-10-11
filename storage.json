@@ -126,6 +126,22 @@
           "*"
         ]
       },
+      "ollama": {
+        "path": "/mnt/stripe/ollama",
+        "description": "NFS Share for Ollama Models in Proxmox PVE3 LXC 300",
+        "protocol": "nfs",
+        "mount_options": [
+          "nfsvers=4.2",
+          "soft",
+          "timeo=50",
+          "retrans=3",
+          "noatime"
+        ],
+        "networks": [
+          "10.10.10.0/24",
+          "10.10.20.0/24"
+        ]
+      },
       "garage_data": {
         "path": "/mnt/oliraid/garage-data",
         "description": "Dataset ZFS per Garage S3",

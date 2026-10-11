@@ -1,5 +1,35 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 In Corso: Automazione Startup SFP+ Porta 10 su Extreme EXOS [[exos-port10-sfp-boot-recovery]]
+- [x] Fase 1: Creazione Script Locali nel Repository (`bounce_port10.py` e `autoexec.xsf`)
+- [x] Fase 2: Implementazione ed Esecuzione Playbook Ansible Permanente (`exos_port10_boot_recovery.yml`)
+- [x] Fase 3: Validazione Test-Driven Flash e Interprete Python su EXOS (Verificato con successo)
+- [ ] Fase 4: Consolidamento Documentale ([[Network_Registry]], sync wiki context)
+
+## 🚀 Pianificato: Creazione Progetto Git e Sviluppo MCP Server per Prese Meross [[meross-mcp-server-project]]
+- [x] Fase 1: Creazione Scaffolding Progetto Git (`/Users/olindo/prj/meross-mcp/`) e Toolchain
+- [x] Fase 2: Implementazione Core Client Asincrono Meross (`config.py`, `client.py`, `devices.py`)
+- [x] Fase 3: Implementazione Server MCP & Tools (`server.py`) con supporto Stdio e SSE
+- [x] Fase 4: Test Suite & Validazione Funzionale (Mocking pytest + smoke test)
+- [ ] Fase 5: Packaging Container OCI & Dockerfile
+- [ ] Fase 6: Integrazione in Antigravity (`~/.gemini/antigravity/mcp_config.json`) e Deployment
+- [ ] Fase 7: Consolidamento Documentale & Knowledge Base Wiki
+
+## 🚀 [x] ✅ COMPLETATO: Storage NFS per Modelli Ollama su TrueNAS Stripe per LXC Ollama su PVE3 [[pve3-lxc-ollama-nfs-stripe-storage]]
+- [x] Fase 1: Creazione Dataset ZFS (`stripe/ollama`) ed Export NFS su TrueNAS SCALE (`10.10.20.50`)
+- [x] Fase 2: Configurazione Storage NFS (`truenas-ollama`) su Proxmox VE PVE3 (`10.10.10.31`)
+- [x] Fase 3: Migrazione Dati Modelli (40 GB) e Configurazione Mount Point in `300.conf`
+- [x] Fase 4: Avvio e Validazione End-to-End (`ollama list`, inferenza e recupero spazio 40 GB)
+- [x] Fase 5: Consolidamento Documentale (`storage.json`, `todo.md`, sync wiki)
+
+## 🚀 [x] ✅ COMPLETATO: Startup Homelab e Sincronizzazione Uncordon Nodi Talos [[talos-startup-sync-uncordon]]
+- [x] Fase 1: Creazione Playbook Ansible di Startup Sincronizzato (`ansible/playbooks/infrastructure/startup_from_truenas_only.yml`)
+- [x] Fase 2: Creazione Script Wrapper di Esecuzione (`scripts/infrastructure/startup_from_truenas_only.sh`)
+- [x] Fase 3: Riallineamento a Caldo `talos-cp-03` (Uncordon con preservazione taint Control Plane Puro)
+- [x] Fase 4: Validazione e Test-Driven Execution (Playbook testato al 100% con esito positivo)
+- [x] Fase 5: Consolidamento Documentale & Knowledge Base ([[Power_Sequence]], `todo.md`, `GEMINI.md`)
+
+
 ## 🚀 In Corso: Script Controllo Aggiornamenti Immagini Docker su TrueNAS [[truenas-docker-image-updates-checker]]
 - [x] Fase 1: Analisi e Definizione Contratti Dati (TrueNAS Docker Stack)
 - [x] Fase 2: Implementazione Motore Core Python (`check_docker_registry_updates.py`)

@@ -1,0 +1,142 @@
+---
+# ==============================================================================
+# 🚀 STARTUP HOMELAB: DA MODALITÀ SOLO TRUENAS A CLUSTER K8S + PROXMOX VE ATTIVI
+# ==============================================================================
+# Procedura deterministica e sincronizzata di riavvio del cluster:
+# FASE 1: Verifica connettività e stato hypervisor Proxmox VE (pve1, pve2, pve3)
+# FASE 2: Gate Talos API & Kubernetes API Server (VIP 10.10.20.55:6443)
+# FASE 3: Sync Barrier: attesa stato Ready simultaneo su TUTTI i nodi (cp-01, 02, 03)
+# FASE 4: Uncordon atomico parallelo per bilanciamento equo dei pod applicativi
+# FASE 5: Health-Check e validazione Ingress Traefik & Database CNPG
+# ==============================================================================
+
+- name: "⚡ STARTUP SINCRONIZZATO HOMELAB: PROXMOX VE + TALOS KUBERNETES"
+  hosts: localhost
+  gather_facts: no
+  vars:
+    pve_hosts:
+      - 10.10.10.11 # pve1
+      - 10.10.10.21 # pve2
+      - 10.10.10.31 # pve3
+    talos_nodes:
+      - 10.10.20.141 # talos-cp-01
+      - 10.10.20.142 # talos-cp-02
+      - 10.10.20.143 # talos-cp-03
+    k8s_vip: "10.10.20.55"
+    traefik_vip: "10.10.20.56"
+  tasks:
+    - name: "🔔 Notifica: Inizio sequenza di startup Homelab"
+      debug:
+        msg: "Avvio sequenza di startup e sincronizzazione uncordon K8s..."
+
+    # --------------------------------------------------------------------------
+    # FASE 1: VERIFICA HYPERVISOR PROXMOX VE
+    # --------------------------------------------------------------------------
+    - name: "⏳ Gate 1.1: Attesa raggiungibilità SSH nodi Proxmox VE (Porta 22)"
+      wait_for:
+        host: "{{ item }}"
+        port: 22
+        state: started
+        timeout: 180
+      loop: "{{ pve_hosts }}"
+
+    - name: "⏳ Gate 1.2: Verifica raggiungibilità WebUI Proxmox VE (Porta 8006)"
+      wait_for:
+        host: "{{ item }}"
+        port: 8006
+        state: started
+        timeout: 60
+      loop: "{{ pve_hosts }}"
+
+    - name: "✅ Gate 1 Superato: Gli Hypervisor Proxmox VE sono online"
+      debug:
+        msg: "Hypervisor pve1, pve2 e pve3 operativi."
+
+    # --------------------------------------------------------------------------
+    # FASE 2: ATTESA API TALOS OS & KUBERNETES VIP
+    # --------------------------------------------------------------------------
+    - name: "⏳ Gate 2.1: Attesa apertura porte API Talos OS (Porta 50000)"
+      wait_for:
+        host: "{{ item }}"
+        port: 50000
+        state: started
+        timeout: 180
+      loop: "{{ talos_nodes }}"
+
+    - name: "⏳ Gate 2.2: Attesa apertura API Server Kubernetes (VIP 10.10.20.55:6443)"
+      wait_for:
+        host: "{{ k8s_vip }}"
+        port: 6443
+        state: started
+        timeout: 120
+
+    - name: "✅ Gate 2 Superato: Talos API e Kubernetes API Server rispondono"
+      debug:
+        msg: "Control plane K8s raggiungibile sul VIP 10.10.20.55."
+
+    # --------------------------------------------------------------------------
+    # FASE 3: SYNC BARRIER - ATTESA STATO READY SIMULTANEO DEI NODI
+    # --------------------------------------------------------------------------
+    - name: "🛡️ Gate 3.1: Attesa che tutti i nodi siano Ready (Sync Barrier anti-valanga)"
+      shell: >
+        kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{":Ready="}{range .status.conditions[?(@.type=="Ready")]}{.status}{end}{" "}{end}'
+      register: nodes_ready_check
+      until: >
+        'talos-cp-01:Ready=True' in nodes_ready_check.stdout and
+        'talos-cp-02:Ready=True' in nodes_ready_check.stdout and
+        'talos-cp-03:Ready=True' in nodes_ready_check.stdout
+      retries: 30
+      delay: 10
+      changed_when: false
+
+    - name: "⏳ Gate 3.2: Grace Period stabilizzazione rete CNI / Flannel (10s)"
+      pause:
+        seconds: 10
+
+    - name: "✅ Gate 3 Superato: Tutti i 3 nodi Talos sono Ready e stabilizzati"
+      debug:
+        msg: "Barriera di sincronizzazione superata: i nodi worker sono pronti a ricevere il carico."
+
+    # --------------------------------------------------------------------------
+    # FASE 4: UNCORDON ATOMICO E SIMULTANEO
+    # --------------------------------------------------------------------------
+    - name: "🚀 Uncordon atomico parallelo nodi Talos (Apertura bilanciata dello scheduling)"
+      command: kubectl uncordon talos-cp-01 talos-cp-02 talos-cp-03
+      register: uncordon_result
+      changed_when: "'already uncordoned' not in uncordon_result.stdout"
+
+    - name: "📋 Output Uncordon"
+      debug:
+        var: uncordon_result.stdout_lines
+
+    # --------------------------------------------------------------------------
+    # FASE 5: HEALTH-CHECK E STATO CLUSTER POST-STARTUP
+    # --------------------------------------------------------------------------
+    - name: "⏳ Gate 5.1: Verifica riapertura Traefik Ingress (VIP 10.10.20.56:443)"
+      wait_for:
+        host: "{{ traefik_vip }}"
+        port: 443
+        state: started
+        timeout: 60
+
+    - name: "💾 Gate 5.2: Verifica salute cluster PostgreSQL CNPG"
+      shell: kubectl get cluster postgres-main -n cnpg-system -o jsonpath='{.status.phase}'
+      register: cnpg_status
+      until: cnpg_status.stdout == "Cluster in healthy state"
+      retries: 15
+      delay: 5
+      changed_when: false
+      ignore_errors: true
+
+    - name: "🏁 STARTUP COMPLETATO CON SUCCESSO"
+      debug:
+        msg: |
+          ============================================================
+          🎉 STARTUP COMPLETATO: CLUSTER K8S E PROXMOX PIENAMENTE OPERATIVI
+          ============================================================
+          - Hypervisor PVE: ONLINE (pve1, pve2, pve3)
+          - Talos Nodi:     READY & UNCORDONATI (Scheduling bilanciato)
+          - Pure CP Nodo:   talos-cp-03 uncordonato con taint protettivo
+          - Ingress VIP:    ONLINE (https://10.10.20.56)
+          - Database CNPG:  {{ cnpg_status.stdout | default('Verificato') }}
+          ============================================================

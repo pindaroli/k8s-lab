@@ -51,6 +51,7 @@ Per garantire la resilienza e facilitare il disaster recovery, le configurazioni
 *   **Accesso CLI / Automazione**: SSH porta `22` con autenticazione a chiavi (`~/.ssh/id_rsa_extreme`).
 *   **Gestione Ansible**: Moduli `extreme.exos` (vedere [[Ansible_Extreme_EXOS]]).
 *   **Backup Configurazione EXOS**: `save configuration primary` o esportazione automatizzata via Ansible.
+*   **Automazione Boot Porta 10 (SFP+ Recovery)**: Configurato script `/usr/local/cfg/autoexec.xsf` che richiama `/usr/local/cfg/bounce_port10.py` per eseguire un bounce SerDes dopo 15s al riavvio, risolvendo il boot delay del transceiver 10GBASE-T RJ45 verso GoodTop (vedere [[exos-port10-sfp-boot-recovery]]). Distribuito da `ansible/playbooks/infrastructure/exos_port10_boot_recovery.yml`.
 
 ### B. Switch Managed GoodTop (GT-ST024M) e Horaco (ZX-310S-8T2XS)
 *   **IP Gestione**: `192.168.2.2` (GoodTop Letto) e `192.168.2.3` (Horaco Server - Sala Server) (VLAN 1).
