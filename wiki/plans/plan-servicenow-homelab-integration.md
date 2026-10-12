@@ -1,11 +1,13 @@
 ---
 title: "Piano: Integrazione Operativa ServiceNow & CMDB Homelab"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-07-27
+archived_at: 2026-10-12
 tags:
   - "#plan"
+  - "#obsolete"
   - "#servicenow"
   - "#cmdb"
   - "#itom"
@@ -16,6 +18,9 @@ tags:
 ---
 
 # Piano: Integrazione Operativa ServiceNow & CMDB Homelab
+
+> [!NOTE]
+> **PIANO OBSOLETO / ARCHIVIATO**: Questo piano è stato formalmente dichiarato obsoleto e archiviato il 2026-10-12. Non è più in vigore né certificato per l'esecuzione.
 
 **Target**: Homelab Infrastructure & ServiceNow PDI · **Data**: 2026-07-27
 **Autore**: Antigravity AI Engineering

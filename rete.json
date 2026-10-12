@@ -52,14 +52,28 @@
         "protocol": "LACP",
         "hash": "L3_L4",
         "interface": "bond0",
-        "members": ["enp1s0f0np0", "enp1s0f1np1"],
+        "members": [
+          "enp1s0f0np0",
+          "enp1s0f1np1"
+        ],
         "switch": "extreme",
         "master_port": "4",
         "member_port": "8",
         "vlan": "20",
         "tagged_vlan": "10"
       },
-      "notes": "LACP 802.3ad trunk. bond0 untagged sulla VLAN 20, un solo indirizzo 10.10.20.50/24, gateway 10.10.20.1. La VLAN 10 è taggata sul LAG solo per la VM PBS (vlan10 senza indirizzo sull'host)."
+      "notes": "LACP 802.3ad trunk. bond0 untagged sulla VLAN 20, un solo indirizzo 10.10.20.50/24, gateway 10.10.20.1. La VLAN 10 è taggata sul LAG solo per la VM PBS (vlan10 senza indirizzo sull'host).",
+      "wol": {
+        "supported": true,
+        "enabled": true,
+        "primary_interface": "enp8s0",
+        "target_mac": "3c:7c:3f:d9:fd:73",
+        "broadcast_address": "192.168.100.255",
+        "vlan": 99,
+        "port": 9,
+        "controller": "Realtek RTL8125 2.5G onboard",
+        "switch_port": "switch-25g-server Port 5"
+      }
     },
     {
       "id": "switch10g",
@@ -653,7 +667,18 @@
           "serial": "2422491F3C19",
           "type": "disk"
         }
-      ]
+      ],
+      "wol": {
+        "supported": true,
+        "enabled": true,
+        "primary_interface": "nic0",
+        "target_mac": "58:47:ca:7b:d9:3d",
+        "broadcast_address": "192.168.100.255",
+        "vlan": 99,
+        "port": 9,
+        "controller": "Realtek RTL8125 2.5G onboard",
+        "switch_port": "switch-25g-server Port 1"
+      }
     },
     {
       "id": "pve2",
@@ -720,7 +745,18 @@
           "serial": "ASBK53470103815",
           "type": "disk"
         }
-      ]
+      ],
+      "wol": {
+        "supported": true,
+        "enabled": true,
+        "primary_interface": "nic0",
+        "target_mac": "58:47:ca:7c:55:32",
+        "broadcast_address": "192.168.100.255",
+        "vlan": 99,
+        "port": 9,
+        "controller": "Realtek RTL8125 2.5G onboard",
+        "switch_port": "switch-25g-server Port 2"
+      }
     },
     {
       "id": "pve3",
@@ -783,7 +819,18 @@
           "serial": "25074E23D6AE",
           "type": "disk"
         }
-      ]
+      ],
+      "wol": {
+        "supported": true,
+        "enabled": true,
+        "primary_interface": "nic0",
+        "target_mac": "c8:ff:bf:05:50:24",
+        "broadcast_address": "192.168.100.255",
+        "vlan": 99,
+        "port": 9,
+        "controller": "Intel I226-V 2.5G onboard",
+        "switch_port": "switch-25g-server Port 3"
+      }
     },
     {
       "id": "ap11000",
@@ -1041,7 +1088,6 @@
         "kef-mcp-internal",
         "nowaikit-mcp-internal"
       ],
-
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
     },
     {

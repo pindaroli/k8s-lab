@@ -26,8 +26,19 @@ Questa procedura garantisce la coerenza dei dati durante lo spegnimento o l'acce
 ## 2. Procedura di Startup (Accensione)
 L'ordine di avvio delle VM su Proxmox è automatizzato con hook e boot-order, seguito dall'orchestrazione con barriera di sincronizzazione Talos.
 
-1.  **Accensione Fisica**: Attiva la PDU/UPS o accendi gli host fisici Proxmox (`pve1`, `pve2`, `pve3`).
-2.  **TrueNAS Bare Metal**: Già operativo 24/7 (o si avvia per primo ed esporta i dataset NFS).
+1.  **Accensione Remota via Wake-on-LAN**:
+    Lancia l'avvio centralizzato via rete tramite [`wake_node.py`](file:///Users/olindo/prj/k8s-lab/scripts/network/wake_node.py) (sulla VLAN 99 OOB):
+    ```bash
+    # Accensione globale automatica
+    ./scripts/network/wake_node.py all
+
+    # Oppure mirata in sequenza storage -> compute:
+    ./scripts/network/wake_node.py truenas
+    ./scripts/network/wake_node.py pve1
+    ./scripts/network/wake_node.py pve2
+    ./scripts/network/wake_node.py pve3
+    ```
+2.  **TrueNAS Bare Metal**: Esporta i dataset ZFS/NFS necessari a Proxmox e K8s.
 3.  **Wait-for-TrueNAS**: I nodi Proxmox attendono che TrueNAS sia raggiungibile prima di avviare le VM Talos K8s.
 4.  **Startup Sincronizzato & Uncordon (Sync Barrier)**:
     Per evitare il disequilibrio di carico (effetto *thundering herd*) tra i nodi worker `talos-cp-01` e `talos-cp-02`, lancia lo script:

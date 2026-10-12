@@ -1,17 +1,22 @@
 ---
 title: "FreeRADIUS solo per il Wi-Fi AP11000"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-09-24
+archived_at: 2026-10-12
 tags:
   - "#plan"
+  - "#obsolete"
   - "#network"
   - "#security"
   - "#opnsense"
 ---
 
 # FreeRADIUS solo per il Wi-Fi AP11000
+
+> [!NOTE]
+> **PIANO OBSOLETO / ARCHIVIATO**: Questo piano è stato formalmente dichiarato obsoleto e archiviato il 2026-10-12. Non è più in vigore né certificato per l'esecuzione.
 
 FreeRADIUS (`os-freeradius` 1.10.2) è sul firewall e accetta autenticazioni solo dal Cudy AP11000 (`10.10.20.103`). Il cavo sulla VLAN 20 non usa 802.1X.
 

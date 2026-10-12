@@ -1,11 +1,26 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## 🚀 Pianificato: Script Shell Interattivo per Benchmark OCR con Promptfoo [[promptfoo-ocr-benchmark-script]]
-- [ ] Fase 1: Progettazione Architettura e Scaffolding dello Script (`scripts/benchmarks/run_promptfoo_ocr.sh`) con Naming Standard ([[guidellm-report-naming-pattern]])
-- [ ] Fase 2: Discovery Dinamica Modelli OCR ed Endpoint da `rete.json` (`llama-server` Vulkan porta 8081 vs `ollama` porta 11434)
-- [ ] Fase 3: Supporto Modalità Interattiva, CLI Flags, Fixture Picker e Dry-Run
-- [ ] Fase 4: Validazione Test-Driven End-to-End ed Esportazione Report Multi-Formato JSON/HTML in `reports/`
-- [ ] Fase 5: Consolidamento Documentale, Allineamento Wiki e Sincronizzazione Contesto
+## 🚀 In Corso: Risoluzione Timeout Startup Talos & Riallineamento Rete TrueNAS VLAN 20 [[talos-startup-and-truenas-vlan20-realign]]
+- [x] Fase 1: Bonifica Hookscript Proxmox VE (`wait-for-truenas.sh` aggiornato con `10.10.20.50` su `pve1`, `pve2`, `pve3`)
+- [x] Fase 2: Esecuzione Playbook Startup (`startup_from_truenas_only.yml` superato con uncordon nodi Talos)
+- [x] Fase 3: Riallineamento CNPG S3 Endpoint (`postgres/cluster.yaml` applicato, WAL archiver verso TrueNAS :3900)
+- [ ] Fase 4: Diagnostica e Ripristino Connettività VLAN 20 / K8s VIP `10.10.20.55:6443` (Rimandata)
+- [ ] Fase 5: Consolidamento Documentale, Verifica Salute Finale CNPG e Chiusura Piano
+
+
+## 🚀 [x] ✅ COMPLETATO: Script Shell Interattivo per Benchmark OCR con Promptfoo [[promptfoo-ocr-benchmark-script]]
+- [x] Fase 1: Progettazione Architettura e Scaffolding dello Script (`scripts/benchmarks/run_promptfoo_ocr.sh`) con Naming Standard ([[guidellm-report-naming-pattern]])
+- [x] Fase 2: Discovery Dinamica Modelli OCR ed Endpoint da `rete.json` (`llama-server` Vulkan porta 8081 vs `ollama` porta 11434)
+- [x] Fase 3: Supporto Modalità Interattiva, CLI Flags, Fixture Picker e Dry-Run
+- [x] Fase 4: Validazione Test-Driven End-to-End ed Esportazione Report Multi-Formato JSON/HTML in `reports/` (100% PASS in 6s)
+- [x] Fase 5: Consolidamento Documentale, Allineamento Wiki e Sincronizzazione Contesto
+
+## 🚀 [x] ✅ COMPLETATO: Automazione e Validazione Wake-on-LAN (WoL) Homelab [[wake-on-lan-homelab-automation]]
+- [x] Fase 1: Sviluppo utilità centrale zero-dipendenze [`scripts/network/wake_node.py`](file:///Users/olindo/prj/k8s-lab/scripts/network/wake_node.py) con supporto multi-subnet/VLAN 99
+- [x] Fase 2: Attivazione e instradamento interfaccia L2 diretta `vlan0` (VLAN 99 OOB `192.168.100.99`) su Mac Studio (0.5 ms RTT)
+- [x] Fase 3: Censimento dichiarativo del blocco `wol` in `rete.json` per tutti i nodi fisici
+- [x] Fase 4: Validazione live spegnimento e accensione da freddo (S5) al 100% su `pve1`, `pve2`, `pve3` e `truenas`
+- [x] Fase 5: Allineamento documentale nel piano [[wake-on-lan-homelab-automation]] e nel workflow [[Power_Sequence]]
 
 ## 🚀 [x] ✅ COMPLETATO: Installazione e Configurazione Promptfoo per Benchmark OCR, Layout e JSON su Mac [[promptfoo-ocr-benchmark-evaluation]]
 - [x] Fase 1: Verifica Prerequisiti e Installazione Promptfoo su Mac (`brew install promptfoo` v0.123.1)
@@ -22,6 +37,19 @@
 - [x] Fase 4: Configurazione Servizio systemd (`llama-ocr.service` su porta 8081 con `/etc/default/llama-ocr`)
 - [x] Fase 5: Validazione End-to-End, Test Vision OpenAI API e Coesistenza con Ollama
 - [x] Fase 6: Allineamento Registri (`rete.json`) e Rigenerazione Wiki Context
+
+## 🚀 Pianificato: Automazione Wake-on-LAN (WoL) e Accensione Remota dell'Homelab [[wake-on-lan-homelab-automation]]
+- [ ] Fase 1: Scaffolding dello Script Canonico `scripts/network/wake_node.py` (Broadcast Magic Packet UDP)
+- [ ] Fase 2: Censimento Dichiarativo delle Interfacce e MAC WoL in `rete.json`
+- [ ] Fase 3: Aggiornamento Template Documentali (`istruzioni/interfaces_pve*.txt`)
+- [ ] Fase 4: Integrazione nel Workflow di Startup del Rack nel Wiki ([[Power_Sequence]])
+- [ ] Fase 5: Validazione Test-Driven & Prerequisiti BIOS/UEFI
+
+## 🚀 Pianificato: Creazione Record DNS per Indirizzi OOB (VLAN 99)
+- [ ] Fase 1: Censimento e standardizzazione degli FQDN OOB in `rete.json` (`opnsense-oob`, `pve1-oob`, `pve2-oob`, `pve3-oob`, `mac-oob` su subnet `192.168.100.0/24`)
+- [ ] Fase 2: Estensione del generatore DNS `ansible/playbooks/scripts/opnsense/validate_rete_dns.py` per il parsing e l'estrazione automatica delle porte di servizio OOB
+- [ ] Fase 3: Esecuzione playbook Ansible `ansible/playbooks/opnsense/opnsense_sync_dns.yml` per l'applicazione degli Host Override su Unbound DNS di OPNsense
+- [ ] Fase 4: Validazione test-driven della risoluzione DNS (`dig`/`ping` verso `*-oob.pindaroli.org`) e allineamento `Network_Registry.md`
 
 ## 🚀 Pianificato: Test Locale, Configurazione Docker, Validazione Meross MCP Server & Widget Homepage [[meross-mcp-docker-validation]]
 - [ ] Fase 1: Test Server Meross in Locale (Connessione Cloud MQTT/TLS, tool stdio/HTTP e verifica dispositivi fisici)
@@ -262,19 +290,6 @@
 - [ ] Fase 3: Logica di valutazione soglie critiche (settori riallocati, pending, temperatura, usura NVMe) e generazione report unificato.
 - [ ] Fase 4: Integrazione opzionale per inoltro telemetrie verso Scrutiny (InfluxDB) o esecuzione via Semaphore (`ansible-engine`).
 
-## 🚀 [ ] Blocco sul firewall dei client Windows riconosciuti in DHCP [[opnsense-windows-dhcp-prefix-block]]
-- [x] Fase 0: Su OPNsense 26.1.10 la client class della GUI matcha un’opzione da inviare, non il pool. Stop: niente regola sul pool generale.
-- [ ] Fase 1: Pool `10.10.20.224-239` solo per vendor class `MSFT 5.0`, pool generale `10.10.20.201-223`.
-- [ ] Fase 2: Alias `Windows_DHCP` e regola Block su TRANSIT, creata disabilitata.
-- [ ] Fase 3: Accensione su conferma e prove (Windows bloccato, client non Windows e host statici ancora aperti).
-
-## 🗑️ [x] OBSOLETO: Captive Portal con Rilevamento Windows (Livello 1), Anti-Sharing e Allarme Telegram [[opnsense-captive-portal-windows-detection]]
-- [x] Piano abbandonato il 2026-09-23. Non eseguito. Percorso attuale: [[opnsense-freeradius-ap11000]].
-
-## 🚀 [ ] FreeRADIUS solo per il Wi-Fi AP11000 [[opnsense-freeradius-ap11000]]
-- [x] Firmware AP 2.5.13, plugin os-freeradius, utenti olindo/patrizia, firewall solo da 10.10.20.103, blocco seconda sessione di patrizia con Telegram.
-- [ ] Sulla GUI dell'AP: Eternal in WPA2-Enterprise verso 192.168.2.254 e SSID Eternal-Device in WPA3-SAE senza RADIUS.
-
 ## 🚀 [x] ✅ COMPLETATO: Estrazione e Normalizzazione Documentazione OPNsense 26.1 per RAGFlow [[opnsense-documentation-extraction-and-ragflow]]
 - [x] Fase 1: Sviluppo script `scripts/ragflow/extract_opnsense_docs.py` con motore di risoluzione link semantici (`:doc:`, `:ref:`) e convertitore reST -> Markdown.
 - [x] Fase 2: Esecuzione test-driven su campioni complessi (`firewall.rst`, `aliases.rst`, `how-tos/wireguard-client.rst`).
@@ -379,47 +394,6 @@
 - [x] ~~Fase 6: MCP Server SQLite~~ (Annullato: nessun target DB specifico attivo).
 - [x] ~~Fase 7: MCP Server PostgreSQL~~ (Annullato: demandato a onboard K8s dedicato).
 - [x] Fase 8: MCP Server GitHub (Completato: attivo su K8s via ToolHive).
-
-## 🚀 [ ] ServiceNow & CMDB Homelab Integration Plan [[plan-servicenow-homelab-integration]]
-### [ ] FASE 1: Foundation & Struttura Dati Fondazionale (Piattaforma)
-- [ ] Creazione Company `HomeLab Corp`, Dipartimenti (`IT Ops`, `NetOps`, `DevOps`, `Security`) e Location `Home Server Room`.
-- [ ] Creazione utenti, gruppi e assegnazione ruoli RBAC (`admin`, `itil`, `asset_manager`, `discovery_admin`, `developer`).
-- [ ] Installazione plugin `ITOM Visibility` (`sn_itom_pattern`), `ITSM Guided Setup` e `Hardware Asset Management Pro`.
-- [ ] Popolamento tabelle CSDM 4.0 (`Business Process`, `Contract`, `Product Model`).
-- [ ] Configurazione categorie Incident, Change Models (`Standard`, `Normal`, `Emergency`) e Service Catalog Items.
-
-### [ ] FASE 2: MID Server, Connettività & ITOM Discovery
-- [ ] Provisioning VM MID Server su Proxmox (Linux Debian/Ubuntu, VLAN 10 Server, IP `10.10.10.x`, outbound 443 OPNsense).
-- [ ] Download agent, configurazione `config.xml`, avvio daemon e validazione MID Server su PDI.
-- [ ] Configurare Volume Persistente (PVC 5Gi `csi-nfs-fast-gen`) montato su `/opt/snc_mid_server/agent/work` in `sn-mid-server.yaml` per evitare il riscaricamento dei pattern NDL e preservare i certificati.
-- [ ] Configurazione credenziali SSH, SNMP v3 e TrueNAS API.
-- [ ] Esecuzione Subnet Discovery e Discovery Schedules per VLAN 10, VLAN 20, nodi Talos K8s, OPNsense e Switch.
-
-### [ ] FASE 3: CMDB Design, CSDM Implementation & Governance
-- [ ] Mapping sistematico delle classi CMDB per tutte le risorse Homelab (PVE, TrueNAS, OPNsense, Switch, VM, Talos K8s, CNPG, App).
-- [ ] Population manuale / Import Set via API per risorse non raggiungibili via agentless (Proxmox API, `talosctl`, LXC).
-- [ ] Modellazione relazioni CI (`cmdb_rel_ci`) e definizione Technical/Application Services CSDM (`Kubernetes Cluster GEMINI`, `Media Stack`, `Automation Platform`).
-- [ ] Service Mapping Top-Down per Kubernetes Ingress (Traefik VIP `10.10.20.56`).
-- [ ] Configurazione CMDB Health Dashboard, Data Manager policy di attestazione e purge.
-
-### [ ] FASE 4: ITSM Operativo, HAM & Event Management
-- [ ] Gestione ciclo completo Incident/Problem/Change reali per l'Homelab e definizione SLA Agreements.
-- [ ] Configurazione Hardware Asset Management Workspace, Asset Records e lifecycle automation.
-- [ ] Modellazione rete OOB (VLAN 99) come Management Network separata nel CMDB.
-- [ ] Event Management AIOps: integrazione REST API da Prometheus/Alertmanager verso MID Server.
-
-### [ ] FASE 5: Integrazioni Bidirezionali, IntegrationHub & Workflow Automation
-- [ ] Script Python/Ansible per interazione bidirezionale con Table API.
-- [ ] IntegrationHub Spokes per Proxmox VE REST API e SSH Step proxy via MID Server (`pvesh get /nodes`).
-- [ ] Flow Designer Workflows: verifica automatica pool ZFS TrueNAS per incidenti Storage, orchestrazione playbook Ansible.
-- [ ] Inbound Webhooks da n8n/Alertmanager a ServiceNow per creazione automatica incident.
-- [ ] Playbook ITSM per *"Nodo K8s Irraggiungibile"* (Check -> Cordon -> Drain -> Reboot -> Wait -> Uncordon -> Verify).
-
-### [ ] FASE 6: Sviluppo Custom App Engine "HomeLab CMDB Enhancer"
-- [ ] Scrittura Business Rules, Script Includes, Client Scripts e UI Policies.
-- [ ] Sviluppo Scoped Application in App Engine Studio: tabella custom `Proxmox Cluster Node`, Service Portal Widget, Scheduled Job.
-- [ ] Scripted REST API endpoint `/api/homelab/infra/summary` per n8n.
-- [ ] Test suite Automated Test Framework (ATF).
 
 ## [x] ✅ FATTO: Implementazione CoreDNS Hard Anti-Affinity [[coredns-hard-anti-affinity]]
 - [x] Analisi architetturale completata (Scelta strategia Disable & Replace).
@@ -663,13 +637,6 @@
 ---
 
 ## Hardening Resilienza Bare-Metal (DeepSearch Insights)
-
-### [ ] Tuning Timeout Talos (RTO < 30s) [IN ATTESA DI UPGRADE A TALOS 1.14]
-- [ ] Modificare `talos-config/controlplane*.yaml` per ridurre i timeout di Kubernetes:
-  - `node-monitor-grace-period: 16s`
-  - `pod-eviction-timeout: 30s`
-- [ ] Aumentare frequenza aggiornamento Kubelet (`node-status-update-frequency: 4s`).
-- [ ] Applicare con `talosctl apply-config`.
 
 ### [ ] Networking L2 & Kube-VIP (Anti-Phantom VIP)
 - [ ] Controllare e disabilitare `macfilter=0` sulle interfacce di rete (net0) delle VM Talos su Proxmox (PVE1, PVE3).
@@ -919,8 +886,6 @@ Implementare un sistema di aggregazione log centralizzato nel cluster per:
 - **Configurazione**: Aggiunta log source in Grafana.
 
 ### [ ] Multimedia Clients & Integration
-- [ ] **Feishin Installation**: Configurare Feishin come player musicale desktop/mobile puntando alla libreria Navidrome/Lidarr.
-    > **Ref**: [Gemini Share - Feishin Setup](https://gemini.google.com/share/8b7a061246b0)
 - [ ] **Migrazione Jellyfin (jellyfin-srv) su Storage NFS (Stripe NVMe)** [[jellyfin-srv-storage-migration]]
     - [ ] Creare le directory `servarr-jellyfin-srv-config` e `servarr-jellyfin-srv-metadata` all'interno della share `/Volumes/k8s-arr-1/` (TrueNAS NVMe).
     - [ ] Impostare la corretta proprietà e permessi per UID `1000` (o l'utente jellyfin nel container).
@@ -946,9 +911,6 @@ Implementare un sistema di aggregazione log centralizzato nel cluster per:
 - [ ] **Configurazione Automatica TrueNAS**: Progettare ed implementare un meccanismo (es. playbook Ansible o script basato sulle API di TrueNAS SCALE) per allineare ed applicare dichiarativamente i dataset ZFS e le esportazioni NFS/SMB definiti nel file `storage.json` direttamente su TrueNAS.
 - [ ] **Re-ingegnerizzazione Sincronizzazione via Ansible**: Re-ingegnerizzare le procedure di sincronizzazione dello storage (attualmente basate su `sync_storage.py` ed expect script) all'interno di playbook Ansible per garantire idempotenza ed una gestione unificata e dichiarativa degli share NFS e dei mountpoint Proxmox/K8s.
 
-## 🔧 Manutenzione Hardware & Hypervisor
-- [ ] **PVE3: Migrazione da PCIe Passthrough a USB Device Passthrough**: Sostituire il passthrough intero del controller USB (PCI Device) con il passthrough di singole porte/dispositivi (USB Device) per le VM su PVE3. Questo permette a Proxmox di mantenere il controllo del controller madre, mantenendo attiva la tastiera locale ed evitando freeze in console locale durante l'autostart delle macchine virtuali.
-
-### [ ] Integrazione Gestione Scaling App su Homepage Local via OliveTin (Iframe) [[homepage-app-scaling-buttons]]
+## 🚀 [ ] Integrazione Gestione Scaling App su Homepage Local via OliveTin (Iframe) [[homepage-app-scaling-buttons]]
 - [ ] Fase 1: Deployment OliveTin e configurazione Webhook n8n.
 - [ ] Fase 2: Aggiunta dell'Iframe OliveTin nella dashboard di Homepage.

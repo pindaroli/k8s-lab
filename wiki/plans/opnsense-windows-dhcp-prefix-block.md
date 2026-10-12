@@ -1,17 +1,22 @@
 ---
 title: "Piano: Blocco sul firewall dei client Windows riconosciuti in DHCP"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-09-23
+archived_at: 2026-10-12
 tags:
   - "#plan"
+  - "#obsolete"
   - "#network"
   - "#security"
   - "#opnsense"
 ---
 
 # Piano: Blocco sul firewall dei client Windows riconosciuti in DHCP
+
+> [!NOTE]
+> **PIANO OBSOLETO / ARCHIVIATO**: Questo piano è stato formalmente dichiarato obsoleto e archiviato il 2026-10-12. Non è più in vigore né certificato per l'esecuzione.
 
 Questo piano blocca sul firewall OPNsense **tutti i pacchetti** il cui IP sorgente appartiene a un client identificato come Windows al momento del DHCP. Il piano [[opnsense-captive-portal-windows-detection]] resta obsoleto e non viene riaperto.
 

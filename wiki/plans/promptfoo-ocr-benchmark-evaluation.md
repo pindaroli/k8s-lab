@@ -181,7 +181,14 @@ La configurazione implementa tre tipologie essenziali di validazione:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: [x] Tutte le fasi completate con successo ✅
-- **Ultima Azione Completata**: Esecuzione benchmark reale tramite `run_promptfoo.sh eval` con esito 100% PASS su tutte le asserzioni in 8s. Generati report JSON e HTML in `reports/report-lxc-ollama-ocr-promptfoo-54gb-20261012-003229.*`.
-- **Prossimo Passo Operativo**: Visualizzazione dashboard interattiva tramite `promptfoo view -p 15500` o test aggiuntivi con sidecar Vulkan remoto.
-- **Blocchi/Decisioni Pendenti**: Nessun blocco. Suite pronta all'uso.
+- **Fase Attiva**: Sessione interrotta su richiesta dell'utente (Stato congelato per ripresa sessione)
+- **Ultima Azione Completata**: 
+  - Installazione nativa Promptfoo v0.123.1 via Homebrew e creazione scaffolding `benchmarks/promptfoo-ocr/`.
+  - Risoluzione bottleneck di tokenizzazione: conversione template in OpenAI Vision chat nativo con Data URI base64 inline (`PROMPTFOO_INLINE_MEDIA=true`), tempi di inferenza scesi da 5 minuti a 8-12 secondi.
+  - Test-driven validation completata con successo al 100% PASS su fattura e scontrino commerciale (riconosciute tutte le voci: `CAFFE ESPRESSO`, `BRIOCHE ARTIGIANALI`, `SPREMUTA D ARANCIA`, totali e tabelle Markdown).
+  - Processi di background fermati e memoria VRAM di Ollama liberata al 100% (`ollama ps` vuoto).
+- **Prossimo Passo Operativo**:
+  - Ripresa sessione domani tramite `/resume [[promptfoo-ocr-benchmark-evaluation]]`.
+  - Riavvio facoltativo della Web Dashboard: `./benchmarks/promptfoo-ocr/run_promptfoo.sh view 15500`.
+  - Connessione e benchmark comparativo con l'endpoint remoto `llama-server` Vulkan su `lxc-ollama` (`http://10.10.20.33:8081/v1`).
+- **Blocchi/Decisioni Pendenti**: Nessun blocco. Tutti gli artefatti, script e report persistiti nel repository.

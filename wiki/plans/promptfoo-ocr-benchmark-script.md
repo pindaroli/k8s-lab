@@ -1,7 +1,7 @@
 ---
 title: "Piano: Script Shell Interattivo per Benchmark OCR con Promptfoo"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-12
 tags:
@@ -105,7 +105,7 @@ Esempio generato:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: In attesa di avvio / Fase 1
-- **Ultima Azione Completata**: Redazione e materializzazione del piano `promptfoo-ocr-benchmark-script.md` e registrazione nel `todo.md`.
-- **Prossimo Passo Operativo**: Avvio Fase 1 con creazione dello script `scripts/benchmarks/run_promptfoo_ocr.sh`.
-- **Blocchi/Decisioni Pendenti**: Nessun blocco. Piano approvato e pronto per l'implementazione.
+- **Fase Attiva**: Completato (Fasi 1-5 completate con successo)
+- **Ultima Azione Completata**: Validazione test-driven end-to-end con esito 2/2 PASS (100%) in 6s su task Markdown e JSON con `qwen2.5vl:7b-q4_K_M` ed esportazione report conformi a `[[guidellm-report-naming-pattern]]`.
+- **Prossimo Passo Operativo**: Nessuno (piano completato con successo).
+- **Blocchi/Decisioni Pendenti**: Nessuno.
