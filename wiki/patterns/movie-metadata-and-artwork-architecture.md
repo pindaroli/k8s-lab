@@ -111,7 +111,7 @@ Per garantire che Jellyfin aggreghi tutte le versioni dello stesso film in una *
    ```
 2. **Sincronizzazione Sottotitoli**: Tutti i file `.srt`/`.sub` esterni devono condividere il medesimo stem del video di appartenenza (es. `... - [576p XviD].it.srt`).
 3. **Divieto Assoluto di Artwork File-Specific**: È vietata la persistenza di file grafici con prefisso video (`*-poster.jpg`, `*-backdrop.jpg`, `*-landscape.jpg`, `*-logo.png`). Jellyfin per i film multi-versione condivide la locandina master di cartella.
-4. **Sanificazione Automatica**: Lo script [`sanitize_movie_folder.sh`](file:///Users/olindo/prj/k8s-lab/scripts/servarr/sanitize_movie_folder.sh) e l'hook post-processo in [`normalize-video.sh`](file:///Users/olindo/prj/pindaroli-arr-helm/custom-docker-images/custom-normalizer/normalize-video.sh) analizzano i file preesistenti con `ffprobe` e sanificano video, sottotitoli e artwork in tempo reale.
+4. **Sanificazione Automatica**: Lo script [`sanitize_movie_folder.sh`](file:///Users/olindo/prj/k8s-lab/scripts/servarr/sanitize_movie_folder.sh) e l'hook post-processo in [`normalize-video.sh`](file:///Users/olindo/prj/pindaroli-arr-helm/custom-docker-images/custom-normalizer/normalize-video.sh) (integrato nel workflow [[media-normalization-pipeline]]) analizzano i file preesistenti con `ffprobe` e sanificano video, sottotitoli e artwork in tempo reale.
 
 ---
 

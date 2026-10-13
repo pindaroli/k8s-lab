@@ -97,3 +97,4 @@ sn/backups/
 
 # Upstream temporary checkouts for container builds
 docker/kef-mcp/upstream/
+tools/

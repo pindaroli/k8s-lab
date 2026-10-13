@@ -58,11 +58,11 @@ Lo stack Servarr è governato tramite il server MCP `arrstack-mcp`, migrato su T
 - **Incidente Correlato**: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]].
 
 
-## 5. Radarr & Video Ingestion (Pattern Metadati)
-L'ingestion dei film e la gestione dei file multimediali su `/media/movies/` segue rigorosamente il pattern [[movie-metadata-and-artwork-architecture]]:
+## 5. Radarr, Video Ingestion & Normalizer (Pattern Metadati e Multi-Versione)
+L'ingestion dei film, la sanificazione delle versioni multiple e la gestione dei file multimediali su `/media/movies/` segue rigorosamente il pattern [[movie-metadata-and-artwork-architecture]] e il workflow [[media-normalization-pipeline]]:
 - **Radarr**: opera con il profilo metadati `Kodi (XBMC) / Emby` configurato con `movieMetadata: false` (nessun NFO generato) e `movieImages: true` (locandine `poster.jpg` e `fanart.jpg` salvate localmente).
-- **FileBot Normalizer**: script [`normalize-video.sh`](file:///Users/olindo/prj/pindaroli-arr-helm/custom-docker-images/custom-normalizer/normalize-video.sh) (immagine `custom-normalizer:1.5.2`) provvisto di rimozione automatica dei file `.nfo` post-ingestion.
-- **Incidente Correlato**: [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
+- **FileBot Normalizer (`webhook-normalizer`)**: container immutabile Docker su TrueNAS bare-metal (`ghcr.io/pindaroli/custom-normalizer:1.7.1`), auto-contenuto (senza bind-mount di codice da host) e governato dal workflow [[media-normalization-pipeline]]. Esegue FileBot AMC, auto-sanitizzazione multi-versione via `sanitize_movie_folder.py`, purge totale dei file `.nfo` e refresh automatico su Jellyfin.
+- **Incidenti Correlati**: [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
 
 ## Relazioni
 - Namespace: `arr`

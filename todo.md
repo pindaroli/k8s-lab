@@ -1,5 +1,20 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Decluttering & Clusterizzazione Tassonomica Segnalibri Chrome [[chrome-bookmarks-decluttering-and-clustering]]
+- [x] Fase 1: Progettazione Tassonomia, Mappatura 208 URL Unici e Approvazione Utente (Layout con Homepage/homepage-truenas + 7 cartelle) ✅
+- [x] Fase 2: Creazione Nuove Cartelle Strutturali via MCP `chrome-bookmarks-mcp` (7 radice su barra + 1 su archivio + 15 sottocartelle) ✅
+- [x] Fase 3: Spostamento & Ricollocazione dei 207 Segnalibri nelle Cartelle Tematiche via MCP `bookmarks_move` ✅
+- [x] Fase 4: Posizionamento dei Primi 2 Elementi Diretti (`Homepage` [0], `homepage-truenas` [1]) seguiti dalle 7 cartelle (2..8) ✅
+- [x] Fase 5: Bonifica Cartelle Duplicate & Nodi Ridondanti (`Imported`, `Imported (1)`, cartelle legacy svuotate `ai`, `home`, `devops`, ecc.) ✅
+- [x] Fase 6: Validazione Test-Driven, Backup Post-Ristrutturazione & Rigenerazione Indice Cronologico Finale (209 segnalibri confermati) ✅
+
+## 🚀 In Corso: Upgrade Risoluzione 1080p e Remux Audio Italiano di Blackout (1997) {tmdb-25690} [[blackout-1997-1080p-upgrade-remux]]
+- [ ] Fase 1: Grab Release 1080p & Download su qBittorrent (Categoria `video-filebot`)
+- [ ] Fase 2: Ingestion & Coesistenza Multi-Versione in `/media/movies/` (FileBot AMC)
+- [ ] Fase 3: Estrazione e Analisi Traccia Audio Italiana dall'AVI Esistente
+- [ ] Fase 4: Sincronizzazione, Muxing e Creazione MKV 1080p Dual Audio (ITA/ENG)
+- [ ] Fase 5: Validazione Test-Driven & Rescan Jellyfin
+
 ## 🚀 In Corso: Risoluzione Timeout Startup Talos & Riallineamento Rete TrueNAS VLAN 20 [[talos-startup-and-truenas-vlan20-realign]]
 - [x] Fase 1: Bonifica Hookscript Proxmox VE (`wait-for-truenas.sh` aggiornato con `10.10.20.50` su `pve1`, `pve2`, `pve3`)
 - [x] Fase 2: Esecuzione Playbook Startup (`startup_from_truenas_only.yml` superato con uncordon nodi Talos)
