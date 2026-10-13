@@ -82,8 +82,8 @@ Esegue la procedura completa di arresto per portare l'intero rack a zero consumo
 **Fasi Operative**:
 1. Esecuzione completa di `shutdown_to_truenas_only` (K8s e PVE offline).
 2. Flush I/O dei file system e pool ZFS su TrueNAS (`sync`).
-3. Shutdown controllato TrueNAS tramite API native middlewared: `midclt call system.shutdown`.
-4. Verifica chiusura porta SSH 22 su TrueNAS (STOPPED). *(Notifica Telegram)*.
+3. Shutdown controllato TrueNAS via comando diretto: `sudo -n shutdown -h now` (segnale diretto a systemd, bypass code middleware).
+4. Verifica chiusura porta SSH 22 su TrueNAS (STOPPED) con polling visivo. *(Notifica Telegram)*.
 
 ---
 

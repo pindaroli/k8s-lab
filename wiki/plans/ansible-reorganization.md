@@ -26,7 +26,8 @@ ansible/
 │   │   └── delete_tunnel_overrides.yml
 │   ├── infrastructure/
 │   │   ├── setup_ups.yml
-│   │   └── shutdown_lab.yml
+│   │   ├── shutdown_all_lab.yml
+│   │   └── shutdown_to_truenas_only.yml
 │   ├── kubernetes/
 │   │   ├── cleanup_old_services.yml
 │   │   ├── deploy_xray_secret.yml
