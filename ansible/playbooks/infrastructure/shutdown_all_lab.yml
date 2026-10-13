@@ -1,0 +1,84 @@
+---
+# ==============================================================================
+# 🛑 SHUTDOWN ALL LAB: SPEGNIMENTO TOTALE HOMELAB (K8S -> PVE -> TRUENAS)
+# ==============================================================================
+# Procedura deterministica e globale di spegnimento a rack dark:
+# FASE 1: Invocazione shutdown_to_truenas_only.yml (K8s Talos + Hypervisor PVE)
+# FASE 2: Flush preventivo buffer ZFS su TrueNAS Bare Metal
+# FASE 3: Shutdown controllato TrueNAS Bare Metal (10.10.20.50) via middlewared API
+# FASE 4: Verifica spegnimento porta SSH 22 TrueNAS (STOPPED)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# FASE 1: SPEGNIMENTO WORKLOAD KUBERNETES E HYPERVISOR PROXMOX VE
+# ------------------------------------------------------------------------------
+- import_playbook: shutdown_to_truenas_only.yml
+
+# ------------------------------------------------------------------------------
+# FASE 2: FLUSH E SPEGNIMENTO FISICO TRUENAS BARE METAL
+# ------------------------------------------------------------------------------
+- name: "🔌 FASE 2: Spegnimento Fisico TrueNAS SCALE Bare Metal"
+  hosts: localhost
+  gather_facts: no
+  vars:
+    truenas_ip: "10.10.20.50"
+    truenas_ssh_user: "olindo"
+  tasks:
+    - name: "🔔 Inizio fase finale: Spegnimento TrueNAS SCALE"
+      debug:
+        msg: "Workload K8s e hypervisor PVE spenti. Procedo con lo shutdown sicuro di TrueNAS..."
+
+    - name: "🔍 Probe Idempotente: Verifica se TrueNAS è ancora acceso (Porta 22)"
+      wait_for:
+        host: "{{ truenas_ip }}"
+        port: 22
+        state: started
+        timeout: 2
+      register: truenas_shutdown_probe
+      failed_when: false
+
+    - name: "ℹ️ Stato rilevamento TrueNAS"
+      debug:
+        msg: "{{ 'TrueNAS ONLINE: procedo con sync e spegnimento' if ('port' in truenas_shutdown_probe and 'Timeout' not in (truenas_shutdown_probe.msg | default(''))) else 'TrueNAS GIÀ OFFLINE: skip sync e comando shutdown' }}"
+
+    - name: "💾 Flush preventivo buffer I/O ZFS su TrueNAS (se online)"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 {{ truenas_ssh_user }}@{{ truenas_ip }} "sync"
+      when: "'port' in truenas_shutdown_probe and 'Timeout' not in (truenas_shutdown_probe.msg | default(''))"
+      ignore_errors: true
+
+    - name: "🛑 Invio comando di spegnimento ACPI a TrueNAS (se online)"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 {{ truenas_ssh_user }}@{{ truenas_ip }} "sudo -n shutdown -h now"
+      when: "'port' in truenas_shutdown_probe and 'Timeout' not in (truenas_shutdown_probe.msg | default(''))"
+      ignore_errors: true
+
+    - name: "⏳ Gate Finale: Polling spegnimento TrueNAS (Porta SSH 22 STOPPED)"
+      wait_for:
+        host: "{{ truenas_ip }}"
+        port: 22
+        state: stopped
+        timeout: 5
+      register: truenas_stopped_check
+      until: truenas_stopped_check is succeeded
+      retries: 30
+      delay: 5
+
+    - name: "✅ Gate Finale Superato: TrueNAS SCALE è completamente spento"
+      debug:
+        msg: "TrueNAS Bare Metal è spento. Tutti i nodi dell'Homelab sono disattivati."
+
+    - name: "🔔 Notifica Telegram: TrueNAS Spento"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "⚫ <b>TrueNAS SCALE Spento</b>: Dischi ZFS e storage bare metal offline. Rack spento al 100%"'
+      changed_when: false
+
+    - name: "🏁 SHUTDOWN TOTALE HOMELAB COMPLETATO"
+      debug:
+        msg: |
+          ============================================================
+          🌙 SHUTDOWN COMPLETATO: TUTTO IL RACK HOMELAB È OFFLINE
+          ============================================================
+          - Kubernetes:    OFFLINE (Cluster Talos disattivato)
+          - Hypervisors:   OFFLINE (pve1, pve2, pve3 spenti)
+          - Storage:       OFFLINE (TrueNAS Bare Metal spento)
+          - Consumo:       STANDBY / ZERO WATT
+          ============================================================

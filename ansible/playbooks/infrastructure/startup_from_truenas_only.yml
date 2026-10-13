@@ -3,7 +3,8 @@
 # 🚀 STARTUP HOMELAB: DA MODALITÀ SOLO TRUENAS A CLUSTER K8S + PROXMOX VE ATTIVI
 # ==============================================================================
 # Procedura deterministica e sincronizzata di riavvio del cluster:
-# FASE 1: Verifica connettività e stato hypervisor Proxmox VE (pve1, pve2, pve3)
+# FASE 0: Wake-on-LAN (WoL) Idempotente Hypervisor Proxmox VE (pve1, pve2, pve3)
+# FASE 1: Attesa e verifica connettività hypervisor Proxmox VE (SSH + WebUI)
 # FASE 2: Gate Talos API & Kubernetes API Server (VIP 10.10.20.55:6443)
 # FASE 3: Sync Barrier: attesa stato Ready simultaneo su TUTTI i nodi (cp-01, 02, 03)
 # FASE 4: Uncordon atomico parallelo per bilanciamento equo dei pod applicativi
@@ -14,6 +15,10 @@
   hosts: localhost
   gather_facts: no
   vars:
+    pve_nodes_map:
+      - { name: "pve1", ip: "10.10.10.11" }
+      - { name: "pve2", ip: "10.10.10.21" }
+      - { name: "pve3", ip: "10.10.10.31" }
     pve_hosts:
       - 10.10.10.11 # pve1
       - 10.10.10.21 # pve2
@@ -25,12 +30,40 @@
     k8s_vip: "10.10.20.55"
     traefik_vip: "10.10.20.56"
   tasks:
-    - name: "🔔 Notifica: Inizio sequenza di startup Homelab"
+    - name: "🔔 Inizio sequenza di startup Homelab"
       debug:
-        msg: "Avvio sequenza di startup e sincronizzazione uncordon K8s..."
+        msg: "Avvio sequenza di startup con WoL idempotente e barriera uncordon..."
 
     # --------------------------------------------------------------------------
-    # FASE 1: VERIFICA HYPERVISOR PROXMOX VE
+    # FASE 0: WAKE-ON-LAN (WoL) IDEMPOTENTE HYPERVISOR PROXMOX VE
+    # --------------------------------------------------------------------------
+    - name: "🔍 Probe Idempotente: Verifica se i nodi Proxmox sono già accesi (Porta 22)"
+      wait_for:
+        host: "{{ item.ip }}"
+        port: 22
+        state: started
+        timeout: 2
+      register: pve_probe
+      failed_when: false
+      loop:
+        - { name: "pve1", ip: "10.10.10.11" }
+        - { name: "pve2", ip: "10.10.10.21" }
+        - { name: "pve3", ip: "10.10.10.31" }
+
+    - name: "ℹ️ Stato rilevamento nodi Proxmox"
+      debug:
+        msg: >-
+          Nodo {{ item.item.name }} ({{ item.item.ip }}):
+          {{ 'GIÀ ONLINE (SKIP WoL)' if ('port' in item and 'Timeout' not in (item.msg | default(''))) else 'OFFLINE (Invio Magic Packet WoL)' }}
+      loop: "{{ pve_probe.results }}"
+
+    - name: "⚡ WoL Idempotente: Invio Magic Packet ai nodi Proxmox spenti"
+      command: "python3 {{ playbook_dir }}/../../../scripts/network/wake_node.py {{ item.item.name }}"
+      when: "'port' not in item or 'Timeout' in (item.msg | default(''))"
+      loop: "{{ pve_probe.results }}"
+
+    # --------------------------------------------------------------------------
+    # FASE 1: ATTESA E VERIFICA HYPERVISOR PROXMOX VE
     # --------------------------------------------------------------------------
     - name: "⏳ Gate 1.1: Attesa raggiungibilità SSH nodi Proxmox VE (Porta 22)"
       wait_for:
@@ -45,12 +78,17 @@
         host: "{{ item }}"
         port: 8006
         state: started
-        timeout: 60
+        timeout: 180
       loop: "{{ pve_hosts }}"
 
     - name: "✅ Gate 1 Superato: Gli Hypervisor Proxmox VE sono online"
       debug:
         msg: "Hypervisor pve1, pve2 e pve3 operativi."
+
+    - name: "🔔 Notifica Telegram: Hypervisor PVE Online"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "✅ <b>PVE Hypervisors Online</b>: pve1, pve2, pve3 operativi (SSH 22 e WebUI 8006)"'
+      changed_when: false
 
     # --------------------------------------------------------------------------
     # FASE 2: ATTESA API TALOS OS & KUBERNETES VIP
@@ -68,11 +106,16 @@
         host: "{{ k8s_vip }}"
         port: 6443
         state: started
-        timeout: 120
+        timeout: 180
 
     - name: "✅ Gate 2 Superato: Talos API e Kubernetes API Server rispondono"
       debug:
         msg: "Control plane K8s raggiungibile sul VIP 10.10.20.55."
+
+    - name: "🔔 Notifica Telegram: Talos & Kubernetes API Ready"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "✅ <b>Control Plane K8s Online</b>: Talos API e Kubernetes API Server operativi su VIP 10.10.20.55:6443"'
+      changed_when: false
 
     # --------------------------------------------------------------------------
     # FASE 3: SYNC BARRIER - ATTESA STATO READY SIMULTANEO DEI NODI
@@ -97,6 +140,11 @@
       debug:
         msg: "Barriera di sincronizzazione superata: i nodi worker sono pronti a ricevere il carico."
 
+    - name: "🔔 Notifica Telegram: Sync Barrier Superata"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "✅ <b>Sync Barrier Superata</b>: Tutti i nodi Talos (cp-01, cp-02, cp-03) sono contemporaneamente Ready e stabilizzati"'
+      changed_when: false
+
     # --------------------------------------------------------------------------
     # FASE 4: UNCORDON ATOMICO E SIMULTANEO
     # --------------------------------------------------------------------------
@@ -109,6 +157,11 @@
       debug:
         var: uncordon_result.stdout_lines
 
+    - name: "🔔 Notifica Telegram: Uncordon Atomico Eseguito"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "🚀 <b>Uncordon Atomico Eseguito</b>: Scheduling K8s aperto in modo bilanciato su tutti i nodi"'
+      changed_when: false
+
     # --------------------------------------------------------------------------
     # FASE 5: HEALTH-CHECK E STATO CLUSTER POST-STARTUP
     # --------------------------------------------------------------------------
@@ -117,7 +170,7 @@
         host: "{{ traefik_vip }}"
         port: 443
         state: started
-        timeout: 60
+        timeout: 120
 
     - name: "💾 Gate 5.2: Verifica salute cluster PostgreSQL CNPG"
       shell: kubectl get cluster postgres-main -n cnpg-system -o jsonpath='{.status.phase}'
@@ -127,6 +180,11 @@
       delay: 5
       changed_when: false
       ignore_errors: true
+
+    - name: "🔔 Notifica Telegram: Health Check Superato"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "✅ <b>Health-Check Superato</b>: Traefik Ingress VIP (443) e Cluster CNPG Database sani e operativi"'
+      changed_when: false
 
     - name: "🏁 STARTUP COMPLETATO CON SUCCESSO"
       debug:

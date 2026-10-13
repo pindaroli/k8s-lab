@@ -75,6 +75,7 @@ import_music/import_classical/venv/
 # Local scratch and temp folders
 scratch/
 .ansible_tmp_dir/
+logs/
 *.b64
 
 # Generated files (do not commit)

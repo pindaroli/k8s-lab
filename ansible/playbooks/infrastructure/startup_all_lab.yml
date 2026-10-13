@@ -1,0 +1,105 @@
+---
+# ==============================================================================
+# 🚀 STARTUP ALL LAB: AVVIO COMPLETO HOMELAB (TRUENAS -> PROXMOX VE + TALOS K8S)
+# ==============================================================================
+# Procedura deterministica e globale di avvio:
+# FASE 0: WoL Idempotente per TrueNAS SCALE Bare Metal (10.10.20.50)
+# FASE 1: Attesa SSH (22) e WebUI (443 o 80) TrueNAS
+# FASE 2: Verifica integrità pool ZFS su TrueNAS (zpool status -x: stripe & oliraid)
+# FASE 3: Verifica servizi permanenti e storage export (porte 3000, 8080, 8096)
+# FASE 4: Esecuzione sequenza startup_from_truenas_only.yml (WoL PVE -> Talos -> Sync Barrier -> Uncordon -> CNPG)
+# ==============================================================================
+
+- name: "⚡ STARTUP ALL LAB: AVVIO E VALIDAZIONE TRUENAS SCALE"
+  hosts: localhost
+  gather_facts: no
+  vars:
+    truenas_ip: "10.10.20.50"
+    truenas_ssh_user: "olindo"
+  tasks:
+    - name: "🔔 Inizio procedura Startup All Lab"
+      debug:
+        msg: "Avvio sequenza globale di accensione Homelab..."
+
+    # --------------------------------------------------------------------------
+    # FASE 0: WAKE-ON-LAN IDEMPOTENTE TRUENAS
+    # --------------------------------------------------------------------------
+    - name: "🔍 Probe Idempotente: Verifica se TrueNAS è già acceso (Porta 22)"
+      wait_for:
+        host: "{{ truenas_ip }}"
+        port: 22
+        state: started
+        timeout: 2
+      register: truenas_probe
+      failed_when: false
+
+    - name: "ℹ️ Stato rilevamento TrueNAS"
+      debug:
+        msg: >-
+          TrueNAS ({{ truenas_ip }}):
+          {{ 'GIÀ ONLINE (SKIP WoL)' if ('port' in truenas_probe and 'Timeout' not in (truenas_probe.msg | default(''))) else 'OFFLINE (Invio Magic Packet WoL)' }}
+
+    - name: "⚡ WoL Idempotente: Invio Magic Packet a TrueNAS"
+      command: "python3 {{ playbook_dir }}/../../../scripts/network/wake_node.py truenas"
+      when: "'port' not in truenas_probe or 'Timeout' in (truenas_probe.msg | default(''))"
+
+    # --------------------------------------------------------------------------
+    # FASE 1: ATTESA TRUENAS SSH E WEBUI
+    # --------------------------------------------------------------------------
+    - name: "⏳ Gate 1.1: Polling raggiungibilità SSH TrueNAS (Porta 22)"
+      wait_for:
+        host: "{{ truenas_ip }}"
+        port: 22
+        state: started
+        timeout: 10
+      register: truenas_boot_check
+      until: truenas_boot_check is succeeded
+      retries: 24
+      delay: 5
+
+    - name: "⏳ Gate 1.2: Attesa WebUI TrueNAS (Porta 443 o 80)"
+      wait_for:
+        host: "{{ truenas_ip }}"
+        port: 443
+        state: started
+        timeout: 60
+
+    # --------------------------------------------------------------------------
+    # FASE 2: VERIFICA INTEGRITÀ STORAGE ZFS TRUENAS
+    # --------------------------------------------------------------------------
+    - name: "💾 Gate 2: Verifica salute dei pool ZFS su TrueNAS (stripe & oliraid)"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 {{ truenas_ssh_user }}@{{ truenas_ip }} "/sbin/zpool status -x"
+      register: zpool_check
+      failed_when: "'all pools are healthy' not in zpool_check.stdout"
+      changed_when: false
+      retries: 10
+      delay: 6
+      until: "'all pools are healthy' in zpool_check.stdout"
+
+    # --------------------------------------------------------------------------
+    # FASE 3: VERIFICA SERVIZI PERMANENTI E NOTIFICA TELEGRAM
+    # --------------------------------------------------------------------------
+    - name: "⏳ Gate 3: Verifica disponibilità servizi permanenti TrueNAS"
+      wait_for:
+        host: "{{ truenas_ip }}"
+        port: "{{ item.port }}"
+        state: started
+        timeout: 60
+      loop:
+        - { name: "Homepage Standalone", port: 3000 }
+        - { name: "qBittorrent", port: 8080 }
+        - { name: "Jellyfin", port: 8096 }
+
+    - name: "✅ TrueNAS Operativo al 100%"
+      debug:
+        msg: "TrueNAS Bare Metal è online, pool ZFS sani e servizi storage attivi."
+
+    - name: "🔔 Notifica Telegram: TrueNAS Online"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "✅ <b>TrueNAS SCALE Online</b>: Host attivo, pool ZFS (stripe & oliraid) sani e servizi storage operativi"'
+      changed_when: false
+
+# ------------------------------------------------------------------------------
+# FASE 4: INNESCO SEQUENZA STARTUP DA TRUENAS (PVE + K8S + SYNC BARRIER)
+# ------------------------------------------------------------------------------
+- import_playbook: startup_from_truenas_only.yml

@@ -51,7 +51,12 @@ def get_script_description(filepath):
             for line in lines:
                 if line.startswith("#") and not line.startswith("#!"):
                     text = line[1:].strip()
-                    if text and text != my_basename:
+                    if (
+                        text
+                        and text != my_basename
+                        and not text.startswith("=")
+                        and not text.startswith("-")
+                    ):
                         return text[:60] + ("..." if len(text) > 60 else "")
     except Exception:
         pass
@@ -71,7 +76,8 @@ def main():
         for f in files:
             if f == "go.py" or f == my_name or f.startswith('.'):
                 continue
-            if f.endswith('.py') or f.endswith('.sh'):
+            # Gli entry-point per l'utente sono esclusivamente gli script shell (.sh)
+            if f.endswith('.sh'):
                 full_path = os.path.join(root, f)
                 if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
                     rel_path = os.path.relpath(full_path, SCRIPT_DIR)

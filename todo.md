@@ -8,6 +8,15 @@
 - [ ] Fase 5: Consolidamento Documentale, Verifica Salute Finale CNPG e Chiusura Piano
 
 
+## 🚀 In Corso / Validazione: Automazione Full Power Homelab (WoL Idempotente, Checkpoint e Alerting) [[homelab-full-power-automation]]
+- [x] Fase 1: Materializzazione Piano nel Wiki (`wiki/plans/homelab-full-power-automation.md`) e Sync `todo.md`
+- [x] Fase 2: Estensione `scripts/infrastructure/utils.sh` per supporto allegati log MIME ed email/telegram universale
+- [x] Fase 3: Aggiornamento WoL idempotente e notifiche Telegram su `ansible/playbooks/infrastructure/startup_from_truenas_only.yml` e wrapper `.sh`
+- [x] Fase 4: Creazione `ansible/playbooks/infrastructure/startup_all_lab.yml` e wrapper `scripts/infrastructure/startup_all_lab.sh`
+- [x] Fase 5: Creazione `ansible/playbooks/infrastructure/shutdown_all_lab.yml` e wrapper `scripts/infrastructure/shutdown_all_lab.sh`
+- [x] Fase 6: Validazione Test-Driven End-to-End, Allineamento `Power_Sequence.md` e Sync Wiki Context
+- [ ] Validazione: Ritestare `shutdown_to_truenas_only.sh` (verifica checkpoint PostgreSQL dinamico CNPG su `cnpg-system` a zero allarmi a video)
+
 ## 🚀 [x] ✅ COMPLETATO: Script Shell Interattivo per Benchmark OCR con Promptfoo [[promptfoo-ocr-benchmark-script]]
 - [x] Fase 1: Progettazione Architettura e Scaffolding dello Script (`scripts/benchmarks/run_promptfoo_ocr.sh`) con Naming Standard ([[guidellm-report-naming-pattern]])
 - [x] Fase 2: Discovery Dinamica Modelli OCR ed Endpoint da `rete.json` (`llama-server` Vulkan porta 8081 vs `ollama` porta 11434)

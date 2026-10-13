@@ -24,21 +24,41 @@
       debug:
         msg: "Avvio spegnimento: salvaguardia carichi di lavoro K8s..."
 
+    - name: "🔍 Probe Idempotente: Verifica se Kubernetes API Server è attivo (Porta 6443)"
+      wait_for:
+        host: "{{ k8s_vip }}"
+        port: 6443
+        state: started
+        timeout: 2
+      register: k8s_probe
+      failed_when: false
+
+    - name: "ℹ️ Stato rilevamento Kubernetes Cluster"
+      debug:
+        msg: "{{ 'Cluster K8s ONLINE: procedo con cordon, checkpoint e shutdown' if ('port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default(''))) else 'Cluster K8s GIÀ OFFLINE: skip cordon, checkpoint e talosctl shutdown' }}"
+
     - name: "🛡️ Cordon globale nodi Talos (Previene rescheduling dei pod)"
       command: kubectl cordon talos-cp-01 talos-cp-02 talos-cp-03
       register: cordon_result
+      when: "'port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default(''))"
       ignore_errors: true
 
     - name: "💾 Quiesce / Checkpoint Database PostgreSQL (CNPG)"
-      command: >
-        kubectl exec -n default -c postgres postgres-main-1 -- psql -U postgres -c "CHECKPOINT;"
+      shell: >
+        PG_PRIMARY=$(kubectl get pods -n cnpg-system -l cnpg.io/cluster=postgres-main,cnpg.io/instanceRole=primary -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true);
+        if [ -n "$PG_PRIMARY" ]; then
+          kubectl exec -n cnpg-system -c postgres "$PG_PRIMARY" -- psql -U postgres -c "CHECKPOINT;"
+        fi
       register: pg_checkpoint
-      ignore_errors: true
+      when: "'port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default(''))"
+      failed_when: false
+      changed_when: false
 
     - name: "🔥 Invia segnale di spegnimento parallelo Talos OS"
       command: >
         talosctl shutdown --nodes {{ talos_nodes }} --endpoints {{ api_endpoint }} --force --wait=false
       register: shutdown_signal
+      when: "'port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default(''))"
       ignore_errors: true
 
     - name: "⏳ Gate 1.1: Attesa chiusura porte API Talos (Porta 50000)"
@@ -70,6 +90,11 @@
       debug:
         msg: "Kubernetes è spento in sicurezza."
 
+    - name: "🔔 Notifica Telegram: K8s Spento"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "⚫ <b>Kubernetes Cluster Spento</b>: Talos nodes disattivati e workload salvaguardati"'
+      changed_when: false
+
 # ------------------------------------------------------------------------------
 # FASE 2: SHUTDOWN FISICO HYPERVISOR PROXMOX VE
 # ------------------------------------------------------------------------------
@@ -78,17 +103,42 @@
   gather_facts: no
   vars:
     pve_satellites:
-      - 10.10.10.31 # pve3
-      - 10.10.10.21 # pve2
-    pve_master: "10.10.10.11" # pve1
+      - { name: "pve3", ip: "10.10.10.31" }
+      - { name: "pve2", ip: "10.10.10.21" }
+    pve_master: { name: "pve1", ip: "10.10.10.11" }
+    pve_all_hosts:
+      - "10.10.10.31"
+      - "10.10.10.21"
+      - "10.10.10.11"
   tasks:
-    - name: "Invia segnale di spegnimento ACPI ai nodi Satellite (PVE3, PVE2)"
-      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ item }} "shutdown -h now"
+    - name: "🔍 Probe Idempotente: Verifica stato nodi Satellite (PVE3, PVE2) (Porta 22)"
+      wait_for:
+        host: "{{ item.ip }}"
+        port: 22
+        state: started
+        timeout: 2
+      register: pve_sat_probe
+      failed_when: false
       loop: "{{ pve_satellites }}"
+
+    - name: "Invia segnale di spegnimento ACPI ai nodi Satellite ancora online"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ item.item.ip }} "shutdown -h now"
+      when: "'port' in item and 'Timeout' not in (item.msg | default(''))"
+      loop: "{{ pve_sat_probe.results }}"
       ignore_errors: true
 
-    - name: "Invia segnale di spegnimento ACPI al nodo Master (PVE1)"
-      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve_master }} "shutdown -h now"
+    - name: "🔍 Probe Idempotente: Verifica stato nodo Master (PVE1) (Porta 22)"
+      wait_for:
+        host: "{{ pve_master.ip }}"
+        port: 22
+        state: started
+        timeout: 2
+      register: pve_master_probe
+      failed_when: false
+
+    - name: "Invia segnale di spegnimento ACPI al nodo Master (PVE1) se ancora online"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ pve_master.ip }} "shutdown -h now"
+      when: "'port' in pve_master_probe and 'Timeout' not in (pve_master_probe.msg | default(''))"
       ignore_errors: true
 
     - name: "⏳ Gate 2.1: Attesa spegnimento nodi Proxmox (Porta SSH 22 STOPPED)"
@@ -97,10 +147,7 @@
         port: 22
         state: stopped
         timeout: 120
-      loop:
-        - 10.10.10.31
-        - 10.10.10.21
-        - 10.10.10.11
+      loop: "{{ pve_all_hosts }}"
 
     - name: "⏳ Gate 2.2: Verifica spegnimento WebUI Proxmox (Porta 8006 STOPPED)"
       wait_for:
@@ -108,14 +155,16 @@
         port: 8006
         state: stopped
         timeout: 30
-      loop:
-        - 10.10.10.31
-        - 10.10.10.21
-        - 10.10.10.11
+      loop: "{{ pve_all_hosts }}"
 
     - name: "✅ Gate 2 Superato: Tutti i 3 server fisici Proxmox sono spenti"
       debug:
         msg: "Hypervisor pve1, pve2 e pve3 disattivati con successo."
+
+    - name: "🔔 Notifica Telegram: Hypervisors PVE Spenti"
+      command: >
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "⚫ <b>Hypervisors PVE Spenti</b>: pve1, pve2, pve3 disattivati in sicurezza"'
+      changed_when: false
 
 # ------------------------------------------------------------------------------
 # FASE 3: HEALTH-CHECK E STATO STANDALONE TRUENAS
