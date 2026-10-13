@@ -13,11 +13,13 @@
 # FASE 1: SPEGNIMENTO WORKLOAD KUBERNETES E HYPERVISOR PROXMOX VE
 # ------------------------------------------------------------------------------
 - import_playbook: shutdown_to_truenas_only.yml
+  tags: [k8s_pve]
 
 # ------------------------------------------------------------------------------
 # FASE 2: FLUSH E SPEGNIMENTO FISICO TRUENAS BARE METAL
 # ------------------------------------------------------------------------------
 - name: "🔌 FASE 2: Spegnimento Fisico TrueNAS SCALE Bare Metal"
+  tags: [truenas]
   hosts: localhost
   gather_facts: no
   vars:

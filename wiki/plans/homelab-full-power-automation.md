@@ -20,11 +20,11 @@ Questo piano definisce l'architettura, la logica dei checkpoint vincolanti e l'i
 1. **Completamento di `startup_from_truenas_only`** (Playbook e `.sh`): aggiunta del **Wake-on-LAN (WoL) idempotente** sui 3 nodi Proxmox VE (`pve1`, `pve2`, `pve3`) e strutturazione formale dei checkpoint.
 2. **Creazione di `startup_all_lab`** (Playbook e `.sh`): sequenza globale deterministica che avvia TrueNAS con WoL idempotente, ne convalida la piena operatività e poi innesca la sequenza `startup_from_truenas_only`.
 3. **Creazione di `shutdown_all_lab`** (Playbook e `.sh`): sequenza globale che esegue `shutdown_to_truenas_only` (spegnimento graceful K8s Talos + PVE) e successivamente lo shutdown controllato di TrueNAS Bare Metal.
-4. **Matrice di Segnalazione & Alerting basata su `utils.sh`**:
-   - **Start e Stop di ogni procedura**: Notifica sia su **Telegram** sia via **Email HTML** tramite le funzioni esistenti `send_telegram` e `send_summary_email`.
-   - **Shutdown**: Notifiche degli step intermedi **esclusivamente su Telegram**.
-   - **Startup di ogni nodo/hypervisor**: Notifiche di raggiungibilità/ready **esclusivamente su Telegram**.
-   - **In caso di errore**: Notifica immediata su **Telegram** e invio di **Email con allegato il file di log completo della sessione** (tramite estensione trasparente di `send_summary_email` con supporto allegati multipart MIME).
+4. **Matrice di Segnalazione & Alerting Gerarchico ([[hierarchical-automation-alerting-pattern]])**:
+   - **Avvio**: Esclusivamente un breve ping testuale su **Telegram** (Zero start emails, eliminando il rumore nell'inbox).
+   - **Step intermedi / Avanzamento nodi**: Notifiche di raggiungibilità/ready **esclusivamente su Telegram**.
+   - **Completamento di Successo**: Se procedura Root, invio di **Email HTML + Telegram riassuntivo finale**. Nelle procedure composte (`shutdown_all_lab`, `startup_all_lab`), la sotto-fase sopprime il proprio report di successo per evitare notifiche frammentate.
+   - **In caso di errore**: Fail-fast universale (`trap ERR` non silenziabile) con alert immediato su **Telegram** ed invio di **Email con allegato il file di log completo della sessione** (`logs/automation/`).
 
 ---
 
@@ -127,17 +127,19 @@ flowchart TD
 
 ---
 
-## 🛠️ Matrice Notifiche via `utils.sh`
+## 🛠️ Matrice Notifiche via `utils.sh` ([[hierarchical-automation-alerting-pattern]])
 
-- **Start Procedura**: `send_telegram` + `send_summary_email` (Template HTML con badge Blu "IN CORSO").
-- **Stop Procedura**: `send_telegram` + `send_summary_email` (Template HTML con badge Verde "SUCCESSO").
-- **Avanzamento Singoli Nodi**: `send_telegram` (chiamata diretta da playbook/script, zero email intermedie).
-- **In Caso di Errore**: `send_telegram` immediato + `send_summary_email` (Template HTML con badge Rosso "ERRORE CRITICO" e **allegato il file di log completo della sessione**).
+- **Start Procedura**: Ping breve `send_telegram` (Zero email di start inviate per azzerare il rumore nell'inbox).
+- **Avanzamento Singoli Nodi / Gates**: Notifiche `send_telegram` puntuali (zero email intermedie).
+- **Stop Procedura (Successo)**:
+  - Se Root Procedure: `send_telegram` + `send_summary_email` (Template HTML con badge Verde "SUCCESSO").
+  - Se Child/Nested Procedure: soppresso (delegato al parent per produrre un unico bilancio finale).
+- **In Caso di Errore**: Fail-fast immediato con `send_telegram` + `send_summary_email` (Template HTML con badge Rosso "ERRORE CRITICO" e **allegato il file di log completo della sessione**).
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: [x] Idempotenza & Trasparenza Completa (Startup & Shutdown) Implementata (100% Gates Validati)
-- **Ultima Azione Completata**: Risolto task checkpoint PostgreSQL in `shutdown_to_truenas_only.yml`: allineato namespace canonico (`cnpg-system`), introdotta discovery dinamica dell'istanza primaria CloudNativePG (`cnpg.io/instanceRole=primary`) e impostato `failed_when: false` per zero allarmi a video.
-- **Prossimo Passo Operativo**: Ritestare `shutdown_to_truenas_only.sh` per validare il checkpoint PostgreSQL dinamico su `cnpg-system` senza falsi allarmi a video.
+- **Ultima Azione Completata**: Materializzato pattern architetturale `wiki/patterns/hierarchical-automation-alerting-pattern.md`: rimosse le email di start su tutti i 4 wrapper `.sh`, introdotta la gestione gerarchica Root vs Child (`HOMELAB_PARENT_PROCEDURE`) per emettere una sola notifica finale riassuntiva di successo nelle procedure composte, garantendo al contempo il tracciamento universale immediato di tutti gli errori.
+- **Prossimo Passo Operativo**: Ritestare `shutdown_to_truenas_only.sh` e `shutdown_all_lab.sh` per validare il nuovo schema di alerting gerarchico e il checkpoint PostgreSQL dinamico.
 - **Blocchi/Decisioni Pendenti**: Nessun blocco.

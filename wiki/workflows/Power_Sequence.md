@@ -20,10 +20,10 @@ Questa procedura garantisce la coerenza dei dati e l'idempotenza durante lo speg
 
 | Obiettivo Operativo | Script Eseguibile | Playbook Ansible Sottostante | Notifiche Start & Stop | Notifiche Intermedie | Notifica di Errore |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Startup Completo (Full Rack)** | [`startup_all_lab.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/startup_all_lab.sh) | `ansible/playbooks/infrastructure/startup_all_lab.yml` | Telegram + Email HTML | Solo Telegram (nodi) | Telegram + Email con **Log Allegato** |
-| **Startup da TrueNAS-only** | [`startup_from_truenas_only.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/startup_from_truenas_only.sh) | `ansible/playbooks/infrastructure/startup_from_truenas_only.yml` | Telegram + Email HTML | Solo Telegram (nodi) | Telegram + Email con **Log Allegato** |
-| **Shutdown a TrueNAS-only (Eco)**| [`shutdown_to_truenas_only.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/shutdown_to_truenas_only.sh) | `ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml` | Telegram + Email HTML | Solo Telegram (step) | Telegram + Email con **Log Allegato** |
-| **Shutdown Completo (Rack Dark)** | [`shutdown_all_lab.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/shutdown_all_lab.sh) | `ansible/playbooks/infrastructure/shutdown_all_lab.yml` | Telegram + Email HTML | Solo Telegram (step) | Telegram + Email con **Log Allegato** |
+| **Startup Completo (Full Rack)** | [`startup_all_lab.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/startup_all_lab.sh) | `ansible/playbooks/infrastructure/startup_all_lab.yml` | Start: Telegram / Stop: TG + Email HTML | Solo Telegram (nodi) | Telegram + Email con **Log Allegato** |
+| **Startup da TrueNAS-only** | [`startup_from_truenas_only.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/startup_from_truenas_only.sh) | `ansible/playbooks/infrastructure/startup_from_truenas_only.yml` | Start: Telegram / Stop: TG + Email HTML (se Root) | Solo Telegram (nodi) | Telegram + Email con **Log Allegato** |
+| **Shutdown a TrueNAS-only (Eco)**| [`shutdown_to_truenas_only.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/shutdown_to_truenas_only.sh) | `ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml` | Start: Telegram / Stop: TG + Email HTML (se Root) | Solo Telegram (step) | Telegram + Email con **Log Allegato** |
+| **Shutdown Completo (Rack Dark)** | [`shutdown_all_lab.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/shutdown_all_lab.sh) | `ansible/playbooks/infrastructure/shutdown_all_lab.yml` | Start: Telegram / Stop: TG + Email HTML | Solo Telegram (step) | Telegram + Email con **Log Allegato** |
 
 ---
 
@@ -88,7 +88,7 @@ Esegue la procedura completa di arresto per portare l'intero rack a zero consumo
 ---
 
 ## 🛡️ Gestione Errori e Notifiche
-
+- **Pattern Architetturale**: [[hierarchical-automation-alerting-pattern]] (Zero start emails, single summary success report per procedure root, fail-fast unconditionale su tutti gli errori).
 - **Libreria Centralizzata**: [`scripts/infrastructure/utils.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/utils.sh).
 - **Zero Plaintext Secrets**: tutte le credenziali (Telegram bot/chat ID e credenziali SMTP Gmail) vengono caricate dinamicamente in memoria tramite `sops` dai file cifrati in `secrets-sops/`.
 - **Trap di Errore**: in caso di fallimento di qualsiasi comando o checkpoint, lo script bash intercetta l'uscita anomala (`trap ERR`), invia un alert immediato su Telegram e inoltra un'email HTML con **allegato il file di log completo della sessione** salvato in `logs/automation/`.
@@ -97,5 +97,6 @@ Esegue la procedura completa di arresto per portare l'intero rack a zero consumo
 
 ## 🔗 Relazioni & Riferimenti
 - Piano Operativo: [[homelab-full-power-automation]]
+- Pattern Notifiche: [[hierarchical-automation-alerting-pattern]]
 - Utilità WoL: [`wake_node.py`](file:///Users/olindo/prj/k8s-lab/scripts/network/wake_node.py)
 - Componenti: [[TrueNAS]], [[Talos_Cluster]], [[OPNsense]], [[sops-secret-sovereignty]]

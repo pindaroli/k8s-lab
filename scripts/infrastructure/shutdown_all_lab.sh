@@ -20,6 +20,8 @@ cd "$ROOT_DIR" || exit 1
 source "$SCRIPT_DIR/utils.sh"
 
 PROCEDURE_NAME="shutdown_all_lab"
+init_procedure_scope "$PROCEDURE_NAME"
+
 LOG_DIR="${ROOT_DIR}/logs/automation"
 mkdir -p "$LOG_DIR"
 LOG_FILE="${LOG_DIR}/${PROCEDURE_NAME}_$(date +%Y%m%d_%H%M%S).log"
@@ -49,17 +51,27 @@ echo "➡️  Spegnimento Globale: K8s &rarr; Proxmox VE &rarr; TrueNAS Storage.
 echo "📄 Log di sessione: $LOG_FILE"
 echo ""
 
-# Notifica Start (Telegram + Email)
+# Ping informativo iniziale (SOLO Telegram, NESSUNA mail di start)
 send_telegram "🛑 <b>Avvio ${PROCEDURE_NAME}</b>%0ASpegnimento totale dell'infrastruttura Homelab: K8s -> PVE -> TrueNAS..." "Homelab Power"
-start_table="<tr><td><b>Procedura:</b></td><td>${PROCEDURE_NAME}</td></tr><tr><td><b>Target:</b></td><td>Intero Rack (K8s Talos, Hypervisor PVE1/2/3, TrueNAS Bare Metal)</td></tr><tr><td><b>Obiettivo:</b></td><td>Rack Dark (Consumo Zero Watt)</td></tr>"
-start_html="$(build_html_email_template "🛑" "Avvio ${PROCEDURE_NAME}" "Homelab Power Automation" "IN CORSO" "#3b82f6" "$start_table")"
-send_summary_email "$DEFAULT_EMAIL_RECIPIENT" "🛑 [START] ${PROCEDURE_NAME}" "$start_html" "Avvio ${PROCEDURE_NAME}"
 
-# Esecuzione Playbook Ansible
-ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/shutdown_all_lab.yml
+# ------------------------------------------------------------------------------
+# FASE 1: SPEGNIMENTO CARICHI K8S E HYPERVISOR PVE (Invoca sotto-procedura)
+# ------------------------------------------------------------------------------
+echo "▶️  [Fase 1/2] Esecuzione sotto-procedura: shutdown_to_truenas_only..."
+"$SCRIPT_DIR/shutdown_to_truenas_only.sh"
 
-# Notifica Stop (Telegram + Email)
+# ------------------------------------------------------------------------------
+# FASE 2: FLUSH E SPEGNIMENTO FISICO TRUENAS BARE METAL
+# ------------------------------------------------------------------------------
+echo "▶️  [Fase 2/2] Esecuzione spegnimento fisico TrueNAS Bare Metal..."
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/shutdown_all_lab.yml --tags truenas
+
+# ------------------------------------------------------------------------------
+# NOTIFICA FINALE RIASSUNTIVA DI SUCCESSO (Unica per l'intera sequenza)
+# ------------------------------------------------------------------------------
 send_telegram "🌙 <b>${PROCEDURE_NAME} Completato!</b>%0ATutti i server fisici e VM del lab sono spenti in sicurezza. Rack offline." "Homelab Power"
 stop_table="<tr><td><b>Stato:</b></td><td>SUCCESSO (Rack Spento)</td></tr><tr><td><b>Kubernetes:</b></td><td>OFFLINE (Cluster Talos disattivato)</td></tr><tr><td><b>Hypervisors:</b></td><td>OFFLINE (pve1, pve2, pve3 spenti)</td></tr><tr><td><b>Storage TrueNAS:</b></td><td>OFFLINE (Bare metal spento)</td></tr>"
 stop_html="$(build_html_email_template "🌙" "Completato: ${PROCEDURE_NAME}" "Homelab Power Automation" "SUCCESSO" "#10b981" "$stop_table")"
 send_summary_email "$DEFAULT_EMAIL_RECIPIENT" "✅ [SUCCESS] ${PROCEDURE_NAME}" "$stop_html" "${PROCEDURE_NAME} completato con successo"
+
+complete_procedure_scope

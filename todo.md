@@ -15,7 +15,8 @@
 - [x] Fase 4: Creazione `ansible/playbooks/infrastructure/startup_all_lab.yml` e wrapper `scripts/infrastructure/startup_all_lab.sh`
 - [x] Fase 5: Creazione `ansible/playbooks/infrastructure/shutdown_all_lab.yml` e wrapper `scripts/infrastructure/shutdown_all_lab.sh`
 - [x] Fase 6: Validazione Test-Driven End-to-End, Allineamento `Power_Sequence.md` e Sync Wiki Context
-- [ ] Validazione: Ritestare `shutdown_to_truenas_only.sh` (verifica checkpoint PostgreSQL dinamico CNPG su `cnpg-system` a zero allarmi a video)
+- [x] Fase 7: Creazione Pattern [[hierarchical-automation-alerting-pattern]], rimozione mail di start e orchestrazione gerarchica delle notifiche
+- [ ] Validazione: Ritestare `shutdown_to_truenas_only.sh` e `shutdown_all_lab.sh` (verifica alerting gerarchico e zero allarmi a video)
 
 ## 🚀 [x] ✅ COMPLETATO: Script Shell Interattivo per Benchmark OCR con Promptfoo [[promptfoo-ocr-benchmark-script]]
 - [x] Fase 1: Progettazione Architettura e Scaffolding dello Script (`scripts/benchmarks/run_promptfoo_ocr.sh`) con Naming Standard ([[guidellm-report-naming-pattern]])
