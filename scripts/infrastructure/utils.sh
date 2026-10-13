@@ -225,35 +225,5 @@ EOF
     fi
 }
 
-# ==============================================================================
-# GESTIONE SCOPE GERARCHICO PROCEDURE (Hierarchical Automation Alerting)
-# ==============================================================================
-
-# Inizializza il contesto della procedura.
-# Se HOMELAB_PARENT_PROCEDURE non è impostata, questo script è la procedura Root.
-# Se è già impostata, questo script opera come sotto-procedura (Child/Nested).
-init_procedure_scope() {
-    local proc_name="$1"
-    CURRENT_PROCEDURE_NAME="$proc_name"
-    if [ -z "${HOMELAB_PARENT_PROCEDURE:-}" ]; then
-        export HOMELAB_PARENT_PROCEDURE="$proc_name"
-        IS_ROOT_PROCEDURE=true
-    else
-        IS_ROOT_PROCEDURE=false
-    fi
-}
-
-# Ritorna 0 (true) se la procedura corrente è la root principale
-is_root_procedure() {
-    [ "${IS_ROOT_PROCEDURE:-true}" = "true" ]
-}
-
-# Termina lo scope della procedura corrente
-complete_procedure_scope() {
-    if is_root_procedure; then
-        unset HOMELAB_PARENT_PROCEDURE
-    fi
-}
-
 # Auto-caricamento al sourcing
 _load_notification_secrets

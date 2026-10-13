@@ -88,8 +88,9 @@ Esegue la procedura completa di arresto per portare l'intero rack a zero consumo
 ---
 
 ## 🛡️ Gestione Errori e Notifiche
-- **Pattern Architetturale**: [[hierarchical-automation-alerting-pattern]] (Zero start emails, single summary success report per procedure root, fail-fast unconditionale su tutti gli errori).
-- **Libreria Centralizzata**: [`scripts/infrastructure/utils.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/utils.sh).
+- **Pattern Architetturale**: [[hierarchical-automation-alerting-pattern]] (Zero start emails, single summary success report per procedure root, fail-fast incondizionato su tutti gli errori).
+- **Gestore Scope Gerarchico**: [`scripts/infrastructure/procedure_scope.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/procedure_scope.sh) (Governa il ciclo di vita e la variabile d'ambiente `HOMELAB_PARENT_PROCEDURE`).
+- **Libreria Notifiche & I/O**: [`scripts/infrastructure/utils.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/utils.sh) (Invio Telegram bot e Email HTML via Gmail SMTP con caricamento credenziali protette da SOPS).
 - **Zero Plaintext Secrets**: tutte le credenziali (Telegram bot/chat ID e credenziali SMTP Gmail) vengono caricate dinamicamente in memoria tramite `sops` dai file cifrati in `secrets-sops/`.
 - **Trap di Errore**: in caso di fallimento di qualsiasi comando o checkpoint, lo script bash intercetta l'uscita anomala (`trap ERR`), invia un alert immediato su Telegram e inoltra un'email HTML con **allegato il file di log completo della sessione** salvato in `logs/automation/`.
 

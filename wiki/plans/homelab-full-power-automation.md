@@ -16,7 +16,7 @@ tags:
 
 # Piano: Automazione Full Power Homelab (WoL Idempotente, Checkpoint e Alerting Multi-Canale)
 
-Questo piano definisce l'architettura, la logica dei checkpoint vincolanti e l'implementazione completa per le procedure di accensione e spegnimento automatizzato dell'infrastruttura Homelab, **riutilizzando integralmente la libreria canonica di notifica** ([`scripts/infrastructure/utils.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/utils.sh)):
+Questo piano definisce l'architettura, la logica dei checkpoint vincolanti e l'implementazione completa per le procedure di accensione e spegnimento automatizzato dell'infrastruttura Homelab, **riutilizzando integralmente la libreria canonica di notifica** ([`scripts/infrastructure/utils.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/utils.sh)) e il gestore dello scope gerarchico ([`scripts/infrastructure/procedure_scope.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/procedure_scope.sh)):
 1. **Completamento di `startup_from_truenas_only`** (Playbook e `.sh`): aggiunta del **Wake-on-LAN (WoL) idempotente** sui 3 nodi Proxmox VE (`pve1`, `pve2`, `pve3`) e strutturazione formale dei checkpoint.
 2. **Creazione di `startup_all_lab`** (Playbook e `.sh`): sequenza globale deterministica che avvia TrueNAS con WoL idempotente, ne convalida la piena operatività e poi innesca la sequenza `startup_from_truenas_only`.
 3. **Creazione di `shutdown_all_lab`** (Playbook e `.sh`): sequenza globale che esegue `shutdown_to_truenas_only` (spegnimento graceful K8s Talos + PVE) e successivamente lo shutdown controllato di TrueNAS Bare Metal.
@@ -33,7 +33,7 @@ Questo piano definisce l'architettura, la logica dei checkpoint vincolanti e l'i
 ```mermaid
 flowchart TD
     subgraph STARTUP_ALL_LAB["🚀 startup_all_lab (.sh & playbook)"]
-        A1["Inizio: Alert Start (TG + Email via utils.sh)"] --> A2["Probe Idempotente TrueNAS (Porta 22)"]
+        A1["Inizio: Ping Start (Solo TG via utils.sh)"] --> A2["Probe Idempotente TrueNAS (Porta 22)"]
         A2 -- "TrueNAS Spento" --> A3["WoL TrueNAS (scripts/network/wake_node.py truenas)"]
         A2 -- "TrueNAS Già Attivo" --> A4["Skip WoL TrueNAS"]
         A3 --> A5["CP 1: Attesa SSH 22 + WebUI TrueNAS"]
@@ -45,7 +45,7 @@ flowchart TD
     end
 
     subgraph STARTUP_FROM_TRUENAS["⚡ startup_from_truenas_only (.sh & playbook)"]
-        B --> B1["Inizio: Alert Start (TG + Email se chiamato standalone)"]
+        B --> B1["Inizio: Ping Start (Solo TG se Root)"]
         B1 --> B2["Probe Idempotente PVE1, PVE2, PVE3 (Porta 22)"]
         B2 -- "Nodi Spenti" --> B3["WoL PVE1, PVE2, PVE3 (wake_node.py)"]
         B2 -- "Nodi Già Attivi" --> B4["Skip WoL per nodi già online"]
@@ -59,11 +59,11 @@ flowchart TD
         C6 --> C7["CP 8: Uncordon Atomico Parallelo (talos-cp-01, 02, 03)"]
         C7 --> C8["TG: Nodi Uncordonati & Scheduling Bilanciato"]
         C8 --> C9["CP 9: Health-Check Traefik VIP (10.10.20.56:443) & CNPG DB"]
-        C9 --> C10["Stop: Alert Successo (TG + Email via utils.sh)"]
+        C9 --> C10["Stop: Alert Successo (TG + Email se Root)"]
     end
 
     subgraph SHUTDOWN_ALL_LAB["🛑 shutdown_all_lab (.sh & playbook)"]
-        S1["Inizio: Alert Start (TG + Email via utils.sh)"] --> S2["Esecuzione: shutdown_to_truenas_only"]
+        S1["Inizio: Ping Start (Solo TG via utils.sh)"] --> S2["Esecuzione: shutdown_to_truenas_only"]
         S2 --> S3["CP S1: Cordon Globale Talos & Quiesce CNPG DB"]
         S3 --> S4["CP S2: Talos OS Shutdown & Verifica Chiusura Porte"]
         S4 --> S5["TG: K8s Spento in Sicurezza"]
@@ -127,7 +127,7 @@ flowchart TD
 
 ---
 
-## 🛠️ Matrice Notifiche via `utils.sh` ([[hierarchical-automation-alerting-pattern]])
+## 🛠️ Matrice Notifiche via `procedure_scope.sh` e `utils.sh` ([[hierarchical-automation-alerting-pattern]])
 
 - **Start Procedura**: Ping breve `send_telegram` (Zero email di start inviate per azzerare il rumore nell'inbox).
 - **Avanzamento Singoli Nodi / Gates**: Notifiche `send_telegram` puntuali (zero email intermedie).
@@ -140,6 +140,6 @@ flowchart TD
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: [x] Idempotenza & Trasparenza Completa (Startup & Shutdown) Implementata (100% Gates Validati)
-- **Ultima Azione Completata**: Materializzato pattern architetturale `wiki/patterns/hierarchical-automation-alerting-pattern.md`: rimosse le email di start su tutti i 4 wrapper `.sh`, introdotta la gestione gerarchica Root vs Child (`HOMELAB_PARENT_PROCEDURE`) per emettere una sola notifica finale riassuntiva di successo nelle procedure composte, garantendo al contempo il tracciamento universale immediato di tutti gli errori.
+- **Ultima Azione Completata**: Materializzato pattern architetturale `wiki/patterns/hierarchical-automation-alerting-pattern.md`: rimosse le email di start su tutti i 4 wrapper `.sh`, introdotto il modulo dedicato `procedure_scope.sh` per la gestione gerarchica Root vs Child (`HOMELAB_PARENT_PROCEDURE`) ed emessa una sola notifica finale riassuntiva di successo nelle procedure composte, garantendo al contempo il tracciamento universale immediato di tutti gli errori.
 - **Prossimo Passo Operativo**: Ritestare `shutdown_to_truenas_only.sh` e `shutdown_all_lab.sh` per validare il nuovo schema di alerting gerarchico e il checkpoint PostgreSQL dinamico.
 - **Blocchi/Decisioni Pendenti**: Nessun blocco.
