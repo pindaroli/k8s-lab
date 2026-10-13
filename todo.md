@@ -8,12 +8,12 @@
 - [x] Fase 5: Bonifica Cartelle Duplicate & Nodi Ridondanti (`Imported`, `Imported (1)`, cartelle legacy svuotate `ai`, `home`, `devops`, ecc.) ✅
 - [x] Fase 6: Validazione Test-Driven, Backup Post-Ristrutturazione & Rigenerazione Indice Cronologico Finale (209 segnalibri confermati) ✅
 
-## 🚀 In Corso: Upgrade Risoluzione 1080p e Remux Audio Italiano di Blackout (1997) {tmdb-25690} [[blackout-1997-1080p-upgrade-remux]]
-- [ ] Fase 1: Grab Release 1080p & Download su qBittorrent (Categoria `video-filebot`)
-- [ ] Fase 2: Ingestion & Coesistenza Multi-Versione in `/media/movies/` (FileBot AMC)
-- [ ] Fase 3: Estrazione e Analisi Traccia Audio Italiana dall'AVI Esistente
-- [ ] Fase 4: Sincronizzazione, Muxing e Creazione MKV 1080p Dual Audio (ITA/ENG)
-- [ ] Fase 5: Validazione Test-Driven & Rescan Jellyfin
+## 🚀 [x] ✅ COMPLETATO: Upgrade Risoluzione 1080p e Bonifica Libreria Blackout (1997) {tmdb-25690} [[blackout-1997-1080p-upgrade-remux]]
+- [x] Fase 1: Grab Release 1080p & Download su qBittorrent (Categoria `video-filebot`) ✅
+- [x] Fase 2: Ingestion & Sanificazione Multi-Versione in `/media/movies/` (FileBot AMC) ✅
+- [x] Fase 3: Analisi Fonetica Tracce Audio (Whisper): accertata natura ENG/ESP dell'AVI legacy ✅
+- [x] Fase 4: Bonifica Opzione 1: rimozione file SD e conservazione esclusiva release 1080p WEB-DL ✅
+- [x] Fase 5: Validazione Test-Driven & Rescan Jellyfin ✅
 
 ## 🚀 In Corso: Risoluzione Timeout Startup Talos & Riallineamento Rete TrueNAS VLAN 20 [[talos-startup-and-truenas-vlan20-realign]]
 - [x] Fase 1: Bonifica Hookscript Proxmox VE (`wait-for-truenas.sh` aggiornato con `10.10.20.50` su `pve1`, `pve2`, `pve3`)

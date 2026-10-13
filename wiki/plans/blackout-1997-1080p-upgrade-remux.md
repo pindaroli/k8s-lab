@@ -1,7 +1,7 @@
 ---
 title: "Piano: Upgrade Risoluzione 1080p e Remux Audio Italiano di Blackout (1997) {tmdb-25690}"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-13
 tags:
@@ -23,13 +23,13 @@ Questo piano definisce la procedura end-to-end per l'aggiornamento qualitativo d
 
 1. **Stato Iniziale della Libreria**:
    - Cartella: `/mnt/oliraid/arrdata/media/movies/Blackout (1997) {tmdb-25690}/`
-   - File presente: `Blackout (1997).avi` (961 MB, video SD 640x336 Xvid a 25 fps, 2 tracce MP3 stereo dual audio ITA/ENG) con `Blackout (1997).en.srt`.
+   - File presente: `Blackout (1997).avi` (961 MB, video SD 640x336 Xvid a 25 fps, 2 tracce MP3 stereo) con `Blackout (1997).en.srt`.
 2. **Problema**:
    - In Italia *The Blackout* (1997) non è mai stato distribuito in Blu-ray né in digitale HD con master italiano (esiste solo il DVD Cecchi Gori del 2006). Tutte le release 1080p mondiali (da Amazon US o Blu-ray francesi) hanno esclusivamente audio in lingua originale (Inglese).
 3. **Strategia Operativa**:
    - Scaricare la migliore versione ad alta risoluzione 1080p disponibile su qBittorrent (**`The Blackout 1997 1080p AMZN WEB-DL H264-GPRS`**, 7.3 GB) assegnando la categoria **`video-filebot`**.
    - Preservare **entrambe le versioni** all'interno della directory del film in modo che coesistano senza sovrascritture.
-   - Solo a valle del download e dell'ingestion multi-versione, procedere all'estrazione dell'audio italiano dal file AVI e al remux/sincronizzazione sulla traccia video 1080p, realizzando un **MKV 1080p Dual Audio (ITA / ENG)** conforme agli standard Jellyfin.
+   - Analizzare le tracce audio del file AVI per il remux.
 
 ---
 
@@ -74,48 +74,40 @@ Questo piano definisce la procedura end-to-end per l'aggiornamento qualitativo d
 
 ---
 
-### FASE 3: Estrazione e Analisi Traccia Audio Italiana dall'AVI Esistente
-- [x] Esecuzione `ffprobe` tramite container Jellyfin per analizzare le 2 tracce MP3 stereo del file `Blackout (1997) {tmdb-25690} - [SD XviD].avi`.
-- [x] Identificazione della traccia con doppiaggio italiano (Stream 0:1, stereo 48kHz, PAL DVD Cecchi Gori).
-- [x] Estrazione della traccia audio italiana e calcolo del rapporto di PAL speedup (`0.959041`).
+### FASE 3: Analisi Linguistica Tracce Audio dell'AVI Preesistente
+- [x] Esecuzione `ffprobe` e campionamento dei due flussi audio MP3 dell'AVI.
+- [x] Trascrizione fonetica (Whisper) e verifica utente: accertato che lo `Stream #0:1` è in Inglese e lo `Stream #0:2` è un doppiaggio in Spagnolo castigliano (*"Si me hace una pregunta... Al repasar tu vida..."*).
+- [x] Conferma assenza del doppiaggio italiano all'interno del rilascio AVI archiviato.
 
 #### 🛑 CHECKPOINT FASE 3:
-- [x] Traccia audio italiana isolata, analizzata e sincronizzata al millisecondo.
+- [x] Natura linguistica delle tracce dell'AVI chiarita e documentata.
 
 ---
 
-### FASE 4: Sincronizzazione, Muxing e Creazione MKV 1080p Dual Audio (ITA/ENG)
-- [x] Verifica del framerate e dell'offset temporale:
-  - Video 1080p WEB-DL: 23.976 fps (offset iniziale al primo parlato a 34.402s).
-  - Audio AVI DVD: a 25.000 fps (parlato iniziale a 19.859s).
-  - Applicazione correzione temporale `atempo=0.959041` e delay `adelay=13695|13695` (sincronia labiale identica da inizio a fine film).
-- [x] Muxing definitivo con `ffmpeg`:
-  - Traccia Video: 1080p AVC da Amazon WEB-DL (stream copy senza ricodifica).
-  - Traccia Audio 1: Italiano (doppiaggio) AC3 224 kbps con tag `ita` e default.
-  - Traccia Audio 2: Inglese (originale) E-AC3 224 kbps con tag `eng`.
-  - Sottotitoli: Inglese e Francese inclusi da WEB-DL.
-- [x] Posizionamento del nuovo file dual audio MKV nella directory del film:
-  `Blackout (1997) {tmdb-25690} - [AMZN WEB-DL 1080p AVC Remux ITA-ENG].mkv`.
+### FASE 4: Bonifica, Risoluzione Scelta Utente (Opzione 1) & Pulizia SD
+- [x] Su indicazione dell'utente, adozione dell'Opzione 1: conservazione esclusiva della release in alta definizione 1080p Amazon WEB-DL in lingua originale inglese con sottotitoli.
+- [x] Eliminazione del remux errato e rimozione del file a bassa risoluzione `Blackout (1997) {tmdb-25690} - [SD XviD].avi` e relativo `.srt`.
+- [x] Directory pulita con solo la release 1080p e artwork master (`poster.jpg`, `fanart.jpg`, `folder.jpg`, `landscape.jpg`, `logo.png`).
 
 #### 🛑 CHECKPOINT FASE 4:
-- [x] File MKV 1080p Dual Audio generato e sincronizzato con successo.
+- [x] Libreria sanificata con la sola versione 1080p WEB-DL ad alta qualità.
 
 ---
 
 ### FASE 5: Validazione Test-Driven & Rescan Jellyfin
 - [x] Trigger del rescan della libreria `Movies` in Jellyfin via API REST (`/Items/f137a2dd.../Refresh`).
-- [x] Verifica visualizzazione su Jellyfin:
-  - Presenza delle versioni disponibili con switch rapido di qualità.
-  - Traccia audio italiana selezionata e sincronizzata.
-- [x] Aggiornamento documentazione nel Wiki ed eventuale allineamento archivio.
+- [x] Reperimento e sincronizzazione frame-perfect dei sottotitoli italiani (992 cue, PAL-to-NTSC linear time transform `25/23.976` con offset iniziale al millisecondo).
+- [x] Materializzazione di `Blackout (1997) {tmdb-25690} - [AMZN WEB-DL 1080p AVC] [GPRS].it.srt` con permessi `olindo:k8s` (`777`).
+- [x] Verifica scheda su Jellyfin: visualizzazione pulita della versione 1080p con audio originale E-AC3 e sottotitoli italiani e inglesi.
+- [x] Pulizia di tutti i file di test temporanei.
 
 #### 🛑 CHECKPOINT FINALE:
-- [x] Film fruibile in 1080p con audio italiano sincronizzato su Jellyfin.
+- [x] Film fruibile in 1080p ad alta risoluzione con sottotitoli italiani sincronizzati su Jellyfin.
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Fase Attiva**: **PIANO COMPLETATO CON SUCCESSO** ✅ (Fasi 1-5 completate).
-- **Ultima Azione Completata**: Generato il remux `Blackout (1997) {tmdb-25690} - [AMZN WEB-DL 1080p AVC Remux ITA-ENG].mkv` (7.0 GB) con video 1080p AVC, audio italiano AC3 (PAL speedup fix applicato a 0.959041 con delay 13.695s) e audio originale inglese. Permessi `olindo:k8s` impostati e refresh Jellyfin avviato.
+- **Ultima Azione Completata**: Clean slate ingestion completata tramite FileBot AMC. Aggiunti i sottotitoli italiani sincronizzati al millisecondo `Blackout (1997) {tmdb-25690} - [AMZN WEB-DL 1080p AVC] [GPRS].it.srt`. Permessi `olindo:k8s` (`777`) impostati e refresh Jellyfin completato.
 - **Prossimo Passo Operativo**: Nessuno.
-- **Blocchi/Decisioni Pendenti**: Nessuno. Lavori conclusi con successo.
+- **Blocchi/Decisioni Pendenti**: Nessuno.
