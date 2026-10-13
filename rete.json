@@ -45,6 +45,7 @@
         "s3",
         "nas-direct"
       ],
+      "memory": "48GB ECC (2x16GB Micron + 2x8GB SK Hynix DDR4 @ 2400 MT/s)",
       "management_ip": "10.10.20.50",
       "default_gateway": "10.10.20.1",
       "dns": "192.168.2.254, 1.1.1.1",
