@@ -89,6 +89,9 @@ Fornire all'ascoltatore un servizio di curatela discografica di alto livello per
 ### Fase 3: Download & Verifica Test-Driven (Post-Scelta)
 1. Ricevuta la scelta dell'utente:
    - Invocare `prowlarr_grab(index=<N>, category="lidarr-classical")`.
-2. Eseguire la verifica reale con `qbt_torrent_details`:
+   - Identificare l'hash del torrent aggiunto (tramite `qbt_list_torrents(filter="downloading")`) e invocare tassativamente `qbt_set_category(torrent_hash="<HASH>", category="lidarr-classical")` per forzare l'aggancio della categoria ed evitare che finisca in *Uncategorized* a causa di un limite dei multipart upload di qBittorrent v5.x.
+2. Eseguire la verifica reale con `qbt_torrent_details(torrent_hash="<HASH>")`:
    - Verificare che il torrent sia attivo e che `save_path` contenga `/media/downloads/lidarr-classical`.
-3. Notificare l'utente con il riepilogo del torrent avviato.
+3. Notificare l'utente con il riepilogo del torrent avviato:
+   - Riportare titolo esatto, formato, dimensione, hash, stato del download e chiarire che la cartella di staging è `/media/downloads/lidarr-classical`.
+
