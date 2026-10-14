@@ -1,0 +1,17 @@
+# Configurazione dichiarativa per Proxy FlareSolverr in Prowlarr (TrueNAS)
+prowlarr:
+  url: "http://10.10.20.50:9696"
+  tags:
+    - name: "flaresolverr"
+  proxies:
+    - name: "FlareSolverr"
+      implementation: "FlareSolverr"
+      configContract: "FlareSolverrSettings"
+      host: "http://flaresolverr:8191"
+      requestTimeout: 60
+      tags:
+        - "flaresolverr"
+  indexers:
+    - name: "FileMood"
+      tags:
+        - "flaresolverr"

@@ -1087,7 +1087,9 @@
         "kubernetes-mcp-internal",
         "ollama-mcp-internal",
         "kef-mcp-internal",
-        "nowaikit-mcp-internal"
+        "nowaikit-mcp-internal",
+        "headlamp",
+        "headlamp-internal"
       ],
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
     },

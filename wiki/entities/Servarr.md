@@ -64,6 +64,21 @@ L'ingestion dei film, la sanificazione delle versioni multiple e la gestione dei
 - **FileBot Normalizer (`webhook-normalizer`)**: container immutabile Docker su TrueNAS bare-metal (`ghcr.io/pindaroli/custom-normalizer:1.7.1`), auto-contenuto (senza bind-mount di codice da host) e governato dal workflow [[media-normalization-pipeline]]. Esegue FileBot AMC, auto-sanitizzazione multi-versione via `sanitize_movie_folder.py`, purge totale dei file `.nfo` e refresh automatico su Jellyfin.
 - **Incidenti Correlati**: [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
 
+## 6. FlareSolverr & External Services Decoupling (Pattern Occam's Razor)
+Per superare i meccanismi di protezione anti-bot (Cloudflare Turnstile Challenge) su indexer come FileMood, e mantenere una netta separazione delle risorse computazionali tra Kubernetes e TrueNAS:
+- **FlareSolverr su TrueNAS Docker**: container `ghcr.io/flaresolverr/flaresolverr:v3.4.6` attivo nello stack Docker bare-metal su porta `8191` (`10.10.20.50:8191`), risolvibile internamente allo stack come `http://flaresolverr:8191`.
+- **Integrazione Prowlarr**: configurato proxy `FlareSolverr` associato al tag `flaresolverr` e agganciato all'indexer `FileMood` (ID: 4), consentendo scraping e ricerca torrent senza blocchi o errori HTTP 403.
+- **Decoupling Generico Kubernetes (Helm Project Chart)**: in `charts/servarr/templates/external-services.yaml` (`pindaroli-arr-helm` v1.10.2), i carichi disabilitati su cluster (`flaresolverr`, `prowlarr`, `qbittorrent`) vengono materializzati come `Service` ed `Endpoints` standard via oggetto generico:
+  ```yaml
+  <component>:
+    enabled: false
+    external:
+      ip: "10.10.20.50"
+      port: <port>
+  ```
+  Questo consente a tutti i pod K8s di raggiungere i servizi esterni attraverso i canonici FQDN del cluster DNS (`http://servarr-flaresolverr:8191`, `http://servarr-prowlarr:9696`, `http://servarr-qbittorrent-web:8080`) senza cablaggi hardcoded nei template né consumo di risorse computazionali sui nodi Talos.
+- **Piano di Riferimento**: [[flaresolverr-truenas-migration-and-declarative-sync]].
+
 ## Relazioni
 - Namespace: `arr`
 - Dipendenze Database: `postgres-main` ([[Talos_Cluster]]).
@@ -74,5 +89,7 @@ L'ingestion dei film, la sanificazione delle versioni multiple e la gestione dei
 - Strategia Classica: [[classical-music-strategy]].
 - Orchestrazione Classica (Prefect): [[prefect-beets-adaptation]].
 - Bonifica Modern: [[beets-music-rescue-pipeline]].
+- Piani Correlati: [[flaresolverr-truenas-migration-and-declarative-sync]], [[arrstack-mcp-truenas-docker-migration]], [[servarr-truenas-permanent-migration]].
 - Incidenti: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]], [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
+
 

@@ -53,6 +53,9 @@ sonarr:
 
 qbittorrent:
   enabled: false
+  external:
+    ip: "10.10.20.50"
+    port: 8080
   categories:
     - radarr
     - lidarr
@@ -181,24 +184,17 @@ qbittorrent:
 
 
 flaresolverr:
-  enabled: true
-  image:
-    tag: v3.4.6
-  env:
-    FLARESOLVERR_RECAPTCHA_SOLVER: "hcaptcha-solver"
-    LOG_LEVEL: "info"
-    TZ: "Europe/Rome"
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "500m"
-    limits:
-      memory: "2Gi"
-      cpu: "3000m"
+  enabled: false
+  external:
+    ip: "10.10.20.50"
+    port: 8191
 
 
 prowlarr:
   enabled: false
+  external:
+    ip: "10.10.20.50"
+    port: 9696
   initContainers:
     - name: wait-for-db
       image: busybox:1.36.1

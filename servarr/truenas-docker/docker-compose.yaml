@@ -60,6 +60,18 @@ services:
       - 9696:9696
     restart: unless-stopped
 
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Europe/Rome
+    ports:
+      - 8191:8191
+    restart: unless-stopped
+
   homepage:
     image: ghcr.io/gethomepage/homepage:v2.4.0
     container_name: homepage

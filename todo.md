@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Integrazione Headlamp Kubernetes Web UI via Helm [[headlamp-kubernetes-integration]]
+- [x] Fase 1: Scaffolding e Configurazione Dichiarativa (`headlamp/headlamp-values.yaml`) ✅
+- [x] Fase 2: Registrazione di Rete e DNS (`rete.json` & OPNsense Unbound) ✅
+- [x] Fase 3: Deployment Helm della Release (`headlamp/headlamp` nel namespace `headlamp`) ✅
+- [x] Fase 4: Validazione Test-Driven & Configurazione RBAC / Access Token ✅
+- [x] Fase 5: Integrazione Dashboard Homepage (`homepage.yaml` e `homepage-local.yaml`) & Consolidamento Knowledge Base ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Decluttering & Clusterizzazione Tassonomica Segnalibri Chrome [[chrome-bookmarks-decluttering-and-clustering]]
 - [x] Fase 1: Progettazione Tassonomia, Mappatura 208 URL Unici e Approvazione Utente (Layout con Homepage/homepage-truenas + 7 cartelle) ✅
 - [x] Fase 2: Creazione Nuove Cartelle Strutturali via MCP `chrome-bookmarks-mcp` (7 radice su barra + 1 su archivio + 15 sottocartelle) ✅
@@ -21,6 +28,13 @@
 - [x] Fase 3: Riallineamento CNPG S3 Endpoint (`postgres/cluster.yaml` applicato, WAL archiver verso TrueNAS :3900)
 - [ ] Fase 4: Diagnostica e Ripristino Connettività VLAN 20 / K8s VIP `10.10.20.55:6443` (Rimandata)
 - [ ] Fase 5: Consolidamento Documentale, Verifica Salute Finale CNPG e Chiusura Piano
+## ✅ Completato: Migrazione FlareSolverr su TrueNAS Docker & Riconciliazione Dichiarativa K8s/Prowlarr [[flaresolverr-truenas-migration-and-declarative-sync]]
+- [x] Fase 1: Installazione FlareSolverr nello Stack Docker TrueNAS (`docker-compose.yaml` su `10.10.20.50:8191`) ✅
+- [x] Fase 2: Configurazione Dichiarativa di Prowlarr verso FlareSolverr (Tag `flaresolverr`, Proxy `http://flaresolverr:8191`, Indexer `FileMood`) ✅
+- [x] Fase 3: Reindirizzamento K8s via Helm Chart (`charts/servarr` `external-services.yaml` e `arr-values.yaml`) ✅
+- [x] Fase 4: Validazione Test-Driven End-to-End (Bypass Challenge FileMood, test DNS K8s) ✅
+- [x] Fase 5: Consolidamento Documentale & Knowledge Base (Wiki, `Servarr.md`, sync context) ✅
+
 
 
 ## 🚀 In Corso / Validazione: Automazione Full Power Homelab (WoL Idempotente, Checkpoint e Alerting) [[homelab-full-power-automation]]

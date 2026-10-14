@@ -418,6 +418,11 @@ data:
             description: Traefik reverse proxy dashboard
             icon: traefik.png
             siteMonitor: http://traefik-metrics.traefik.svc.cluster.local:9100/metrics
+        - Headlamp:
+            href: https://headlamp.pindaroli.org
+            description: Kubernetes cluster management dashboard
+            icon: si-kubernetes
+            siteMonitor: http://headlamp.headlamp.svc.cluster.local:80/
 
     - "AI services":
         - n8n:
@@ -532,6 +537,11 @@ data:
             href: https://grafana.pindaroli.org
             description: Monitoring Dashboard
             icon: grafana.png
+            siteMonitor: http://victoria-monitoring-grafana.monitoring.svc.cluster.local:80/api/health
+        - Certificati SSL:
+            href: https://grafana.pindaroli.org/d/cert-manager/cert-manager
+            description: Monitoraggio Cert-Manager & Scadenze TLS
+            icon: mdi-certificate-outline
             siteMonitor: http://victoria-monitoring-grafana.monitoring.svc.cluster.local:80/api/health
         - Scrutiny:
             href: http://10.10.20.50:31054

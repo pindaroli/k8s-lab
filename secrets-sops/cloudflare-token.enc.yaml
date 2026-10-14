@@ -5,19 +5,19 @@ metadata:
     namespace: cert-manager
 type: Opaque
 stringData:
-    api-token: ENC[AES256_GCM,data:KvR3hhrupNjFk4NZhuDfDH2f1EUJiQGqkOMZT00LwsKItc1FKS3e,iv:2Y6MzM7kHNIirfPKnjcNWsjuGKUNoSlI7rNuLe67/Uo=,tag:o1gy9vfDDX9YvUt/feiiNg==,type:str]
+    api-token: ENC[AES256_GCM,data:ouXy4/K+yIcVcz2Pou4/zpyyuiQ0eU8WJI8r5PhXwFmqmx3lJGec7Nz+Cl7CDoC0uiBWW9U=,iv:+nY2T70khMLj+r28U23rwCnbeWF5ovMHWXOcA2G7Dhg=,tag:zm2rhAhzNSZErOd64Bx+hQ==,type:str]
 sops:
     age:
         - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
           enc: |
             -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBwK1pzTUVISUdxMlo3ZFRp
-            dDVtbThscXZEYWJyVEptSmtMbEdkRmNOK21jCnEwOVRrbHRmRjF1aDBWdDFjYWRU
-            UFhRRGpzOWQzdzd3S3p1N05PdVB0djAKLS0tIHBEQjZncDJoK0c5YzE3VUpocHpw
-            Q01lQ1l0RkltakN6VDJnRGp3dnhVdTgKJPwcLgLxGspvcAHlyvOFLmxYma5vnIQk
-            l4SUMTXYiu8L4pONaClY9hqYXwGewsM74C2+ybkFpIPvUbO/pwQ10g==
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBlczNMeDVxQ2FVTGd5ZzVE
+            OGttaE5ZKzY2TnZYR0I5T25QWEwxclhOQVc0CkdRT0FPRncxdUI5VDRQUEdNS2Rj
+            eWxvd2RlTUVJWGcydmxTMzRUcWpieGMKLS0tIG9MUDFmWWdmenJTY1BDN2VhU0VO
+            dXFpOXpZcTZjVldhSkJPYnlwSEtxNW8KX/DGvzFdAtvMpI90tOuVEWC4U0hGZ1eV
+            oQwDqX8Wn+SuRCNDPdpBZROvcJCk4KAqfzGknOma2Hl733EURTyCdQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-05-10T11:21:49Z"
-    mac: ENC[AES256_GCM,data:nY0Ba1OJA/D7YhzOKfarvm+d74cma8Dx0Md0V8lyVkt1ZH4m/ud51fhCxIN16Rd3unAzDS/AHKqYAFzFJCHnJeC7Vo99c+Q/WjVjcXCvU2NWDj8sq/iOXTdA6cjxHmnXQ+nIjqBpeIecWi1z01H52aaIBNiKEzrD2PzWZYTtti8=,iv:PmqokMCVS3GAlyMiuvt8lCLgXkvQxBeN+oSKUwnvs9A=,tag:ySYqUU/ZHD6WcCwz18aVjg==,type:str]
+    lastmodified: "2026-10-14T06:48:09Z"
+    mac: ENC[AES256_GCM,data:STRtI4DMb37OLG6Yizs6ZKvwZeb/XP+WX2P2zqVqHRDbekiaEaaybl3NbDeny7HdgSAzCOnnioLsRHnYofD0JJB41AK/p5PKQ7D3MBRtquU7Fz8BScfQDXghTGQmQTFEX/6RQpiYdjEale4iH6ElxuV6qMh4ovDs/M+VZlzOcPs=,iv:aI0ADWL4Fxbcgf2yCmoQq+IltzhG/y8cX2OMkjStFxE=,tag:f2+o8GNhckiFO7t0BzLobQ==,type:str]
     encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
     version: 3.12.2
