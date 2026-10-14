@@ -14,8 +14,7 @@
   - **Ultima Azione Completata**: [Descrizione sintetica del comando/azione eseguita con successo]
   - **Prossimo Passo Operativo**: [Comando esatto o modifica da fare successivamente]
   - **Blocchi/Decisioni Pendenti**: [Attesa via libera, info mancanti o discussioni aperte]
-- **Obbligo di Rollout Automatico Homepage**: Ogni volta che viene modificata la configurazione della dashboard Homepage (in `homepage/homepage.yaml` o `homepage/homepage-local.yaml`), è **obbligatorio** ed automatico eseguire immediatamente l'apply dei manifesti ed il rollout restart dei deployment nel namespace `default`:
-  `kubectl apply -f homepage/homepage.yaml && kubectl apply -f homepage/homepage-local.yaml && kubectl rollout restart deployment/homepage deployment/homepage-local -n default`
+- **Gestione Dashboard Homepage (Homepage Operations Mandate)**: Qualsiasi modifica, aggiunta di servizi o configurazione delle dashboard Homepage (`homepage/homepage.yaml` e `homepage/homepage-local.yaml`) DEVE tassativamente attivare e seguire la skill `.agents/skills/homepage-manager/` (allineamento simmetrico, verifica preventiva raggiungibilità icone a 7 livelli, fallback standard MDI e rollout automatico K8s).
 
 - **Gestione Switch Extreme via Ansible (Ansible Mandate)**: Per lo switch Extreme Networks, i comandi CLI/SSH di sola lettura (es. `show vlan`, `show configuration`, ispezioni di stato) sono liberamente consentiti per la diagnostica. Qualsiasi operazione di modifica della configurazione DEVE essere obbligatoriamente automatizzata tramite Playbook Ansible permanenti salvati nel repository.
 

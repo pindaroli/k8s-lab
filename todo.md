@@ -22,6 +22,12 @@
 - [x] Fase 4: Bonifica Opzione 1: rimozione file SD e conservazione esclusiva release 1080p WEB-DL ✅
 - [x] Fase 5: Validazione Test-Driven & Rescan Jellyfin ✅
 
+## 🚀 [x] ✅ COMPLETATO: Tool CLI Interattivo per Pulizia Selettiva Conversazioni Antigravity [[antigravity-conversations-cleanup-tool]]
+- [x] Fase 1: Creazione Directory `scripts/antigravity/` e Motore Python (`clean_conversations.py`) ✅
+- [x] Fase 2: Creazione Wrapper Shell (`clean_conversations.sh`) e Integrazione Launcher `go.py` ✅
+- [x] Fase 3: Validazione Test-Driven con Modalità `--dry-run` ed Eccezioni ✅
+- [x] Fase 4: Consolidamento Documentale Wiki e Chiusura Piano ✅
+
 ## 🚀 In Corso: Risoluzione Timeout Startup Talos & Riallineamento Rete TrueNAS VLAN 20 [[talos-startup-and-truenas-vlan20-realign]]
 - [x] Fase 1: Bonifica Hookscript Proxmox VE (`wait-for-truenas.sh` aggiornato con `10.10.20.50` su `pve1`, `pve2`, `pve3`)
 - [x] Fase 2: Esecuzione Playbook Startup (`startup_from_truenas_only.yml` superato con uncordon nodi Talos)

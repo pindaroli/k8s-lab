@@ -397,7 +397,7 @@ data:
         - Headlamp:
             href: https://headlamp-internal.pindaroli.org
             description: Kubernetes cluster web UI (Internal)
-            icon: si-kubernetes
+            icon: headlamp.png
             siteMonitor: http://headlamp.headlamp.svc.cluster.local:80/
 
     - "AI services":
@@ -409,12 +409,12 @@ data:
         - Hermes Agent:
             href: https://hermes-internal.pindaroli.org
             description: LLM-based Kubernetes & Infra Agent (Internal)
-            icon: mdi-robot-outline
+            icon: hermes.png
             siteMonitor: http://hermes-hermes-agent.hermes.svc.cluster.local:9119/health
         - RAGFlow:
             href: https://ragflow-internal.pindaroli.org
             description: Enterprise RAG & DeepDoc Document Intelligence (Internal)
-            icon: mdi-brain
+            icon: https://raw.githubusercontent.com/infiniflow/ragflow/main/web/public/logo.svg
             siteMonitor: http://ragflow.ragflow-system.svc.cluster.local:80/
         # - MCP Gateway & Fleet:
         #     href: https://mcp-ui-internal.pindaroli.org
@@ -507,7 +507,7 @@ data:
         - Garage:
             href: http://10.10.20.50:3903/health
             description: S3 Object Storage (Internal)
-            icon: mdi-bucket-outline
+            icon: garage.png
             siteMonitor: http://10.10.20.50:3903/health
         - Grafana:
             href: https://grafana-internal.pindaroli.org

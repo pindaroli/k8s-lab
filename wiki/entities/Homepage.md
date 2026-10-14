@@ -1,6 +1,6 @@
 ---
 title: "Homepage Dashboard"
-last_updated: "2026-09-26"
+last_updated: "2026-10-14"
 confidence: "High"
 tags:
   - "#app"
@@ -49,6 +49,10 @@ Homepage include un controllo interattivo per la gestione del container gaming `
   - 🔴 **Avvia**: quando il container è spento (cliccando avvia il container e arresta Ollama).
   - 🟡 **Avvio... / Stop...**: stato transitorio con spinner.
 - Piano di riferimento: [[homepage-steam-lxc-control-button]].
+
+## 6. Standard Icone Servizi & Skill Operativa
+La gestione dei servizi, la risoluzione delle icone e il rollout delle dashboard sono governati tassativamente dalla skill [homepage-manager](file:///.agents/skills/homepage-manager/SKILL.md).
+Prima dell'inserimento, ogni icona è soggetta al protocollo di verifica preventiva a 7 livelli (Dashboard Icons, varianti SVG/alt, selfh.st, web asset interni dell'app `/apple-touch-icon.png` e `/logo.svg`, Simple Icons, Lobe/CNCF e Chart.yaml upstream), con fallback standard MDI solo se tutti i tentativi falliscono.
 
 ## Relazioni
 - Autenticazione via: [[OAuth2_Proxy]].
