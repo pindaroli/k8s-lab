@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Sviluppo Skill Classical Music Curator per Ricerca Critica e Download Assistito [[classical-music-curator-skill]]
+- [x] Fase 1: Creazione Skill `.agents/skills/classical-music-curator/SKILL.md` (Gate di stop, 7 criteri e tracker opzionale) ✅
+- [x] Fase 2: Registrazione Regole di Progetto in `.agents/AGENTS.md` e `GEMINI.md` ✅
+- [x] Fase 3: Validazione Test-Driven End-to-End (Dry-Run su Caso d'Uso Reale senza download) ✅
+- [x] Fase 4: Consolidamento Documentale & Rigenerazione Wiki Context (`build_wiki_context.py`) ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Integrazione Headlamp Kubernetes Web UI via Helm [[headlamp-kubernetes-integration]]
 - [x] Fase 1: Scaffolding e Configurazione Dichiarativa (`headlamp/headlamp-values.yaml`) ✅
 - [x] Fase 2: Registrazione di Rete e DNS (`rete.json` & OPNsense Unbound) ✅

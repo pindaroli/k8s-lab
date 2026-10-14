@@ -48,6 +48,8 @@
 
 - **Video Ingestor Skill (`.agents/skills/video-ingestor/`)**: Ogni volta che l'utente scrive *"fai ingestion di <nome film>"*, *"ingestion di <nome film>"*, o richiede l'ingestion/normalizzazione di film scaricati in qBittorrent (categoria `video-filebot` o cartelle manuali) verso `/media/movies/`, l'agente DEVE obbligatoriamente attivare ed eseguire la skill dedicata `video-ingestor` (innesco atomico del Job Kubernetes FileBot AMC tramite `/scripts/trigger-job.sh`, monitoraggio dei log e verifica finale di hardlink e artwork).
 
+- **Classical Music Curator Skill (`.agents/skills/classical-music-curator/`)**: Ogni volta che l'utente richiede di cercare o scaricare brani, sinfonie, concerti o quartetti di musica classica specificando autore/opera (con tracker opzionale), l'agente DEVE obbligatoriamente attivare ed eseguire la skill dedicata `classical-music-curator` (ricerca Prowlarr, selezione critica comparativa dei 7 migliori candidati per esecuzione artistica e qualità audiofila, GATE DI STOP vincolante con divieto di grab automatico, e download finale con categoria `lidarr-classical` solo dopo la scelta esplicita dell'utente).
+
 
 
 

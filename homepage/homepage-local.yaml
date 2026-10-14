@@ -558,7 +558,7 @@ data:
         - Prefect Console:
             href: https://prefect-internal.pindaroli.org
             description: Workflow & Task Orchestrator
-            icon: mdi-api
+            icon: si-prefect
             siteMonitor: http://prefect-server.prefect.svc.cluster.local:4200/api/health
 ---
 apiVersion: v1
