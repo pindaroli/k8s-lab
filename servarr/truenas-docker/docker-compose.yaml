@@ -175,3 +175,55 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+  bitmagnet-postgres:
+    image: postgres:16-alpine
+    container_name: bitmagnet-postgres
+    restart: unless-stopped
+    shm_size: 1g
+    environment:
+      - POSTGRES_DB=bitmagnet
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${BITMAGNET_DB_PASSWORD:-postgres}
+      - PGUSER=postgres
+    volumes:
+      - /mnt/stripe/truenas-docker/bitmagnet/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bitmagnet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  bitmagnet:
+    image: ghcr.io/bitmagnet-io/bitmagnet:v0.10.1
+    container_name: bitmagnet
+    restart: unless-stopped
+    ports:
+      - "3333:3333"
+      - "3334:3334/tcp"
+      - "3334:3334/udp"
+    environment:
+      - POSTGRES_HOST=bitmagnet-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=bitmagnet
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${BITMAGNET_DB_PASSWORD:-postgres}
+      - TMDB_API_KEY=${TMDB_API_KEY}
+      - DHT_CRAWLER_SCALING_FACTOR=10
+      - DHT_CRAWLER_SAVE_FILES_THRESHOLD=500
+      - DHT_CRAWLER_SAVE_PIECES=false
+      - LOG_LEVEL=info
+      - TZ=Europe/Rome
+    volumes:
+      - /mnt/stripe/truenas-docker/bitmagnet/config:/root/.config/bitmagnet
+      - /mnt/stripe/truenas-docker/bitmagnet/data:/root/.local/share/bitmagnet
+    command:
+      - worker
+      - run
+      - --keys=http_server
+      - --keys=queue_server
+      - --keys=dht_crawler
+    depends_on:
+      bitmagnet-postgres:
+        condition: service_healthy

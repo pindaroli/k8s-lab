@@ -1,29 +1,36 @@
 ---
-title: "Piano: Test Locale, Configurazione Docker, Validazione Meross MCP Server & Widget Homepage"
+title: "Piano: Test Locale, Pipeline CI/CD GHCR, Docker TrueNAS & Widget Homepage Meross MCP"
 type: plan
 status: active
 certified_for_ai: true
 created_at: 2026-10-11
+last_updated: 2026-10-15
 tags:
   - "#plan"
   - "#meross"
   - "#mcp"
   - "#docker"
   - "#truenas"
+  - "#ghcr"
+  - "#cicd"
   - "#homepage"
   - "#iot"
   - "#power-monitoring"
 ---
 
-# Piano: Test Locale, Configurazione Docker, Validazione Meross MCP Server & Widget Homepage
+# Piano: Test Locale, Pipeline CI/CD GHCR, Docker TrueNAS & Widget Homepage Meross MCP
 
-Questo documento definisce il piano operativo per il collaudo locale del server **Meross Dual Gateway** (`pindaroli/meross-mcp`), la sua integrazione containerizzata nello stack Docker permanente di TrueNAS SCALE bare-metal (`10.10.20.50`), la validazione come server MCP centralizzato per Antigravity e l'esposizione del widget di monitoraggio energetico (consumi in Watt, Volt e Ampere) sulla dashboard Homepage.
+Questo documento definisce il piano operativo per:
+1. Il collaudo funzionale del server **Meross Dual Gateway** (`pindaroli/meross-mcp`) con le credenziali reali.
+2. L'implementazione della pipeline CI/CD GitHub Actions per la build e pubblicazione automatica delle immagini container OCI su **GitHub Container Registry (GHCR)** con **versionamento semantico formale** (`ghcr.io/pindaroli/meross-mcp:0.1.0`).
+3. L'integrazione dichiarativa del servizio nello stack Docker permanente di TrueNAS SCALE bare-metal (`10.10.20.50`), con **divieto assoluto del tag `:latest`** e adozione esclusiva dell'ultima versione semantica rilasciata.
+4. La configurazione centralizzata come server MCP in Antigravity (Streamable HTTP unificato su porta `8112`) e l'integrazione del widget di monitoraggio energetico (Watt, Volt, Ampere) sulla dashboard Homepage.
 
 ---
 
 ## 🗺️ Mappe Concettuali e Relazioni
 - [[meross-mcp-server-project]] (Piano originario di scaffolding e sviluppo della libreria, FastAPI REST e FastMCP)
-- [[zero-install-executable-package-pattern]] (Standard architetturale pacchetti zero-install on-demand)
+- [[mcp-upstream-tracking-pattern]] / [[mcp-registry-package-pattern]] (Standard architetturale build OCI CI/CD, immutabilità e divieto di `:latest`)
 - [[mcp-secret-projection-pattern]] (Proiezione sicura delle credenziali `MEROSS_*` nello stack TrueNAS)
 - [[MCP_Platform]] (Architettura e registro dei server MCP attivi 24/7 su TrueNAS Docker)
 - [[Homepage]] (Dashboard centrale del lab con supporto widget `customapi` e rollout dichiarativo)
@@ -31,80 +38,115 @@ Questo documento definisce il piano operativo per il collaudo locale del server 
 
 ---
 
-## 1. Architettura dell'Integrazione
+## 1. Architettura dell'Integrazione & Policy di Versionamento
+
+> [!CRITICAL]
+> **MANDATO VERSIONAMENTO SEMANTICO (DIVIETO ASSOLUTO DI `:latest`)**:
+> In conformità con le policy architetturali del lab, è **tassativamente proibito** utilizzare il tag generico `:latest` o build locali prive di versione nella configurazione dello stack Docker di TrueNAS.
+> Il servizio Docker di TrueNAS DEVE referenziare sempre e solo **l'ultima versione semantica formale pubblicata su GHCR** (es. `image: ghcr.io/pindaroli/meross-mcp:0.1.0`). Ogni aggiornamento applicativo richiede il bump semantico su Git, la build CI/CD su GHCR e l'aggiornamento dichiarativo del tag nel `docker-compose.yaml`.
 
 ```mermaid
 flowchart TD
-    subgraph Clients["Client & Consumatori"]
-        AG["Google Antigravity (AI Agent)"]
-        HP_K8S["Homepage (K8s: home.pindaroli.org)"]
-        HP_TN["Homepage (TrueNAS: :3000)"]
+    subgraph Dev["Sviluppo & Repository Git (pindaroli/meross-mcp)"]
+        CODE["Codice Sorgente Python (FastAPI + FastMCP)"]
+        TAG["Git Tag Semantico (es. v0.1.0)"]
+    end
+
+    subgraph CICD["GitHub Actions CI/CD"]
+        WORKFLOW["Workflow: docker-publish.yml\nTrigger: push tag v* / manual dispatch"]
+        BUILD["Build Multi-Arch (linux/amd64)\nHardened Dockerfile (appuser UID 1000)"]
+        PUSH["Push GHCR: ghcr.io/pindaroli/meross-mcp:0.1.0"]
     end
 
     subgraph TrueNAS["TrueNAS SCALE Bare-Metal (10.10.20.50)"]
         subgraph DockerStack["Stack Docker MCP (/mnt/stripe/truenas-docker/mcp/)"]
-            MCP_MEROSS["Container mcp-meross\n(FastAPI + FastMCP Dual Gateway)\nPorta Host: 8112"]
+            COMPOSE["docker-compose.yaml\nimage: ghcr.io/pindaroli/meross-mcp:0.1.0 (NO :latest)\nPorta Host: 8112:8112"]
+            CONTAINER["Container mcp-meross\n(FastAPI + FastMCP Dual Gateway)"]
             ENV_FILE[".env protetto (SOPS)\nMEROSS_EMAIL & MEROSS_PASSWORD"]
         end
     end
 
-    subgraph MerossCloud["Infrastruttura Meross"]
-        AUTH["Cloud Auth REST (iotx-eu.meross.com)"]
-        MQTT_BROKER["Broker MQTT over TLS (AWS IoT)"]
+    subgraph Clients["Client & Consumatori"]
+        AG["Google Antigravity (AI Agent)\nserverUrl: http://10.10.20.50:8112/mcp"]
+        HP_K8S["Homepage (K8s: home.pindaroli.org)"]
+        HP_TN["Homepage (TrueNAS: :3000)"]
     end
 
-    subgraph Hardware["Dispositivi Fisici Homelab"]
-        MSS310["Prese Smart Meross MSS310\n(con Power Metering)"]
-    end
-
-    AG -->|JSON-RPC /mcp| MCP_MEROSS
-    HP_K8S & HP_TN -->|GET /api/v1/devices/{id}/power| MCP_MEROSS
-    ENV_FILE --> MCP_MEROSS
-    MCP_MEROSS -.->|Login Iniziale| AUTH
-    MCP_MEROSS <===>|MQTT over TLS (Persistent Pool)| MQTT_BROKER
-    MQTT_BROKER <===>|Telemetria W/V/A & Relè| MSS310
+    CODE --> TAG --> WORKFLOW --> BUILD --> PUSH
+    PUSH -->|Pull Versione Semantica| COMPOSE --> CONTAINER
+    ENV_FILE --> CONTAINER
+    AG -->|Streamable HTTP POST /mcp| CONTAINER
+    HP_K8S & HP_TN -->|GET /api/v1/devices/{id}/power| CONTAINER
 ```
 
 ---
 
 ## 2. Fasi Operative del Piano
 
-### Fase 1: Test Server Meross in Locale
-- **Obiettivo**: Verificare il funzionamento del runtime e della libreria con credenziali reali prima del deployment.
+### Fase 1: Test Server Meross in Locale & Validazione Credenziali
+- **Obiettivo**: Verificare il funzionamento del runtime e della libreria con credenziali reali prima di procedere al rilascio.
 - **Azioni**:
   1. Configurazione delle credenziali `MEROSS_EMAIL` e `MEROSS_PASSWORD` nel file `.env` in `/Users/olindo/prj/meross-mcp/`.
   2. Test di autenticazione REST iniziale su `https://iotx-eu.meross.com`.
   3. Stabilimento del client asincrono e polling MQTT over TLS verso il broker Meross.
-  4. Esecuzione del Dual Gateway in locale (`meross-mcp --port 8112`).
-  5. Test funzionale dei tool MCP (`meross_list_devices`, `meross_get_device_state`, commutazione relè e telemetria energetica) con le prese fisiche presenti nel lab.
+  4. Esecuzione del Dual Gateway in locale (`python -m meross_mcp.app --transport http --port 8112`).
+  5. Test funzionale dei tool MCP (`meross_list_devices`, `meross_get_device_state`, telemetria energetica) con le prese fisiche MSS310 censite nel lab.
 - **Verifica Test-Driven**: Esecuzione smoke test CLI e chiamata `curl -s http://127.0.0.1:8112/api/v1/devices` con esito 200 OK e lista dispositivi popolata.
 
-### Fase 2: Configurazione Docker Server MCP Meross
-- **Obiettivo**: Integrare dichiarativamente il servizio Meross nello stack Docker Compose centralizzato di TrueNAS.
+### Fase 2: Implementazione Pipeline CI/CD GitHub Actions & Release OCI `v0.1.0`
+- **Obiettivo**: Automatizzare la produzione e pubblicazione dell'immagine Docker ufficiale su GHCR con tag semantico.
+- **Azioni**:
+  1. Creazione del workflow `.github/workflows/docker.yml` nel repository `pindaroli/meross-mcp`:
+     - Trigger: push di tag `v*` e `workflow_dispatch` manuale.
+     - Login a GHCR (`ghcr.io`) tramite token GitHub.
+     - Build OCI AMD64 basata sul `Dockerfile` di produzione (utente unprivileged `appuser` UID 1000).
+     - Tagging e push: `ghcr.io/pindaroli/meross-mcp:<versione>` (es. `0.1.0`).
+  2. Commit e push delle modifiche sul repository GitHub.
+  3. Creazione e push del tag git `v0.1.0`.
+  4. Monitoraggio del workflow GitHub Actions fino a completamento positivo.
+- **Verifica Test-Driven**: Ispezione su GHCR (`ghcr.io/pindaroli/meross-mcp:0.1.0`) e test di pull dell'immagine pubblicata.
+
+### Fase 3: Configurazione Dichiarativa TrueNAS Docker (Pinning Semantico)
+- **Obiettivo**: Integrare il container nello stack Docker di TrueNAS referenziando la versione semantica ufficiale, vietando `:latest`.
 - **Azioni**:
   1. Aggiornamento dichiarativo di `docker/mcp/docker-compose.yaml`:
-     - Servizio `meross-mcp`, container `mcp-meross`.
-     - Porta host dedicata `8112:8112`.
-     - Healthcheck su `http://127.0.0.1:8112/healthz`.
-     - Riconfigurazione parametri d'ambiente: `MEROSS_GATEWAY_HOST=0.0.0.0`, `MEROSS_GATEWAY_PORT=8112`.
-  2. Aggiornamento dello script `docker/mcp/build-images.sh` per la build locale dell'immagine (`local/meross-mcp:latest` da `/Users/olindo/prj/meross-mcp/Dockerfile`).
-  3. Configurazione sicura delle credenziali `MEROSS_EMAIL` e `MEROSS_PASSWORD` nel file `.env` di TrueNAS (`/mnt/stripe/truenas-docker/mcp/.env`) tramite SOPS.
-- **Verifica Test-Driven**: Linting del file `docker-compose.yaml` (`docker compose config`) e build dell'immagine container senza errori.
+     ```yaml
+     meross-mcp:
+       container_name: mcp-meross
+       image: ghcr.io/pindaroli/meross-mcp:0.1.0  # Tassativo: versione semantica esplicita (NO :latest)
+       restart: unless-stopped
+       env_file: .env
+       ports:
+         - "8112:8112"
+       healthcheck:
+         test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8112/healthz')"]
+         interval: 30s
+         timeout: 5s
+         retries: 3
+         start_period: 10s
+     ```
+  2. Configurazione sicura delle credenziali `MEROSS_EMAIL` e `MEROSS_PASSWORD` nel file `.env` di TrueNAS (`/mnt/stripe/truenas-docker/mcp/.env`) tramite estrazione SOPS.
+  3. Nessuna necessità di build locale on-host: TrueNAS esegue il pull diretto dell'immagine semantica da GHCR.
+- **Verifica Test-Driven**: Linting del file `docker-compose.yaml` (`docker compose config`).
 
-### Fase 3: Deployment e Test di Validazione End-to-End Container Docker
+### Fase 4: Deployment e Validazione End-to-End su TrueNAS
 - **Obiettivo**: Avviare il container su TrueNAS SCALE bare-metal e connetterlo al client Antigravity.
 - **Azioni**:
-  1. Sincronizzazione dei file aggiornati su TrueNAS SCALE (`10.10.20.50`).
-  2. Avvio del container: `docker compose up -d meross-mcp`.
-  3. Verifica dello stato di salute (`docker ps`, health status `healthy`, ispezione dei log Uvicorn/FastMCP).
-  4. Validazione endpoint di rete: probe HTTP su `http://10.10.20.50:8112/healthz` e endpoint MCP su `http://10.10.20.50:8112/mcp`.
+  1. Sincronizzazione dei file dichiarativi su TrueNAS SCALE (`10.10.20.50`).
+  2. Avvio del container: `docker compose pull meross-mcp && docker compose up -d meross-mcp`.
+  3. Verifica dello stato di salute (`docker ps`, health status `healthy`, ispezione dei log).
+  4. Validazione endpoint di rete: probe HTTP su `http://10.10.20.50:8112/healthz` ed endpoint MCP su `http://10.10.20.50:8112/mcp`.
   5. Aggiornamento della configurazione centralizzata in `~/.gemini/antigravity/mcp_config.json`:
-     - Server `meross` con trasporto `sse` o `streamable-http` puntato a `http://10.10.20.50:8112/mcp`.
+     ```json
+     "meross": {
+       "serverUrl": "http://10.10.20.50:8112/mcp"
+     }
+     ```
   6. Collaudo interattivo tramite Antigravity dei tool MCP sul server remoto.
 - **Verifica Test-Driven**: Chiamata tool `meross_list_devices` tramite Antigravity con risposta corretta proveniente dal container TrueNAS.
 
-### Fase 4: Integrazione Widget Consumi su Dashboard Homepage
-- **Obiettivo**: Esporre i consumi in tempo reale delle prese Meross sulla dashboard Homepage K8s e TrueNAS.
+### Fase 5: Integrazione Widget Consumi su Dashboard Homepage
+- **Obiettivo**: Esporre i consumi in tempo reale delle prese Meross sulle dashboard Homepage K8s e TrueNAS.
 - **Azioni**:
   1. Identificazione dell'UUID/nome della presa Meross adibita al monitoraggio.
   2. Configurazione del widget nativo `customapi` in `homepage/homepage.yaml` e `homepage/homepage-local.yaml`:
@@ -132,7 +174,7 @@ flowchart TD
                suffix: " A"
      ```
   3. Sincronizzazione della configurazione sulla dashboard Homepage bare-metal di TrueNAS.
-  4. Esecuzione del rollout obbligatorio dei deployment K8s:
+  4. Esecuzione del rollout dei deployment K8s:
      ```bash
      kubectl apply -f homepage/homepage.yaml && kubectl apply -f homepage/homepage-local.yaml && kubectl rollout restart deployment/homepage deployment/homepage-local -n default
      ```
@@ -142,7 +184,7 @@ flowchart TD
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 (Test Server Meross in Locale)
-- **Ultima Azione Completata**: Piano strutturato e registrato in Wiki e todo.md.
+- **Fase Attiva**: Fase 1 (Test Server Meross in Locale & Validazione Credenziali)
+- **Ultima Azione Completata**: Piano formalizzato con pipeline CI/CD GHCR e vincolo di pinning versione semantica (divieto di `:latest`).
 - **Prossimo Passo Operativo**: Configurazione credenziali reali in `.env` locale di `/Users/olindo/prj/meross-mcp` ed esecuzione smoke test locale.
-- **Blocchi/Decisioni Pendenti**: Attesa credenziali utente o conferma esecuzione smoke test locale.
+- **Blocchi/Decisioni Pendenti**: Attesa conferma utente per avviare la Fase 1.

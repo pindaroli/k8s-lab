@@ -170,3 +170,23 @@ services:
       interval: 15s
       timeout: 5s
       retries: 3
+
+  meross-mcp:
+    container_name: mcp-meross
+    image: ghcr.io/pindaroli/meross-mcp:0.1.0
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MEROSS_EMAIL=${MEROSS_EMAIL}
+      - MEROSS_PASSWORD=${MEROSS_PASSWORD}
+      - MEROSS_API_BASE_URL=https://iotx-eu.meross.com
+      - MEROSS_GATEWAY_HOST=0.0.0.0
+      - MEROSS_GATEWAY_PORT=8112
+    ports:
+      - "8112:8112"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8112/healthz')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

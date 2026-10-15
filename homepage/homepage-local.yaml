@@ -461,6 +461,12 @@ data:
             description: Indexer management
             icon: prowlarr.png
             siteMonitor: http://servarr-prowlarr.arr.svc.cluster.local:9696/ping
+        - Bitmagnet:
+            href: http://10.10.20.50:3333/webui/torrents
+            description: DHT Crawler & Torrent Indexer (TrueNAS)
+            icon: bitmagnet.png
+            siteMonitor: http://10.10.20.50:3333/webui
+
         - Autobrr:
             href: https://autobrr-internal.pindaroli.org
             description: Torrent monitor and automation (Internal)

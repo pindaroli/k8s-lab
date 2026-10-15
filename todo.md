@@ -1,5 +1,21 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 In Corso: Migrazione Flotta TrueNAS Docker MCP su Standard Streamable HTTP [[truenas-mcp-fleet-streamable-http-migration]]
+- [ ] Fase 1: Aggiornamento Dichiarativo Immagini Docker (`docker/mcp/build-images.sh` e `docker-compose.yaml` con `--streamableHttpPath /mcp`)
+- [ ] Fase 2: Rebuild Immagini & Sincronizzazione su TrueNAS (`10.10.20.50`)
+- [ ] Fase 3: Rollout e Restart Atomico Stack Docker su TrueNAS
+- [ ] Fase 4: Allineamento Client Antigravity (`~/.gemini/antigravity/mcp_config.json` con `serverUrl`)
+- [ ] Fase 5: Validazione Test-Driven End-to-End (Handshake POST 200 OK & tool live call)
+- [ ] Fase 6: Consolidamento Documentale & Knowledge Base ([[MCP_Platform]], sync wiki context)
+
+## 🚀 [x] ✅ COMPLETATO: Integrazione Bitmagnet nello Stack Docker su TrueNAS SCALE [[bitmagnet-truenas-docker-integration]]
+- [x] Fase 1: Pianificazione, Scelta Parametri & Cifratura Segreto SOPS TMDb (`secrets-sops/tmdb-credentials.enc.yaml`) ✅
+- [x] Fase 2: Aggiornamento Dichiarativo Repository (`servarr/truenas-docker/docker-compose.yaml` e `.env.example`) ✅
+- [x] Fase 3: Preparazione Storage & Rollout su TrueNAS (`10.10.20.50`, `/mnt/stripe/truenas-docker/bitmagnet/`) ✅
+- [x] Fase 4: Validazione Test-Driven (Healthcheck DB, Dozzle log audit, WebUI :3333 e Torznab caps) ✅
+- [x] Fase 5: Integrazioni Finali (Indexer Torznab Prowlarr ID 15 & Card Dashboard Homepage K8s/TrueNAS) ✅
+
+
 ## 🚀 [x] ✅ COMPLETATO: Sviluppo Skill Classical Music Curator per Ricerca Critica e Download Assistito [[classical-music-curator-skill]]
 - [x] Fase 1: Creazione Skill `.agents/skills/classical-music-curator/SKILL.md` (Gate di stop, 7 criteri e tracker opzionale) ✅
 - [x] Fase 2: Registrazione Regole di Progetto in `.agents/AGENTS.md` e `GEMINI.md` ✅
@@ -102,11 +118,12 @@
 - [ ] Fase 3: Esecuzione playbook Ansible `ansible/playbooks/opnsense/opnsense_sync_dns.yml` per l'applicazione degli Host Override su Unbound DNS di OPNsense
 - [ ] Fase 4: Validazione test-driven della risoluzione DNS (`dig`/`ping` verso `*-oob.pindaroli.org`) e allineamento `Network_Registry.md`
 
-## 🚀 Pianificato: Test Locale, Configurazione Docker, Validazione Meross MCP Server & Widget Homepage [[meross-mcp-docker-validation]]
-- [ ] Fase 1: Test Server Meross in Locale (Connessione Cloud MQTT/TLS, tool stdio/HTTP e verifica dispositivi fisici)
-- [ ] Fase 2: Configurazione Docker Server MCP Meross (`docker/mcp/docker-compose.yaml` su porta 8112, secret SOPS `.env`)
-- [ ] Fase 3: Deployment e Test di Validazione End-to-End Container Docker (`healthz`, `/mcp`, switch e telemetria via client MCP)
-- [ ] Fase 4: Integrazione Widget Consumi su Dashboard Homepage (Widget `customapi` telemetria W/V/A su `homepage.yaml` e TrueNAS, rollout K8s)
+## 🚀 In Corso: Test Locale, Pipeline CI/CD GHCR, Docker TrueNAS & Widget Homepage Meross MCP [[meross-mcp-docker-validation]]
+- [ ] Fase 1: Test Server Meross in Locale & Validazione Credenziali (MQTT/TLS e telemetria W/V/A)
+- [ ] Fase 2: Implementazione Pipeline CI/CD GitHub Actions & Release OCI `v0.1.0` su GHCR
+- [ ] Fase 3: Configurazione Dichiarativa TrueNAS Docker (Pinning semantico `ghcr.io/pindaroli/meross-mcp:0.1.0`, divieto `:latest`)
+- [ ] Fase 4: Deployment e Validazione End-to-End su TrueNAS (`healthz`, `/mcp` Streamable HTTP e tool client)
+- [ ] Fase 5: Integrazione Widget Consumi su Dashboard Homepage (K8s & TrueNAS)
 
 ## 🚀 [x] ✅ COMPLETATO: Ottimizzazione e Dimensionamento al Limite Fisico di LXC Ollama su PVE3 [[lxc-ollama-hardware-limit-optimization]]
 - [x] Fase 1: Ispezione e Baseline Benchmark GuideLLM su `lxc-ollama`
