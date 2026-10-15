@@ -1,8 +1,9 @@
 ---
 title: "Piano: Integrazione Bitmagnet nello Stack Docker su TrueNAS SCALE (Porte 3333/3334)"
 type: plan
-status: archived
-certified_for_ai: false
+status: completed
+certified_for_ai: true
+completed_at: 2026-10-15
 resolved: true
 resolved_at: "2026-10-15"
 created_at: 2026-10-14
