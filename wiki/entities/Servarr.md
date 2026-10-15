@@ -77,7 +77,15 @@ Per superare i meccanismi di protezione anti-bot (Cloudflare Turnstile Challenge
       port: <port>
   ```
   Questo consente a tutti i pod K8s di raggiungere i servizi esterni attraverso i canonici FQDN del cluster DNS (`http://servarr-flaresolverr:8191`, `http://servarr-prowlarr:9696`, `http://servarr-qbittorrent-web:8080`) senza cablaggi hardcoded nei template né consumo di risorse computazionali sui nodi Talos.
-- **Piano di Riferimento**: [[flaresolverr-truenas-migration-and-declarative-sync]].
+## 7. Bitmagnet DHT Crawler & Torznab Indexer (Sovranità Locale e Anti-Censura)
+Per superare la dipendenza dai tracker pubblici soggetti a blocchi DNS, sequestri di dominio, rate limiting e protezioni Cloudflare, lo stack multimediale integra un crawler DHT autonomo e indicizzatore Torznab locale:
+- **Bitmagnet su TrueNAS Docker**: container `ghcr.io/bitmagnet-io/bitmagnet:v0.10.1` affiancato da un'istanza dedicata e isolata di **PostgreSQL 16** (`postgres:16-alpine`), attestati sullo storage NVMe ad alte prestazioni `/mnt/stripe/truenas-docker/bitmagnet/` di TrueNAS SCALE bare-metal (`10.10.20.50`).
+- **Porte ed Endpoint**:
+  - `3333`: WebUI e Torznab API (`http://10.10.20.50:3333/webui/torrents`, `http://bitmagnet:3333/torznab`).
+  - `3334`: Porta TCP/UDP per il crawling e l'interrogazione della rete BitTorrent DHT globale (outbound stateful).
+- **Integrazione Prowlarr**: indicizzatore Torznab custom integrato via API REST (`baseUrl: http://bitmagnet:3333/torznab`, ID 15) con mappatura nativa per Film (2000), Serie TV (5000), Musica (3000), PC/Software (4000) ed eBook (7000).
+- **Arricchimento Metadati**: integrazione API TMDb con chiave cifrata via SOPS (`secrets-sops/tmdb-credentials.enc.yaml`), che permette la classificazione automatica e l'arricchimento con metadati e codici `tmdbid` per il matching trasparente su Radarr.
+- **Piano di Riferimento**: [[bitmagnet-truenas-docker-integration]].
 
 ## Relazioni
 - Namespace: `arr`
@@ -89,7 +97,7 @@ Per superare i meccanismi di protezione anti-bot (Cloudflare Turnstile Challenge
 - Strategia Classica: [[classical-music-strategy]].
 - Orchestrazione Classica (Prefect): [[prefect-beets-adaptation]].
 - Bonifica Modern: [[beets-music-rescue-pipeline]].
-- Piani Correlati: [[flaresolverr-truenas-migration-and-declarative-sync]], [[arrstack-mcp-truenas-docker-migration]], [[servarr-truenas-permanent-migration]].
+- Piani Correlati: [[bitmagnet-truenas-docker-integration]], [[flaresolverr-truenas-migration-and-declarative-sync]], [[arrstack-mcp-truenas-docker-migration]], [[servarr-truenas-permanent-migration]].
 - Incidenti: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]], [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
 
 
