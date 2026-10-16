@@ -19,8 +19,8 @@ printf 'FROM ghcr.io/pindaroli/ollama-mcp:2.1.0\nUSER root\nRUN npm install -g s
 echo "==> Building local/nowaikit-mcp:latest..."
 printf 'FROM ghcr.io/pindaroli/nowaikit-mcp:4.15.1\nUSER root\nRUN npm install -g supergateway\nUSER node\nENTRYPOINT ["supergateway", "--port", "8080", "--ssePath", "/mcp", "--messagePath", "/message", "--stdio", "nowaikit-mcp"]\n' | docker build -t local/nowaikit-mcp:latest -
 
-echo "==> Building local/arrstack-mcp:latest..."
-docker build -t local/arrstack-mcp:latest "$(dirname "$0")/../arrstack-mcp"
+echo "==> Building local/arrstack-mcp:1.1.0..."
+docker build -t local/arrstack-mcp:1.1.0 "$(dirname "$0")/../arrstack-mcp"
 
 echo "==> Building local/ragflow-mcp:latest..."
 docker build -t local/ragflow-mcp:latest "$(dirname "$0")/../ragflow-mcp"

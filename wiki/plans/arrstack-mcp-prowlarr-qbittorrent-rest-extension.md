@@ -1,8 +1,11 @@
 ---
 title: "Piano: Estensione REST API arrstack-mcp per Prowlarr e qBittorrent"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
+completed_at: 2026-10-16
+resolved: true
+resolved_at: "2026-10-16"
 created_at: 2026-10-15
 tags:
   - "#plan"
@@ -73,26 +76,28 @@ Estendere il server MCP `arrstack-mcp` (in esecuzione su TrueNAS SCALE bare-meta
 
 ---
 
-## 🛠️ Procedura Operativa di Implementazione (Post-Approvazione)
+## 🛠️ Procedura Operativa di Implementazione (Completata)
 
-1. **FASE 1: Aggiornamento del Codice (`server.py`)**
+1. **FASE 1: Aggiornamento del Codice (`server.py`)** [COMPLETATA ✅]
    - Modifica di `docker/arrstack-mcp/src/server.py` aggiungendo i tool approvati decorati con `@mcp.tool()`.
-   - Formattazione output pulita e concisa per AI.
-2. **FASE 2: Deploy e Ricompilazione su TrueNAS SCALE**
-   - Sincronizzazione di `server.py` su TrueNAS: `/mnt/stripe/truenas-docker/mcp/arrstack-mcp/src/server.py`.
-   - Ricompilazione dell'immagine Docker: `sudo docker build -t local/arrstack-mcp:latest .`
-   - Riavvio del container: `sudo docker compose up -d arrstack-mcp`.
-3. **FASE 3: Validazione & Test E2E**
-   - Esecuzione chiamate di test tramite i nuovi tool MCP (es. `prowlarr_list_applications`, `qbt_list_categories`).
-   - Verifica assenza di errori nei log del container `mcp-arrstack`.
-4. **FASE 4: Documentazione Wiki & Chiusura**
-   - Allineamento delle entità [[MCP_Platform]] e [[Servarr]].
-   - Rigenerazione contesto wiki (`build_wiki_context.py`).
+   - Compilazione sintattica Python completata con esito positivo (`py_compile`).
+2. **FASE 2: Versionamento SemVer `1.1.0` e Sincronizzazione su TrueNAS** [COMPLETATA ✅]
+   - Aggiornato `docker/mcp/docker-compose.yaml`, `docker/mcp/build-images.sh` e `.github/workflows/docker-arrstack-mcp.yml` con la versione deterministica `1.1.0`.
+   - Sincronizzazione di `server.py` e `docker-compose.yaml` su TrueNAS (`/mnt/stripe/truenas-docker/mcp/`).
+3. **FASE 3: Build Docker & Rollout su TrueNAS SCALE** [COMPLETATA ✅]
+   - Compilata immagine Docker locale `local/arrstack-mcp:1.1.0` su TrueNAS (`sudo docker build -t local/arrstack-mcp:1.1.0 .`).
+   - Riavviato container `mcp-arrstack` con `sudo docker compose up -d arrstack-mcp`.
+   - Container attivo e healthy sulla porta `8110`.
+4. **FASE 4: Validazione & Test E2E** [COMPLETATA ✅]
+   - Eseguite chiamate di test reali su Prowlarr (`prowlarr_list_applications`, `prowlarr_indexer_stats`) con esito 200 OK.
+   - Eseguite chiamate di test reali su qBittorrent (`qbt_list_categories`) con esito 200 OK e 10 categorie rilevate.
+5. **FASE 5: Documentazione Wiki & Chiusura** [COMPLETATA ✅]
+   - Allineamento delle entità [[MCP_Platform]], [[Servarr]], `todo.md` e rigenerazione `wiki_context.md`.
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 0 (Presentazione Piano e Lista Funzionalità Mancanti)
-- **Ultima Azione Completata**: Redazione del piano e censimento delle API REST mancanti per Prowlarr e qBittorrent.
-- **Prossimo Passo Operativo**: Attendere l'approvazione e la selezione dei tool desiderati da parte dell'utente.
-- **Blocchi/Decisioni Pendenti**: Selezione dell'utente sui tool proposti da implementare (es. solo Tier 1, oppure Tier 1 + Tier 2).
+- **Fase Attiva**: Piano Completato con Successo ✅
+- **Ultima Azione Completata**: Rollout di `local/arrstack-mcp:1.1.0` su TrueNAS bare-metal completato, test live eseguiti e verificati al 100% su Prowlarr e qBittorrent, documentazione wiki sincronizzata.
+- **Prossimo Passo Operativo**: Nessuno.
+- **Blocchi/Decisioni Pendenti**: Nessuno.

@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Estensione REST API arrstack-mcp per Prowlarr e qBittorrent [[arrstack-mcp-prowlarr-qbittorrent-rest-extension]]
+- [x] Fase 1: Aggiornamento Codice Locale (`server.py` esteso con 4 tool Prowlarr e 9 tool qBittorrent) ✅
+- [x] Fase 2: Versionamento SemVer `1.1.0` e Sincronizzazione Sorgente su TrueNAS (`10.10.20.50`) ✅
+- [x] Fase 3: Rebuild Immagine Docker (`local/arrstack-mcp:1.1.0`) & Riavvio Container su TrueNAS (`mcp-arrstack`) ✅
+- [x] Fase 4: Validazione Test-Driven End-to-End (Test live verificati 100% su Prowlarr e qBittorrent) ✅
+- [x] Fase 5: Consolidamento Documentale & Chiusura Piano ✅
+
 ## 🚀 In Corso: Migrazione Flotta TrueNAS Docker MCP su Standard Streamable HTTP [[truenas-mcp-fleet-streamable-http-migration]]
 - [ ] Fase 1: Aggiornamento Dichiarativo Immagini Docker (`docker/mcp/build-images.sh` e `docker-compose.yaml` con `--streamableHttpPath /mcp`)
 - [ ] Fase 2: Rebuild Immagini & Sincronizzazione su TrueNAS (`10.10.20.50`)
@@ -119,10 +126,10 @@
 - [ ] Fase 4: Validazione test-driven della risoluzione DNS (`dig`/`ping` verso `*-oob.pindaroli.org`) e allineamento `Network_Registry.md`
 
 ## 🚀 In Corso: Test Locale, Pipeline CI/CD GHCR, Docker TrueNAS & Widget Homepage Meross MCP [[meross-mcp-docker-validation]]
-- [ ] Fase 1: Test Server Meross in Locale & Validazione Credenziali (MQTT/TLS e telemetria W/V/A)
-- [ ] Fase 2: Implementazione Pipeline CI/CD GitHub Actions & Release OCI `v0.1.0` su GHCR
-- [ ] Fase 3: Configurazione Dichiarativa TrueNAS Docker (Pinning semantico `ghcr.io/pindaroli/meross-mcp:0.1.0`, divieto `:latest`)
-- [ ] Fase 4: Deployment e Validazione End-to-End su TrueNAS (`healthz`, `/mcp` Streamable HTTP e tool client)
+- [x] Fase 1: Test Server Meross in Locale & Validazione Credenziali (MQTT/TLS connesso con successo, scoperta presa fisica `ups` MSS310) ✅
+- [x] Fase 2: Implementazione Pipeline CI/CD GitHub Actions & Release OCI `v0.1.0` su GHCR ✅
+- [x] Fase 3: Configurazione Dichiarativa TrueNAS Docker (Pinning semantico `ghcr.io/pindaroli/meross-mcp:0.1.0`, divieto `:latest`, SOPS) ✅
+- [ ] Fase 4: Deployment e Validazione End-to-End su TrueNAS (In corso: fix telemetria `async_get_instant_metrics` + mount `/mcp`, rilascio `v0.1.1` e test client)
 - [ ] Fase 5: Integrazione Widget Consumi su Dashboard Homepage (K8s & TrueNAS)
 
 ## 🚀 [x] ✅ COMPLETATO: Ottimizzazione e Dimensionamento al Limite Fisico di LXC Ollama su PVE3 [[lxc-ollama-hardware-limit-optimization]]

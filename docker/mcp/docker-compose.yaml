@@ -130,7 +130,7 @@ services:
 
   arrstack-mcp:
     container_name: mcp-arrstack
-    image: local/arrstack-mcp:latest
+    image: local/arrstack-mcp:1.1.0
     restart: unless-stopped
     env_file: .env
     environment:

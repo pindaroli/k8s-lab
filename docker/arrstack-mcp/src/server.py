@@ -1730,6 +1730,99 @@ def prowlarr_health() -> str:
     return "\n".join(lines)
 
 
+@mcp.tool()
+def prowlarr_list_applications() -> str:
+    """List all configured applications (Radarr, Sonarr, Lidarr, etc.) connected to Prowlarr."""
+    data = _prowlarr("/applications")
+    if isinstance(data, str):
+        return data
+    if not data:
+        return "No applications configured in Prowlarr."
+    lines = []
+    for app in data:
+        app_id = app.get("id", "?")
+        name = app.get("name", "?")
+        impl = app.get("implementationName", "")
+        sync = app.get("syncLevel", "?")
+        base_url = ""
+        for f in app.get("fields", []):
+            if f.get("name") in ("baseUrl", "prowlarrUrl"):
+                base_url = f.get("value", "")
+                break
+        url_str = f" — {base_url}" if base_url else ""
+        lines.append(f"• [{app_id}] {name} ({impl}) [sync: {sync}]{url_str}")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def prowlarr_sync_applications(application_id: int = 0) -> str:
+    """Trigger application sync to push indexers to connected Servarr apps.
+
+    Args:
+        application_id: Optional application ID to sync (0 = sync all applications).
+    """
+    payload = {"name": "ApplicationSync"}
+    if application_id > 0:
+        payload["applicationId"] = application_id
+    result = _prowlarr("/command", method="POST", json=payload)
+    if isinstance(result, dict):
+        target = f"for application {application_id}" if application_id > 0 else "for all applications"
+        return f"🔄 Application sync triggered {target}."
+    return str(result)
+
+
+@mcp.tool()
+def prowlarr_test_applications(application_id: int = 0) -> str:
+    """Test connection to configured Servarr applications.
+
+    Args:
+        application_id: Optional application ID to test (0 = test all applications).
+    """
+    if application_id > 0:
+        result = _prowlarr(f"/applications/{application_id}/test", method="POST")
+        if isinstance(result, str) and result.startswith("prowlarr request"):
+            return f"❌ Application {application_id} test failed: {result}"
+        return f"✅ Application {application_id} connection test passed."
+
+    apps = _prowlarr("/applications")
+    if isinstance(apps, str):
+        return apps
+    if not apps:
+        return "No applications configured."
+    results = []
+    for app in apps:
+        app_id = app.get("id")
+        app_name = app.get("name", f"App {app_id}")
+        res = _prowlarr(f"/applications/{app_id}/test", method="POST")
+        if isinstance(res, str) and res.startswith("prowlarr request"):
+            results.append(f"❌ [{app_id}] {app_name} — {res}")
+        else:
+            results.append(f"✅ [{app_id}] {app_name} — OK")
+    return "\n".join(results)
+
+
+@mcp.tool()
+def prowlarr_indexer_stats() -> str:
+    """Get aggregated query and grab statistics for all Prowlarr indexers."""
+    data = _prowlarr("/indexerstats")
+    if isinstance(data, str):
+        return data
+    stats = data.get("indexers", []) if isinstance(data, dict) else data
+    if not stats:
+        return "No indexer statistics available."
+    lines = []
+    for s in stats:
+        name = s.get("indexerName", f"ID {s.get('indexerId', '?')}")
+        queries = s.get("numberOfQueries", 0)
+        grabs = s.get("numberOfGrabs", 0)
+        failed = s.get("numberOfFailedQueries", 0)
+        avg_time = s.get("averageResponseTime", 0)
+        lines.append(
+            f"• {name}: {queries} queries, {grabs} grabs, {failed} failed (avg {avg_time}ms)"
+        )
+    return "\n".join(lines)
+
+
 # ════════════════════════════════════════════════════════════════
 #  qBittorrent Tools
 # ════════════════════════════════════════════════════════════════
@@ -2169,6 +2262,144 @@ def qbt_transfer_info() -> str:
             f"DHT nodes: {info.get('dht_nodes', 0)}"
         )
     return str(info)
+
+
+@mcp.tool()
+def qbt_list_categories() -> str:
+    """List all configured categories and their download save paths in qBittorrent."""
+    cats = _qbt("/torrents/categories")
+    if isinstance(cats, str):
+        return cats
+    if not cats:
+        return "No categories configured in qBittorrent."
+    lines = []
+    for name, details in cats.items():
+        save_path = details.get("savePath", "(default)") if isinstance(details, dict) else str(details)
+        lines.append(f"• {name} → {save_path}")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def qbt_create_category(category: str, save_path: str = "") -> str:
+    """Create a new category in qBittorrent with an optional save path.
+
+    Args:
+        category: Name of the category to create.
+        save_path: Optional dedicated download directory for this category.
+    """
+    data = {"category": category.strip(), "savePath": save_path.strip()}
+    res = _qbt("/torrents/createCategory", method="POST", data=data)
+    if isinstance(res, str) and res.strip() and ("fail" in res.lower() or "error" in res.lower()):
+        return f"❌ Failed to create category: {res}"
+    path_info = f" with path '{save_path}'" if save_path else ""
+    return f"✅ Category '{category}' created successfully{path_info}."
+
+
+@mcp.tool()
+def qbt_torrent_files(torrent_hash: str) -> str:
+    """List all files inside a torrent with their size, progress, and priority.
+
+    Args:
+        torrent_hash: The info hash of the torrent.
+    """
+    files = _qbt("/torrents/files", params={"hash": torrent_hash})
+    if isinstance(files, str):
+        return files
+    if not files:
+        return f"No files found for torrent {torrent_hash}."
+    lines = []
+    for f in files:
+        idx = f.get("index", "?")
+        name = f.get("name", "?")
+        size = _format_size(f.get("size", 0))
+        prog = f.get("progress", 0) * 100
+        prio = f.get("priority", "?")
+        lines.append(f"[{idx}] {name} — {size} ({prog:.1f}%) [prio: {prio}]")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def qbt_torrent_trackers(torrent_hash: str) -> str:
+    """Inspect trackers for a specific torrent, including status, seeds, peers, and error messages.
+
+    Args:
+        torrent_hash: The info hash of the torrent.
+    """
+    trackers = _qbt("/torrents/trackers", params={"hash": torrent_hash})
+    if isinstance(trackers, str):
+        return trackers
+    if not trackers:
+        return f"No trackers found for torrent {torrent_hash}."
+    status_map = {0: "Disabled", 1: "Not contacted", 2: "Working", 3: "Updating", 4: "Not working"}
+    lines = []
+    for tr in trackers:
+        url = tr.get("url", "?")
+        raw_status = tr.get("status", 1)
+        status_desc = status_map.get(raw_status, f"Status {raw_status}")
+        seeds = tr.get("num_seeds", 0)
+        peers = tr.get("num_peers", 0)
+        msg = tr.get("msg", "").strip()
+        msg_str = f" — {msg}" if msg else ""
+        icon = "✅" if raw_status == 2 else ("⚠️" if raw_status in (1, 3) else "❌")
+        lines.append(f"{icon} {url} [{status_desc}] — Seeds: {seeds}, Peers: {peers}{msg_str}")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def qbt_recheck(torrent_hash: str) -> str:
+    """Force recheck torrent data integrity.
+
+    Args:
+        torrent_hash: The info hash of the torrent.
+    """
+    _qbt("/torrents/recheck", method="POST", data={"hashes": torrent_hash})
+    return f"🔄 Recheck triggered for torrent {torrent_hash}."
+
+
+@mcp.tool()
+def qbt_reannounce(torrent_hash: str) -> str:
+    """Force reannounce torrent to all trackers.
+
+    Args:
+        torrent_hash: The info hash of the torrent.
+    """
+    _qbt("/torrents/reannounce", method="POST", data={"hashes": torrent_hash})
+    return f"📡 Reannounce triggered for torrent {torrent_hash}."
+
+
+@mcp.tool()
+def qbt_list_tags() -> str:
+    """List all tags configured in qBittorrent."""
+    tags = _qbt("/torrents/tags")
+    if isinstance(tags, str):
+        return tags
+    if not tags:
+        return "No tags configured in qBittorrent."
+    return "Tags: " + ", ".join(tags)
+
+
+@mcp.tool()
+def qbt_add_tags(torrent_hashes: str, tags: str) -> str:
+    """Add one or more tags (comma-separated) to torrents (pipe-separated hashes).
+
+    Args:
+        torrent_hashes: Torrent hash or pipe-separated hashes (e.g. "hash1|hash2").
+        tags: Comma-separated list of tags to add.
+    """
+    _qbt("/torrents/addTags", method="POST", data={"hashes": torrent_hashes, "tags": tags})
+    return f"🏷️ Added tag(s) '{tags}' to torrent(s)."
+
+
+@mcp.tool()
+def qbt_remove_tags(torrent_hashes: str, tags: str) -> str:
+    """Remove one or more tags (comma-separated) from torrents (pipe-separated hashes).
+
+    Args:
+        torrent_hashes: Torrent hash or pipe-separated hashes (e.g. "hash1|hash2").
+        tags: Comma-separated list of tags to remove.
+    """
+    _qbt("/torrents/removeTags", method="POST", data={"hashes": torrent_hashes, "tags": tags})
+    return f"🏷️ Removed tag(s) '{tags}' from torrent(s)."
 
 
 # ════════════════════════════════════════════════════════════════
