@@ -12,6 +12,7 @@ in_use_by:
   - "scripts/infrastructure/shutdown_to_truenas_only.sh"
   - "scripts/servarr/audit_movie_duplicates.sh"
   - "scripts/antigravity/clean_conversations.sh"
+  - "scripts/servarr/cleanup_torrents.sh"
 ---
 
 # Pattern: Go Launcher Script Integration

@@ -184,7 +184,7 @@ flowchart TD
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 (Test Server Meross in Locale & Validazione Credenziali)
-- **Ultima Azione Completata**: Piano formalizzato con pipeline CI/CD GHCR e vincolo di pinning versione semantica (divieto di `:latest`).
-- **Prossimo Passo Operativo**: Configurazione credenziali reali in `.env` locale di `/Users/olindo/prj/meross-mcp` ed esecuzione smoke test locale.
-- **Blocchi/Decisioni Pendenti**: Attesa conferma utente per avviare la Fase 1.
+- **Fase Attiva**: Fase 3 (Deployment e Validazione End-to-End su TrueNAS) - Bugfix Telemetria & Routing MCP
+- **Ultima Azione Completata**: Autenticazione Meross Cloud superata con successo; scoperta presa fisica `ups` (MSS310, UUID `2303168327141751200348e1e9bf25d7`); endpoint REST `/api/v1/devices` operativo al 100% su TrueNAS (`10.10.20.50:8112`). Immagine `ghcr.io/pindaroli/meross-mcp:0.1.0` pubblicata su GHCR e deployata con pinning semantico. Identificata la causa radice del baco telemetria (necessario `async_get_instant_metrics` con `PowerInfo` su `meross-iot` 0.4.x) e del mount subpath `/mcp`.
+- **Prossimo Passo Operativo**: Patch al codice sorgente in `/Users/olindo/prj/meross-mcp/` (`client.py`, `devices.py` e `app.py`) per supportare `async_get_instant_metrics()` e mount unificato `mcp.http_app(path="/")`, rilascio versione `0.1.1` su GHCR e riavvio container.
+- **Blocchi/Decisioni Pendenti**: Sessione sospesa su richiesta utente; pronta per essere ripresa con il bugfix.

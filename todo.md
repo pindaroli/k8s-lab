@@ -1,11 +1,30 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Mitigazione Bitmagnet DHT Crawler, Scaling Factor & State Limiter OPNsense [[bitmagnet-dht-crawler-mitigation-and-state-limiter]]
+- [x] Fase 1: Snapshot Preventivo di Sicurezza su TrueNAS SCALE (`stripe/truenas-docker@pre-bitmagnet-mitigation-2026-10-17`) ✅
+- [x] Fase 2: Configurazione e Tuning Docker su TrueNAS (`DHT_CRAWLER_SCALING_FACTOR=1`, restart container `bitmagnet`) ✅
+- [x] Fase 3: Creazione Regola State Limiter su OPNsense (`TRANSIT`, max 300 / max-src 300, quick, sopra Allow All Transit) ✅
+- [x] Fase 4: Validazione Test-Driven End-to-End (Risoluzione DNS Unbound istantanea, WebUI Bitmagnet 200 OK, qBittorrent 30661/8080 OK, Jellyfin 8096 OK) ✅
+
+## 🚀 [x] ✅ COMPLETATO: Controllo e Ripristino Disco mSATA / ZFS zroot di OPNsense [[opnsense-msata-zroot-disk-recovery]]
+- [x] Fase 1: Backup Preventivo di Sicurezza (`config.xml` scaricato e verificato nel repository: `opnsense_backup_pre_zfs_recovery_20261016.xml`) ✅
+- [x] Fase 2: Bonifica File Corrotti & Reinizializzazione RRD (rimozione `system-states.rrd`/`hosts.db`, `zpool clear zroot`, `updaterrd.php`) ✅
+- [x] Fase 3: Hardening Anti-Usura SSD (Svuotamento 9.8 GB `/var/log/filter` -> 8.5K, ZFS compression LZ4 & atime off) ✅
+- [x] Fase 4: Scrub ZFS Completo & Diagnostica Hardware SMART (`zpool scrub zroot` completato con 0 errori, SMART Short superato 100%, SMART Long avviato) ✅
+- [x] Fase 5: Matrice di Decisione Strategica (Scenario A confermato: disco integro, nessun guasto hardware, usura fermata) ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Estensione REST API arrstack-mcp per Prowlarr e qBittorrent [[arrstack-mcp-prowlarr-qbittorrent-rest-extension]]
 - [x] Fase 1: Aggiornamento Codice Locale (`server.py` esteso con 4 tool Prowlarr e 9 tool qBittorrent) ✅
 - [x] Fase 2: Versionamento SemVer `1.1.0` e Sincronizzazione Sorgente su TrueNAS (`10.10.20.50`) ✅
 - [x] Fase 3: Rebuild Immagine Docker (`local/arrstack-mcp:1.1.0`) & Riavvio Container su TrueNAS (`mcp-arrstack`) ✅
 - [x] Fase 4: Validazione Test-Driven End-to-End (Test live verificati 100% su Prowlarr e qBittorrent) ✅
 - [x] Fase 5: Consolidamento Documentale & Chiusura Piano ✅
+
+## 🚀 [x] ✅ COMPLETATO: Tool CLI Interattivo per Pulizia Selettiva Torrent su qBittorrent [[qbittorrent-selective-cleanup-tool]]
+- [x] Fase 1: Creazione del Motore Core Python (`scripts/servarr/cleanup_torrents.py`) ✅
+- [x] Fase 2: Creazione del Wrapper Shell Eseguibile (`scripts/servarr/cleanup_torrents.sh`) ✅
+- [x] Fase 3: Validazione Test-Driven End-to-End (Unit tests helpers, CLI args, discovery `go.py`) ✅
+- [x] Fase 4: Integrazione Launcher `scripts/go.py` e Consolidamento Documentale Wiki / Todo ✅
 
 ## 🚀 In Corso: Migrazione Flotta TrueNAS Docker MCP su Standard Streamable HTTP [[truenas-mcp-fleet-streamable-http-migration]]
 - [ ] Fase 1: Aggiornamento Dichiarativo Immagini Docker (`docker/mcp/build-images.sh` e `docker-compose.yaml` con `--streamableHttpPath /mcp`)
