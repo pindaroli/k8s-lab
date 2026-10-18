@@ -1,9 +1,10 @@
 ---
 title: "Migrazione Macchina OPNsense su i3-12100, MSI PRO H610M-E DDR4 con NVMe, ZFS e Emulex 10G"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-09-26
+completed_at: 2026-10-18
 last_updated: 2026-10-18
 tags:
   - "#opnsense"
@@ -309,14 +310,18 @@ Quando tutta la preparazione in Fase 3 è completata e verificata al 100%:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: **Fase 3 — Migrazione Automatizzata via SSH (Step 3.2: Gateway Internet Temporaneo & Plugin)**
+- **Fase Attiva**: **PIANO COMPLETATO CON SUCCESSO ✅ (Tutte le 4 Fasi Concluse)**
 - **Ultima Azione Completata**:
-  - **Fasi 1 e 2 Completate al 100% ✅**: 
-    - Scheda 10G identificata come **Emulex OneConnect Skyhawk** (driver `if_oce`, interfacce `oce0` e `oce1`).
-    - Modulo `if_oce_load="YES"` reso persistente in `/boot/loader.conf.local`.
-    - Collegamento DAC 10G su Porta 9 SFP+ di `switch-25g-server` (`192.168.2.3`) agganciato con successo (`status: active` / `10GbpsFull` su `oce0`).
-    - VLAN 99 OOB (`oce0_vlan99`) configurata con IP `192.168.100.2/24`.
-    - **Step 3.1 Completato ✅**: Chiave SSH del Mac Studio iniettata con successo. Accesso SSH `BatchMode=yes` (passwordless) verificato al 100% da remoto.
-- **Prossimo Passo Operativo**:
-  - **Step 3.2**: Impostare gateway temporaneo `route add default 192.168.100.1` sul nuovo OPNsense per scaricare e installare i plugin (`os-ddclient`, `os-gdrive-backup`, `os-upnp`, `os-realtek-re`) prima del cutover.
-- **Blocchi/Decisioni Pendenti**: In attesa di approvazione esplicita dell'utente per eseguire lo Step 3.2.
+  - **Fase 1 (Installazione & Setup Console) ✅**: OPNsense 26.1 ZFS stripe su NVMe, `if_oce_load="YES"`, VLAN 99 OOB.
+  - **Fase 2 (Cablaggio Switch Server & DAC 10G) ✅**: Porta 9 SFP+ di `switch-25g-server` (`192.168.2.3`) agganciata a 10 Gbps Full Duplex con scheda Emulex OneConnect (`oce0`).
+  - **Fase 3 (Automazione AI via SSH) ✅**: SSH passwordless permanente, installati tutti i 4 plugin (`os-ddclient`, `os-gdrive-backup`, `os-upnp`, `os-realtek-re`), ZFS hardening (`atime=off`, `compression=lz4`), ARC limitato a 2 GB, RAM disk MFS `/var/log` e `/tmp` attivi, e traduzione completa `config.xml`.
+  - **Fase 4 (Cutover Fisico & Validazione End-to-End) ✅**:
+    - Vecchio Mini PC spento e conservato intatto come Cold-Spare.
+    - Cavo WAN modem collegato a `re0` (IP pubblico `151.59.83.25` acquisito via DHCP).
+    - Trunk 10G `oce0` attivo su `TRANSIT` (`192.168.2.254`) e `oce0_vlan99` (`192.168.100.1`).
+    - Suite di test completata: DNS Unbound 36/37 OK (100% record interni ed esterni), Kea DHCP 17/18 OK (tutti i lease e host raggiungibili), CPU temp 22-25°C a 800MHz idle.
+    - Aggiornati `rete.json` e `wiki/entities/OPNsense.md`.
+- **Prossimo Passo Operativo**: Nessuno. La migrazione è conclusa e il nuovo firewall è pienamente operativo in produzione a 10 Gbps.
+- **Blocchi/Decisioni Pendenti**: Nessuno.
+
+

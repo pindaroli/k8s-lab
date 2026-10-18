@@ -57,22 +57,26 @@ La documentazione ufficiale di OPNsense allineata alla versione in esecuzione ne
 - **Master Index**: `downloads/opnsense-26.1/SUMMARY.md` (suddiviso per Core, Manual, How-Tos, Services, Firewall/NAT, Releases, Development, Troubleshooting).
 - **Piano di Riferimento**: [[opnsense-documentation-extraction-and-ragflow]].
 
-## 7. Piattaforma Hardware & Interfacce (In corso di migrazione)
-- **Host Attuale in Produzione**: Mini PC 4x 2.5GbE Intel i225/i226 (`igc0` WAN, `igc1` Trunk TRANSIT/VLAN, `igc3` OOB).
-- **Nuovo Host Staging (In migrazione [[opnsense-i3-12100-nvme-migration]])**:
-  - **CPU**: Intel Core i3-12100 (4C/8T Alder Lake).
+## 7. Piattaforma Hardware & Interfacce (In Produzione)
+- **Host Migrato & Operativo ([[opnsense-i3-12100-nvme-migration]])**:
+  - **CPU**: Intel Core i3-12100 (4C/8T Alder Lake con Speed Shift HWP EPP=80).
   - **Motherboard**: MSI PRO H610M-E DDR4.
-  - **RAM**: 16 GB DDR4 (con RAM disk MFS `/var` e `/tmp`).
-  - **Storage**: NVMe SSD su pool ZFS `zroot` (Hardening anti-usura: `atime=off`, `compression=lz4`, ARC max 4GB).
-  - **NIC 10G SFP+**: **Emulex OneConnect Dual-Port 10G SFP+** (Skyhawk, driver FreeBSD `if_oce`, modulo `if_oce_load="YES"`):
-    - `oce0`: Trunk 10G connesso a Porta 9 SFP+ di `switch-25g-server` (`192.168.2.3`), trasporta `TRANSIT` (VLAN 1 nativa untagged), VLAN 99 OOB (`oce0_vlan99`), VLAN 10 (`oce0_vlan10`), VLAN 20 (`oce0_vlan20`), VLAN 30 (`oce0_vlan30`).
+  - **RAM**: 16 GB DDR4.
+  - **Hardening Anti-Usura NVMe (Zero Wearing)**:
+    - Pool ZFS `zroot` su NVMe: `atime=off`, `compression=lz4`.
+    - ARC ZFS limitato a 2 GB (`vfs.zfs.arc.max="2147483648"` in `/boot/loader.conf.local`), lasciando 14 GB interamente liberi per la rete e buffer.
+    - RAM Disk nativo MFS per `/var/log` (20% max) e `/tmp` (10% max) montati in `tmpfs`.
+  - **NIC 10G SFP+**: **Emulex OneConnect Dual-Port 10G SFP+** (Skyhawk, firmware `12.0.1345.0`, driver FreeBSD `if_oce`, modulo `if_oce_load="YES"`):
+    - `oce0`: Trunk 10G connesso a Porta 9 SFP+ di `switch-25g-server` (`192.168.2.3`), trasporta `TRANSIT` (`192.168.2.254` VLAN 1 nativa untagged), VLAN 99 OOB (`oce0_vlan99` `192.168.100.1`), VLAN 10 (`oce0_vlan10`), VLAN 20 (`oce0_vlan20`), VLAN 30 (`oce0_vlan30`).
     - `oce1`: Seconda porta 10G SFP+ (Spenta / Cold-Spare).
-  - **NIC WAN**: Realtek RTL8111/8168 Gigabit Ethernet onboard (`re0`) per uplink diretto al modem operatore.
+  - **NIC WAN**: Realtek RTL8111H Gigabit Ethernet onboard (`re0`, MAC `34:5a:60:d9:9d:13`) con modulo vendor `realtek-re-kmod` / `if_re.ko` (`os-realtek-re`) per uplink diretto al modem operatore (DHCP pubblico).
+- **Vecchio Firewall Mini PC (Cold-Spare)**: Mini PC 4x 2.5GbE Intel i225/i226 conservato spento con configurazione intatta come backup fisico di disaster recovery.
 
 ## Relazioni Architetturali
 - Fornisce DNS a: [[Talos_Cluster]], Dispositivi Client VLAN 20
 - Bilancia traffico verso: [[Traefik]]
 - Instradamento simmetrico con: [[Ansible_Extreme_EXOS]] su rete di TRANSIT.
 - Base di conoscenza offline e RAGFlow: [[opnsense-documentation-extraction-and-ragflow]] (`downloads/opnsense-26.1/`).
-- Piano di Migrazione Attivo: [[opnsense-i3-12100-nvme-migration]].
+- Piano di Migrazione Completato: [[opnsense-i3-12100-nvme-migration]].
+
 

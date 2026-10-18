@@ -259,11 +259,10 @@
         },
         {
           "id": "4",
-          "role": "OPNsense igc3 OOB (VLAN 99)",
+          "role": "Free / Spare (VLAN 99 Access)",
           "mode": "ACCESS",
           "speed": "2.5Gbs",
-          "pvid": 99,
-          "connected_to": "opnsense igc3"
+          "pvid": 99
         },
         {
           "id": "5",
@@ -281,7 +280,7 @@
         },
         {
           "id": "7",
-          "role": "Uplink to OPNsense igc1 (LAN Trunk)",
+          "role": "Free / Spare (Trunk)",
           "mode": "Trunk",
           "speed": "2.5Gbs",
           "native_vlan": "1",
@@ -292,8 +291,7 @@
             "30",
             "40",
             "99"
-          ],
-          "connected_to": "opnsense igc1"
+          ]
         },
         {
           "id": "8",
@@ -304,10 +302,19 @@
         },
         {
           "id": "9",
-          "role": "Free / Spare (10G SFP+)",
-          "mode": "ACCESS",
+          "role": "Uplink to OPNsense oce0 (10G SFP+ LAN Trunk)",
+          "mode": "Trunk",
           "speed": "10Gbs",
-          "pvid": 1
+          "native_vlan": "1",
+          "allowed_vlans": [
+            "1",
+            "10",
+            "20",
+            "30",
+            "40",
+            "99"
+          ],
+          "connected_to": "opnsense oce0"
         },
         {
           "id": "10",
@@ -437,7 +444,7 @@
       "id": "opnsense",
       "label": "OPNsense Firewall",
       "type": "Firewall/Router",
-      "model": "Mini PC (4x 2.5GbE)",
+      "model": "Intel Core i3-12100 / MSI PRO H610M-E DDR4 / Emulex OneConnect 10G (Skyhawk)",
       "management_ip": "192.168.100.1",
       "aliases": [
         "opnsense",
@@ -447,21 +454,25 @@
         "Kea DHCP is the active DHCP server. Ansible playbooks manage static DHCP reservations via the Kea API.",
         "Ensure 'Static route filtering' is DISABLED (Firewall > Settings > Advanced) to maintain stateful symmetry with the L3 Switch.",
         "Ensure Unbound DNS is listening on TRANSIT interface (192.168.2.254) to allow infrastructure DNS resolution.",
-        "Ensure Unbound DNS is NOT listening on WAN interface to prevent external DNS amplification attacks."
+        "Ensure Unbound DNS is NOT listening on WAN interface to prevent external DNS amplification attacks.",
+        "Hardware offloading (checksum, TSO, LRO, VLAN HW filter) is disabled globally for stability with Emulex 10G and 802.1Q VLANs.",
+        "MFS RAM disk active for /var/log and /tmp to ensure zero NVMe NAND wearing."
       ],
       "ports": [
         {
-          "id": "igc0",
+          "id": "re0",
           "role": "Direct WAN (Modem)",
-          "speed": "2.5Gbs",
-          "note": "Direct physical connection to Modem (No VLAN)"
+          "speed": "1Gbs",
+          "mac": "34:5a:60:d9:9d:13",
+          "note": "Onboard Realtek RTL8111H Gigabit RJ45 con driver vendor os-realtek-re (if_re.ko). Connessione fisica diretta al Modem."
         },
         {
-          "id": "igc1",
-          "role": "Trunk LAN Master",
-          "speed": "2.5Gbs",
+          "id": "oce0",
+          "role": "Trunk LAN Master (10G SFP+)",
+          "speed": "10Gbs",
           "mode": "Trunk",
-          "connected_to": "switch-25g-server Port 7",
+          "mac": "70:10:6f:ef:59:20",
+          "connected_to": "switch-25g-server Port 9",
           "allowed_vlans": [
             "1",
             "10",
@@ -510,31 +521,24 @@
               "gateway": "192.168.2.1 (Switch L3)",
               "dhcp": "disabled",
               "firewall_policy": "Allow All / Transit"
-            }
-          ]
-        },
-        {
-          "id": "igc2",
-          "role": "Unused/Spare",
-          "speed": "2.5Gbs"
-        },
-        {
-          "id": "igc3",
-          "role": "ADMIN_LAN",
-          "speed": "2.5Gbs",
-          "description": "OOB Management Port - Collegata a switch-25g-server Porta 4 (Access VLAN 99)",
-          "connected_to": "switch-25g-server Port 4",
-          "logical_interfaces": [
+            },
             {
               "name": "gw-admin",
               "interface": "lan",
+              "vlan_tag": "99",
               "ip": "192.168.100.1",
               "subnet": "192.168.100.0/24",
               "dhcp": "disabled (DHCP disabilitato - IP statici su VLAN 99)",
               "firewall_policy": "Allow All",
-              "note": "IP OOB del firewall. Accesso fisico diretto e out-of-band alla gestione OPNsense."
+              "note": "IP OOB del firewall su oce0_vlan99 (Trunk 10G Porta 9 switch-25g-server). Accesso protetto e out-of-band alla gestione OPNsense."
             }
           ]
+        },
+        {
+          "id": "oce1",
+          "role": "Cold-Spare / Unused (10G SFP+)",
+          "speed": "10Gbs",
+          "note": "Seconda porta SFP+ 10G della Emulex OneConnect. Lasciata spenta amministrativamente."
         }
       ]
     },

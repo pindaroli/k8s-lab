@@ -7,7 +7,7 @@ import os
 
 # Load credentials from the standard location
 script_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.abspath(os.path.join(script_dir, '..'))
+root_dir = os.path.abspath(os.path.join(script_dir, '../..'))
 apikey_file = os.path.join(root_dir, 'ansible/OPNsense.internal_root_apikey.txt')
 
 if not os.path.exists(apikey_file):
