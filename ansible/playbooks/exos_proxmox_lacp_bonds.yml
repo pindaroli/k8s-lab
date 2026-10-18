@@ -1,0 +1,52 @@
+---
+- name: Proxmox PVE1, PVE2, PVE3 LACP 802.3ad 20G Trunks (VLAN 10 & VLAN 20 Tagged)
+  hosts: switches
+  gather_facts: no
+
+  tasks:
+    - name: 1. Align member ports 5, 6, 7 into VLAN server before LACP grouping
+      extreme.exos.exos_config:
+        lines:
+          - "configure vlan server add ports 5,6,7 untagged"
+
+    - name: 2. Enable LACP 802.3ad sharing (L3_L4) for PVE3 (1,5), PVE1 (2,6), PVE2 (3,7)
+      extreme.exos.exos_config:
+        lines:
+          - "enable sharing 1 grouping 1,5 algorithm address-based L3_L4 lacp"
+          - "enable sharing 2 grouping 2,6 algorithm address-based L3_L4 lacp"
+          - "enable sharing 3 grouping 3,7 algorithm address-based L3_L4 lacp"
+
+    - name: 3. Convert LAG masters 1, 2, 3 to 802.1Q Tagged Trunks (VLAN 10 server + VLAN 20 client)
+      extreme.exos.exos_config:
+        lines:
+          - "configure vlan server delete ports 1,2,3"
+          - "configure vlan server add ports 1,2,3 tagged"
+          - "configure vlan client add ports 1,2,3 tagged"
+
+    - name: 4. Save configuration to primary.cfg
+      ansible.netcommon.cli_command:
+        command: save configuration primary
+        prompt: '(?i)(y/N|already exists)'
+        answer: y
+      register: save_result
+
+    - name: 5. Verify LACP sharing status on Extreme Switch
+      extreme.exos.exos_command:
+        commands:
+          - show sharing
+          - show vlan
+      register: verify_output
+
+    - name: 6. Display verification output
+      ansible.builtin.debug:
+        var: verify_output.stdout_lines
+
+# Rollback (non eseguito da questo playbook, da lanciare se necessario con sessioni OOB attive su 192.168.100.11/21/31):
+# configure vlan client delete ports 1,2,3
+# configure vlan server delete ports 1,2,3
+# disable sharing 1
+# disable sharing 2
+# disable sharing 3
+# configure vlan server add ports 1,2,3 untagged
+# configure vlan client add ports 5,6,7 untagged
+# save configuration primary

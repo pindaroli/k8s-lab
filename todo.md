@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 Pianificato: Triangolo Schede 10G SFP+ (PVE1, TrueNAS, OPNsense) & Bond LACP 802.3ad sui 3 Nodi Proxmox [[nic-10g-triangle-swap-and-proxmox-lacp-bond]]
+- [ ] Fase 1: Attivazione LACP 802.3ad (`bond0` 20 Gbps con `bond0.10` -> `vmbr10` e `bond0.20` -> `vmbr20`) sui 3 nodi Proxmox (`pve1`, `pve2`, `pve3`) via OOB e Playbook Switch Extreme (`ansible/playbooks/exos_proxmox_lacp_bonds.yml`, LAG 1 `1,5`, LAG 2 `2,6`, LAG 3 `3,7`)
+- [ ] Fase 2: Pre-Configurazione Software "Zero-Console" per lo scambio schede (`50-pmx-nic1/2.link` con MAC Emulex + `update-initramfs` su `pve1`; conversione `/conf/config.xml` da `oce0` a `ixl0` su `opnsense`)
+- [ ] Fase 3: Spegnimento ordinato (`shutdown_all_lab.sh` + `opnsense`), scambio fisico delle 3 schede PCIe (`X710-DA4` -> `truenas`, `X710-DA2` -> `opnsense`, `Emulex OneConnect` -> `pve1`) e riaccensione (`startup_all_lab.sh`)
+- [ ] Fase 4: Validazione Test-Driven End-to-End (LACP 4 gruppi `1..4` su Extreme, `ixl0` su OPNsense, 4 porte su TrueNAS, `be2net` su PVE1) e riallineamento `rete.json` / Wiki
+
 ## 🚀 [x] ✅ COMPLETATO: Migrazione Macchina OPNsense su i3-12100 con NVMe, ZFS e Emulex 10G [[opnsense-i3-12100-nvme-migration]]
 - [x] Fase 1: Installazione OPNsense 26.1 (ZFS su NVMe), `if_oce_load="YES"`, VLAN 99 (`oce0_vlan99` con IP OOB di staging `192.168.100.2/24`) e attivazione SSH `root` ✅
 - [x] Fase 2: Configurazione Porta 9 SFP+ di `switch-25g-server` (`192.168.2.3`) in Trunk (`BP_21` VLAN 99 `Bridge ID 1`) e collegamento cavo DAC 10G (`oce0`) agganciato a 10Gbps ✅
