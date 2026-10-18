@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 In Corso: Migrazione Macchina OPNsense su i3-12100 con NVMe, ZFS e Emulex 10G [[opnsense-i3-12100-nvme-migration]]
+- [x] Fase 1: Installazione OPNsense 26.1 (ZFS su NVMe), `if_oce_load="YES"`, VLAN 99 (`oce0_vlan99` con IP OOB di staging `192.168.100.2/24`) e attivazione SSH `root` ✅
+- [x] Fase 2: Configurazione Porta 9 SFP+ di `switch-25g-server` (`192.168.2.3`) in Trunk (`BP_21` VLAN 99 `Bridge ID 1`) e collegamento cavo DAC 10G (`oce0`) agganciato a 10Gbps ✅
+- [ ] Fase 3: Migrazione Automatizzata dall'AI via SSH (`root@192.168.100.2`): accesso passwordless BatchMode verificato, setup gateway temp verso 192.168.100.1, installazione plugin (`os-ddclient`, `os-gdrive-backup`, `os-upnp`, `os-realtek-re`), tuning ZFS/HWP/ARC e conversione automatica di `config.xml` (`re0` WAN + `oce0` Trunk con `TRANSIT` VLAN 1 e `oce0_vlan10/20/30/99`)
+- [ ] Fase 4: Cutover Fisico Finale (< 60s: attivazione config definitiva `192.168.100.1`/`192.168.2.254`, spostamento cavo WAN e spegnimento vecchio Mini PC) & Validazione Test-Driven (`test_internet.sh`, `test_dns.sh`, `test_dhcp.sh`, sync `rete.json`)
+
 ## 🚀 [x] ✅ COMPLETATO: Mitigazione Bitmagnet DHT Crawler, Scaling Factor & State Limiter OPNsense [[bitmagnet-dht-crawler-mitigation-and-state-limiter]]
 - [x] Fase 1: Snapshot Preventivo di Sicurezza su TrueNAS SCALE (`stripe/truenas-docker@pre-bitmagnet-mitigation-2026-10-17`) ✅
 - [x] Fase 2: Configurazione e Tuning Docker su TrueNAS (`DHT_CRAWLER_SCALING_FACTOR=1`, restart container `bitmagnet`) ✅
