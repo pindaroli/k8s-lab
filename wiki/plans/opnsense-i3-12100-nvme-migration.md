@@ -1,35 +1,35 @@
 ---
-title: "Migrazione Macchina OPNsense su i3-12100, MSI PRO H610M-E DDR4 con NVMe, ZFS e Intel X520"
+title: "Migrazione Macchina OPNsense su i3-12100, MSI PRO H610M-E DDR4 con NVMe, ZFS e Emulex 10G"
 type: plan
 status: active
 certified_for_ai: true
 created_at: 2026-09-26
-last_updated: 2026-10-17
+last_updated: 2026-10-18
 tags:
   - "#opnsense"
   - "#hardware"
   - "#migration"
   - "#nvme"
   - "#zfs"
-  - "#intel-x520"
+  - "#emulex-oneconnect"
   - "#msi-h610"
   - "#power-tuning"
   - "#plan"
 ---
 
-# Migrazione Macchina OPNsense su i3-12100 con MSI PRO H610M-E DDR4, NVMe, ZFS e Intel X520
+# Migrazione Macchina OPNsense su i3-12100 con MSI PRO H610M-E DDR4, NVMe, ZFS e Emulex 10G
 
-Questo piano definisce la strategia operativa **Side-by-Side (Zero Conflitti & Delega Totale all'AI via SSH)** per migrare il firewall OPNsense dall'attuale Mini PC (4x 2.5GbE Intel i225/i226) alla nuova macchina con processore **Intel Core i3-12100**, scheda madre **MSI PRO H610M-E DDR4**, **16 GB di RAM**, storage **NVMe ZFS** e scheda di rete **Intel X520 Dual-Port 10G SFP+**.
+Questo piano definisce la strategia operativa **Side-by-Side (Zero Conflitti & Delega Totale all'AI via SSH)** per migrare il firewall OPNsense dall'attuale Mini PC (4x 2.5GbE Intel i225/i226) alla nuova macchina con processore **Intel Core i3-12100**, scheda madre **MSI PRO H610M-E DDR4**, **16 GB di RAM**, storage **NVMe ZFS** e scheda di rete **Emulex OneConnect Dual-Port 10G SFP+ (Skyhawk - driver `if_oce`, interfacce `oce0` e `oce1`)**.
 
 ### 💡 Il Paradigma Operativo: Staging Parallelo su VLAN 99 OOB (`192.168.100.2`) + Migrazione AI via SSH
 Invece di importare subito il vecchio `config.xml` via USB (che causerebbe un conflitto IP immediato se collegato allo switch mentre il vecchio firewall è acceso), la procedura si divide in due parti nettissime:
 1. **Setup Minimo Utente a Console (5 minuti)**:
    - Installazione pulita di OPNsense 26.1 su ZFS NVMe.
-   - Configurazione della sola **VLAN 99 OOB (`ix0_vlan99`)** con IP temporaneo di staging **`192.168.100.2/24`** e attivazione di **SSH per `root`**.
-   - Collegamento del cavo DAC 10G (`ix0`) alla **Porta 9 di `switch-25g-server`** (`192.168.2.3`).
+   - Configurazione della sola **VLAN 99 OOB (`oce0_vlan99`)** con IP temporaneo di staging **`192.168.100.2/24`** e attivazione di **SSH per `root`**.
+   - Collegamento del cavo DAC 10G (`oce0`) alla **Porta 9 di `switch-25g-server`** (`192.168.2.3`).
 2. **Migrazione Completamente Automatizzata dall'AI via SSH (`root@192.168.100.2`)**:
    - Mentre il vecchio OPNsense (`192.168.100.1` / `192.168.2.254`) continua a erogare Internet e servizi a tutto l'homelab senza interruzioni, **l'AI si collega via SSH al nuovo OPNsense (`192.168.100.2`)** attraverso la VLAN 99.
-   - L'AI installa i plugin necessari (usando il vecchio OPNsense `192.168.100.1` come gateway internet temporaneo), applica il tuning ZFS/FreeBSD, esporta il `config.xml` live dal vecchio OPNsense, **converte automaticamente tutte le interfacce (`igc0` $\rightarrow$ WAN onboard, `igc1` + `igc3` $\rightarrow$ Trunk `ix0` + VLAN)** e prepara il sistema per il cutover finale di 30 secondi.
+   - L'AI installa i plugin necessari (usando il vecchio OPNsense `192.168.100.1` come gateway internet temporaneo), applica il tuning ZFS/FreeBSD, esporta il `config.xml` live dal vecchio OPNsense, **converte automaticamente tutte le interfacce (`igc0` $\rightarrow$ WAN onboard `re0`, `igc1` + `igc3` $\rightarrow$ Trunk `oce0` + VLAN)** e prepara il sistema per il cutover finale di 30 secondi.
 
 ---
 
@@ -52,7 +52,7 @@ Dal controllo del file di configurazione attuale (`opnsense_backup_pre_zfs_recov
 > [!IMPORTANT]
 > **Prerequisito Switch Server (`switch-25g-server` - Horaco `192.168.2.3`, Porta 9 SFP+ 10G)**:
 > In `rete.json`, la **Porta 9 (10G SFP+)** di `switch-25g-server` era lasciata come `Free / Spare` in modalità `ACCESS` (PVID 1).
-> Prima di collegare il cavo DAC 10G da `ix0` del nuovo OPNsense alla **Porta 9**, verificare/impostare nella WebGUI dello switch (`http://192.168.2.3`) che la **Porta 9** abbia la **stessa identica configurazione Trunk della Porta 7 e della Porta 10**:
+> Prima di collegare il cavo DAC 10G da `oce0` del nuovo OPNsense alla **Porta 9**, verificare/impostare nella WebGUI dello switch (`http://192.168.2.3`) che la **Porta 9** abbia la **stessa identica configurazione Trunk della Porta 7 e della Porta 10**:
 > - **Mode**: `Trunk`
 > - **PVID / Native VLAN**: `1` (Untagged — trasporta la rete `TRANSIT` `192.168.2.0/24`)
 > - **Allowed / Tagged VLANs**: `1, 10, 20, 30, 40, 99`
@@ -81,12 +81,12 @@ Prima di avviare l'installer USB di OPNsense, entrare nel BIOS della **MSI PRO H
 3. **C-States & Speed Shift (`OC > Advanced CPU Configuration`)**:
    - **Intel C-State**: `Enabled` (`C-State Limit` = `C10` / `Auto`).
    - **Intel Speed Shift Technology (HWP)**: `Enabled`.
-   - In **Settings > Advanced > PCI Subsystem Settings**: lasciare **PCIe ASPM** = `Disabled` (garantisce stabilità DMA assoluta con il controller PCIe 2.0 Intel 82599ES della X520).
+   - In **Settings > Advanced > PCI Subsystem Settings**: lasciare **PCIe ASPM** = `Disabled` (garantisce stabilità DMA assoluta con il controller PCIe Emulex OneConnect).
 4. **Affidabilità Headless & Periferiche**:
    - **Settings > Advanced > Power Management Setup > Restore after AC Power Loss**: **`Power On`**.
    - **Settings > Advanced > Integrated Peripherals > HD Audio Controller**: **`Disabled`**.
    - **Settings > Security > Secure Boot**: **`Disabled`**.
-   - **Hardware Monitor (F6)**: Ventole CPU e SYS_FAN in **PWM Smart Fan Mode** (minimo 30–35% per ventilare il dissipatore passivo della Intel X520).
+   - **Hardware Monitor (F6)**: Ventole CPU e SYS_FAN in **PWM Smart Fan Mode** (minimo 30–35% per ventilare il dissipatore della Emulex 10G).
 5. Premere **`F10`** (*Save & Exit*).
 
 ---
@@ -96,20 +96,20 @@ Prima di avviare l'installer USB di OPNsense, entrare nel BIOS della **MSI PRO H
 ```mermaid
 flowchart TD
     subgraph FASE1["FASE 1: Setup Minimo a Console Utente (5 min)"]
-        A["Boot USB Installer OPNsense 26.1<br/>Installazione ZFS Stripe su NVMe"] --> B["Primo Boot a Console Locale<br/>Opzione 8 (Shell): hw.ix.unsupported_sfp=1"]
-        B --> C["Opzione 1 (Assign Interfaces):<br/>Crea VLAN 99 su ix0 (ix0_vlan99)<br/>LAN -> ix0_vlan99 | WAN -> re0/igc0"]
+        A["Boot USB Installer OPNsense 26.1<br/>Installazione ZFS Stripe su NVMe"] --> B["Primo Boot a Console Locale<br/>Opzione 8 (Shell): if_oce_load=YES in loader.conf.local"]
+        B --> C["Opzione 1 (Assign Interfaces):<br/>Crea VLAN 99 su oce0 (oce0_vlan99)<br/>LAN -> oce0_vlan99 | WAN -> re0"]
         C --> D["Opzione 2 (Set IP):<br/>LAN = 192.168.100.2/24 (No DHCP)<br/>Abilitazione SSH root"]
     end
 
     subgraph FASE2["FASE 2: Connessione Cavo DAC 10G a Switch Server"]
         D --> E["Configura Porta 9 di switch-25g-server (192.168.2.3)<br/>in Trunk (Native 1, Allowed 1,10,20,30,40,99)"]
-        E --> F["Collega Cavo DAC 10G: Nuovo OPNsense (ix0)<br/>---> Porta 9 switch-25g-server"]
+        E --> F["Collega Cavo DAC 10G: Nuovo OPNsense (oce0)<br/>---> Porta 9 switch-25g-server"]
     end
 
     subgraph FASE3["FASE 3: Automazione AI via SSH (Zero Downtime)"]
         F --> G["AI si connette da Mac Studio:<br/>ssh root@192.168.100.2 (VLAN 99)"]
-        G --> H["AI configura gateway temp -> 192.168.100.1<br/>Installa plugin (os-ddclient, os-gdrive-backup, os-upnp, os-realtek-re)<br/>Applica Tunables ZFS, HWP, ARC e RAM Disk"]
-        H --> I["AI esporta config.xml da 192.168.100.1<br/>Converte interfacce (re0, ix0, ix0_vlan10/20/30/99)<br/>e la inietta sul Nuovo OPNsense"]
+        G --> H["AI configura gateway temp -> 192.168.100.1<br/>Installa plugin (os-ddclient, os-gdrive-backup, os-upnp, os-realtek-re)<br/>Applica Hardening ZFS, RAM Disk e HWP"]
+        H --> I["AI esporta config.xml da 192.168.100.1<br/>Converte interfacce (re0, oce0, oce0_vlan10/20/30/99)<br/>e la inietta sul Nuovo OPNsense"]
     end
 
     subgraph FASE4["FASE 4: Cutover Fisico Finale (30 sec)"]
@@ -143,16 +143,16 @@ flowchart TD
 
 ---
 
-#### Step 1.2: Sblocco Cavo DAC 10G sulla Scheda Intel X520 (`hw.ix.unsupported_sfp`)
+#### Step 1.2: Abilitazione Driver Scheda 10G Emulex OneConnect (`if_oce`)
 Al primo avvio dal disco NVMe, comparirà il menu testuale di OPNsense (`0) Logout ... 8) Shell`).
 Effettua il login come `root` e segui questi passaggi esatti:
 
 1. Digita **`8`** e premi `Invio` per entrare nella **Shell** di FreeBSD.
-2. Abilita il supporto a qualsiasi cavo DAC SFP+ sulla scheda Intel X520 e ricarica il driver `ixgbe` digitando:
+2. Abilita il caricamento permanente del driver Emulex (`if_oce`) nel bootloader digitando:
 
 ```sh
-echo 'hw.ix.unsupported_sfp="1"' >> /boot/loader.conf.local
-kldunload if_ixgbe 2>/dev/null; kldload if_ixgbe
+echo 'if_oce_load="YES"' >> /boot/loader.conf.local
+kldload if_oce
 ```
 
 3. Verifica il nome esatto delle schede di rete viste dal kernel:
@@ -160,7 +160,7 @@ kldunload if_ixgbe 2>/dev/null; kldload if_ixgbe
 ```sh
 ifconfig -l
 ```
-*(Vedrai **`ix0`** e **`ix1`** per le due porte 10G SFP+ della Intel X520, e **`re0`** — oppure `igc0`/`rge0` — per la porta RJ45 onboard della scheda madre).*
+*(Vedrai **`oce0`** e **`oce1`** per le due porte 10G SFP+ della Emulex OneConnect, e **`re0`** per la porta RJ45 onboard Realtek della scheda madre).*
 
 4. Torna al menu principale di OPNsense digitando:
 
@@ -170,17 +170,17 @@ exit
 
 ---
 
-#### Step 1.3: Creazione della VLAN 99 OOB (`ix0_vlan99`) dal Menu Console
+#### Step 1.3: Creazione della VLAN 99 OOB (`oce0_vlan99`) dal Menu Console
 Dal menu numerato di OPNsense:
 
 1. Digita **`1`** (*Assign interfaces*) e premi `Invio`:
    - Alla domanda **`Do you want to configure LAGGs now? [y/N]`**: digita **`n`** e premi `Invio`.
    - Alla domanda **`Do you want to configure VLANs now? [y/N]`**: digita **`y`** e premi `Invio`:
-     - **Parent interface**: digita **`ix0`** (la Porta 1 10G SFP+ della Intel X520 dove hai inserito il cavo DAC) e premi `Invio`.
+     - **Parent interface**: digita **`oce0`** (la Porta 1 10G SFP+ della Emulex dove è inserito il cavo DAC) e premi `Invio`.
      - **VLAN tag**: digita **`99`** e premi `Invio`.
      - Quando ti chiede nuovamente *Parent interface (or nothing if finished)*: premi semplicemente **`Invio`** (vuoto) per terminare la creazione delle VLAN.
    - **Enter the WAN interface name**: digita il nome della porta RJ45 onboard (es. **`re0`**) e premi `Invio`.
-   - **Enter the LAN interface name**: digita **`ix0_vlan99`** e premi `Invio`.
+   - **Enter the LAN interface name**: digita **`oce0_vlan99`** e premi `Invio`.
    - **Enter the Optional interface 1 name**: premi semplicemente **`Invio`** (vuoto).
    - Alla domanda **`Do you want to proceed? [y/N]`**: digita **`y`** e premi `Invio`.
 
@@ -224,7 +224,7 @@ php -r '$c = simplexml_load_file("/conf/config.xml"); $c->system->ssh->enabled =
      - **Nota Isolamento Multicast KVM (`VLAN 40` / `Bridge ID 2`)**: A OPNsense la VLAN 40 non serve. Per evitare che il chip MaxLinear dello switch Horaco disturbi il flusso multicast dell'IP Streamer (`AV Access 4KIP100-KVM`), lasciare **`BP_22` (e `BP_18`) NON spuntate**, mantenendo sul `Bridge ID 2` esclusivamente la **`Port_8`** (in `Port VLAN`) e **`BP_20` (`Port = 10`, `Bridge ID = 2`, `External VLAN = 40`)** verso lo Switch Extreme.
      - **Port VLAN**: `Port_9` su `Bridge ID = 0` (passaggio nativo VLAN 1 `TRANSIT` untagged e VLAN 10/20/30 tagged).
 2. **[x] Collegamento Fisico Cavo DAC 10G**:
-   - Cavo DAC SFP+ collegato dalla porta **`ix0`** (Intel X520 Porta 1) del nuovo OPNsense alla **Porta 9 (10G SFP+)** di `switch-25g-server`.
+   - Cavo DAC SFP+ collegato dalla porta **`oce0`** (Emulex OneConnect Porta 1) del nuovo OPNsense alla **Porta 9 (10G SFP+)** di `switch-25g-server`.
    - Il vecchio OPNsense resta collegato e acceso senza alcuna interruzione di rete.
 
 ---
@@ -297,13 +297,13 @@ Quando tutta la preparazione in Fase 3 è completata e verificata al 100%:
    - Scollegare il vecchio OPNsense (Porte 4 e 7 di `switch-25g-server`) e spegnerlo (lasciandolo intatto come backup fisico pronto all'uso).
    - Spostare il **cavo RJ45 WAN (Modem)** dalla porta `igc0` del vecchio OPNsense alla **porta RJ45 onboard (`re0`)** del nuovo OPNsense.
 3. **Validazione Automatica Post-Cutover (Eseguita dall'AI)**:
-   - Verifica raggiungibilità nuovo OPNsense sugli IP definitivi **`192.168.100.1`** (VLAN 99 su `ix0_vlan99`) e **`192.168.2.254`** (`TRANSIT` su `ix0`).
+   - Verifica raggiungibilità nuovo OPNsense sugli IP definitivi **`192.168.100.1`** (VLAN 99 su `oce0_vlan99`) e **`192.168.2.254`** (`TRANSIT` su `oce0`).
    - Esecuzione suite di test di rete dell'homelab:
      - `./scripts/infrastructure/test_internet.sh`
      - `./scripts/network/test_dns.sh`
      - `./scripts/network/test_dhcp.sh`
      - `python3 scripts/opnsense/check_opnsense_plugins.py`
-   - Verifica stato ZFS, RAM Disk e temperature CPU/X520 via SSH (`zpool status zroot`, `sysctl dev.cpu | grep temperature`).
+   - Verifica stato ZFS, RAM Disk e temperature CPU/Emulex via SSH (`zpool status zroot`, `sysctl dev.cpu | grep temperature`).
    - Aggiornamento finale di `rete.json` e `wiki/entities/OPNsense.md` con la nuova topologia su Porta 9 di `switch-25g-server`.
 
 ---

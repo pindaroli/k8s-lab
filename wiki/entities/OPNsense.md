@@ -57,9 +57,22 @@ La documentazione ufficiale di OPNsense allineata alla versione in esecuzione ne
 - **Master Index**: `downloads/opnsense-26.1/SUMMARY.md` (suddiviso per Core, Manual, How-Tos, Services, Firewall/NAT, Releases, Development, Troubleshooting).
 - **Piano di Riferimento**: [[opnsense-documentation-extraction-and-ragflow]].
 
+## 7. Piattaforma Hardware & Interfacce (In corso di migrazione)
+- **Host Attuale in Produzione**: Mini PC 4x 2.5GbE Intel i225/i226 (`igc0` WAN, `igc1` Trunk TRANSIT/VLAN, `igc3` OOB).
+- **Nuovo Host Staging (In migrazione [[opnsense-i3-12100-nvme-migration]])**:
+  - **CPU**: Intel Core i3-12100 (4C/8T Alder Lake).
+  - **Motherboard**: MSI PRO H610M-E DDR4.
+  - **RAM**: 16 GB DDR4 (con RAM disk MFS `/var` e `/tmp`).
+  - **Storage**: NVMe SSD su pool ZFS `zroot` (Hardening anti-usura: `atime=off`, `compression=lz4`, ARC max 4GB).
+  - **NIC 10G SFP+**: **Emulex OneConnect Dual-Port 10G SFP+** (Skyhawk, driver FreeBSD `if_oce`, modulo `if_oce_load="YES"`):
+    - `oce0`: Trunk 10G connesso a Porta 9 SFP+ di `switch-25g-server` (`192.168.2.3`), trasporta `TRANSIT` (VLAN 1 nativa untagged), VLAN 99 OOB (`oce0_vlan99`), VLAN 10 (`oce0_vlan10`), VLAN 20 (`oce0_vlan20`), VLAN 30 (`oce0_vlan30`).
+    - `oce1`: Seconda porta 10G SFP+ (Spenta / Cold-Spare).
+  - **NIC WAN**: Realtek RTL8111/8168 Gigabit Ethernet onboard (`re0`) per uplink diretto al modem operatore.
+
 ## Relazioni Architetturali
 - Fornisce DNS a: [[Talos_Cluster]], Dispositivi Client VLAN 20
 - Bilancia traffico verso: [[Traefik]]
 - Instradamento simmetrico con: [[Ansible_Extreme_EXOS]] su rete di TRANSIT.
 - Base di conoscenza offline e RAGFlow: [[opnsense-documentation-extraction-and-ragflow]] (`downloads/opnsense-26.1/`).
+- Piano di Migrazione Attivo: [[opnsense-i3-12100-nvme-migration]].
 
