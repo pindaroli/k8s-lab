@@ -341,21 +341,21 @@
       "ports": [
         {
           "id": "1",
-          "role": "LAN Server (VLAN 10) - TrueNAS 10G / PVE DAC",
+          "role": "LAN Server (VLAN 10) - PVE3 Port 1 (enp5s0f0)",
           "mode": "ACCESS",
           "speed": "10Gbs",
           "pvid": 10
         },
         {
           "id": "2",
-          "role": "LAN Server (VLAN 10) - PVE DAC uplink",
+          "role": "LAN Server (VLAN 10) - PVE1 Port 1 (enp1s0f0np0)",
           "mode": "ACCESS",
           "speed": "10Gbs",
           "pvid": 10
         },
         {
           "id": "3",
-          "role": "LAN Server (VLAN 10) - PVE1 Port 1 (enp1s0f0)",
+          "role": "LAN Server (VLAN 10) - PVE2 Port 1 (enp1s0f0np0)",
           "mode": "ACCESS",
           "speed": "10Gbs",
           "pvid": 10
@@ -371,21 +371,21 @@
         },
         {
           "id": "5",
-          "role": "LAN Client (VLAN 20) - PVE1 Port 2 (enp1s0f1np1)",
+          "role": "LAN Client (VLAN 20) - PVE3 Port 2 (enp5s0f1)",
           "mode": "ACCESS",
           "speed": "10Gbs",
           "pvid": 20
         },
         {
           "id": "6",
-          "role": "LAN Client (VLAN 20) - PVE2 DAC uplink",
+          "role": "LAN Client (VLAN 20) - PVE1 Port 2 (enp1s0f1np1)",
           "mode": "ACCESS",
           "speed": "10Gbs",
           "pvid": 20
         },
         {
           "id": "7",
-          "role": "LAN Client (VLAN 20) - PVE3 Port 2 (enp101s0f1)",
+          "role": "LAN Client (VLAN 20) - PVE2 Port 2 (enp1s0f1np1)",
           "mode": "ACCESS",
           "speed": "10Gbs",
           "pvid": 20
@@ -631,7 +631,7 @@
           "mac": "3c:fd:fe:05:5e:a0",
           "driver": "i40e",
           "speed": "10Gbs",
-          "connected_to": "switch10g Port 2",
+          "connected_to": "extreme Port 2",
           "vlan": "10",
           "bridge": "vmbr10",
           "note": "LAN Server Bridge (vmbr10) - Intel X710 Port 0"
@@ -643,7 +643,7 @@
           "mac": "3c:fd:fe:05:5e:a2",
           "driver": "i40e",
           "speed": "10Gbs",
-          "connected_to": "switch10g Port 6",
+          "connected_to": "extreme Port 6",
           "vlan": "20",
           "bridge": "vmbr20",
           "note": "LAN Client Bridge (vmbr20) - Intel X710 Port 1"
@@ -701,7 +701,7 @@
           "mac": "3c:fd:fe:d5:9c:cc",
           "driver": "i40e",
           "speed": "10Gbs",
-          "connected_to": "switch10g Port 3",
+          "connected_to": "extreme Port 3",
           "vlan": "10",
           "bridge": "vmbr10",
           "note": "LAN Server Bridge (vmbr10) - Intel X710 Port 0"
@@ -713,7 +713,7 @@
           "mac": "3c:fd:fe:d5:9c:cd",
           "driver": "i40e",
           "speed": "10Gbs",
-          "connected_to": "switch10g Port 7",
+          "connected_to": "extreme Port 7",
           "vlan": "20",
           "bridge": "vmbr20",
           "note": "LAN Client Bridge (vmbr20) - Intel X710 Port 1"
@@ -779,11 +779,11 @@
           "mac": "f4:4c:7f:1d:a2:68",
           "driver": "ixgbe",
           "speed": "10Gbs",
-          "bridge": "vmbr20",
-          "connected_to": "switch10g Port 5",
-          "vlan": "20",
+          "bridge": "vmbr10",
+          "connected_to": "extreme Port 1",
+          "vlan": "10",
           "status": "UP",
-          "note": "Intel X520 Port 1 → DAC → Extreme. 10G Access for VLAN 20 (Client)."
+          "note": "Intel X520 Port 1 → DAC → Extreme Port 1. 10G Access for VLAN 10 (Server)."
         },
         {
           "id": "2",
@@ -792,16 +792,16 @@
           "mac": "f4:4c:7f:1d:a2:69",
           "driver": "ixgbe",
           "speed": "10Gbs",
-          "bridge": "vmbr10",
-          "connected_to": "switch10g Port 1",
-          "vlan": "10",
+          "bridge": "vmbr20",
+          "connected_to": "extreme Port 5",
+          "vlan": "20",
           "status": "UP",
-          "note": "Intel X520 Port 2 → DAC → Extreme. 10G Access for VLAN 10 (Server)."
+          "note": "Intel X520 Port 2 → DAC → Extreme Port 5. 10G Access for VLAN 20 (Client)."
         },
         {
           "id": "3",
           "os_name": "nic0",
-          "pci": "63:00.0",
+          "pci": "03:00.0",
           "mac": "c8:ff:bf:05:50:24",
           "driver": "igc",
           "speed": "2.5Gbs",

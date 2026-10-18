@@ -33,14 +33,18 @@
       register: k8s_probe
       failed_when: false
 
+    - name: "Definisci stato Kubernetes (Online / Offline)"
+      set_fact:
+        k8s_is_online: "{{ 'port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default('')) }}"
+
     - name: "ℹ️ Stato rilevamento Kubernetes Cluster"
       debug:
-        msg: "{{ 'Cluster K8s ONLINE: procedo con cordon, checkpoint e shutdown' if ('port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default(''))) else 'Cluster K8s GIÀ OFFLINE: skip cordon, checkpoint e talosctl shutdown' }}"
+        msg: "{{ 'Cluster K8s ONLINE: procedo con cordon, checkpoint e shutdown' if k8s_is_online else 'Cluster K8s GIÀ OFFLINE: skip cordon, checkpoint, talosctl shutdown e gate attesa porte' }}"
 
     - name: "🛡️ Cordon globale nodi Talos (Previene rescheduling dei pod)"
       command: kubectl cordon talos-cp-01 talos-cp-02 talos-cp-03
       register: cordon_result
-      when: "'port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default(''))"
+      when: k8s_is_online
       ignore_errors: true
 
     - name: "💾 Quiesce / Checkpoint Database PostgreSQL (CNPG)"
@@ -50,7 +54,7 @@
           kubectl exec -n cnpg-system -c postgres "$PG_PRIMARY" -- psql -U postgres -c "CHECKPOINT;"
         fi
       register: pg_checkpoint
-      when: "'port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default(''))"
+      when: k8s_is_online
       failed_when: false
       changed_when: false
 
@@ -58,7 +62,7 @@
       command: >
         talosctl shutdown --nodes {{ talos_nodes }} --endpoints {{ api_endpoint }} --force --wait=false
       register: shutdown_signal
-      when: "'port' in k8s_probe and 'Timeout' not in (k8s_probe.msg | default(''))"
+      when: k8s_is_online
       ignore_errors: true
 
     - name: "⏳ Gate 1.1: Attesa chiusura porte API Talos (Porta 50000)"
@@ -71,6 +75,7 @@
         - 10.10.20.141
         - 10.10.20.142
         - 10.10.20.143
+      when: k8s_is_online
 
     - name: "⏳ Gate 1.2: Verifica chiusura API Server K8s (VIP 10.10.20.55:6443)"
       wait_for:
@@ -78,6 +83,7 @@
         port: 6443
         state: stopped
         timeout: 30
+      when: k8s_is_online
 
     - name: "⏳ Gate 1.3: Verifica chiusura Traefik Ingress (VIP 10.10.20.56:443)"
       wait_for:
@@ -85,14 +91,17 @@
         port: 443
         state: stopped
         timeout: 30
+      when: k8s_is_online
 
     - name: "✅ Gate 1 Superato: Cluster Kubernetes e Ingress ufficialmente OFFLINE"
       debug:
         msg: "Kubernetes è spento in sicurezza."
+      when: k8s_is_online
 
     - name: "🔔 Notifica Telegram: K8s Spento"
       command: >
         bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "⚫ <b>Kubernetes Cluster Spento</b>: Talos nodes disattivati e workload salvaguardati"'
+      when: k8s_is_online
       changed_when: false
 
 # ------------------------------------------------------------------------------
@@ -141,6 +150,14 @@
       when: "'port' in pve_master_probe and 'Timeout' not in (pve_master_probe.msg | default(''))"
       ignore_errors: true
 
+    - name: "Definisci se almeno un nodo Proxmox VE era online"
+      set_fact:
+        pve_any_online: "{{ ('port' in pve_master_probe and 'Timeout' not in (pve_master_probe.msg | default(''))) or (pve_sat_probe.results | selectattr('port', 'defined') | rejectattr('msg', 'search', 'Timeout') | list | length > 0) }}"
+
+    - name: "ℹ️ Stato rilevamento Proxmox VE Cluster"
+      debug:
+        msg: "{{ 'Hypervisors PVE ONLINE: procedo con attesa spegnimento e gate' if pve_any_online else 'Hypervisors PVE GIÀ OFFLINE: skip gate attesa porte e notifica' }}"
+
     - name: "⏳ Gate 2.1: Attesa spegnimento nodi Proxmox (Porta SSH 22 STOPPED)"
       wait_for:
         host: "{{ item }}"
@@ -148,6 +165,7 @@
         state: stopped
         timeout: 120
       loop: "{{ pve_all_hosts }}"
+      when: pve_any_online
 
     - name: "⏳ Gate 2.2: Verifica spegnimento WebUI Proxmox (Porta 8006 STOPPED)"
       wait_for:
@@ -156,14 +174,17 @@
         state: stopped
         timeout: 30
       loop: "{{ pve_all_hosts }}"
+      when: pve_any_online
 
     - name: "✅ Gate 2 Superato: Tutti i 3 server fisici Proxmox sono spenti"
       debug:
         msg: "Hypervisor pve1, pve2 e pve3 disattivati con successo."
+      when: pve_any_online
 
     - name: "🔔 Notifica Telegram: Hypervisors PVE Spenti"
       command: >
         bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "⚫ <b>Hypervisors PVE Spenti</b>: pve1, pve2, pve3 disattivati in sicurezza"'
+      when: pve_any_online
       changed_when: false
 
 # ------------------------------------------------------------------------------
