@@ -1,5 +1,16 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Script Idempotenti di Convergenza Stato Homelab (`lab_mode_full`, `lab_mode_eco`, `lab_mode_off`) [[homelab-idempotent-mode-scripts]]
+- [x] Fase 1: Creazione dei 4 Playbook Atomici Ansible (`ensure_storage_on.yml`, `ensure_storage_off.yml`, `ensure_compute_on.yml`, `ensure_compute_off.yml`) e verifica sintassi ✅
+- [x] Fase 2: Creazione dei 3 Script Dichiarativi (`lab_mode_full.sh`, `lab_mode_eco.sh`, `lab_mode_off.sh`), alias `lab_mode_echo.sh` e permessi `chmod +x` ✅
+- [x] Fase 3: Allineamento Script Legacy & Launcher `scripts/go.py` ✅
+- [x] Fase 4: Validazione Test-Driven End-to-End, Aggiornamento `Power_Sequence.md`, `in_use_by` nei Pattern e Sync Wiki Context (`build_wiki_context.py`) ✅
+
+## 🚀 [x] ✅ COMPLETATO: Deduplicazione Alert nelle Procedure di Automazione Gerarchiche [[automation-alerting-deduplication]]
+- [x] Fase 1: Estensione del Modulo `procedure_scope.sh` con token/marker atomico di errore (`mark_error_reported`, `has_error_been_reported`, `clean_error_marker`) ✅
+- [x] Fase 2: Aggiornamento della funzione `on_error()` nei 4 script shell (`startup_all_lab.sh`, `startup_from_truenas_only.sh`, `shutdown_all_lab.sh`, `shutdown_to_truenas_only.sh`) ✅
+- [x] Fase 3: Validazione Test-Driven con simulazione errore gerarchico (100% superata sia annidata sia standalone) e allineamento pattern [[hierarchical-automation-alerting-pattern]] ✅
+
 ## 🚀 Pianificato: Triangolo Schede 10G SFP+ (PVE1, TrueNAS, OPNsense) & Bond LACP 802.3ad sui 3 Nodi Proxmox [[nic-10g-triangle-swap-and-proxmox-lacp-bond]]
 - [ ] Fase 1: Attivazione LACP 802.3ad (`bond0` 20 Gbps con `bond0.10` -> `vmbr10` e `bond0.20` -> `vmbr20`) sui 3 nodi Proxmox (`pve1`, `pve2`, `pve3`) via OOB e Playbook Switch Extreme (`ansible/playbooks/exos_proxmox_lacp_bonds.yml`, LAG 1 `1,5`, LAG 2 `2,6`, LAG 3 `3,7`)
 - [ ] Fase 2: Pre-Configurazione Software "Zero-Console" per lo scambio schede (`50-pmx-nic1/2.link` con MAC Emulex + `update-initramfs` su `pve1`; conversione `/conf/config.xml` da `oce0` a `ixl0` su `opnsense`)
@@ -40,8 +51,8 @@
 - [x] Fase 4: Integrazione Launcher `scripts/go.py` e Consolidamento Documentale Wiki / Todo ✅
 
 ## 🚀 In Corso: Migrazione Flotta TrueNAS Docker MCP su Standard Streamable HTTP [[truenas-mcp-fleet-streamable-http-migration]]
-- [ ] Fase 1: Aggiornamento Dichiarativo Immagini Docker (`docker/mcp/build-images.sh` e `docker-compose.yaml` con `--streamableHttpPath /mcp`)
-- [ ] Fase 2: Rebuild Immagini & Sincronizzazione su TrueNAS (`10.10.20.50`)
+- [x] Fase 1: Aggiornamento Dichiarativo Immagini Docker (`docker/mcp/build-images.sh` e `docker-compose.yaml` con `--streamableHttpPath /mcp`) ✅
+- [x] Fase 2: Rebuild Immagini & Sincronizzazione su TrueNAS (`10.10.20.50`) ✅
 - [ ] Fase 3: Rollout e Restart Atomico Stack Docker su TrueNAS
 - [ ] Fase 4: Allineamento Client Antigravity (`~/.gemini/antigravity/mcp_config.json` con `serverUrl`)
 - [ ] Fase 5: Validazione Test-Driven End-to-End (Handshake POST 200 OK & tool live call)
@@ -160,8 +171,8 @@
 ## 🚀 In Corso: Test Locale, Pipeline CI/CD GHCR, Docker TrueNAS & Widget Homepage Meross MCP [[meross-mcp-docker-validation]]
 - [x] Fase 1: Test Server Meross in Locale & Validazione Credenziali (MQTT/TLS connesso con successo, scoperta presa fisica `ups` MSS310) ✅
 - [x] Fase 2: Implementazione Pipeline CI/CD GitHub Actions & Release OCI `v0.1.0` su GHCR ✅
-- [x] Fase 3: Configurazione Dichiarativa TrueNAS Docker (Pinning semantico `ghcr.io/pindaroli/meross-mcp:0.1.0`, divieto `:latest`, SOPS) ✅
-- [ ] Fase 4: Deployment e Validazione End-to-End su TrueNAS (In corso: fix telemetria `async_get_instant_metrics` + mount `/mcp`, rilascio `v0.1.1` e test client)
+- [x] Fase 3: Configurazione Dichiarativa TrueNAS Docker (Pinning semantico `ghcr.io/pindaroli/meross-mcp:0.1.2`, divieto `:latest`, SOPS) ✅
+- [x] Fase 4: Deployment e Validazione End-to-End su TrueNAS (Completato: fix telemetria `async_get_instant_metrics`, lifespan ASGI FastMCP, rilascio `v0.1.2`, test Streamable HTTP 200 OK e configurazione `serverUrl` in `mcp_config.json`) ✅
 - [ ] Fase 5: Integrazione Widget Consumi su Dashboard Homepage (K8s & TrueNAS)
 
 ## 🚀 [x] ✅ COMPLETATO: Ottimizzazione e Dimensionamento al Limite Fisico di LXC Ollama su PVE3 [[lxc-ollama-hardware-limit-optimization]]

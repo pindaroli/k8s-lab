@@ -184,7 +184,7 @@ flowchart TD
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 3 (Deployment e Validazione End-to-End su TrueNAS) - Bugfix Telemetria & Routing MCP
-- **Ultima Azione Completata**: Autenticazione Meross Cloud superata con successo; scoperta presa fisica `ups` (MSS310, UUID `2303168327141751200348e1e9bf25d7`); endpoint REST `/api/v1/devices` operativo al 100% su TrueNAS (`10.10.20.50:8112`). Immagine `ghcr.io/pindaroli/meross-mcp:0.1.0` pubblicata su GHCR e deployata con pinning semantico. Identificata la causa radice del baco telemetria (necessario `async_get_instant_metrics` con `PowerInfo` su `meross-iot` 0.4.x) e del mount subpath `/mcp`.
-- **Prossimo Passo Operativo**: Patch al codice sorgente in `/Users/olindo/prj/meross-mcp/` (`client.py`, `devices.py` e `app.py`) per supportare `async_get_instant_metrics()` e mount unificato `mcp.http_app(path="/")`, rilascio versione `0.1.1` su GHCR e riavvio container.
-- **Blocchi/Decisioni Pendenti**: Sessione sospesa su richiesta utente; pronta per essere ripresa con il bugfix.
+- **Fase Attiva**: Fase 4 (Deployment e Validazione End-to-End su TrueNAS) COMPLETATA con Successo ✅ / Pronta per Fase 5 (Widget Homepage)
+- **Ultima Azione Completata**: Risolti i bug di telemetria e lifespan ASGI con rilascio semantico `0.1.2` (`ghcr.io/pindaroli/meross-mcp:0.1.2`). Container `mcp-meross` healthy su TrueNAS SCALE (`10.10.20.50:8112`). Telemetria istantanea verificata live (270W su presa fisica `ups` MSS310). Handshake Streamable HTTP su `/mcp` collaudato con esito 200 OK e 6 tool MCP registrati. Centralizzata la configurazione in `~/.gemini/antigravity/mcp_config.json` con `"serverUrl": "http://10.10.20.50:8112/mcp"`.
+- **Prossimo Passo Operativo**: Fase 5: Integrazione widget consumi in tempo reale (`customapi`) sulle dashboard Homepage K8s (`home.pindaroli.org`) e TrueNAS (`:3000`).
+- **Blocchi/Decisioni Pendenti**: Nessuno.
