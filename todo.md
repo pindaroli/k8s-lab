@@ -50,13 +50,22 @@
 - [x] Fase 3: Validazione Test-Driven End-to-End (Unit tests helpers, CLI args, discovery `go.py`) ✅
 - [x] Fase 4: Integrazione Launcher `scripts/go.py` e Consolidamento Documentale Wiki / Todo ✅
 
-## 🚀 In Corso: Migrazione Flotta TrueNAS Docker MCP su Standard Streamable HTTP [[truenas-mcp-fleet-streamable-http-migration]]
+## 🚀 Pianificato: Migrazione Flotta MCP TrueNAS su CI/CD GitOps e Sanificazione Tag Immagini [[truenas-mcp-fleet-gitops-and-image-tag-sanitization]]
+- [ ] Fase 1: Standardizzazione Dockerfile Streamable HTTP nel Repository (`docker/<app>/Dockerfile` & repos standalone)
+- [ ] Fase 2: Configurazione e Aggiornamento Pipeline GitHub Actions (`.github/workflows/docker-*.yml`)
+- [ ] Fase 3: Esecuzione CI/CD & Pubblicazione Immagini OCI su GHCR con Version Pinning SemVer
+- [ ] Fase 4: Refactoring Dichiarativo del `docker-compose.yaml` di TrueNAS ed Eliminazione `build-images.sh`
+- [ ] Fase 5: Rollout Dichiarativo & Test-Driven su TrueNAS SCALE (`pull && up -d`)
+- [ ] Fase 6: Validazione Funzionale & Bonifica Ambientale (Prune vecchi tag `local/*`)
+- [ ] Fase 7: Consolidamento Documentale, Aggiornamento Pattern e Wiki Context
+
+## 🚀 [x] ✅ COMPLETATO: Migrazione Flotta TrueNAS Docker MCP su Standard Streamable HTTP [[truenas-mcp-fleet-streamable-http-migration]]
 - [x] Fase 1: Aggiornamento Dichiarativo Immagini Docker (`docker/mcp/build-images.sh` e `docker-compose.yaml` con `--streamableHttpPath /mcp`) ✅
 - [x] Fase 2: Rebuild Immagini & Sincronizzazione su TrueNAS (`10.10.20.50`) ✅
-- [ ] Fase 3: Rollout e Restart Atomico Stack Docker su TrueNAS
-- [ ] Fase 4: Allineamento Client Antigravity (`~/.gemini/antigravity/mcp_config.json` con `serverUrl`)
-- [ ] Fase 5: Validazione Test-Driven End-to-End (Handshake POST 200 OK & tool live call)
-- [ ] Fase 6: Consolidamento Documentale & Knowledge Base ([[MCP_Platform]], sync wiki context)
+- [x] Fase 3: Rollout e Restart Atomico Stack Docker su TrueNAS (12/12 container healthy) ✅
+- [x] Fase 4: Allineamento Client Antigravity (`~/.gemini/antigravity/mcp_config.json` con `serverUrl`) ✅
+- [x] Fase 5: Validazione Test-Driven End-to-End (Handshake POST 200 OK & tool live call su TrueNAS, Talos, KEF, Arrstack, RAGFlow) ✅
+- [x] Fase 6: Consolidamento Documentale & Knowledge Base ([[MCP_Platform]], sync wiki context) ✅
 
 ## 🚀 [x] ✅ COMPLETATO: Integrazione Bitmagnet nello Stack Docker su TrueNAS SCALE [[bitmagnet-truenas-docker-integration]]
 - [x] Fase 1: Pianificazione, Scelta Parametri & Cifratura Segreto SOPS TMDb (`secrets-sops/tmdb-credentials.enc.yaml`) ✅

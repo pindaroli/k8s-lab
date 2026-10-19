@@ -64,44 +64,44 @@ Unificare l'intera flotta su **Streamable HTTP**:
 ## 3. Fasi Operative
 
 ### Fase 1: Aggiornamento Dichiarativo Immagini Docker (`docker/mcp/`)
-- [ ] Modifica di `docker/mcp/build-images.sh` per aggiornare l'entrypoint di Supergateway con `--streamableHttpPath /mcp` per:
+- [x] Modifica di `docker/mcp/build-images.sh` per aggiornare l'entrypoint di Supergateway con `--streamableHttpPath /mcp` per:
   - `local/talos-mcp:latest`
   - `local/truenas-master-mcp:latest`
   - `local/github-mcp-server:latest`
   - `local/opnsense-mcp:latest`
   - `local/ollama-mcp:latest`
   - `local/nowaikit-mcp:latest`
-- [ ] Aggiornamento di `docker/ragflow-mcp/` con `--streamableHttpPath /mcp`.
-- [ ] Riconfigurazione di `gemini-deepsearch-mcp` in `docker/mcp/docker-compose.yaml` su Streamable HTTP `/mcp`.
+- [x] Aggiornamento di `docker/ragflow-mcp/` con `--streamableHttpPath /mcp`.
+- [x] Riconfigurazione di `gemini-deepsearch-mcp` in `docker/mcp/docker-compose.yaml` su Streamable HTTP `/mcp`.
 
 ### Fase 2: Rebuild Immagini & Sincronizzazione su TrueNAS
-- [ ] Trasferimento dello script aggiornato su TrueNAS SCALE bare-metal (`10.10.20.50`).
-- [ ] Esecuzione della build delle nuove immagini OCI AMD64 su TrueNAS.
+- [x] Trasferimento dello script aggiornato su TrueNAS SCALE bare-metal (`10.10.20.50`).
+- [x] Esecuzione della build delle nuove immagini OCI AMD64 su TrueNAS.
 
 ### Fase 3: Rollout e Restart Stack Docker
-- [ ] Esecuzione del riavvio atomico dello stack:
+- [x] Esecuzione del riavvio atomico dello stack:
   ```bash
   cd /mnt/stripe/truenas-docker/mcp && docker compose up -d --force-recreate
   ```
-- [ ] Verifica dello stato di salute (`healthy`) e assenza di riavvii anomali.
+- [x] Verifica dello stato di salute (`healthy` 12/12) e assenza di riavvii anomali.
 
 ### Fase 4: Allineamento Client Antigravity (`mcp_config.json`)
-- [ ] Aggiornamento delle definizioni in `~/.gemini/antigravity/mcp_config.json`:
-  - Sostituzione della sintassi legacy `{"transport": "sse", "url": "..."}` con la sintassi `{"serverUrl": "http://10.10.20.50:810X/mcp"}` per tutta la flotta (`8101`, `8102`, `8103`, `8104`, `8106`, `8108`, `8109`, `8111`).
+- [x] Aggiornamento delle definizioni in `~/.gemini/antigravity/mcp_config.json`:
+  - Sostituzione della sintassi legacy `{"transport": "sse", "url": "..."}` con la sintassi `{"serverUrl": "http://10.10.20.50:810X/mcp"}` per tutta la flotta (`8101`, `8102`, `8103`, `8104`, `8106`, `8107`, `8108`, `8109`, `8111`).
 
 ### Fase 5: Validazione Test-Driven End-to-End
-- [ ] Esecuzione smoke test via curl su ciascun endpoint con metodo POST e payload `{"jsonrpc": "2.0", "method": "initialize", ...}` per verificare codice 200 OK.
-- [ ] Riavvio/ricaricamento del runtime Antigravity e verifica del caricamento privo di errori di tutti gli 11 server MCP.
-- [ ] Collaudo funzionale interattivo dei tool per ciascun server.
+- [x] Esecuzione smoke test via curl su ciascun endpoint con metodo POST e payload `{"jsonrpc": "2.0", "method": "initialize", ...}` per verificare codice 200 OK (11/11 PASSED).
+- [x] Riavvio/ricaricamento del runtime Antigravity e verifica del caricamento privo di errori di tutti gli 11 server MCP.
+- [x] Collaudo funzionale live dei tool via `call_mcp_tool` (`truenas_master_mcp/get_system_info`, `ragflow_list_datasets`, `qbt_transfer_info`, `talos_version`, `kef_status`).
 
 ### Fase 6: Consolidamento Documentale & Knowledge Base
-- [ ] Aggiornamento di [[MCP_Platform]] con la nuova architettura Streamable HTTP.
-- [ ] Rigenerazione del contesto wiki tramite `scripts/wiki/build_wiki_context.py`.
+- [x] Aggiornamento di [[MCP_Platform]] con la nuova architettura Streamable HTTP.
+- [x] Rigenerazione del contesto wiki tramite `scripts/wiki/build_wiki_context.py`.
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 1 (Aggiornamento Dichiarativo Immagini Docker)
-- **Ultima Azione Completata**: Creazione e formalizzazione del piano nel Wiki.
-- **Prossimo Passo Operativo**: Modifica di `docker/mcp/build-images.sh` e `docker/mcp/docker-compose.yaml` con `--streamableHttpPath /mcp`.
+- **Fase Attiva**: Piano Completato con Successo (Fasi 1-6 completate).
+- **Ultima Azione Completata**: Migrazione dell'intera flotta TrueNAS Docker MCP (11 server) sullo standard unificato Streamable HTTP RFC 2025 (`--outputTransport streamableHttp`, FastMCP nativo), allineamento di `mcp_config.json`, test live dei tool e consolidamento nel Wiki.
+- **Prossimo Passo Operativo**: Nessuno (Infrastruttura MCP completamente migrata e convergente).
 - **Blocchi/Decisioni Pendenti**: Nessuno.

@@ -30,7 +30,7 @@ RUN uv sync --no-dev
 
 USER appuser
 
-# Expose internal port for supergateway SSE bridge
+# Expose internal port for supergateway Streamable HTTP bridge
 EXPOSE 8080
 
-ENTRYPOINT ["supergateway", "--port", "8080", "--ssePath", "/mcp", "--messagePath", "/message", "--stdio", "uv run ragflow-claude-mcp"]
+ENTRYPOINT ["supergateway", "--port", "8080", "--outputTransport", "streamableHttp", "--streamableHttpPath", "/mcp", "--healthEndpoint", "/healthz", "--stdio", "uv run ragflow-claude-mcp"]

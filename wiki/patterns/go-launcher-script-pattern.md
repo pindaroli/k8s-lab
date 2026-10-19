@@ -9,7 +9,9 @@ tags:
   - "#automation"
   - "#scripting"
 in_use_by:
-  - "scripts/infrastructure/shutdown_to_truenas_only.sh"
+  - "scripts/infrastructure/lab_mode_full.sh"
+  - "scripts/infrastructure/lab_mode_eco.sh"
+  - "scripts/infrastructure/lab_mode_off.sh"
   - "scripts/servarr/audit_movie_duplicates.sh"
   - "scripts/antigravity/clean_conversations.sh"
   - "scripts/servarr/cleanup_torrents.sh"

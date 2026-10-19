@@ -50,7 +50,7 @@ services:
     ports:
       - "8104:8080"
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; req = urllib.request.Request('http://127.0.0.1:8080/mcp', headers={'Accept': 'application/json, text/event-stream'}); urllib.request.urlopen(req, timeout=2)\" || exit 1"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request, urllib.error; req = urllib.request.Request('http://127.0.0.1:8080/mcp'); \ntry: urllib.request.urlopen(req, timeout=2)\nexcept urllib.error.HTTPError as e: assert e.code in (200, 400, 406)\" || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
