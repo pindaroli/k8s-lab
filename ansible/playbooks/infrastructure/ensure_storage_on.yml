@@ -1,29 +1,28 @@
 ---
 # ==============================================================================
-# 🚀 STARTUP ALL LAB: AVVIO COMPLETO HOMELAB (TRUENAS -> PROXMOX VE + TALOS K8S)
+# ⚡ ENSURE STORAGE ON: AVVIO E VALIDAZIONE IDEMPOTENTE TRUENAS SCALE BARE METAL
 # ==============================================================================
-# Procedura deterministica e globale di avvio:
-# FASE 0: WoL Idempotente per TrueNAS SCALE Bare Metal (10.10.20.50)
-# FASE 1: Attesa SSH (22) e WebUI (443 o 80) TrueNAS
-# FASE 2: Verifica integrità pool ZFS su TrueNAS (zpool status -x: stripe & oliraid)
-# FASE 3: Verifica servizi permanenti e storage export (porte 3000, 8080, 8096)
-# FASE 4: Esecuzione sequenza startup_from_truenas_only.yml (WoL PVE -> Talos -> Sync Barrier -> Uncordon -> CNPG)
+# 1. Probe Idempotente porta 22 su TrueNAS (10.10.20.50)
+# 2. Magic Packet WoL solo se spento (SKIP se già online)
+# 3. Gate SSH (22) e WebUI (443)
+# 4. Gate integrità pool ZFS (stripe e oliraid)
+# 5. Gate disponibilità servizi core (3000, 8080, 8096)
 # ==============================================================================
 
-- name: "⚡ STARTUP ALL LAB: AVVIO E VALIDAZIONE TRUENAS SCALE"
-  tags: [truenas]
+- name: "⚡ ENSURE STORAGE ON: TrueNAS SCALE Bare Metal"
+  tags: [truenas, storage_on]
   hosts: localhost
   gather_facts: no
   vars:
     truenas_ip: "10.10.20.50"
     truenas_ssh_user: "olindo"
   tasks:
-    - name: "🔔 Inizio procedura Startup All Lab"
+    - name: "🔔 Inizio verifica / avvio Storage TrueNAS"
       debug:
-        msg: "Avvio sequenza globale di accensione Homelab..."
+        msg: "Verifica stato storage TrueNAS SCALE Bare Metal..."
 
     # --------------------------------------------------------------------------
-    # FASE 0: WAKE-ON-LAN IDEMPOTENTE TRUENAS
+    # FASE 0: PROBE E WAKE-ON-LAN IDEMPOTENTE
     # --------------------------------------------------------------------------
     - name: "🔍 Probe Idempotente: Verifica se TrueNAS è già acceso (Porta 22)"
       wait_for:
@@ -99,9 +98,3 @@
       command: >
         bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "✅ <b>TrueNAS SCALE Online</b>: Host attivo, pool ZFS (stripe & oliraid) sani e servizi storage operativi"'
       changed_when: false
-
-# ------------------------------------------------------------------------------
-# FASE 4: INNESCO SEQUENZA STARTUP DA TRUENAS (PVE + K8S + SYNC BARRIER)
-# ------------------------------------------------------------------------------
-- import_playbook: startup_from_truenas_only.yml
-  tags: [k8s_pve]

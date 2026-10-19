@@ -1,17 +1,18 @@
 ---
 # ==============================================================================
-# 🛑 SHUTDOWN HOMELAB: CLUSTER K8S + HYPERVISOR PVE OFF -> SOLO TRUENAS STANDALONE
+# 🛑 ENSURE COMPUTE OFF: SPEGNIMENTO IDEMPOTENTE TALOS KUBERNETES + PROXMOX VE
 # ==============================================================================
-# Procedura deterministica per il risparmio energetico:
-# FASE 1: Shutdown Graceful Kubernetes (Talos) e flushing DB
-# FASE 2: Shutdown Fisico Hypervisor Proxmox VE (pve3, pve2, pve1)
-# FASE 3: Health-Check e validazione servizi standalone su TrueNAS Bare Metal
+# 1. Shutdown Graceful Kubernetes (Cordon, CNPG DB Checkpoint, talosctl shutdown)
+# 2. Gate chiusura porte Talos e API Server K8s (VIP 10.10.20.55:6443)
+# 3. Shutdown Fisico ACPI Hypervisor Proxmox VE (PVE3, PVE2 poi PVE1)
+# 4. Gate spegnimento porte SSH (22) e WebUI (8006) Proxmox VE
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
 # FASE 1: SHUTDOWN GRACEFUL KUBERNETES
 # ------------------------------------------------------------------------------
 - name: "⚡ FASE 1: Shutdown Graceful Cluster Kubernetes (Talos)"
+  tags: [k8s, compute_off]
   hosts: localhost
   gather_facts: no
   vars:
@@ -20,9 +21,9 @@
     k8s_vip: "10.10.20.55"
     traefik_vip: "10.10.20.56"
   tasks:
-    - name: "🔔 Notifica: Inizio procedura di spegnimento K8s e PVE"
+    - name: "🔔 Inizio procedura spegnimento K8s e PVE"
       debug:
-        msg: "Avvio spegnimento: salvaguardia carichi di lavoro K8s..."
+        msg: "Verifica stato ed eventuale spegnimento di Kubernetes e Proxmox VE..."
 
     - name: "🔍 Probe Idempotente: Verifica se Kubernetes API Server è attivo (Porta 6443)"
       wait_for:
@@ -108,6 +109,7 @@
 # FASE 2: SHUTDOWN FISICO HYPERVISOR PROXMOX VE
 # ------------------------------------------------------------------------------
 - name: "🔌 FASE 2: Shutdown Fisico Hypervisor Proxmox VE"
+  tags: [pve, compute_off]
   hosts: localhost
   gather_facts: no
   vars:
@@ -187,46 +189,12 @@
       when: pve_any_online
       changed_when: false
 
-# ------------------------------------------------------------------------------
-# FASE 3: HEALTH-CHECK E STATO STANDALONE TRUENAS
-# ------------------------------------------------------------------------------
-- name: "🛡️ FASE 3: Health-Check e Stato Standalone TrueNAS"
-  hosts: truenas
-  gather_facts: no
-  become: true
-  tasks:
-    - name: "Verifica integrità pool ZFS su TrueNAS (stripe & oliraid)"
-      command: zpool status -x
-      register: zpool_check
-      failed_when: "'all pools are healthy' not in zpool_check.stdout"
-      changed_when: false
-
-    - name: "⏳ Gate 3: Verifica porte dei servizi permanenti su TrueNAS (10.10.20.50)"
-      wait_for:
-        host: 10.10.20.50
-        port: "{{ item.port }}"
-        state: started
-        timeout: 15
-      loop:
-        - { name: "Homepage Standalone", port: 3000 }
-        - { name: "qBittorrent", port: 8080 }
-        - { name: "Jellyfin 12", port: 8096 }
-        - { name: "Prowlarr", port: 9696 }
-        - { name: "Webhook Normalizer", port: 9000 }
-
-    - name: "🏁 REGIME A RISPARMIO ENERGETICO ATTIVO"
+    - name: "🏁 COMPUTE LAYER OFFLINE"
       debug:
         msg: |
           ============================================================
-          🎉 SHUTDOWN COMPLETATO: HOMELAB IN MODALITÀ SOLO TRUENAS
+          🌙 COMPUTE OFFLINE: KUBERNETES E PROXMOX VE DISATTIVATI
           ============================================================
-          - Kubernetes:    OFFLINE (Cluster spento in sicurezza)
-          - Proxmox (PVE): OFFLINE (pve1, pve2, pve3 spenti)
-          - Storage ZFS:   ONLINE (Pool stripe & oliraid operativi)
-          - Servizi Media: ONLINE 24/7 su TrueNAS (10.10.20.50)
-          ------------------------------------------------------------
-          🔗 Homepage Dashboard LAN: http://10.10.20.50:3000
-          🔗 qBittorrent WebUI:      http://10.10.20.50:8080
-          🔗 Jellyfin WebUI:         http://10.10.20.50:8096
-          🔗 Prowlarr WebUI:         http://10.10.20.50:9696
+          - Kubernetes:    OFFLINE (Talos spento)
+          - Hypervisors:   OFFLINE (pve1, pve2, pve3 spenti)
           ============================================================

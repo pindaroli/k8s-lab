@@ -16,6 +16,7 @@ init_procedure_scope() {
     if [ -z "${HOMELAB_PARENT_PROCEDURE:-}" ]; then
         export HOMELAB_PARENT_PROCEDURE="$proc_name"
         IS_ROOT_PROCEDURE=true
+        clean_error_marker
     else
         IS_ROOT_PROCEDURE=false
     fi
@@ -36,9 +37,36 @@ get_current_procedure() {
     echo "${CURRENT_PROCEDURE_NAME:-}"
 }
 
+# ------------------------------------------------------------------------------
+# GESTIONE ATOMICA DEDUPLICAZIONE ERRORI GERARCHICI
+# ------------------------------------------------------------------------------
+_get_error_marker_path() {
+    local parent="${HOMELAB_PARENT_PROCEDURE:-${CURRENT_PROCEDURE_NAME:-global}}"
+    echo "/tmp/homelab_error_marker_${parent}"
+}
+
+mark_error_reported() {
+    local marker
+    marker="$(_get_error_marker_path)"
+    touch "$marker"
+}
+
+has_error_been_reported() {
+    local marker
+    marker="$(_get_error_marker_path)"
+    [ -f "$marker" ]
+}
+
+clean_error_marker() {
+    local marker
+    marker="$(_get_error_marker_path)"
+    rm -f "$marker"
+}
+
 # Termina lo scope della procedura corrente
 complete_procedure_scope() {
     if is_root_procedure; then
+        clean_error_marker
         unset HOMELAB_PARENT_PROCEDURE
         unset CURRENT_PROCEDURE_NAME
         unset IS_ROOT_PROCEDURE

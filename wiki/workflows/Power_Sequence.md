@@ -1,6 +1,6 @@
 ---
 title: "Workflow: Safe Shutdown & Startup Sequence"
-last_updated: "2026-10-13"
+last_updated: "2026-10-19"
 confidence: "High"
 tags:
   - "#workflow"
@@ -12,78 +12,73 @@ tags:
 
 # Safe Shutdown & Startup (Rack Power Orchestration)
 
-Questa procedura garantisce la coerenza dei dati e l'idempotenza durante lo spegnimento o l'accensione dell'intero rack Homelab, supportando sia la modalità **Full Rack** sia la modalità a risparmio energetico **Eco (TrueNAS-only)**.
+Questa procedura garantisce la coerenza dei dati e l'idempotenza assoluta durante lo spegnimento o l'accensione dell'intero rack Homelab, consentendo la transizione deterministica verso la modalità desiderata **partendo da qualsiasi configurazione iniziale** (Rack Spento, Modalità Eco o Full Mode).
 
 ---
 
-## 🧭 Matrice delle Procedure Disponibili
+## 🧭 Matrice delle Modalità Dichiarative Idempotenti (State-Driven)
 
-| Obiettivo Operativo | Script Eseguibile | Playbook Ansible Sottostante | Notifiche Start & Stop | Notifiche Intermedie | Notifica di Errore |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Startup Completo (Full Rack)** | [`startup_all_lab.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/startup_all_lab.sh) | `ansible/playbooks/infrastructure/startup_all_lab.yml` | Start: Telegram / Stop: TG + Email HTML | Solo Telegram (nodi) | Telegram + Email con **Log Allegato** |
-| **Startup da TrueNAS-only** | [`startup_from_truenas_only.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/startup_from_truenas_only.sh) | `ansible/playbooks/infrastructure/startup_from_truenas_only.yml` | Start: Telegram / Stop: TG + Email HTML (se Root) | Solo Telegram (nodi) | Telegram + Email con **Log Allegato** |
-| **Shutdown a TrueNAS-only (Eco)**| [`shutdown_to_truenas_only.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/shutdown_to_truenas_only.sh) | `ansible/playbooks/infrastructure/shutdown_to_truenas_only.yml` | Start: Telegram / Stop: TG + Email HTML (se Root) | Solo Telegram (step) | Telegram + Email con **Log Allegato** |
-| **Shutdown Completo (Rack Dark)** | [`shutdown_all_lab.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/shutdown_all_lab.sh) | `ansible/playbooks/infrastructure/shutdown_all_lab.yml` | Start: Telegram / Stop: TG + Email HTML | Solo Telegram (step) | Telegram + Email con **Log Allegato** |
+L'infrastruttura è governata da tre entrypoint principali che eseguono la convergenza dichiarativa:
+
+| Modalità Target | Script Eseguibile | Mattoni Atomici Eseguiti | Storage TrueNAS | Compute (PVE + K8s) | Notifiche Start & Stop |
+| :--- | :--- | :--- | :---: | :---: | :--- |
+| **Full Lab (Tutto Attivo)** | [`lab_mode_full.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_full.sh) | 1. `ensure_storage_on`<br>2. `ensure_compute_on` | **ONLINE** (ZFS sani) | **ONLINE** (3 nodi Ready, uncordoned) | Start: Telegram<br>Stop: TG + Email HTML |
+| **Eco Lab (Solo TrueNAS)** | [`lab_mode_eco.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_eco.sh)<br>*(alias: `lab_mode_echo.sh`)* | 1. `ensure_storage_on`<br>2. `ensure_compute_off` | **ONLINE** (Servarr 24/7) | **OFFLINE** (PVE e K8s spenti) | Start: Telegram<br>Stop: TG + Email HTML |
+| **Rack Dark (Tutto Spento)** | [`lab_mode_off.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_off.sh) | 1. `ensure_compute_off`<br>2. `ensure_storage_off` | **OFFLINE** (Bare metal spento) | **OFFLINE** (PVE e K8s spenti) | Start: Telegram<br>Stop: TG + Email HTML |
 
 ---
 
-## 1. Procedure di Startup (Accensione)
+## 1. Descrizione Dettagliata dei Comandi
 
-### 1.1 Startup Completo dell'Intero Homelab (`startup_all_lab`)
-Avvia da freddo (S5) TrueNAS Bare Metal, ne verifica la salute storage e successivamente sveglia i nodi Proxmox e il cluster Talos:
+### 1.1 Full Homelab (`lab_mode_full.sh`)
+Porta l'intero rack a regime operativo completo.
 ```bash
-./scripts/infrastructure/startup_all_lab.sh
+./scripts/infrastructure/lab_mode_full.sh
 ```
-**Checkpoint Vincolanti**:
-1. **WoL Idempotente TrueNAS**: probe porta 22 su `10.10.20.50` (se già online salta il WoL).
-2. **Gate TrueNAS SSH & WebUI**: attesa porte 22 e 443.
-3. **Gate ZFS Health**: verifica via SSH `zpool status -x` che confermi `all pools are healthy` (`stripe` e `oliraid`).
-4. **Gate Storage Services**: attesa porte 3000 (Homepage), 8080 (qBittorrent), 8096 (Jellyfin) ed export NFS. *(Notifica Telegram)*.
-5. **Innesco Sequenza PVE**: avvio automatico di `startup_from_truenas_only`.
+**Regola di Sequenza & Checkpoint**:
+1. **Hard Gate Storage (`ensure_storage_on.yml`)**:
+   - Probe porta 22 su TrueNAS (`10.10.20.50`): invio WoL solo se spento (altrimenti `SKIP WoL`).
+   - Attesa SSH (22) e WebUI (443).
+   - Validazione ZFS (`zpool status -x`: `all pools are healthy`).
+   - Verifica servizi (3000 Homepage, 8080 qBittorrent, 8096 Jellyfin) ed export NFS.
+   - *Se TrueNAS fallisce o non è sano, la procedura scatta in errore immediato e NON sveglia Proxmox*.
+2. **Gate Compute (`ensure_compute_on.yml`)**:
+   - WoL mirato solo ai nodi Proxmox spenti (`pve1`, `pve2`, `pve3`).
+   - Verifica via SSH dello stato delle VM Talos (`1300`, `2300`, `3200`): se `stopped`, avvio automatico (`qm start`).
+   - Attesa porte API Talos (50000) e API Server K8s (VIP `10.10.20.55:6443`).
+   - **Sync Barrier**: attesa contemporanea `Ready=True` su tutti e 3 i nodi Talos + 10s stabilizzazione CNI Flannel.
+   - **Uncordon Atomico Parallelo**: apertura bilanciata dello scheduling (preservando taint protettivo su `cp-03`).
+   - Health-Check Ingress Traefik (VIP `10.10.20.56:443`) e cluster PostgreSQL CNPG.
 
 ---
 
-### 1.2 Startup da Modalità Solo TrueNAS (`startup_from_truenas_only`)
-Porta l'Homelab dalla modalità eco (solo storage attivo) a pieno regime computazionale:
+### 1.2 Modalità Eco (`lab_mode_eco.sh`)
+Mantiene attivo solo lo storage server TrueNAS SCALE per i carichi leggeri (Servarr, download qBittorrent, streaming Jellyfin), spegnendo gli hypervisor di calcolo Proxmox VE e Kubernetes per ridurre consumi e usura.
 ```bash
-./scripts/infrastructure/startup_from_truenas_only.sh
+./scripts/infrastructure/lab_mode_eco.sh
+# oppure: ./scripts/infrastructure/lab_mode_echo.sh
 ```
-**Checkpoint Vincolanti**:
-1. **WoL Idempotente PVE**: probe porta 22 su `pve1`, `pve2`, `pve3` $\rightarrow$ invio Magic Packet mirato solo ai nodi spenti.
-2. **Gate PVE Hypervisors**: attesa porte 22 (SSH) e 8006 (WebUI) su tutti i 3 nodi. *(Notifica Telegram)*.
-3. **Gate Talos & K8s VIP**: attesa porta 50000 e API Server K8s su VIP `10.10.20.55:6443`. *(Notifica Telegram)*.
-4. **Sync Barrier (Anti-Valanga)**: polling affinché `talos-cp-01`, `talos-cp-02` e `talos-cp-03` abbiano simultaneamente `Ready=True`. Segue una pausa di grazia di 10s per Flannel CNI. *(Notifica Telegram)*.
-5. **Uncordon Atomico Parallelo**: sblocco contemporaneo dello scheduling con preservazione del taint `control-plane:NoSchedule` su `talos-cp-03`. *(Notifica Telegram)*.
-6. **Health-Check Finale**: verifica Traefik Ingress VIP `10.10.20.56:443` e cluster CloudNativePG `postgres-main`.
+**Regola di Sequenza**:
+1. Esegue `ensure_storage_on.yml` per garantire che TrueNAS sia operativo e sano (WoL solo se era spento).
+2. Esegue `ensure_compute_off.yml` per disattivare K8s Talos e gli hypervisor PVE (se già spenti, skip immediato in pochi secondi).
 
 ---
 
-## 2. Procedure di Shutdown (Spegnimento)
-
-### 2.1 Spegnimento a Risparmio Energetico (`shutdown_to_truenas_only`)
-Spegne in sicurezza i workload Kubernetes e gli hypervisor fisici Proxmox VE, lasciando TrueNAS attivo 24/7 per Servarr e storage:
+### 1.3 Spegnimento Totale del Rack (`lab_mode_off.sh`)
+Arresta l'intero rack in sicurezza per portare l'assorbimento a standby / zero watt (safe per manutenzione PDU o spegnimento prolungato).
 ```bash
-./scripts/infrastructure/shutdown_to_truenas_only.sh
+./scripts/infrastructure/lab_mode_off.sh
 ```
-**Fasi Operative**:
-1. Cordon globale dei nodi Talos per prevenire rescheduling indesiderato.
-2. Esecuzione `CHECKPOINT;` nel database PostgreSQL (`postgres-main`).
-3. Invio segnale di spegnimento parallelo Talos OS (`talosctl shutdown`) e verifica porte 50000, 6443, 443 STOPPED. *(Notifica Telegram)*.
-4. Shutdown ACPI satelliti Proxmox (`pve3`, `pve2`) e successivamente del master (`pve1`). Verifica porte 22 e 8006 STOPPED. *(Notifica Telegram)*.
-5. Verifica servizi permanenti TrueNAS.
-
----
-
-### 2.2 Spegnimento Totale del Rack (`shutdown_all_lab`)
-Esegue la procedura completa di arresto per portare l'intero rack a zero consumo (PDU/UPS safe):
-```bash
-./scripts/infrastructure/shutdown_all_lab.sh
-```
-**Fasi Operative**:
-1. Esecuzione completa di `shutdown_to_truenas_only` (K8s e PVE offline).
-2. Flush I/O dei file system e pool ZFS su TrueNAS (`sync`).
-3. Shutdown controllato TrueNAS via comando diretto: `sudo -n shutdown -h now` (segnale diretto a systemd, bypass code middleware).
-4. Verifica chiusura porta SSH 22 su TrueNAS (STOPPED) con polling visivo. *(Notifica Telegram)*.
+**Regola di Sequenza**:
+1. Esegue prima `ensure_compute_off.yml`:
+   - Cordon K8s e checkpoint database PostgreSQL CNPG (`CHECKPOINT;`).
+   - `talosctl shutdown` e verifica porte chiuse.
+   - Shutdown ACPI satelliti Proxmox (`pve3`, `pve2`) e successivamente del master (`pve1`).
+   - Attesa porte 22 e 8006 PVE STOPPED (tutti i client NFS rilasciano i lock in modo pulito).
+2. Solo a Compute spento, esegue `ensure_storage_off.yml`:
+   - Flush preventivo I/O ZFS (`sync`).
+   - Shutdown controllato TrueNAS (`shutdown -h now`).
+   - Verifica chiusura porta SSH 22 STOPPED.
 
 ---
 
@@ -97,7 +92,9 @@ Esegue la procedura completa di arresto per portare l'intero rack a zero consumo
 ---
 
 ## 🔗 Relazioni & Riferimenti
-- Piano Operativo: [[homelab-full-power-automation]]
+- Piano Operativo: [[homelab-idempotent-mode-scripts]]
 - Pattern Notifiche: [[hierarchical-automation-alerting-pattern]]
+- Pattern Launcher CLI: [[go-launcher-script-pattern]]
+- Launcher Interattivo: [`scripts/go.py`](file:///Users/olindo/prj/k8s-lab/scripts/go.py)
 - Utilità WoL: [`wake_node.py`](file:///Users/olindo/prj/k8s-lab/scripts/network/wake_node.py)
 - Componenti: [[TrueNAS]], [[Talos_Cluster]], [[OPNsense]], [[sops-secret-sovereignty]]

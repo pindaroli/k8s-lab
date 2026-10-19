@@ -10,12 +10,11 @@ tags:
   - "#alerting"
   - "#notifications"
 in_use_by:
+  - "scripts/infrastructure/lab_mode_full.sh"
+  - "scripts/infrastructure/lab_mode_eco.sh"
+  - "scripts/infrastructure/lab_mode_off.sh"
   - "scripts/infrastructure/procedure_scope.sh"
   - "scripts/infrastructure/utils.sh"
-  - "scripts/infrastructure/shutdown_all_lab.sh"
-  - "scripts/infrastructure/shutdown_to_truenas_only.sh"
-  - "scripts/infrastructure/startup_all_lab.sh"
-  - "scripts/infrastructure/startup_from_truenas_only.sh"
 ---
 
 # Pattern: Hierarchical Automation Alerting
@@ -226,7 +225,7 @@ mkdir -p "$LOG_DIR"
 LOG_FILE="${LOG_DIR}/${PROCEDURE_NAME}_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-# 2. Gestore errori universale (Fail-Fast)
+# 2. Gestore errori universale con deduplicazione gerarchica
 on_error() {
     local exit_code=$?
     local err_msg="Procedura ${PROCEDURE_NAME} fallita alla riga $1 (exit code: $exit_code)"
@@ -234,6 +233,14 @@ on_error() {
         err_msg="Sub-procedura ${PROCEDURE_NAME} (richiamata da $(get_parent_procedure)) fallita alla riga $1 (exit code: $exit_code)"
     fi
     echo "❌ $err_msg"
+
+    # Deduplicazione: se l'errore è già stato notificato dalla sotto-fase, propaga senza alert duplicato
+    if has_error_been_reported; then
+        echo "ℹ️ [NESTED] Errore già segnalato. Uscita senza alert duplicato."
+        exit "$exit_code"
+    fi
+    mark_error_reported
+
     send_telegram "❌ <b>ERRORE CRITICO HOMELAB</b>%0A${err_msg}%0AConsulta l'email per il log completo." "Homelab Alert"
     # Invio email HTML con allegato log completo...
     exit "$exit_code"
@@ -286,7 +293,7 @@ Tuttavia, per mantenere l'architettura pulita e disaccoppiata (**Single Responsi
 | :--- | :--- | :--- | :--- | :--- |
 | **Avvio** | Testo Telegram breve | Silente / Log console | Testo Telegram breve | Telegram (No Email) |
 | **Step Intermedio** | Ping Telegram (opzionale) | Ping Telegram (opzionale) | Ping Telegram (opzionale) | Telegram |
-| **Errore / Trap** | **Attivo al 100%** | **Attivo al 100% (evidenzia Child)** | Propagato via `exit != 0` | **Telegram + Email HTML con Log** |
+| **Errore / Trap** | **Attivo al 100%** | **Attivo (Notifica Child con Log)** | **Soppresso se già segnalato da Child (`has_error_been_reported`)** | **Telegram + Email HTML con Log** |
 | **Successo Finale** | **Invia Report Completo** | **Soppresso (Delegato a Parent)** | **Invia Report Unificato Finale** | **Telegram + Email HTML** |
 
 ---

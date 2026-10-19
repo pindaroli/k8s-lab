@@ -1,34 +1,23 @@
 ---
 # ==============================================================================
-# 🛑 SHUTDOWN ALL LAB: SPEGNIMENTO TOTALE HOMELAB (K8S -> PVE -> TRUENAS)
+# 🔌 ENSURE STORAGE OFF: FLUSH E SPEGNIMENTO IDEMPOTENTE TRUENAS SCALE BARE METAL
 # ==============================================================================
-# Procedura deterministica e globale di spegnimento a rack dark:
-# FASE 1: Invocazione shutdown_to_truenas_only.yml (K8s Talos + Hypervisor PVE)
-# FASE 2: Flush preventivo buffer ZFS su TrueNAS Bare Metal
-# FASE 3: Shutdown controllato TrueNAS Bare Metal (10.10.20.50) via middlewared API
-# FASE 4: Verifica spegnimento porta SSH 22 TrueNAS (STOPPED)
+# 1. Probe Idempotente porta 22 su TrueNAS (10.10.20.50)
+# 2. Se già offline: skip immediato in 1 secondo (zero errori)
+# 3. Se online: sync buffer ZFS, comando shutdown ACPI e attesa porta 22 STOPPED
 # ==============================================================================
 
-# ------------------------------------------------------------------------------
-# FASE 1: SPEGNIMENTO WORKLOAD KUBERNETES E HYPERVISOR PROXMOX VE
-# ------------------------------------------------------------------------------
-- import_playbook: shutdown_to_truenas_only.yml
-  tags: [k8s_pve]
-
-# ------------------------------------------------------------------------------
-# FASE 2: FLUSH E SPEGNIMENTO FISICO TRUENAS BARE METAL
-# ------------------------------------------------------------------------------
-- name: "🔌 FASE 2: Spegnimento Fisico TrueNAS SCALE Bare Metal"
-  tags: [truenas]
+- name: "🔌 ENSURE STORAGE OFF: Spegnimento Fisico TrueNAS SCALE Bare Metal"
+  tags: [truenas, storage_off]
   hosts: localhost
   gather_facts: no
   vars:
     truenas_ip: "10.10.20.50"
     truenas_ssh_user: "olindo"
   tasks:
-    - name: "🔔 Inizio fase finale: Spegnimento TrueNAS SCALE"
+    - name: "🔔 Inizio verifica / spegnimento Storage TrueNAS"
       debug:
-        msg: "Workload K8s e hypervisor PVE spenti. Procedo con lo shutdown sicuro di TrueNAS..."
+        msg: "Verifica stato per spegnimento sicuro di TrueNAS..."
 
     - name: "🔍 Probe Idempotente: Verifica se TrueNAS è ancora acceso (Porta 22)"
       wait_for:
@@ -71,23 +60,11 @@
 
     - name: "✅ Gate Finale Superato: TrueNAS SCALE è completamente spento"
       debug:
-        msg: "TrueNAS Bare Metal è spento. Tutti i nodi dell'Homelab sono disattivati."
+        msg: "TrueNAS Bare Metal è spento. Storage disattivato."
       when: truenas_is_online
 
     - name: "🔔 Notifica Telegram: TrueNAS Spento"
       command: >
-        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "⚫ <b>TrueNAS SCALE Spento</b>: Dischi ZFS e storage bare metal offline. Rack spento al 100%"'
+        bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "⚫ <b>TrueNAS SCALE Spento</b>: Dischi ZFS e storage bare metal offline"'
       when: truenas_is_online
       changed_when: false
-
-    - name: "🏁 SHUTDOWN TOTALE HOMELAB COMPLETATO"
-      debug:
-        msg: |
-          ============================================================
-          🌙 SHUTDOWN COMPLETATO: TUTTO IL RACK HOMELAB È OFFLINE
-          ============================================================
-          - Kubernetes:    OFFLINE (Cluster Talos disattivato)
-          - Hypervisors:   OFFLINE (pve1, pve2, pve3 spenti)
-          - Storage:       OFFLINE (TrueNAS Bare Metal spento)
-          - Consumo:       STANDBY / ZERO WATT
-          ============================================================

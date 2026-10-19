@@ -1,24 +1,25 @@
 ---
 # ==============================================================================
-# 🚀 STARTUP HOMELAB: DA MODALITÀ SOLO TRUENAS A CLUSTER K8S + PROXMOX VE ATTIVI
+# ⚡ ENSURE COMPUTE ON: AVVIO E SINCRONIZZAZIONE PROXMOX VE + TALOS KUBERNETES
 # ==============================================================================
-# Procedura deterministica e sincronizzata di riavvio del cluster:
-# FASE 0: Wake-on-LAN (WoL) Idempotente Hypervisor Proxmox VE (pve1, pve2, pve3)
-# FASE 1: Attesa e verifica connettività hypervisor Proxmox VE (SSH + WebUI)
-# FASE 2: Gate Talos API & Kubernetes API Server (VIP 10.10.20.55:6443)
-# FASE 3: Sync Barrier: attesa stato Ready simultaneo su TUTTI i nodi (cp-01, 02, 03)
-# FASE 4: Uncordon atomico parallelo per bilanciamento equo dei pod applicativi
-# FASE 5: Health-Check e validazione Ingress Traefik & Database CNPG
+# 1. WoL Idempotente Hypervisor Proxmox VE (pve1, pve2, pve3)
+# 2. Gate SSH (22) e WebUI (8006) Proxmox VE
+# 3. Verifica e auto-avvio idempotente VM Talos (1300, 2300, 3200) se spente
+# 4. Gate Talos API (50000) e Kubernetes VIP (10.10.20.55:6443)
+# 5. Sync Barrier: attesa contemporanea Ready=True su tutti i nodi Talos
+# 6. Uncordon atomico parallelo (apertura bilanciata dello scheduling K8s)
+# 7. Health-Check Ingress Traefik (443) e Database PostgreSQL CNPG
 # ==============================================================================
 
-- name: "⚡ STARTUP SINCRONIZZATO HOMELAB: PROXMOX VE + TALOS KUBERNETES"
+- name: "⚡ ENSURE COMPUTE ON: Proxmox VE + Talos Kubernetes"
+  tags: [pve, k8s, compute_on]
   hosts: localhost
   gather_facts: no
   vars:
     pve_nodes_map:
-      - { name: "pve1", ip: "10.10.10.11" }
-      - { name: "pve2", ip: "10.10.10.21" }
-      - { name: "pve3", ip: "10.10.10.31" }
+      - { name: "pve1", ip: "10.10.10.11", vmid: "1300" }
+      - { name: "pve2", ip: "10.10.10.21", vmid: "2300" }
+      - { name: "pve3", ip: "10.10.10.31", vmid: "3200" }
     pve_hosts:
       - 10.10.10.11 # pve1
       - 10.10.10.21 # pve2
@@ -30,9 +31,9 @@
     k8s_vip: "10.10.20.55"
     traefik_vip: "10.10.20.56"
   tasks:
-    - name: "🔔 Inizio sequenza di startup Homelab"
+    - name: "🔔 Inizio verifica / avvio Compute Layer (Proxmox + K8s)"
       debug:
-        msg: "Avvio sequenza di startup con WoL idempotente e barriera uncordon..."
+        msg: "Verifica stato Proxmox VE e cluster Kubernetes..."
 
     # --------------------------------------------------------------------------
     # FASE 0: WAKE-ON-LAN (WoL) IDEMPOTENTE HYPERVISOR PROXMOX VE
@@ -45,10 +46,7 @@
         timeout: 2
       register: pve_probe
       failed_when: false
-      loop:
-        - { name: "pve1", ip: "10.10.10.11" }
-        - { name: "pve2", ip: "10.10.10.21" }
-        - { name: "pve3", ip: "10.10.10.31" }
+      loop: "{{ pve_nodes_map }}"
 
     - name: "ℹ️ Stato rilevamento nodi Proxmox"
       debug:
@@ -84,6 +82,15 @@
     - name: "✅ Gate 1 Superato: Gli Hypervisor Proxmox VE sono online"
       debug:
         msg: "Hypervisor pve1, pve2 e pve3 operativi."
+
+    # --------------------------------------------------------------------------
+    # FASE 1.5: AUTO-START IDEMPOTENTE VM TALOS SE SPENTE
+    # --------------------------------------------------------------------------
+    - name: "🔍 Idempotenza VM Talos: Verifica e avvio VM su Proxmox se spente"
+      shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ item.ip }} "qm status {{ item.vmid }} | grep -q running || qm start {{ item.vmid }}"
+      loop: "{{ pve_nodes_map }}"
+      changed_when: false
+      ignore_errors: true
 
     - name: "🔔 Notifica Telegram: Hypervisor PVE Online"
       command: >
@@ -186,15 +193,14 @@
         bash -c 'source {{ playbook_dir }}/../../../scripts/infrastructure/utils.sh && send_telegram "✅ <b>Health-Check Superato</b>: Traefik Ingress VIP (443) e Cluster CNPG Database sani e operativi"'
       changed_when: false
 
-    - name: "🏁 STARTUP COMPLETATO CON SUCCESSO"
+    - name: "🏁 COMPUTE LAYER ONLINE"
       debug:
         msg: |
           ============================================================
-          🎉 STARTUP COMPLETATO: CLUSTER K8S E PROXMOX PIENAMENTE OPERATIVI
+          🎉 COMPUTE ONLINE: PROXMOX VE E TALOS KUBERNETES OPERATIVI
           ============================================================
           - Hypervisor PVE: ONLINE (pve1, pve2, pve3)
           - Talos Nodi:     READY & UNCORDONATI (Scheduling bilanciato)
-          - Pure CP Nodo:   talos-cp-03 uncordonato con taint protettivo
           - Ingress VIP:    ONLINE (https://10.10.20.56)
           - Database CNPG:  {{ cnpg_status.stdout | default('Verificato') }}
           ============================================================
