@@ -1,8 +1,9 @@
 ---
 title: "Piano: Migrazione Flotta TrueNAS Docker MCP su Standard Streamable HTTP"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+superseded_by: [[truenas-mcp-fleet-gitops-and-image-tag-sanitization]]
 created_at: 2026-10-15
 tags:
   - "#plan"

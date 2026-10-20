@@ -111,21 +111,22 @@ I dataset rispettano lo schema NFS standard del lab: `chmod 777`, ownership `oli
 
 ## 4. Catalogo Server MCP Attivi 24/7 su TrueNAS Docker (`10.10.20.50`)
 
-Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita gli 11 server MCP remoti della flotta GEMINI, tutti unificati sullo standard **Streamable HTTP RFC 2025** (`--streamableHttpPath /mcp` o FastMCP nativo) e raggiungibili tramite `"serverUrl"` nel client Antigravity:
+Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita i 12 server MCP remoti della flotta GEMINI, tutti protetti dal gateway **Traefik v3.3.4** su porta host unica **`8100`** con sidecar **Docker Socket Proxy L7** (`tecnativa/docker-socket-proxy:v0.4.1`), unificati sullo standard **Streamable HTTP RFC 2025** e raggiungibili tramite `"serverUrl"` nel client Antigravity:
 
-| Server MCP | Immagine Container | Transport MCP Container | Host Port | Endpoint Client Antigravity (`serverUrl`) | Protocollo e Target Backend |
+| Server MCP | Immagine Container (GHCR Immutabile) | Transport MCP Container | Porta Host Traefik | Endpoint Client Antigravity (`serverUrl`) | Protocollo e Target Backend |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`truenas-master-mcp`** | `local/truenas-master-mcp:latest` | Streamable HTTP `/mcp` (Supergateway) | **`8101`** | `http://10.10.20.50:8101/mcp` | WebSocket JSON-RPC 2.0 (`wss://10.10.20.50/api/current`) |
-| **`opnsense`** | `local/opnsense-mcp:latest` | Streamable HTTP `/mcp` (Supergateway) | **`8102`** | `http://10.10.20.50:8102/mcp` | OPNsense Firewall REST API (`https://192.168.100.1:443`) |
-| **`talos`** | `local/talos-mcp:latest` | Streamable HTTP `/mcp` (Supergateway) | **`8103`** | `http://10.10.20.50:8103/mcp` | Talos Control Plane gRPC API (`10.10.20.141/55:50000`) |
-| **`gemini-deepsearch`** | `ghcr.io/pindaroli/gemini-deepsearch-mcp:latest` | Nativo FastMCP Streamable HTTP `/mcp` | **`8104`** | `http://10.10.20.50:8104/mcp` | Google Gemini Cloud API |
-| **`kubernetes`** | `ghcr.io/containers/kubernetes-mcp-server:latest` | Nativo Go Streamable HTTP `/mcp` | **`8105`** | `http://10.10.20.50:8105/mcp` | Kubernetes API Server VIP (`10.10.20.55:6443`) |
-| **`ollama`** | `local/ollama-mcp:latest` | Streamable HTTP `/mcp` (Supergateway) | **`8106`** | `http://10.10.20.50:8106/mcp` | Demone Ollama Mac Studio (`10.10.20.100:11434`) |
-| **`kef`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | Nativo FastMCP Streamable HTTP `/mcp` | **`8107`** | `http://10.10.20.50:8107/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
-| **`nowaikit`** | `local/nowaikit-mcp:latest` | Streamable HTTP `/mcp` (Supergateway) | **`8108`** | `http://10.10.20.50:8108/mcp` | ServiceNow Cloud REST API (`dev395227.service-now.com`) |
-| **`github-mcp-server`** | `local/github-mcp-server:latest` | Streamable HTTP `/mcp` (Supergateway) | **`8109`** | `http://10.10.20.50:8109/mcp` | GitHub Cloud REST/GraphQL API (`api.github.com`) |
-| **`arrstack-mcp`** | `local/arrstack-mcp:1.1.0` | Nativo FastMCP Streamable HTTP `/mcp` | **`8110`** | `http://10.10.20.50:8110/mcp` | Radarr, Lidarr, Prowlarr, qBittorrent (53 tool: indexers, apps, categories, trackers) |
-| **`ragflow-local`** | `local/ragflow-mcp:latest` | Streamable HTTP `/mcp` (Supergateway) | **`8111`** | `http://10.10.20.50:8111/mcp` | RAGFlow Server (`https://ragflow-internal.pindaroli.org`) |
+| **`truenas-master-mcp`** | `ghcr.io/pindaroli/truenas-mcp:1.0.0-r1` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/truenas/mcp` | WebSocket JSON-RPC 2.0 (`wss://10.10.20.50/api/current`) |
+| **`opnsense`** | `ghcr.io/pindaroli/opnsense-mcp:0.5.3-r1` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/opnsense/mcp` | OPNsense Firewall REST API (`https://192.168.100.1:443`) |
+| **`talos`** | `ghcr.io/pindaroli/talos-mcp:2.5.1-r1` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/talos/mcp` | Talos Control Plane gRPC API (`10.10.20.141/55:50000`) |
+| **`gemini-deepsearch`** | `ghcr.io/pindaroli/gemini-deepsearch-mcp:0.2.0` | Nativo FastMCP Streamable HTTP `/mcp` | **`8100`** | `http://10.10.20.50:8100/gemini/mcp` | Google Gemini Cloud API |
+| **`kubernetes`** | `ghcr.io/containers/kubernetes-mcp-server@sha256:6992...` | Nativo Go Streamable HTTP `/mcp` | **`8100`** | `http://10.10.20.50:8100/kubernetes/mcp` | Kubernetes API Server VIP (`10.10.20.55:6443`) |
+| **`ollama`** | `ghcr.io/pindaroli/ollama-mcp:2.1.0-r1` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/ollama/mcp` | Demone Ollama Mac Studio (`10.10.20.100:11434`) |
+| **`kef`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | Nativo FastMCP Streamable HTTP `/mcp` | **`8100`** | `http://10.10.20.50:8100/kef/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
+| **`nowaikit`** | `ghcr.io/pindaroli/nowaikit-mcp:4.15.1-r1` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/nowaikit/mcp` | ServiceNow Cloud REST API (`dev395227.service-now.com`) |
+| **`github-mcp-server`** | `ghcr.io/pindaroli/github-mcp-server:0.7.0-r1` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/github/mcp` | GitHub Cloud REST/GraphQL API (`api.github.com`) |
+| **`arrstack-mcp`** | `ghcr.io/pindaroli/arrstack-mcp:1.1.0` | Nativo FastMCP Streamable HTTP `/mcp` | **`8100`** | `http://10.10.20.50:8100/arrstack/mcp` | Radarr, Lidarr, Prowlarr, qBittorrent (53 tool: indexers, apps, categories, trackers) |
+| **`ragflow-local`** | `ghcr.io/pindaroli/ragflow-mcp:1.0.0` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/ragflow/mcp` | RAGFlow Server (`https://ragflow-internal.pindaroli.org`) |
+| **`meross`** | `ghcr.io/pindaroli/meross-mcp:0.1.2` | Dual Gateway (FastAPI REST + FastMCP) | **`8100`** | `http://10.10.20.50:8100/meross/mcp` | Meross Cloud IoT API + REST Homepage Widget (`/meross/api/v1/...`) |
 
 
 *(Nota: La flotta originaria su Kubernetes in `mcp-system` è mantenuta integra e pronta in standby dichiarativo con `replicas: 0` ed `enabled: false` in `mcp-gateway/mcp-gateway-values.yaml`)*.

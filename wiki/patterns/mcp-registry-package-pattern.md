@@ -5,7 +5,7 @@ type: pattern
 status: active
 certified_for_ai: true
 created_at: 2026-09-08
-last_updated: 2026-09-08
+last_updated: 2026-10-20
 in_use_by:
   - project: "k8s-lab"
     paths:
@@ -13,10 +13,14 @@ in_use_by:
       - "docker/opnsense-mcp"
       - "docker/talos-mcp"
       - "docker/nowaikit-mcp"
+      - "docker/github-mcp-server"
+      - "docker/truenas-mcp"
       - ".github/workflows/docker-ollama-mcp.yml"
       - ".github/workflows/docker-opnsense-mcp.yml"
       - ".github/workflows/docker-talos-mcp.yml"
       - ".github/workflows/docker-nowaikit-mcp.yml"
+      - ".github/workflows/docker-github-mcp-server.yml"
+      - ".github/workflows/docker-truenas-mcp.yml"
       - "mcp-gateway/mcp-gateway-values.yaml"
 tags:
   - "#pattern"
