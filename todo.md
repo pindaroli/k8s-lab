@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 In Corso: Bonifica Script Obsoleti e Riallineamento Diagnostica all'Architettura Homelab Corrente [[scripts-architecture-realignment]]
+- [x] Fase 1: Rimozione Script Obsoleti e One-Off (Sezioni 1 & 2 - 21 file rimossi e verificati) ✅
+- [ ] Fase 2: Riallineamento `scripts/infrastructure/check_lab.py` (TrueNAS Bare-Metal `10.10.20.50`, PBS KVM `10.10.10.100`, LXC su `pve3`, rimozione `VM 1100`/`LXC 1400`)
+- [ ] Fase 3: Riallineamento `scripts/kubernetes/check_k8s.py` (Rimozione namespace `"arr"` da `CRITICAL_NAMESPACES`, aggiunta `"monitoring"` e `"homepage"`)
+- [ ] Fase 4: Correzione fallback `RETE_JSON` in `scripts/infrastructure/test_internet.sh` e rimozione `TRUENAS_PASS` in `scripts/storage/sync_storage.py`
+- [ ] Fase 5: Rifinitura `scripts/go.py` (deduplicazione symlink `lab_mode_echo.sh`, pulizia `exclude_dirs`), header script PVE3 e riscrittura `scripts/README.md`
+
 ## 🚀 [x] ✅ COMPLETATO: Script Idempotenti di Convergenza Stato Homelab (`lab_mode_full`, `lab_mode_eco`, `lab_mode_off`) [[homelab-idempotent-mode-scripts]]
 - [x] Fase 1: Creazione dei 4 Playbook Atomici Ansible (`ensure_storage_on.yml`, `ensure_storage_off.yml`, `ensure_compute_on.yml`, `ensure_compute_off.yml`) e verifica sintassi ✅
 - [x] Fase 2: Creazione dei 3 Script Dichiarativi (`lab_mode_full.sh`, `lab_mode_eco.sh`, `lab_mode_off.sh`), alias `lab_mode_echo.sh` e permessi `chmod +x` ✅
