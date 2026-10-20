@@ -20,7 +20,7 @@ tags:
 
 Questo skill standardizza l'intero ciclo di vita per l'introduzione di nuovi server **Model Context Protocol (MCP)** nell'architettura Kubernetes dell'homelab (`mcp-system`). 
 
-I server MCP sono containerizzati nel monorepo (`docker/<app>/`), pubblicati su GitHub Container Registry (**GHCR**), orchestrati da **ToolHive Operator** con bridging `stdio`-to-HTTP/SSE su porta `8080`, federati da **Kuadrant MCP Gateway**, esposti in LAN tramite **Traefik IngressRoute** su dominio `-internal.pindaroli.org` e infine censiti centralmente in `~/.gemini/antigravity/mcp_config.json`.
+I server MCP sono containerizzati nel monorepo sotto la tassonomia unificata `docker/mcp/<category>/<app>/` (`registry-package`, `upstream-tracking`, `in-house`), pubblicati su GitHub Container Registry (**GHCR**), orchestrati da **ToolHive Operator** con bridging `stdio`-to-HTTP/SSE su porta `8080`, federati da **Kuadrant MCP Gateway**, esposti in LAN tramite **Traefik IngressRoute** su dominio `-internal.pindaroli.org` e infine censiti centralmente in `~/.gemini/antigravity/mcp_config.json`.
 
 ---
 
@@ -62,10 +62,13 @@ Prima di scrivere qualsiasi file, l'agente DEVE verificare il rispetto delle seg
 2. Interrogare il registro (es. `https://registry.npmjs.org/<pkg>` o `https://pypi.org/pypi/<pkg>/json`) o i tag Git (`list_tags`) per identificare l'ultima release stabile.
 3. Se ricade nella **Clausola di Ambiguità**, applicare le regole descritte sopra.
 
-### Fase 2: Containerizzazione Monorepo (`docker/<app>/`)
-1. Creare la cartella `docker/<app>/`.
-2. Creare `docker/<app>/Dockerfile` utilizzando il template corrispondente.
-3. Se il server MCP logga su disco fisso o richiede argomenti CLI non configurabili da env, creare un wrapper minimale `docker/<app>/<app>_wrapper.py` o `entrypoint.py` che reindirizzi i log su `/dev/null` o `/tmp`.
+### Fase 2: Containerizzazione Monorepo (`docker/mcp/<category>/<app>/`)
+1. Creare la cartella target in base alla categoria del pattern:
+   - `docker/mcp/registry-package/<app>/` per pacchetti da registro pubblico (npm/PyPI) o immagini/binari ufficiali.
+   - `docker/mcp/upstream-tracking/<app>/` per tracciamento Git upstream di repository senza package formali.
+   - `docker/mcp/in-house/<app>/` per server MCP sviluppati nativamente nel monorepo.
+2. Creare `docker/mcp/<category>/<app>/Dockerfile` utilizzando il template corrispondente.
+3. Se il server MCP logga su disco fisso o richiede argomenti CLI non configurabili da env, creare un wrapper minimale `docker/mcp/<category>/<app>/<app>_wrapper.py` o `entrypoint.py` che reindirizzi i log su `/dev/null` o `/tmp`.
 4. Creare il workflow GitHub Actions `.github/workflows/docker-<app>.yml` (vedi `templates/workflow-docker.yml.tpl`).
 
 ### Fase 3: Gestione Credenziali e Segreti (SOPS)

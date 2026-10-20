@@ -162,5 +162,16 @@ Server autonomi distribuiti ed eseguiti on-demand come pacchetti effimeri senza 
 | :--- | :--- | :--- | :--- | :--- |
 | **`meross`** | [`pindaroli/meross-mcp`](https://github.com/pindaroli/meross-mcp) | Stdio (`uvx`) & HTTP/SSE porta `8112` | Meross Cloud MQTT over TLS & REST API Gateway (`/api/v1/devices`) | 6 tool MCP per controllo relè, commutazione canali e telemetria energetica ($W, V, A$) su prese e ciabatte Meross (MSS310, MSS210, MSS425E) |
 
+---
+
+## 8. Tassonomia Monorepo Docker (`docker/mcp/`)
+
+I sorgenti e i `Dockerfile` di compilazione della flotta MCP sono organizzati nel monorepo sotto la radice `docker/mcp/` secondo le tre categorie del **Pattern di Packaging & Ingestion degli Artefatti**:
+
+- **`docker/mcp/registry-package/`**: per server distribuiti tramite pacchetti ufficiali su npm/PyPI o container ufficiali (`github-mcp-server`, `nowaikit-mcp`, `ollama-mcp`, `opnsense-mcp`, `talos-mcp`, `truenas-mcp`).
+- **`docker/mcp/upstream-tracking/`**: per server che compilano codice da repository Git upstream senza release ufficiali (`kef-mcp`).
+- **`docker/mcp/in-house/`**: per server con codebase interna al monorepo (`arrstack-mcp`, `gemini-deepsearch-mcp`, `ragflow-mcp`).
+- **`docker/mcp/docker-compose.yaml`**: orchestratore di flotta a livello root per il runtime su TrueNAS SCALE.
+
 
 

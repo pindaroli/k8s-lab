@@ -1,5 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Riorganizzazione Tassonomica della Directory docker/mcp per Pattern di Packaging [[docker-mcp-taxonomy-refactoring]]
+- [x] Fase 1: Creazione della Struttura di Directory Tassonomica (`registry-package`, `upstream-tracking`, `in-house`) ✅
+- [x] Fase 2: Migrazione Selettiva delle 10 directory con `git mv` (Preservazione Cronologia Git) ✅
+- [x] Fase 3: Riallineamento Pipeline CI/CD GitHub Actions (`.github/workflows/docker-*.yml`) ✅
+- [x] Fase 4: Riallineamento Skill Onboarding, Template e Pattern di Governance (`k8s-mcp-server-onboarding`, `mcp-*-pattern`) ✅
+- [x] Fase 5: Validazione Test-Driven Sintassi YAML, Integrità Path & Wiki Sync ✅
+
 ## 🚀 In Corso: Bonifica Script Obsoleti e Riallineamento Diagnostica all'Architettura Homelab Corrente [[scripts-architecture-realignment]]
 - [x] Fase 1: Rimozione Script Obsoleti e One-Off (Sezioni 1 & 2 - 21 file rimossi e verificati) ✅
 - [ ] Fase 2: Riallineamento `scripts/infrastructure/check_lab.py` (TrueNAS Bare-Metal `10.10.20.50`, PBS KVM `10.10.10.100`, LXC su `pve3`, rimozione `VM 1100`/`LXC 1400`)

@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'docker/<app>-mcp/**'
+      - 'docker/mcp/<category>/<app>-mcp/**'
       - '.github/workflows/docker-<app>-mcp.yml'
   workflow_dispatch:
     inputs:
@@ -49,8 +49,8 @@ jobs:
       - name: Build and Push Image
         uses: docker/build-push-action@v5
         with:
-          context: ./docker/<app>-mcp
-          file: ./docker/<app>-mcp/Dockerfile
+          context: ./docker/mcp/<category>/<app>-mcp
+          file: ./docker/mcp/<category>/<app>-mcp/Dockerfile
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

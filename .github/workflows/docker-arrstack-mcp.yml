@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'docker/arrstack-mcp/**'
+      - 'docker/mcp/in-house/arrstack-mcp/**'
       - '.github/workflows/docker-arrstack-mcp.yml'
   workflow_dispatch:
 
@@ -24,7 +24,7 @@ jobs:
       - name: Read Version
         id: version
         run: |
-          VERSION=$(cat ./docker/arrstack-mcp/VERSION | tr -d ' \t\n\r')
+          VERSION=$(cat ./docker/mcp/in-house/arrstack-mcp/VERSION | tr -d ' \t\n\r')
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
@@ -49,8 +49,8 @@ jobs:
       - name: Build and Push Image
         uses: docker/build-push-action@v5
         with:
-          context: ./docker/arrstack-mcp
-          file: ./docker/arrstack-mcp/Dockerfile
+          context: ./docker/mcp/in-house/arrstack-mcp
+          file: ./docker/mcp/in-house/arrstack-mcp/Dockerfile
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

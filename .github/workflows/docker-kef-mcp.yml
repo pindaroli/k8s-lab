@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'docker/kef-mcp/**'
+      - 'docker/mcp/upstream-tracking/kef-mcp/**'
       - '.github/workflows/docker-kef-mcp.yml'
   workflow_dispatch:
     inputs:
@@ -33,7 +33,7 @@ jobs:
       - name: Read Version
         id: version
         run: |
-          VERSION=$(cat ./docker/kef-mcp/VERSION | tr -d ' \t\n\r')
+          VERSION=$(cat ./docker/mcp/upstream-tracking/kef-mcp/VERSION | tr -d ' \t\n\r')
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Checkout Upstream kef-mcp
@@ -41,7 +41,7 @@ jobs:
         with:
           repository: nqrwhal/kef-mcp
           ref: ${{ inputs.upstream_ref || 'main' }}
-          path: docker/kef-mcp/upstream
+          path: docker/mcp/upstream-tracking/kef-mcp/upstream
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -65,8 +65,8 @@ jobs:
       - name: Build and Push Image
         uses: docker/build-push-action@v5
         with:
-          context: ./docker/kef-mcp
-          file: ./docker/kef-mcp/Dockerfile
+          context: ./docker/mcp/upstream-tracking/kef-mcp
+          file: ./docker/mcp/upstream-tracking/kef-mcp/Dockerfile
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

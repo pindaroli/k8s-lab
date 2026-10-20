@@ -12,7 +12,7 @@ in_use_by:
     paths:
       - "helm-charts/mcp-gateway"
       - "mcp-gateway/mcp-gateway-values.yaml"
-      - "docker/talos-mcp"
+      - "docker/mcp/registry-package/talos-mcp"
 tags:
   - "#pattern"
   - "#mcp"

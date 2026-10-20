@@ -9,12 +9,12 @@ last_updated: 2026-10-20
 in_use_by:
   - project: "k8s-lab"
     paths:
-      - "docker/ollama-mcp"
-      - "docker/opnsense-mcp"
-      - "docker/talos-mcp"
-      - "docker/nowaikit-mcp"
-      - "docker/github-mcp-server"
-      - "docker/truenas-mcp"
+      - "docker/mcp/registry-package/ollama-mcp"
+      - "docker/mcp/registry-package/opnsense-mcp"
+      - "docker/mcp/registry-package/talos-mcp"
+      - "docker/mcp/registry-package/nowaikit-mcp"
+      - "docker/mcp/registry-package/github-mcp-server"
+      - "docker/mcp/registry-package/truenas-mcp"
       - ".github/workflows/docker-ollama-mcp.yml"
       - ".github/workflows/docker-opnsense-mcp.yml"
       - ".github/workflows/docker-talos-mcp.yml"
@@ -65,8 +65,8 @@ flowchart TD
     end
 
     subgraph CI["GitHub Actions (k8s-lab CI/CD)"]
-        DOCKERFILE["docker/<app>/Dockerfile\n- Base image minimale (alpine/slim)\n- Strict version pinning\n- Utente non-root (UID 1000)\n- Wrapper stdio (se necessario)"]
-        GHA["Workflow .github/workflows/docker-<app>.yml\nBuild automatica su push main a docker/<app>/**"]
+        DOCKERFILE["docker/mcp/registry-package/<app>/Dockerfile\n- Base image minimale (alpine/slim)\n- Strict version pinning\n- Utente non-root (UID 1000)\n- Wrapper stdio (se necessario)"]
+        GHA["Workflow .github/workflows/docker-<app>.yml\nBuild automatica su push main a docker/mcp/registry-package/<app>/**"]
         GHCR["ghcr.io/pindaroli/<app>:<version>"]
     end
 
@@ -122,7 +122,7 @@ Questo assicura la piena conformità con la policy di sicurezza `securityContext
 
 ### 4. Supporto al Trasporto `stdio` e Wrapper di Compatibilità
 I server MCP pacchettizzati devono comunicare nativamente tramite `stdio`. Qualora il pacchetto richieda parametri CLI specifici, variabili d'ambiente non standard o intercettazione di log verbosi (come nel caso di `talos-mcp-server` che loggava su file locale non scrivibile), è consentito affiancare un wrapper minimale:
-* File: `docker/<app>/<app>_wrapper.py`
+* File: `docker/mcp/registry-package/<app>/<app>_wrapper.py`
 * Esempio: `talos_mcp_wrapper.py` reindirizza i log su `/dev/null` per rispettare il filesystem read-only.
 
 ### 5. Tag OCI Immutabili su GHCR e Rilascio Controllato

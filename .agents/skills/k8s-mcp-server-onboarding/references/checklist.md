@@ -11,7 +11,7 @@ Questa checklist deve essere verificata punto per punto prima di considerare con
 - [ ] È stato scelto il pattern corretto (`mcp-registry-package-pattern` o `mcp-upstream-tracking-pattern`).
 
 ## 🐳 2. Containerizzazione & Hardening Monorepo
-- [ ] La cartella `docker/<app>/` contiene il `Dockerfile` standardizzato.
+- [ ] La cartella tassonomica `docker/mcp/<category>/<app>/` contiene il `Dockerfile` standardizzato.
 - [ ] È presente `ARG <PKG>_VERSION` o `ARG UPSTREAM_REF` esplicito.
 - [ ] Viene rilasciato l'accesso root impostando `USER node` (UID 1000) o `USER appuser` (UID 1000).
 - [ ] È verificata la piena compatibilità con `securityContext.readOnlyRootFilesystem: true` (nessuna scrittura su disco tranne `/tmp`).

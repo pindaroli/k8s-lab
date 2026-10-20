@@ -10,7 +10,7 @@ last_updated: 2026-09-08
 in_use_by:
   - project: "k8s-lab"
     paths:
-      - "docker/kef-mcp"
+      - "docker/mcp/upstream-tracking/kef-mcp"
       - ".github/workflows/docker-kef-mcp.yml"
       - "mcp-gateway/mcp-gateway-values.yaml"
 tags:
@@ -41,7 +41,7 @@ Molti server Model Context Protocol (MCP) della community open-source (es. `nqrw
 2. Pacchetti pubblicati su PyPI o NPM.
 3. Rilasci frequenti di tag semantici formali.
 
-Copiare staticamente ("vendoring") il codice sorgente all'interno del monorepo (`docker/<app>/`) presenta gravi rischi:
+Copiare staticamente ("vendoring") il codice sorgente all'interno del monorepo (`docker/mcp/upstream-tracking/<app>/`) presenta gravi rischi:
 * **Disallineamento dal codice upstream**: bugfix, aggiornamenti a librerie di streaming (es. `yt-dlp`), modifiche API o nuove feature non vengono recepite.
 * **Inquinamento del repository**: centinaia di righe di codice di terze parti non pertinenti alla configurazione dell'infrastruttura.
 * **Perdita di tracciabilità**: non è chiaro da quale commit upstream provenga il codice compilato nel container.

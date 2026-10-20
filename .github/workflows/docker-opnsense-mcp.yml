@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'docker/opnsense-mcp/**'
+      - 'docker/mcp/registry-package/opnsense-mcp/**'
       - '.github/workflows/docker-opnsense-mcp.yml'
   workflow_dispatch:
 
@@ -24,7 +24,7 @@ jobs:
       - name: Read Version
         id: version
         run: |
-          VERSION=$(cat ./docker/opnsense-mcp/VERSION | tr -d ' \t\n\r')
+          VERSION=$(cat ./docker/mcp/registry-package/opnsense-mcp/VERSION | tr -d ' \t\n\r')
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
@@ -49,8 +49,8 @@ jobs:
       - name: Build and Push Image
         uses: docker/build-push-action@v5
         with:
-          context: ./docker/opnsense-mcp
-          file: ./docker/opnsense-mcp/Dockerfile
+          context: ./docker/mcp/registry-package/opnsense-mcp
+          file: ./docker/mcp/registry-package/opnsense-mcp/Dockerfile
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
