@@ -1,15 +1,25 @@
-FROM node:22-alpine
+FROM node:22.14.0-alpine3.21
 
-WORKDIR /app
-
-# Build-time argument for strict version pinning (never use @latest)
+ARG SUPERGATEWAY_VERSION=4.1.0
 ARG APP_VERSION=4.15.1
 
-# Install the MCP server globally from official npm registry
-RUN npm install -g nowaikit@${APP_VERSION}
+RUN npm install -g \
+    "supergateway@${SUPERGATEWAY_VERSION}" \
+    "nowaikit@${APP_VERSION}" && \
+    npm cache clean --force
 
-# Drop privileges to standard non-root user (UID 1000)
 USER node
+WORKDIR /home/node
 
-# ToolHive executes the container and communicates via stdio
-ENTRYPOINT ["nowaikit-mcp"]
+EXPOSE 8080
+
+ENTRYPOINT [ \
+  "supergateway", \
+  "--port", "8080", \
+  "--outputTransport", "streamableHttp", \
+  "--streamableHttpPath", "/mcp", \
+  "--healthEndpoint", "/healthz", \
+  "--stateful", \
+  "--cors", \
+  "--stdio", "nowaikit-mcp" \
+]

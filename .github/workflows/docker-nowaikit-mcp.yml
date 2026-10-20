@@ -21,6 +21,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Read Version
+        id: version
+        run: |
+          VERSION=$(cat ./docker/nowaikit-mcp/VERSION | tr -d ' \t\n\r')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -37,8 +43,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/nowaikit-mcp
           tags: |
-            type=raw,value=4.15.1
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=${{ steps.version.outputs.version }}
             type=sha,prefix=sha-,format=short
 
       - name: Build and Push Image

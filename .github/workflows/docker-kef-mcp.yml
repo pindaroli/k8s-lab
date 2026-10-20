@@ -30,6 +30,12 @@ jobs:
       - name: Checkout Monorepo
         uses: actions/checkout@v4
 
+      - name: Read Version
+        id: version
+        run: |
+          VERSION=$(cat ./docker/kef-mcp/VERSION | tr -d ' \t\n\r')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
       - name: Checkout Upstream kef-mcp
         uses: actions/checkout@v4
         with:
@@ -53,8 +59,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/kef-mcp
           tags: |
-            type=raw,value=${{ inputs.image_tag || '1.0.0' }}
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=${{ inputs.image_tag || steps.version.outputs.version }}
             type=sha,prefix=sha-,format=short
 
       - name: Build and Push Image

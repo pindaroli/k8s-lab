@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     npm \
     wget \
     git \
-    && npm install -g supergateway \
+    && npm install -g supergateway@4.1.0 \
     && pip install --no-cache-dir uv \
     && rm -rf /var/lib/apt/lists/*
 
@@ -33,4 +33,4 @@ USER appuser
 # Expose internal port for supergateway Streamable HTTP bridge
 EXPOSE 8080
 
-ENTRYPOINT ["supergateway", "--port", "8080", "--outputTransport", "streamableHttp", "--streamableHttpPath", "/mcp", "--healthEndpoint", "/healthz", "--stdio", "uv run ragflow-claude-mcp"]
+ENTRYPOINT ["supergateway", "--port", "8080", "--outputTransport", "streamableHttp", "--streamableHttpPath", "/mcp", "--healthEndpoint", "/healthz", "--stateful", "--cors", "--stdio", "uv run ragflow-claude-mcp"]

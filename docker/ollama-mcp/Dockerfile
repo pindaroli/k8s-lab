@@ -1,14 +1,25 @@
-FROM node:22-alpine
+FROM node:22.14.0-alpine3.21
 
-WORKDIR /app
-
+ARG SUPERGATEWAY_VERSION=4.1.0
 ARG OLLAMA_MCP_VERSION=2.1.0
 
-# Install ollama-mcp globally (pinned to latest official stable release)
-RUN npm install -g ollama-mcp@${OLLAMA_MCP_VERSION}
+RUN npm install -g \
+    "supergateway@${SUPERGATEWAY_VERSION}" \
+    "ollama-mcp@${OLLAMA_MCP_VERSION}" && \
+    npm cache clean --force
 
-# Use unprivileged node user
 USER node
+WORKDIR /home/node
 
-# ToolHive executes the container and communicates via stdio
-ENTRYPOINT ["ollama-mcp"]
+EXPOSE 8080
+
+ENTRYPOINT [ \
+  "supergateway", \
+  "--port", "8080", \
+  "--outputTransport", "streamableHttp", \
+  "--streamableHttpPath", "/mcp", \
+  "--healthEndpoint", "/healthz", \
+  "--stateful", \
+  "--cors", \
+  "--stdio", "ollama-mcp" \
+]

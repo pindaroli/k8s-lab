@@ -1,19 +1,30 @@
-FROM alpine:3.21
+FROM alpine:3.21.3 AS fetcher
+ARG TALOS_MCP_VERSION=2.5.1
+RUN apk add --no-cache curl tar && \
+    curl -fsSL "https://github.com/Nosmoht/talos-mcp-server/releases/download/v${TALOS_MCP_VERSION}/talos-mcp-server_${TALOS_MCP_VERSION}_linux_amd64.tar.gz" \
+    | tar -xz -C /usr/local/bin talos-mcp && \
+    chmod +x /usr/local/bin/talos-mcp
 
-ARG APP_VERSION=2.5.1
-ARG TARGETARCH=amd64
+FROM node:22.14.0-alpine3.21
+ARG SUPERGATEWAY_VERSION=4.1.0
 
-WORKDIR /app
+RUN npm install -g "supergateway@${SUPERGATEWAY_VERSION}" && \
+    npm cache clean --force
 
-# Install ca-certificates, curl, tar, extract binary and configure non-root user
-RUN apk add --no-cache ca-certificates curl tar && \
-    curl -fsSL "https://github.com/Nosmoht/talos-mcp-server/releases/download/v${APP_VERSION}/talos-mcp-server_${APP_VERSION}_linux_${TARGETARCH}.tar.gz" | tar -xz -C /usr/local/bin talos-mcp && \
-    chmod +x /usr/local/bin/talos-mcp && \
-    apk del curl tar && \
-    rm -rf /var/cache/apk/* && \
-    adduser -D -u 1000 -h /app talos
+COPY --from=fetcher /usr/local/bin/talos-mcp /usr/local/bin/talos-mcp
 
-USER 1000
+USER node
+WORKDIR /home/node
 
-# ToolHive executes the container and communicates via stdio
-ENTRYPOINT ["/usr/local/bin/talos-mcp"]
+EXPOSE 8080
+
+ENTRYPOINT [ \
+  "supergateway", \
+  "--port", "8080", \
+  "--outputTransport", "streamableHttp", \
+  "--streamableHttpPath", "/mcp", \
+  "--healthEndpoint", "/healthz", \
+  "--stateful", \
+  "--cors", \
+  "--stdio", "/usr/local/bin/talos-mcp" \
+]

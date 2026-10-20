@@ -86,8 +86,15 @@ def deep_search(
 
 def main():
     """Main entry point for the MCP server."""
-    sys.stderr.write("Starting MCP stdio server...\n")
-    mcp.run(transport="stdio")
+    transport = os.getenv("MCP_TRANSPORT", "streamable-http").lower()
+    host = os.getenv("MCP_HOST", "0.0.0.0")
+    port = int(os.getenv("MCP_PORT", "8080"))
+    if transport == "stdio":
+        sys.stderr.write("Starting MCP stdio server...\n")
+        mcp.run(transport="stdio")
+    else:
+        sys.stderr.write(f"Starting MCP {transport} server on {host}:{port}...\n")
+        mcp.run(transport=transport, host=host, port=port, path="/mcp")
 
 
 if __name__ == "__main__":

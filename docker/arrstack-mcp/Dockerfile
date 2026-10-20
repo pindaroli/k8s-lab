@@ -21,6 +21,6 @@ ENV PYTHONPATH=/app
 
 USER appuser
 
-# Default to FastMCP SSE on port 8080 listening on all interfaces
+# Default to FastMCP Streamable HTTP on port 8080 listening on all interfaces
 ENTRYPOINT ["python", "/app/server.py"]
-CMD ["--transport", "sse", "--port", "8080", "--host", "0.0.0.0"]
+CMD ["--transport", "streamable-http", "--port", "8080", "--host", "0.0.0.0"]
