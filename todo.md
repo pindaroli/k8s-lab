@@ -1,5 +1,26 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Installazione LiteLLM Proxy su K8s con Routing Mac Studio / lxc-ollama e Integrazione Hermes [[litellm-proxy-kubernetes-deployment]]
+- [x] Fase 1: Raccolta dati (risorse nodi, DNS Unbound, versione chart upstream) ✅
+- [x] Fase 1b: Allineamento dei 5 modelli sui due backend (pull `gemma4:31b` su Mac, `qwen2.5vl:7b-q4_K_M` su lxc-ollama) ✅
+- [x] Fase 2: Segreti SOPS (master key, DB, virtual key Hermes) ✅
+- [x] Fase 3: Ruolo `litellm` in `postgres-main` + risorsa `Database` ✅
+- [x] Fase 4: `litellm/litellm-values.yaml` e validazione `helm template` ✅
+- [x] Fase 5: Deploy, DNS e IngressRoute `litellm-internal.pindaroli.org` ✅
+- [x] Fase 6: Virtual key Hermes riproducibile (Job idempotente) e test di routing ✅
+- [x] Fase 7: Integrazione Hermes (esclusivamente via LiteLLM, rimozione DeepSeek) ✅
+- [x] Fase 8: RAGFlow invariato (solo verifica di non regressione: `bge-m3`, `gpt-4o:latest` preservati) ✅
+- [x] Fase 8b: Voci Homepage (`homepage.yaml`, `homepage-local.yaml`; TrueNAS escluso) ✅
+- [x] Fase 9: Documentazione, `validate_network.py` e `build_wiki_context.py` ✅
+- [x] Fase 10: Rimozione `qwen2.5:72b-instruct-q4_K_M` dal Mac (~44 GB liberati) ✅
+- [x] Fase 11: Rimozione tag `deepseek-r1:32b` e `gpt-4o-mini:latest` dal Mac (`gpt-4o:latest` preservato per RAGFlow) ✅
+
+## 🚀 [x] ✅ COMPLETATO: Ottimizzazione 100% GPU Offload per Modelli 32B su LXC Ollama e Persistenza Kernel VRAM GTT/TTM su PVE3 [[lxc-ollama-gpu-offload-and-gtt-persistence]]
+- [x] Fase 1: Aggiornamento Dichiarativo di `rete.json` (`OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_CONTEXT_LENGTH=32768`) e validazione schema ✅
+- [x] Fase 2: Estensione del Playbook Ansible `configure_ollama_fleet.yml` con persistenza Kernel GTT/TTM (54 GiB) su `pve3` (`/etc/modprobe.d/amdgpu.conf`, `/etc/kernel/cmdline`, `proxmox-boot-tool refresh`) ✅
+- [x] Fase 3: Esecuzione Playbook Ansible e Convergenza Live su `pve3` (senza reboot) e `lxc-ollama` (verifica `ollama ps` 100% GPU) ✅
+- [x] Fase 4: Benchmark GuideLLM di Certificazione (`qwen2.5:32b-instruct-q5_K_M`) e Consolidamento Documentale (`Ollama.md`, `build_wiki_context.py`) ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Riorganizzazione Tassonomica della Directory docker/mcp per Pattern di Packaging [[docker-mcp-taxonomy-refactoring]]
 - [x] Fase 1: Creazione della Struttura di Directory Tassonomica (`registry-package`, `upstream-tracking`, `in-house`) ✅
 - [x] Fase 2: Migrazione Selettiva delle 10 directory con `git mv` (Preservazione Cronologia Git) ✅
@@ -12,11 +33,11 @@
 - [ ] Fase 2: Riallineamento `scripts/infrastructure/check_lab.py` (TrueNAS Bare-Metal `10.10.20.50`, PBS KVM `10.10.10.100`, LXC su `pve3`, rimozione `VM 1100`/`LXC 1400`)
 - [ ] Fase 3: Riallineamento `scripts/kubernetes/check_k8s.py` (Rimozione namespace `"arr"` da `CRITICAL_NAMESPACES`, aggiunta `"monitoring"` e `"homepage"`)
 - [ ] Fase 4: Correzione fallback `RETE_JSON` in `scripts/infrastructure/test_internet.sh` e rimozione `TRUENAS_PASS` in `scripts/storage/sync_storage.py`
-- [ ] Fase 5: Rifinitura `scripts/go.py` (deduplicazione symlink `lab_mode_echo.sh`, pulizia `exclude_dirs`), header script PVE3 e riscrittura `scripts/README.md`
+- [ ] Fase 5: Rifinitura `scripts/go.py` (pulizia `exclude_dirs`), header script PVE3 e riscrittura `scripts/README.md`
 
 ## 🚀 [x] ✅ COMPLETATO: Script Idempotenti di Convergenza Stato Homelab (`lab_mode_full`, `lab_mode_eco`, `lab_mode_off`) [[homelab-idempotent-mode-scripts]]
 - [x] Fase 1: Creazione dei 4 Playbook Atomici Ansible (`ensure_storage_on.yml`, `ensure_storage_off.yml`, `ensure_compute_on.yml`, `ensure_compute_off.yml`) e verifica sintassi ✅
-- [x] Fase 2: Creazione dei 3 Script Dichiarativi (`lab_mode_full.sh`, `lab_mode_eco.sh`, `lab_mode_off.sh`), alias `lab_mode_echo.sh` e permessi `chmod +x` ✅
+- [x] Fase 2: Creazione dei 3 Script Dichiarativi (`lab_mode_full.sh`, `lab_mode_eco.sh`, `lab_mode_off.sh`) e permessi `chmod +x` ✅
 - [x] Fase 3: Allineamento Script Legacy & Launcher `scripts/go.py` ✅
 - [x] Fase 4: Validazione Test-Driven End-to-End, Aggiornamento `Power_Sequence.md`, `in_use_by` nei Pattern e Sync Wiki Context (`build_wiki_context.py`) ✅
 

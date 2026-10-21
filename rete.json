@@ -611,7 +611,16 @@
           "memory": "64gb-unified",
           "hardware": "Apple Silicon M2 Ultra",
           "status": "active",
-          "notes": "Inferenza locale su macOS via Metal framework."
+          "notes": "Inferenza locale su macOS via Metal framework.",
+          "env": {
+            "OLLAMA_NUM_PARALLEL": "2",
+            "OLLAMA_MAX_LOADED_MODELS": "2",
+            "OLLAMA_KEEP_ALIVE": "15m",
+            "OLLAMA_FLASH_ATTENTION": "1",
+            "OLLAMA_KV_CACHE_TYPE": "q8_0",
+            "OLLAMA_MAX_QUEUE": "128",
+            "OLLAMA_LOAD_TIMEOUT": "10m"
+          }
         }
       ]
     },
@@ -1011,7 +1020,20 @@
           "memory": "54gb",
           "hardware": "AMD Radeon 890M (Vulkan RADV)",
           "status": "active",
-          "notes": "Ollama 0.34.2 con 54 GB RAM, 20 vCPU (Zen 5 + Zen 5c), OLLAMA_IGPU_ENABLE=1, OLLAMA_FLASH_ATTENTION=1, OLLAMA_KV_CACHE_TYPE=q8_0 e mount NFS stripe/ollama."
+          "notes": "Ollama 0.34.2 con 54 GB RAM, 20 vCPU (Zen 5 + Zen 5c), OLLAMA_IGPU_ENABLE=1, OLLAMA_FLASH_ATTENTION=1, OLLAMA_KV_CACHE_TYPE=q8_0 e mount NFS stripe/ollama.",
+          "env": {
+            "OLLAMA_HOST": "0.0.0.0:11434",
+            "OLLAMA_IGPU_ENABLE": "1",
+            "HSA_OVERRIDE_GFX_VERSION": "11.5.0",
+            "OLLAMA_FLASH_ATTENTION": "1",
+            "OLLAMA_KV_CACHE_TYPE": "q8_0",
+            "OLLAMA_KEEP_ALIVE": "-1",
+            "OLLAMA_NUM_PARALLEL": "1",
+            "OLLAMA_MAX_LOADED_MODELS": "1",
+            "OLLAMA_CONTEXT_LENGTH": "32768",
+            "OLLAMA_MAX_QUEUE": "128",
+            "OLLAMA_LOAD_TIMEOUT": "10m"
+          }
         },
         {
           "id": "llama-ocr",
@@ -1093,7 +1115,8 @@
         "kef-mcp-internal",
         "nowaikit-mcp-internal",
         "headlamp",
-        "headlamp-internal"
+        "headlamp-internal",
+        "litellm-internal"
       ],
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
     },

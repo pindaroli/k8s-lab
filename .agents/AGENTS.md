@@ -32,12 +32,13 @@
   - **Scope & Purpose**: The RAGFlow knowledge bases (`https://ragflow-internal.pindaroli.org`) are the authoritative source for homelab technical and hardware documentation:
     1. **`opnsense`**: Official OPNsense 26.1 ("Witty Woodpecker") documentation (firewall rules, NAT, policy routing, Kea DHCP, Unbound DNS, WireGuard, MVC APIs, plugins).
     2. **`truenas`**: Official TrueNAS SCALE 25.10 documentation (ZFS storage pools, datasets, quotas, NFS/SMB shares & ACL permissions, replication tasks, snapshot retention).
-    3. **`k8s-lab`**: Homelab physical hardware documentation (vendor manuals, component datasheets, motherboard pinouts, PCIe bifurcation, Extreme switch port matrices, BIOS/UEFI/IPMI settings, UPS/NUT power specs).
+    3. **`k8s-lab`**: Homelab physical hardware documentation (vendor manuals, component datasheets, motherboard pinouts, PCIe bifurcation, Extreme switch port matrices, BIOS/UEFI/IPMI settings, UPS/NUT power specs, telecomando WHY EVO).
   - **Intelligent Trigger Conditions (MUST query RAGFlow via `ragflow_retrieval_by_name`)**:
     1. **OPNsense Procedures & Parameters**: Queries regarding firewall rules, routing policies, NAT rules, VPN tunnels, or Unbound/Kea settings.
     2. **TrueNAS Procedures & Storage Best Practices**: Queries regarding recommended ZFS dataset properties (recordsize, sync), NFS/SMB permission schemes, or replication setups.
     3. **Hardware Specifications & Datasheets**: Queries regarding physical component specs, power consumption, connector types, jumper settings, or hardware limits.
-    4. **Vendor Model Inquiries & Fallback**: Whenever the user references specific hardware or OS features and local repository files (`rete.json`, `storage.json`, `wiki/`) lack detailed technical manuals or official vendor guidelines.
+    4. **Telecomando WHY EVO**: Queries or mentions of "telecomando why evo" / "why evo" (procedure di programmazione, clonazione, frequenze, rolling code) -> Target dataset `k8s-lab`.
+    5. **Vendor Model Inquiries & Fallback**: Whenever the user references specific hardware or OS features and local repository files (`rete.json`, `storage.json`, `wiki/`) lack detailed technical manuals or official vendor guidelines.
   - **Strict Exclusions (Do NOT query RAGFlow)**:
     - **Live Infrastructure Operations**: Real-time pod status, service health, live ZFS pool states (`zpool status`), Talos cluster events, or OPNsense active firewall states -> Query live system tools directly (`opnsense` MCP, `truenas-master-mcp`, `talos` MCP, `kubernetes` MCP).
     - **Git Workspace Code & Configs**: Helm values (`arr-values.yaml`), Kubernetes manifests, Ansible playbooks, and GitOps logic -> Inspect local repository files.

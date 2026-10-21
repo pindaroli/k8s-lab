@@ -1,1 +1,0 @@
-lab_mode_eco.sh

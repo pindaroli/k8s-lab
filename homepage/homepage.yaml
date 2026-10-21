@@ -440,6 +440,11 @@ data:
             description: Enterprise RAG & DeepDoc Document Intelligence
             icon: https://raw.githubusercontent.com/infiniflow/ragflow/main/web/public/logo.svg
             siteMonitor: http://ragflow.ragflow-system.svc.cluster.local:80/
+        - LiteLLM:
+            href: https://litellm-internal.pindaroli.org/ui
+            description: LLM Gateway & Model Proxy Admin UI
+            icon: sh-litellm
+            siteMonitor: http://litellm.litellm.svc.cluster.local:4000/health/liveliness
         # - MCP Gateway & Fleet:
         #     href: https://mcp-ui.pindaroli.org
         #     description: Model Context Protocol Fleet Gateway & Web Console (Google OAuth2)

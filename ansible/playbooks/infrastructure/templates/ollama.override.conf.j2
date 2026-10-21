@@ -1,0 +1,6 @@
+# Ansible Managed - DO NOT EDIT MANUALLY
+# Sourced declaratively from rete.json (Node: lxc-ollama -> Service: ollama)
+[Service]
+{% for key, value in ollama_env.items() %}
+Environment={{ key }}={{ value }}
+{% endfor %}

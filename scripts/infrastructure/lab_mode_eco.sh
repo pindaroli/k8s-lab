@@ -2,7 +2,7 @@
 # Homelab a risparmio energetico: solo TrueNAS attivo, PVE e K8s spenti
 set -Eeuo pipefail
 # ==============================================================================
-# lab_mode_eco.sh (alias: lab_mode_echo.sh)
+# lab_mode_eco.sh
 # ==============================================================================
 # Convergenza dichiarativa e idempotente allo stato ECO HOMELAB:
 # 1. Garantisce TrueNAS Bare Metal ONLINE (ZFS stripe & oliraid, servizi media)

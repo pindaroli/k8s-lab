@@ -21,10 +21,14 @@ DEFAULT_PROFILE="sweep"
 DEFAULT_DATA="prompt_tokens=128,output_tokens=64"
 DEFAULT_PROCESSOR="gpt2"
 
+# Ottimizzazione concurrency GuideLLM (prevenzione IPC deadlock macOS/Linux)
+export GUIDELLM_MAX_WORKER_PROCESSES="${GUIDELLM_MAX_WORKER_PROCESSES:-4}"
+
 OUTPUT_DIR="${DEFAULT_OUTPUT_DIR}"
 PROFILE="${DEFAULT_PROFILE}"
 DATA="${DEFAULT_DATA}"
 PROCESSOR="${DEFAULT_PROCESSOR}"
+LEVEL=""
 MAX_REQUESTS=""
 MAX_SECONDS=""
 RATE=""
@@ -59,20 +63,27 @@ Opzioni:
   -b, --backend <url>       URL backend OpenAI-compatibile
   -d, --output-dir <dir>    Cartella destinazione report (default: ./reports)
   -p, --profile <tipo>      Tipo profilo GuideLLM (sweep|throughput|concurrent|...)
+  -l, --level <1|2|3>       Livello di benchmark: 1=Smoke (~1-2m), 2=Standard [default] (~3-5m), 3=Deep (~15-20m)
   --data <spec>             Dataset o config sintetica (default: prompt_tokens=128,output_tokens=64)
   --processor <tok>         Tokenizer HuggingFace per token counts (default: gpt2)
-  --max-requests <num>      Numero massimo di richieste per benchmark
-  --max-seconds <sec>       Durata massima in secondi per benchmark
-  --rate <val>              Valore di rate o concorrenza
+  --max-requests <num>      Numero massimo di richieste per benchmark (override livello)
+  --max-seconds <sec>       Durata massima in secondi per benchmark (override livello)
+  --rate <val>              Valore di rate o numero di step dello sweep
   --dry-run                 Stampa la configurazione e i percorsi senza eseguire
   -h, --help                Mostra questo messaggio di aiuto
 
 Esempi:
-  # Batch non-interattivo rapido:
-  ./run_guidellm_benchmark.sh -n lxc-ollama -m bge-m3:latest --max-requests 5
+  # Standard consigliato (Livello 2 automatico, ~3-5 min):
+  ./run_guidellm_benchmark.sh -n lxc-ollama -m qwen2.5-coder-7b
 
-  # Dry-run per verifica naming:
-  ./run_guidellm_benchmark.sh -n pve3 -m qwen2.5-coder-7b --dry-run
+  # Smoke test rapido (~1-2 min):
+  ./run_guidellm_benchmark.sh -n lxc-ollama -m bge-m3:latest -l 1
+
+  # Test approfondito di stress (~15-20 min):
+  ./run_guidellm_benchmark.sh -n pve3 -m qwen2.5-32b-instruct -l 3
+
+  # Dry-run per verifica comandi e naming:
+  ./run_guidellm_benchmark.sh -n pve3 -m qwen2.5-coder-7b -l 2 --dry-run
 
   # Wizard interattivo (nessun parametro):
   ./run_guidellm_benchmark.sh
@@ -109,6 +120,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -p|--profile)
       PROFILE="$2"
+      shift 2
+      ;;
+    -l|--level)
+      LEVEL="$2"
       shift 2
       ;;
     --max-requests)
@@ -390,6 +405,198 @@ if [[ -z "$NODE" || -z "$MODEL" || -z "$MEMORY" ]]; then
 fi
 
 # ==============================================================================
+# Tabella Parametrica di Dimensionamento Timeout (--max-seconds) per Modello
+# ==============================================================================
+#
+# La latenza di inferenza varia drasticamente in base alla dimensione dei parametri (B)
+# e all'hardware. Per evitare timeout prematuri nello step di throughput e conseguenti
+# deadlock/ConnectionRefusedError sui worker GuideLLM:
+#
+# +--------------------+--------------------+----------+----------+----------+
+# | Classe Modello     | Parametri          | Lvl 1    | Lvl 2    | Lvl 3    |
+# |                    |                    | (Smoke)  | (Std)    | (Stress) |
+# +--------------------+--------------------+----------+----------+----------+
+# | Embeddings/Micro   | Embed / <4B        | 15s/10req| 30s/30req|  60s/60req|
+# | Small              | 4B - 9B            | 20s/10req| 45s/30req|  90s/80req|
+# | Medium             | 10B - 20B          | 30s/10req| 60s/25req| 150s/60req|
+# | Large (es. 32B)    | 21B - 44B          | 60s/10req|120s/20req| 240s/40req|
+# | Extra-Large        | >= 45B (es. 70B)   | 90s/10req|180s/15req| 360s/30req|
+# | Default / Fallback | Sconosciuto        | 30s/10req| 60s/25req| 120s/50req|
+# +--------------------+--------------------+----------+----------+----------+
+
+classify_model_and_set_defaults() {
+  local model_raw="$1"
+  local m_low
+  m_low=$(echo "$model_raw" | tr '[:upper:]' '[:lower:]')
+
+  local param_num=""
+  local model_class="unknown"
+  local class_desc="Default / Non Riconosciuto"
+
+  # 1. Riconoscimento Modelli di Embedding o Text Representation
+  if [[ "$m_low" =~ (embed|bge|nomic|minilm|bert) ]]; then
+    model_class="embed"
+    class_desc="Embeddings / Representation (<1B)"
+  # 2. Riconoscimento Dimensione Parametri da nome (es. 32b, 31b, 7b, 1.5b, 70b)
+  elif [[ "$m_low" =~ ([0-9]+(\.[0-9]+)?)[bB]([^a-z0-9]|$) ]]; then
+    param_num="${BASH_REMATCH[1]}"
+  fi
+
+  # 3. Fallback: interrogazione rapida API Ollama (/api/show) se param_num è ancora vuoto
+  if [[ -z "$param_num" && "$model_class" == "unknown" && -n "$BACKEND_URL" ]]; then
+    local show_api="${BACKEND_URL%/v1}/api/show"
+    if curl -s -m 2 "$show_api" -d "{\"name\":\"$model_raw\"}" >/dev/null 2>&1; then
+      local show_json
+      show_json=$(curl -s -m 2 "$show_api" -d "{\"name\":\"$model_raw\"}" 2>/dev/null || true)
+      local detected_p
+      detected_p=$(echo "$show_json" | grep -o '"parameter_size":"[^"]*"' | head -n1 | cut -d'"' -f4 | tr -d ' ' | tr '[:upper:]' '[:lower:]' || true)
+      if [[ "$detected_p" =~ ([0-9]+(\.[0-9]+)?)[bB] ]]; then
+        param_num="${BASH_REMATCH[1]}"
+      fi
+    fi
+  fi
+
+  # 4. Assegnazione classe in base al numero di parametri
+  if [[ -n "$param_num" ]]; then
+    # Conversione intera per comparazione (troncamento decimale)
+    local p_int
+    p_int=$(echo "$param_num" | awk '{print int($1)}')
+
+    if (( p_int < 4 )); then
+      model_class="micro"
+      class_desc="Micro (<4B, rilevato ${param_num}B)"
+    elif (( p_int >= 4 && p_int < 10 )); then
+      model_class="small"
+      class_desc="Small (4B-9B, rilevato ${param_num}B)"
+    elif (( p_int >= 10 && p_int < 21 )); then
+      model_class="medium"
+      class_desc="Medium (10B-20B, rilevato ${param_num}B)"
+    elif (( p_int >= 21 && p_int < 45 )); then
+      model_class="large"
+      class_desc="Large (21B-44B, rilevato ${param_num}B)"
+    else
+      model_class="xlarge"
+      class_desc="Extra-Large (>=45B, rilevato ${param_num}B)"
+    fi
+  fi
+
+  # 5. Mappatura parametri per classe (Livello 1, 2, 3)
+  case "$model_class" in
+    embed|micro)
+      TBL_SEC_L1=15;  TBL_REQ_L1=10; TBL_RATE_L1=3
+      TBL_SEC_L2=30;  TBL_REQ_L2=30; TBL_RATE_L2=4
+      TBL_SEC_L3=60;  TBL_REQ_L3=60; TBL_RATE_L3=8
+      ;;
+    small)
+      TBL_SEC_L1=20;  TBL_REQ_L1=10; TBL_RATE_L1=3
+      TBL_SEC_L2=45;  TBL_REQ_L2=30; TBL_RATE_L2=4
+      TBL_SEC_L3=90;  TBL_REQ_L3=80; TBL_RATE_L3=8
+      ;;
+    medium)
+      TBL_SEC_L1=30;  TBL_REQ_L1=10; TBL_RATE_L1=3
+      TBL_SEC_L2=60;  TBL_REQ_L2=25; TBL_RATE_L2=4
+      TBL_SEC_L3=150; TBL_REQ_L3=60; TBL_RATE_L3=8
+      ;;
+    large)
+      TBL_SEC_L1=60;  TBL_REQ_L1=10; TBL_RATE_L1=3
+      TBL_SEC_L2=120; TBL_REQ_L2=20; TBL_RATE_L2=4
+      TBL_SEC_L3=240; TBL_REQ_L3=40; TBL_RATE_L3=6
+      ;;
+    xlarge)
+      TBL_SEC_L1=90;  TBL_REQ_L1=10; TBL_RATE_L1=2
+      TBL_SEC_L2=180; TBL_REQ_L2=15; TBL_RATE_L2=3
+      TBL_SEC_L3=360; TBL_REQ_L3=30; TBL_RATE_L3=5
+      ;;
+    *)
+      TBL_SEC_L1=30;  TBL_REQ_L1=10; TBL_RATE_L1=3
+      TBL_SEC_L2=60;  TBL_REQ_L2=25; TBL_RATE_L2=4
+      TBL_SEC_L3=120; TBL_REQ_L3=50; TBL_RATE_L3=8
+      ;;
+  esac
+
+  MODEL_DETECTED_CLASS="$model_class"
+  MODEL_CLASS_DESCRIPTION="$class_desc"
+}
+
+# Risoluzione automatica dei default per il modello selezionato
+classify_model_and_set_defaults "$MODEL"
+
+# ==============================================================================
+# Selezione e Applicazione Livello di Benchmark (1, 2, 3)
+# ==============================================================================
+
+# Se né livello né limiti espliciti sono stati forniti da CLI, richiedi in modalità interattiva
+if [[ -z "$LEVEL" && -z "$MAX_REQUESTS" && -z "$MAX_SECONDS" ]]; then
+  if [[ "$INTERACTIVE" == true || -t 0 ]]; then
+    echo ""
+    echo -e "${CYAN}======================================================${NC}"
+    echo -e "${CYAN}   Selezione Livello di Profondità Benchmark          ${NC}"
+    echo -e "${CYAN}======================================================${NC}"
+    echo -e "  Modello selezionato: ${GREEN}${MODEL}${NC}"
+    echo -e "  Classe rilevata:     ${YELLOW}${MODEL_CLASS_DESCRIPTION}${NC}"
+    echo ""
+    echo -e "  ${GREEN}1) Livello 1 — Smoke Test / Rapido (~1-3 min)${NC}"
+    echo "     Verifica connettività, funzionamento dell'endpoint e stima iniziale."
+    echo "     Ideale per controlli rapidi post-aggiornamento o cambio modello."
+    echo "     [Calibrato per modello: max ${TBL_REQ_L1} req, max ${TBL_SEC_L1}s per step, sweep compatto ${TBL_RATE_L1} step]"
+    echo ""
+    echo -e "  ${GREEN}2) Livello 2 — Standard Attendibile [CONSIGLIATO] (~3-8 min)${NC}"
+    echo "     Sweet spot statistico: media, p50 e p90 stabili con varianza <3%."
+    echo "     Fornisce metriche affidabili evitando timeout prematurely su throughput."
+    echo "     [Calibrato per modello: max ${TBL_REQ_L2} req, max ${TBL_SEC_L2}s per step, sweep ottimizzato ${TBL_RATE_L2} step]"
+    echo ""
+    echo -e "  ${GREEN}3) Livello 3 — Approfondito / Stress Test (~10-25 min)${NC}"
+    echo "     Analisi estesa code di latenza (p95, p99) e tenuta termica continua."
+    echo "     [Calibrato per modello: max ${TBL_REQ_L3} req, max ${TBL_SEC_L3}s per step, sweep completo ${TBL_RATE_L3} step]"
+    echo ""
+    read -rp "Seleziona livello di benchmark [1-3] (default: 2): " LEVEL_INPUT
+    LEVEL="${LEVEL_INPUT:-2}"
+  else
+    LEVEL="2"
+  fi
+elif [[ -z "$LEVEL" ]]; then
+  # Se l'utente ha già specificato limiti custom come --max-requests o --max-seconds, etichetta come Custom
+  LEVEL="custom"
+fi
+
+# Mappatura parametri in base al livello selezionato e alla tabella modello
+case "$LEVEL" in
+  1)
+    LVL_LABEL="Livello 1 (Smoke Test / Rapido, ${MODEL_CLASS_DESCRIPTION})"
+    PRESET_MAX_SEC=$TBL_SEC_L1
+    PRESET_MAX_REQ=$TBL_REQ_L1
+    PRESET_RATE=$TBL_RATE_L1
+    ;;
+  3)
+    LVL_LABEL="Livello 3 (Approfondito / Stress Test, ${MODEL_CLASS_DESCRIPTION})"
+    PRESET_MAX_SEC=$TBL_SEC_L3
+    PRESET_MAX_REQ=$TBL_REQ_L3
+    PRESET_RATE=$TBL_RATE_L3
+    ;;
+  custom)
+    LVL_LABEL="Personalizzato / Flag CLI"
+    PRESET_MAX_SEC=""
+    PRESET_MAX_REQ=""
+    PRESET_RATE=""
+    ;;
+  2|*)
+    if [[ "$LEVEL" != "2" ]]; then
+      echo -e "${YELLOW}Livello '${LEVEL}' non riconosciuto. Applicazione automatica Livello 2 (Standard).${NC}"
+    fi
+    LEVEL="2"
+    LVL_LABEL="Livello 2 (Standard Attendibile, ${MODEL_CLASS_DESCRIPTION})"
+    PRESET_MAX_SEC=$TBL_SEC_L2
+    PRESET_MAX_REQ=$TBL_REQ_L2
+    PRESET_RATE=$TBL_RATE_L2
+    ;;
+esac
+
+# Applicazione preset preservando gli override espliciti passati dall'utente
+[[ -n "$PRESET_MAX_SEC" && -z "$MAX_SECONDS" ]] && MAX_SECONDS="$PRESET_MAX_SEC"
+[[ -n "$PRESET_MAX_REQ" && -z "$MAX_REQUESTS" ]] && MAX_REQUESTS="$PRESET_MAX_REQ"
+[[ -n "$PRESET_RATE" && -z "$RATE" && "$PROFILE" == "sweep" ]] && RATE="$PRESET_RATE"
+
+# ==============================================================================
 # Normalizzazione e Costruzione Nomi Conforme a [[guidellm-report-naming-pattern]]
 # ==============================================================================
 
@@ -446,9 +653,12 @@ echo -e "${GREEN}   Riepilogo Parametri Benchmark GuideLLM             ${NC}"
 echo -e "${GREEN}======================================================${NC}"
 echo "  • Nodo Target:     ${CLEAN_NODE} (raw: ${NODE})"
 echo "  • Modello LLM:     ${MODEL} (naming: ${CLEAN_MODEL})"
+echo "  • Classe Modello:  ${MODEL_CLASS_DESCRIPTION}"
 echo "  • Memoria Host:    ${CLEAN_MEM}"
 echo "  • Backend URL:     ${BACKEND_URL}"
-echo "  • Profilo:         ${PROFILE}"
+echo "  • Livello:         ${LVL_LABEL}"
+echo "  • Profilo:         ${PROFILE} (rate/steps: ${RATE:-auto})"
+echo "  • Limiti per Step: max ${MAX_SECONDS:-illimitati}s | max ${MAX_REQUESTS:-illimitate} req"
 echo "  • Runner Utilizzato: ${RUNNER}"
 echo "  • Destinazione Output:"
 echo "      JSON: ${REPORT_JSON}"
@@ -457,6 +667,44 @@ echo "      HTML: ${REPORT_HTML}"
 echo "  • Pattern Base:    ${BASE_NAME}"
 echo -e "${GREEN}======================================================${NC}"
 echo ""
+
+# ==============================================================================
+# Funzione Pre-flight Warmup (Caricamento preventivo VRAM su Ollama / OpenAI)
+# ==============================================================================
+preflight_warmup() {
+  local target_url="$1"
+  local model_name="$2"
+  local base_url="${target_url%/v1}"
+  base_url="${base_url%/v1/}"
+  base_url="${base_url%/}"
+
+  echo -e "${YELLOW}🔥 Pre-flight warmup: verifica e caricamento modello '${model_name}' in memoria su ${NODE}...${NC}"
+
+  # Tentativo 1: API nativa Ollama /api/generate con num_predict=1 (forza allocazione VRAM e risponde al primo token)
+  local http_code
+  http_code=$(curl -s -m 120 -o /dev/null -w "%{http_code}" \
+    "${base_url}/api/generate" \
+    -H "Content-Type: application/json" \
+    -d "{\"model\": \"${model_name}\", \"prompt\": \"warmup\", \"stream\": false, \"options\": {\"num_predict\": 1}}" 2>/dev/null || echo "000")
+
+  if [[ "$http_code" == "200" ]]; then
+    echo -e "${GREEN}✅ Modello '${model_name}' pronto in memoria/VRAM.${NC}"
+    return 0
+  fi
+
+  # Tentativo 2: Fallback endpoint OpenAI-compatible /chat/completions (per vLLM o server OpenAI standard)
+  http_code=$(curl -s -m 120 -o /dev/null -w "%{http_code}" \
+    "${target_url%/}/chat/completions" \
+    -H "Content-Type: application/json" \
+    -d "{\"model\": \"${model_name}\", \"messages\": [{\"role\":\"user\",\"content\":\"hi\"}], \"max_tokens\": 1}" 2>/dev/null || echo "000")
+
+  if [[ "$http_code" == "200" ]]; then
+    echo -e "${GREEN}✅ Modello '${model_name}' pronto in memoria/VRAM (OpenAI endpoint).${NC}"
+    return 0
+  fi
+
+  echo -e "${YELLOW}⚠️ Pre-flight warmup non confermato (HTTP ${http_code}). Procedo con l'avvio...${NC}"
+}
 
 if ${RUNNER} benchmark --help >/dev/null 2>&1 || [[ "$RUNNER" == "guidellm" ]]; then
   # Sintassi GuideLLM benchmark run (versione installata)
@@ -472,6 +720,9 @@ if ${RUNNER} benchmark --help >/dev/null 2>&1 || [[ "$RUNNER" == "guidellm" ]]; 
     echo "  ${RUNNER} benchmark from-file \"${REPORT_JSON}\" --output-path \"${REPORT_CSV}\""
     exit 0
   fi
+
+  # Esecuzione probe di warmup per evitare cold-start e crash Pydantic rate=0.0
+  preflight_warmup "${BACKEND_URL}" "${MODEL}"
 
   echo -e "${BLUE}Avvio esecuzione GuideLLM (${BENCH_CMD[*]}) in corso...${NC}"
   "${BENCH_CMD[@]}"

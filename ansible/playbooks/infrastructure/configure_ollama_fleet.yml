@@ -1,0 +1,181 @@
+---
+# ==============================================================================
+# Playbook: configure_ollama_fleet.yml
+# Progetto: Homelab k8s-lab
+# Descrizione: Configurazione dichiarativa della flotta Ollama (pve3, lxc-ollama e mac)
+#              avente rete.json come Single Source of Truth.
+# ==============================================================================
+
+- name: "Configura Persistenza Kernel AMDGPU GTT/TTM (54 GiB) su PVE3"
+  hosts: 10.10.10.31
+  gather_facts: false
+  tasks:
+    - name: "Configura /etc/modprobe.d/amdgpu.conf su PVE3"
+      ansible.builtin.copy:
+        dest: /etc/modprobe.d/amdgpu.conf
+        content: |
+          # Ansible Managed - DO NOT EDIT MANUALLY
+          # 54 GiB GTT size e TTM limits per AMD Radeon 890M APU
+          options amdgpu gttsize=55296
+          options ttm pages_limit=14155776 page_pool_size=14155776
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - "Aggiorna initramfs su PVE3"
+        - "Aggiorna proxmox-boot-tool su PVE3"
+
+    - name: "Leggi /etc/kernel/cmdline attuale su PVE3"
+      ansible.builtin.slurp:
+        src: /etc/kernel/cmdline
+      register: current_cmdline_raw
+
+    - name: "Calcola e applica /etc/kernel/cmdline con parametri GTT/TTM"
+      vars:
+        base_cmdline: "{{ (current_cmdline_raw.content | b64decode | trim) | regex_replace('\\s+amdgpu\\.gttsize=\\S+', '') | regex_replace('\\s+ttm\\.pages_limit=\\S+', '') | regex_replace('\\s+ttm\\.page_pool_size=\\S+', '') }}"
+        target_cmdline: "{{ base_cmdline }} amdgpu.gttsize=55296 ttm.pages_limit=14155776 ttm.page_pool_size=14155776"
+      ansible.builtin.copy:
+        dest: /etc/kernel/cmdline
+        content: "{{ target_cmdline }}\n"
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - "Aggiorna initramfs su PVE3"
+        - "Aggiorna proxmox-boot-tool su PVE3"
+
+  handlers:
+    - name: "Aggiorna initramfs su PVE3"
+      ansible.builtin.command: update-initramfs -u -k all
+
+    - name: "Aggiorna proxmox-boot-tool su PVE3"
+      ansible.builtin.command: proxmox-boot-tool refresh
+
+
+- name: "Configura Ollama su lxc-ollama (PVE3 CT 300)"
+  hosts: lxc-ollama
+  gather_facts: false
+  tasks:
+    - name: "Carica Single Source of Truth (rete.json)"
+      ansible.builtin.set_fact:
+        network_registry: "{{ lookup('file', playbook_dir + '/../../../rete.json') | from_json }}"
+      delegate_to: localhost
+      run_once: true
+
+    - name: "Estrai variabili d'ambiente per lxc-ollama"
+      ansible.builtin.set_fact:
+        ollama_env: >-
+          {{
+            (network_registry.nodi | selectattr('id', 'equalto', 'lxc-ollama') | first).services
+            | selectattr('id', 'equalto', 'ollama') | map(attribute='env') | first
+          }}
+
+    - name: "Assicura directory systemd drop-in per ollama"
+      ansible.builtin.file:
+        path: /etc/systemd/system/ollama.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: "Applica configurazione dichiarativa override.conf"
+      ansible.builtin.template:
+        src: templates/ollama.override.conf.j2
+        dest: /etc/systemd/system/ollama.service.d/override.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - "Reload systemd daemon (lxc-ollama)"
+        - "Restart ollama service (lxc-ollama)"
+
+    - name: "Esegui flush immediato degli handler se modificato"
+      ansible.builtin.meta: flush_handlers
+
+    - name: "Health Check API su lxc-ollama"
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:11434/api/version"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: health_lxc
+      retries: 5
+      delay: 2
+      until: health_lxc.status == 200
+      when: not ansible_check_mode
+
+    - name: "Riepilogo stato lxc-ollama"
+      ansible.builtin.debug:
+        msg: "lxc-ollama attivo e rispondente: versione {{ health_lxc.json.version | default((health_lxc.content | default('{}') | from_json).version | default('N/A')) }}"
+      when: not ansible_check_mode
+
+  handlers:
+    - name: "Reload systemd daemon (lxc-ollama)"
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: "Restart ollama service (lxc-ollama)"
+      ansible.builtin.systemd:
+        name: ollama
+        state: restarted
+
+
+- name: "Configura Ollama su mac (Localhost)"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: "Carica Single Source of Truth (rete.json)"
+      ansible.builtin.set_fact:
+        network_registry: "{{ lookup('file', playbook_dir + '/../../../rete.json') | from_json }}"
+
+    - name: "Estrai variabili d'ambiente per mac studio"
+      ansible.builtin.set_fact:
+        ollama_env: >-
+          {{
+            (network_registry.nodi | selectattr('id', 'equalto', 'mac studio') | first).services
+            | selectattr('id', 'equalto', 'ollama') | map(attribute='env') | first
+          }}
+
+    - name: "Verifica esistenza cartella LaunchAgents"
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/Library/LaunchAgents"
+        state: directory
+        mode: '0755'
+
+    - name: "Applica configurazione dichiarativa sh.brew.ollama.plist"
+      ansible.builtin.template:
+        src: templates/sh.brew.ollama.plist.j2
+        dest: "{{ lookup('env', 'HOME') }}/Library/LaunchAgents/sh.brew.ollama.plist"
+        mode: '0644'
+      vars:
+        plist_label: "sh.brew.ollama"
+      notify:
+        - "Restart ollama service (mac)"
+
+    - name: "Esegui flush immediato degli handler se modificato"
+      ansible.builtin.meta: flush_handlers
+
+    - name: "Health Check API su localhost"
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:11434/api/version"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: health_mac
+      retries: 5
+      delay: 2
+      until: health_mac.status == 200
+      when: not ansible_check_mode
+
+    - name: "Riepilogo stato mac"
+      ansible.builtin.debug:
+        msg: "mac (localhost) attivo e rispondente: versione {{ health_mac.json.version | default((health_mac.content | default('{}') | from_json).version | default('N/A')) }}"
+      when: not ansible_check_mode
+
+  handlers:
+    - name: "Restart ollama service (mac)"
+      ansible.builtin.shell: |
+        launchctl bootout gui/$(id -u)/sh.brew.ollama 2>/dev/null || true
+        sleep 1
+        launchctl bootstrap gui/$(id -u) {{ lookup('env', 'HOME') }}/Library/LaunchAgents/sh.brew.ollama.plist

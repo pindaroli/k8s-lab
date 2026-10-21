@@ -23,7 +23,7 @@ L'infrastruttura è governata da tre entrypoint principali che eseguono la conve
 | Modalità Target | Script Eseguibile | Mattoni Atomici Eseguiti | Storage TrueNAS | Compute (PVE + K8s) | Notifiche Start & Stop |
 | :--- | :--- | :--- | :---: | :---: | :--- |
 | **Full Lab (Tutto Attivo)** | [`lab_mode_full.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_full.sh) | 1. `ensure_storage_on`<br>2. `ensure_compute_on` | **ONLINE** (ZFS sani) | **ONLINE** (3 nodi Ready, uncordoned) | Start: Telegram<br>Stop: TG + Email HTML |
-| **Eco Lab (Solo TrueNAS)** | [`lab_mode_eco.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_eco.sh)<br>*(alias: `lab_mode_echo.sh`)* | 1. `ensure_storage_on`<br>2. `ensure_compute_off` | **ONLINE** (Servarr 24/7) | **OFFLINE** (PVE e K8s spenti) | Start: Telegram<br>Stop: TG + Email HTML |
+| **Eco Lab (Solo TrueNAS)** | [`lab_mode_eco.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_eco.sh) | 1. `ensure_storage_on`<br>2. `ensure_compute_off` | **ONLINE** (Servarr 24/7) | **OFFLINE** (PVE e K8s spenti) | Start: Telegram<br>Stop: TG + Email HTML |
 | **Rack Dark (Tutto Spento)** | [`lab_mode_off.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_off.sh) | 1. `ensure_compute_off`<br>2. `ensure_storage_off` | **OFFLINE** (Bare metal spento) | **OFFLINE** (PVE e K8s spenti) | Start: Telegram<br>Stop: TG + Email HTML |
 
 ---
@@ -56,7 +56,6 @@ Porta l'intero rack a regime operativo completo.
 Mantiene attivo solo lo storage server TrueNAS SCALE per i carichi leggeri (Servarr, download qBittorrent, streaming Jellyfin), spegnendo gli hypervisor di calcolo Proxmox VE e Kubernetes per ridurre consumi e usura.
 ```bash
 ./scripts/infrastructure/lab_mode_eco.sh
-# oppure: ./scripts/infrastructure/lab_mode_echo.sh
 ```
 **Regola di Sequenza**:
 1. Esegue `ensure_storage_on.yml` per garantire che TrueNAS sia operativo e sano (WoL solo se era spento).

@@ -1,6 +1,12 @@
 config:
+  providers:
+    litellm:
+      base_url: http://litellm.litellm.svc.cluster.local:4000/v1
+      key_env: LITELLM_API_KEY
+      discover_models: true
   model:
-    provider: deepseek
+    provider: litellm
+    default: big-chat
   terminal:
     backend: local
 

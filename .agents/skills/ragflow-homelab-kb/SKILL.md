@@ -9,13 +9,15 @@ tags:
   - opnsense
   - truenas
   - hardware
+  - telecomando
+  - why-evo
   - knowledge-base
 ---
 
 # RAGFlow Homelab Knowledge Base (`ragflow-homelab-kb`)
 
 ## Overview
-This skill provides automated, intelligent retrieval across all official technical documentation and hardware manuals indexed in **RAGFlow** (`https://ragflow-internal.pindaroli.org`). It acts as the primary knowledge authority for the homelab's core operating systems (OPNsense, TrueNAS SCALE) and physical infrastructure.
+This skill provides automated, intelligent retrieval across all official technical documentation and hardware manuals indexed in **RAGFlow** (`https://ragflow-internal.pindaroli.org`). It acts as the primary knowledge authority for the homelab's core operating systems (OPNsense, TrueNAS SCALE) and physical infrastructure/devices.
 
 ---
 
@@ -27,7 +29,7 @@ Always map the user's intent to the appropriate RAGFlow dataset (or combination 
 | :--- | :--- | :---: |
 | 🛡️ **OPNsense Firewall** | Stateful packet filter rules, Outbound & Port Forward NAT, policy-based routing, Multi-WAN, Kea DHCP (subnets, reservations), Unbound DNS (overrides, DNSBL, dot), WireGuard & OpenVPN tunnels, HA/CARP failover, MVC API endpoints, official plugins. | `["opnsense"]` |
 | 💾 **TrueNAS SCALE** | ZFS pool topologies (RAIDZ2, mirror, stripe), dataset creation, compression, recordsize, quotas, POSIX & NFSv4 ACL permissions, NFS exports (`maproot`, `all_squash`), SMB shares, snapshot tasks, replication tasks, cloud sync, SCALE apps. | `["truenas"]` |
-| 🖥️ **Physical Hardware** | Proxmox VE server motherboards (PVE1, PVE2, PVE3), Extreme Networks switch port matrices & cabling, IPMI/BMC default settings & pinouts, SAS/SATA HBAs, disk backplanes, UPS / NUT power specs & serial pinouts, thermal limits. | `["k8s-lab"]` |
+| 🖥️ **Physical Hardware & Devices** | Proxmox VE server motherboards (PVE1, PVE2, PVE3), Extreme Networks switch port matrices & cabling, IPMI/BMC default settings & pinouts, SAS/SATA HBAs, disk backplanes, UPS / NUT power specs & serial pinouts, thermal limits, telecomando WHY EVO (manuali programmazione, duplicazione codici/rolling code, frequenze). | `["k8s-lab"]` |
 | 🔀 **Cross-Domain Scenarios** | Queries spanning multiple systems (e.g., configuring a TrueNAS NFS export and the corresponding OPNsense inter-VLAN firewall rules). | `["truenas", "opnsense"]` or `["k8s-lab", "truenas"]` |
 
 ---
@@ -43,7 +45,9 @@ Activate this skill and query RAGFlow (`ragflow_retrieval_by_name`) when:
    - The user asks for recommended ZFS dataset properties (e.g., recordsize for specific workloads, sync settings), NFS/SMB permission architectures, or backup/replication task setups on TrueNAS SCALE 25.10.
 3. **Physical Hardware Specifications & Datasheets**:
    - Questions regarding motherboard pinouts, PCIe slot bifurcation/lane distribution, switch console baud rates, jumper configurations, power draw, or physical cabling.
-4. **Local Repository Fallback**:
+4. **Telecomando WHY EVO**:
+   - Qualsiasi menzione o domanda su "telecomando why evo", "why evo" (procedure di apprendimento, duplicazione radiocomando, rolling code, frequenze o tasti) $\rightarrow$ attiva immediatamente la ricerca sul dataset `k8s-lab`.
+5. **Local Repository Fallback**:
    - When local configuration files (`rete.json`, `storage.json`, `ansible/`, `wiki/`) specify *what* is deployed, but lack detailed *how-to* instructions, technical specifications, or official vendor guidelines.
 
 ---
