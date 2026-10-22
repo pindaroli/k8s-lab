@@ -1,1 +1,0 @@
-# arrstack-mcp test package

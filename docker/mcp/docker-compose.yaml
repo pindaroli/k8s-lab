@@ -342,7 +342,7 @@ services:
   # ============================================================================
   arrstack-mcp:
     container_name: mcp-arrstack
-    image: ghcr.io/pindaroli/arrstack-mcp:1.2.0
+    image: ghcr.io/pindaroli/arrstack-mcp:1.3.0
     restart: unless-stopped
     env_file: .env
     environment:
@@ -358,8 +358,7 @@ services:
       - QBT_PASS=${ARRSTACK_QBT_PASS}
       - BITMAGNET_GRAPHQL_URL=http://10.10.20.50:3333/graphql
       - BITMAGNET_TIMEOUT=30.0
-      - MCP_ALLOWED_HOSTS=*
-      - MCP_DNS_REBINDING_PROTECTION=false
+      - MCP_ALLOWED_HOSTS=10.10.20.50:*,127.0.0.1:*,localhost:*
     command: ["--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8080"]
     networks:
       - mcp-network
@@ -372,7 +371,7 @@ services:
       - "traefik.http.services.mcp-arrstack.loadbalancer.server.port=8080"
       - "traefik.http.services.mcp-arrstack.loadbalancer.responseforwarding.flushinterval=-1ms"
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2)\" || exit 1"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/.well-known/mcp-server-card.json', timeout=2)\" || exit 1"]
       interval: 30s
       timeout: 5s
       start_period: 10s

@@ -21,11 +21,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Read Version
+      - name: Read Version and Upstream Ref
         id: version
         run: |
           VERSION=$(cat ./docker/mcp/in-house/arrstack-mcp/VERSION | tr -d ' \t\n\r')
+          UPSTREAM_REF=$(cat ./docker/mcp/in-house/arrstack-mcp/UPSTREAM_REF | tr -d ' \t\n\r')
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "upstream_ref=${UPSTREAM_REF}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -51,6 +53,8 @@ jobs:
         with:
           context: ./docker/mcp/in-house/arrstack-mcp
           file: ./docker/mcp/in-house/arrstack-mcp/Dockerfile
+          build-args: |
+            ARRSTACK_REF=${{ steps.version.outputs.upstream_ref }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
