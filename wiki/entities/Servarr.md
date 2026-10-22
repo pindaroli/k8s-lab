@@ -1,6 +1,6 @@
 ---
 title: "Servarr Stack & qBittorrent"
-last_updated: "2026-09-02"
+last_updated: "2026-10-22"
 confidence: "High"
 tags:
   - "#app"
@@ -83,6 +83,7 @@ Per superare la dipendenza dai tracker pubblici soggetti a blocchi DNS, sequestr
 - **Porte ed Endpoint**:
   - `3333`: WebUI e Torznab API (`http://10.10.20.50:3333/webui/torrents`, `http://bitmagnet:3333/torznab`).
   - `3334`: Porta TCP/UDP per il crawling e l'interrogazione della rete BitTorrent DHT globale (outbound stateful).
+- **GraphQL API & SDL Schema**: endpoint `http://10.10.20.50:3333/graphql`. Lo Schema Definition Language (SDL) completo di BitMagnet è estratto e persistito dichiarativamente nel repository in `servarr/bitmagnet/schema.graphql`, unitamente ai sorgenti modulari `servarr/bitmagnet/schema/` e alle operazioni client (queries, mutazioni, frammenti) in `servarr/bitmagnet/operations/`.
 - **Integrazione Prowlarr**: indicizzatore Torznab custom integrato via API REST (`baseUrl: http://bitmagnet:3333/torznab`, ID 15) con mappatura nativa per Film (2000), Serie TV (5000), Musica (3000), PC/Software (4000) ed eBook (7000).
 - **Arricchimento Metadati**: integrazione API TMDb con chiave cifrata via SOPS (`secrets-sops/tmdb-credentials.enc.yaml`), che permette la classificazione automatica e l'arricchimento con metadati e codici `tmdbid` per il matching trasparente su Radarr.
 - **Piano di Riferimento**: [[bitmagnet-truenas-docker-integration]].

@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 Pianificato: Estensione GraphQL Bitmagnet per arrstack-mcp (v1.2.0) [[arrstack-mcp-bitmagnet-graphql-extension]]
+- [ ] Fase 1: Bonifica duplicati obsoleti (`server.py`, `ard.py` nella root di `arrstack-mcp`), integrazione tool `bitmagnet_simple_search` e `bitmagnet_complex_search` in `src/server.py` e `src/ard.py`, e unit test `tests/test_bitmagnet.py`
+- [ ] Fase 2: Versioning `1.2.0`, aggiornamento dichiarativo `docker/mcp/docker-compose.yaml` e build/push immagine GHCR via GitHub Actions (`.github/workflows/docker-arrstack-mcp.yml`)
+- [ ] Fase 3: Rollout GitOps su TrueNAS SCALE (`10.10.20.50`) e validazione E2E JSON-RPC su Traefik (`http://10.10.20.50:8100/arrstack/mcp`)
+- [ ] Fase 4: Consolidamento documentale ([[MCP_Platform]], [[Servarr]]), chiusura piano e rigenerazione contesto wiki (`build_wiki_context.py`)
+
 ## 🚀 [x] ✅ COMPLETATO: Installazione LiteLLM Proxy su K8s con Routing Mac Studio / lxc-ollama e Integrazione Hermes [[litellm-proxy-kubernetes-deployment]]
 - [x] Fase 1: Raccolta dati (risorse nodi, DNS Unbound, versione chart upstream) ✅
 - [x] Fase 1b: Allineamento dei 5 modelli sui due backend (pull `gemma4:31b` su Mac, `qwen2.5vl:7b-q4_K_M` su lxc-ollama) ✅
