@@ -124,7 +124,7 @@ Lo stack Docker Compose in `/mnt/stripe/truenas-docker/mcp/` ospita i 12 server 
 | **`kef`** | `ghcr.io/pindaroli/kef-mcp:1.0.0` | Nativo FastMCP Streamable HTTP `/mcp` | **`8100`** | `http://10.10.20.50:8100/kef/mcp` | Casse KEF LSX II LT (`10.10.20.210`) |
 | **`nowaikit`** | `ghcr.io/pindaroli/nowaikit-mcp:4.15.1-r1` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/nowaikit/mcp` | ServiceNow Cloud REST API (`dev395227.service-now.com`) |
 | **`github-mcp-server`** | `ghcr.io/pindaroli/github-mcp-server:0.7.0-r1` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/github/mcp` | GitHub Cloud REST/GraphQL API (`api.github.com`) |
-| **`arrstack-mcp`** | `ghcr.io/pindaroli/arrstack-mcp:1.1.0` | Nativo FastMCP Streamable HTTP `/mcp` | **`8100`** | `http://10.10.20.50:8100/arrstack/mcp` | Radarr, Lidarr, Prowlarr, qBittorrent (53 tool: indexers, apps, categories, trackers) |
+| **`arrstack-mcp`** | `ghcr.io/pindaroli/arrstack-mcp:1.2.0` | Nativo FastMCP Streamable HTTP `/mcp` | **`8100`** | `http://10.10.20.50:8100/arrstack/mcp` | Radarr, Lidarr, Prowlarr, qBittorrent, Bitmagnet (55 tool: indexers, apps, categories, trackers, GraphQL DHT search) |
 | **`ragflow-local`** | `ghcr.io/pindaroli/ragflow-mcp:1.0.0` | Streamable HTTP `/mcp` (Supergateway) | **`8100`** | `http://10.10.20.50:8100/ragflow/mcp` | RAGFlow Server (`https://ragflow-internal.pindaroli.org`) |
 | **`meross`** | `ghcr.io/pindaroli/meross-mcp:0.1.2` | Dual Gateway (FastAPI REST + FastMCP) | **`8100`** | `http://10.10.20.50:8100/meross/mcp` | Meross Cloud IoT API + REST Homepage Widget (`/meross/api/v1/...`) |
 

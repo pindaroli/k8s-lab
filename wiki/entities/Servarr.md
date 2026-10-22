@@ -48,8 +48,8 @@ La gestione musicale è affidata a una singola istanza Lidarr.
 *(Nota: L'architettura multi-istanza con `lidarr-classic` e `jellyfin-classic` è stata dismessa per semplificare la gestione).*
 
 ## 4. MCP Server & Automazione (arrstack-mcp)
-Lo stack Servarr è governato tramite il server MCP `arrstack-mcp`, migrato su TrueNAS SCALE bare-metal (`10.10.20.50:8110/mcp`) tramite [[arrstack-mcp-truenas-docker-migration]] e configurato centralmente in `~/.gemini/antigravity/mcp_config.json`.
-- **Servizi Abilitati**: Radarr, Lidarr, Prowlarr, qBittorrent (40 tool esposti).
+Lo stack Servarr è governato tramite il server MCP `arrstack-mcp` (versione `1.2.0`), ospitato su TrueNAS SCALE bare-metal (`10.10.20.50:8100/arrstack/mcp` dietro Traefik Umbrella Gateway) e configurato centralmente in `~/.gemini/antigravity/mcp_config.json`.
+- **Servizi Abilitati**: Radarr, Lidarr, Prowlarr, qBittorrent, Bitmagnet (55 tool esposti: gestione librerie multimediali, indexer, client download e ricerca full-text/multi-filtro sul crawler DHT decentralizzato tramite l'endpoint GraphQL di Bitmagnet con `bitmagnet_simple_search` e `bitmagnet_complex_search`).
 - **Prompt MCP 2.0 (Template Operativi)**:
   - `audit_downloads`: Ispezione stato download, rilevamento torrent in stallo o con errori, calcolo spazio disco libero e riassunto code.
   - `search_and_grab`: Workflow guidato di ricerca multimediale (film/musica) tramite Prowlarr/Radarr/Lidarr e accodamento automatico su qBittorrent.

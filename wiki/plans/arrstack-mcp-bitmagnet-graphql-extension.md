@@ -1,7 +1,7 @@
 ---
 title: "Piano: Estensione GraphQL Bitmagnet per arrstack-mcp (v1.2.0)"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-22
 tags:
@@ -16,10 +16,15 @@ tags:
 
 # Piano: Estensione GraphQL Bitmagnet per arrstack-mcp (v1.2.0)
 
+> [!IMPORTANT]
+> **Scopo di questo piano**: Fornire una specifica operativa esaustiva, priva di ambiguità e con snippet di codice, diff e comandi esatti pronti per essere eseguiti in autonomia anche da un modello con capacità di ragionamento ridotta (es. Gemini Flash / Flash Lite).
+
+---
+
 ## 🎯 Obiettivo
-Estendere il server MCP in-house **`arrstack-mcp`** (`docker/mcp/in-house/arrstack-mcp/src/server.py`, esposto tramite Traefik Umbrella Gateway su `http://10.10.20.50:8100/arrstack/mcp`) integrando il motore di ricerca **GraphQL di Bitmagnet** (`http://10.10.20.50:3333/graphql`) tramite due nuovi tool asincroni validati con **Pydantic**:
-1. **`bitmagnet_simple_search`**: Ricerca full-text rapida con filtro opzionale per `contentType`, ordinata per `seeders` decrescenti.
-2. **`bitmagnet_complex_search`**: Ricerca avanzata multi-filtro tramite faccette GraphQL (`contentType`, `videoResolution`, `videoSource`, `language`, `releaseYear`, `torrentTag`), filtri di post-processing Python (`minSeeders`, `videoCodecs`, limite file `maxFilesPerTorrent=25`), ordinamento personalizzabile, paginazione e conteggio aggregazioni.
+Estendere il microservizio MCP in-house **`arrstack-mcp`** (ospitato in `docker/mcp/in-house/arrstack-mcp/` ed eseguito su TrueNAS SCALE bare-metal `10.10.20.50:8100/arrstack/mcp` dietro Traefik Umbrella Gateway) aggiungendo due nuovi tool asincroni basati su **FastMCP**, **Pydantic** e **httpx** per interrogare l'endpoint GraphQL nativo di **Bitmagnet** (`http://10.10.20.50:3333/graphql`):
+1. **`bitmagnet_simple_search`**: Ricerca full-text rapida per keyword con filtro opzionale per `contentType`, ordinata per seeders decrescenti.
+2. **`bitmagnet_complex_search`**: Ricerca avanzata multi-filtro con faccette GraphQL native (`contentType`, `videoResolution`, `videoSource`, `releaseYear`, `language`, `torrentTag`), filtri di post-processing Python (`minSeeders`, `videoCodecs`, limite file `maxFilesPerTorrent=25`), paginazione, ordinamento personalizzato e aggregazioni conteggiate.
 
 ---
 
@@ -48,21 +53,100 @@ Dall'introspezione diretta dello schema GraphQL sull'istanza live di Bitmagnet `
 
 ---
 
-## 2. Architettura di Integrazione in `arrstack-mcp`
+## 2. Dettaglio Operativo e Codice Pronto per Modelli Leggeri
 
-### 2.1 Configurazione e Service Discovery (`SERVICE_CONFIG` & `ard.py`)
-- **Variabili d'ambiente supportate**:
-  - `BITMAGNET_GRAPHQL_URL` (prioritaria, es. `http://10.10.20.50:3333/graphql`) e fallback su `BITMAGNET_URL` (se configurata come base URL `http://10.10.20.50:3333`, aggiunge automaticamente `/graphql`).
-  - `BITMAGNET_TIMEOUT` (default `30.0` secondi).
-- **Registrazione in `SERVICE_CONFIG` (`src/server.py`)**:
-  - `"bitmagnet": ("Bitmagnet", BITMAGNET_GRAPHQL_URL, "bitmagnet_")`
-  - Garantisce la piena compatibilità con `ENABLED_SERVICES`, `--list-services`, `--setup` e la rimozione dinamica dei tool non abilitati (`_configure_service_tools()`).
-- **Registrazione in `src/ard.py`**:
-  - Aggiunta di `"bitmagnet": "search the Bitmagnet DHT index for 4K BluRay or FLAC torrents"` in `_SERVICE_QUERIES` e inserimento in `_QUERY_PRIORITY` per la generazione conforme del manifesto `ai-catalog.json`.
+### FASE 1: Bonifica Directory e Dipendenze
 
-### 2.2 Modelli Pydantic, Query SDL e Tool Asincroni (`src/server.py`)
+#### Passo 1.1: Eliminazione dei file obsoleti duplicati
+Comando:
+```bash
+rm -f /Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/server.py /Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/ard.py
+```
+Verifica:
+```bash
+ls -la /Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/
+```
 
+#### Passo 1.2: Aggiornamento di `requirements.txt`
+File: `/Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/requirements.txt`
+```diff
+--- requirements.txt
++++ requirements.txt
+@@ -2,3 +2,4 @@
+ httpx>=0.27.0
+ starlette>=0.38.0
+ uvicorn>=0.30.0
++pydantic>=2.0.0
+```
+
+#### Passo 1.3: Aggiornamento di `VERSION`
+File: `/Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/VERSION`
+Contenuto: `1.2.0`
+
+#### Passo 1.4: Correzione del path di import in `tests/conftest.py`
+File: `/Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/tests/conftest.py`
+```diff
+--- conftest.py
++++ conftest.py
+@@ -3,4 +3,4 @@
+ import pytest
+ 
+-# Add parent directory (docker/mcp/in-house/arrstack-mcp) to sys.path so server.py can be imported
+-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
++# Add src directory (docker/mcp/in-house/arrstack-mcp/src) to sys.path so server.py can be imported
++sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+```
+
+---
+
+### FASE 2: Integrazione Codice in `src/ard.py` e `src/server.py`
+
+#### Passo 2.1: Aggiornamento di `src/ard.py`
+File: `/Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/src/ard.py`
+In `_SERVICE_QUERIES`:
 ```python
+    "qbittorrent": "what torrents are downloading right now",
+    "bitmagnet": "search the Bitmagnet DHT index for 4K BluRay or FLAC torrents",
+    "sabnzbd": "pause my usenet download queue",
+```
+In `_QUERY_PRIORITY`:
+```python
+_QUERY_PRIORITY = [
+    "radarr", "sonarr", "qbittorrent", "bitmagnet", "romm", "lidarr",
+    "jellyfin", "gamevault", "prowlarr", "sabnzbd", "rdtclient", "bookshelf",
+]
+```
+
+#### Passo 2.2: Aggiornamento di `src/server.py`
+File: `/Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/src/server.py`
+
+1. **Imports** (aggiungere in testa a `src/server.py` subito dopo gli import standard esistenti):
+```python
+from typing import Optional, List, Literal, Dict, Any
+from pydantic import BaseModel, Field
+```
+
+2. **Configurazione variabili d'ambiente** (aggiungere subito dopo il blocco di configurazione `QBT_PASS` / `QBT_URL`):
+```python
+BITMAGNET_GRAPHQL_URL = os.environ.get("BITMAGNET_GRAPHQL_URL", "").rstrip("/")
+if not BITMAGNET_GRAPHQL_URL:
+    bitmagnet_base = os.environ.get("BITMAGNET_URL", "").rstrip("/")
+    if bitmagnet_base:
+        BITMAGNET_GRAPHQL_URL = f"{bitmagnet_base}/graphql" if not bitmagnet_base.endswith("/graphql") else bitmagnet_base
+BITMAGNET_TIMEOUT = float(os.environ.get("BITMAGNET_TIMEOUT", "30.0"))
+```
+
+3. **Mappa `SERVICE_CONFIG`** (aggiungere la chiave `"bitmagnet"` all'interno del dizionario `SERVICE_CONFIG` esistente):
+```python
+    "bitmagnet": ("Bitmagnet", BITMAGNET_GRAPHQL_URL, "bitmagnet_"),
+```
+
+4. **Nuova sezione Tool Bitmagnet** (prima di `# ── MCP Prompts ──`):
+```python
+# ════════════════════════════════════════════════════════════════
+#  Bitmagnet Tools (GraphQL DHT & Torrent Search Engine)
+# ════════════════════════════════════════════════════════════════
+
 ContentTypeLiteral = Literal[
     "movie", "tv_show", "music", "ebook", "comic",
     "audiobook", "game", "software", "xxx", "null"
@@ -96,24 +180,458 @@ class OrderByInput(BaseModel):
         default=True,
         description="Se True, ordina in modo decrescente."
     )
+
+
+_BITMAGNET_SIMPLE_SEARCH_QUERY = """
+query SimpleTorrentSearch($input: TorrentContentSearchQueryInput!) {
+  torrentContent {
+    search(input: $input) {
+      items {
+        id
+        infoHash
+        title
+        contentType
+        seeders
+        leechers
+        publishedAt
+        torrent {
+          name
+          size
+          magnetUri
+          filesCount
+        }
+      }
+    }
+  }
+}
+"""
+
+_BITMAGNET_COMPLEX_SEARCH_QUERY = """
+query ComplexTorrentSearch($input: TorrentContentSearchQueryInput!) {
+  torrentContent {
+    search(input: $input) {
+      totalCount
+      hasNextPage
+      items {
+        id
+        infoHash
+        title
+        releaseGroup
+        contentType
+        languages {
+          id
+          name
+        }
+        videoResolution
+        videoSource
+        videoCodec
+        video3d
+        videoModifier
+        seeders
+        leechers
+        publishedAt
+        torrent {
+          name
+          size
+          magnetUri
+          filesCount
+          tagNames
+          files {
+            index
+            path
+            size
+          }
+        }
+        content {
+          title
+          releaseYear
+          overview
+          collections {
+            name
+            type
+          }
+        }
+      }
+      aggregations {
+        contentType { value count }
+        videoResolution { value count }
+        videoSource { value count }
+        releaseYear { value count }
+        language { value label count }
+      }
+    }
+  }
+}
+"""
+
+
+def _bitmagnet_enrich_items(
+    items: List[Dict[str, Any]],
+    min_seeders: Optional[int] = None,
+    video_codecs: Optional[List[str]] = None,
+    max_files_per_torrent: int = 25,
+) -> List[Dict[str, Any]]:
+    """Filtra per min_seeders e video_codecs, calcola sizeFormatted e limita i file restituiti."""
+    processed = []
+    allowed_codecs = {c.lower() for c in video_codecs} if video_codecs else None
+
+    if allowed_codecs:
+        if "x265" in allowed_codecs:
+            allowed_codecs.add("h265")
+        if "h265" in allowed_codecs:
+            allowed_codecs.add("x265")
+        if "x264" in allowed_codecs:
+            allowed_codecs.add("h264")
+        if "h264" in allowed_codecs:
+            allowed_codecs.add("x264")
+
+    for item in items:
+        seeders = item.get("seeders") or 0
+        if min_seeders is not None and seeders < min_seeders:
+            continue
+
+        if allowed_codecs:
+            codec = (item.get("videoCodec") or "").strip().lower()
+            if not codec or codec not in allowed_codecs:
+                continue
+
+        torrent = item.get("torrent")
+        if isinstance(torrent, dict):
+            if torrent.get("size") is not None:
+                torrent["sizeFormatted"] = _format_size(torrent["size"])
+
+            files = torrent.get("files")
+            if isinstance(files, list) and len(files) > 0:
+                total_files = len(files)
+                for f in files[:max_files_per_torrent]:
+                    if isinstance(f, dict) and f.get("size") is not None:
+                        f["sizeFormatted"] = _format_size(f["size"])
+                if total_files > max_files_per_torrent:
+                    torrent["files"] = files[:max_files_per_torrent]
+                    torrent["filesTruncated"] = True
+                    torrent["filesTotalCount"] = total_files
+
+        processed.append(item)
+    return processed
+
+
+async def _bitmagnet_execute_graphql(query: str, variables: Dict[str, Any]) -> Dict[str, Any]:
+    """Esegue la chiamata POST all'endpoint GraphQL di Bitmagnet con gestione errori sanitizzata."""
+    if not BITMAGNET_GRAPHQL_URL:
+        raise ValueError("Bitmagnet non è configurato. Impostare BITMAGNET_GRAPHQL_URL o BITMAGNET_URL.")
+
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    async with httpx.AsyncClient(timeout=BITMAGNET_TIMEOUT, verify=False) as client:
+        response = await client.post(
+            BITMAGNET_GRAPHQL_URL,
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        response.raise_for_status()
+        payload = response.json()
+
+        if "errors" in payload and payload["errors"]:
+            error_messages = "; ".join(err.get("message", str(err)) for err in payload["errors"])
+            raise RuntimeError(f"Errore GraphQL da Bitmagnet: {error_messages}")
+
+        return payload.get("data", {})
+
+
+@mcp.tool()
+async def bitmagnet_simple_search(
+    query: str = Field(..., description="Stringa di ricerca full-text (titolo, autore, album, software o infoHash)."),
+    contentType: Optional[ContentTypeLiteral] = Field(None, description="Filtra opzionalmente per tipo principale di contenuto."),
+    limit: int = Field(10, ge=1, le=50, description="Numero massimo di risultati da restituire (default: 10, max: 50).")
+) -> str:
+    """Esegue una ricerca testuale rapida su Bitmagnet per trovare torrent e contenuti multimediali tramite parole chiave. Ideale per query veloci con filtro opzionale sulla categoria."""
+    if not BITMAGNET_GRAPHQL_URL:
+        return "Bitmagnet non è configurato. Impostare BITMAGNET_GRAPHQL_URL o BITMAGNET_URL."
+
+    input_vars: Dict[str, Any] = {
+        "queryString": query,
+        "limit": limit,
+        "orderBy": [{"field": "seeders", "descending": True}]
+    }
+
+    if contentType:
+        input_vars["facets"] = {"contentType": {"filter": [contentType]}}
+
+    try:
+        data = await _bitmagnet_execute_graphql(_BITMAGNET_SIMPLE_SEARCH_QUERY, {"input": input_vars})
+        search_res = data.get("torrentContent", {}).get("search", {})
+        items = _bitmagnet_enrich_items(search_res.get("items", []))
+        return json.dumps({"count": len(items), "items": items}, indent=2, ensure_ascii=False)
+    except Exception as error:
+        logger.error("bitmagnet_simple_search failed: %s", error)
+        return json.dumps({"error": str(error)}, indent=2, ensure_ascii=False)
+
+
+@mcp.tool()
+async def bitmagnet_complex_search(
+    queryString: Optional[str] = Field(None, description="Query di ricerca testuale full-text."),
+    contentTypes: Optional[List[ContentTypeLiteral]] = Field(None, description="Elenco dei tipi di contenuto da includere (es. ['movie', 'music'])."),
+    videoResolutions: Optional[List[VideoResolutionLiteral]] = Field(None, description="Filtra per risoluzioni video (es. ['V1080p', 'V2160p'])."),
+    videoSources: Optional[List[VideoSourceLiteral]] = Field(None, description="Filtra per sorgente video (es. ['BluRay', 'WEBDL', 'WEB', 'HDTV'])."),
+    videoCodecs: Optional[List[VideoCodecLiteral]] = Field(None, description="Filtra per codec video (es. ['x265', 'AV1', 'H264'])."),
+    languages: Optional[List[str]] = Field(None, description="Codici lingua ISO 639-1 (es. ['it', 'en'])."),
+    releaseYear: Optional[int] = Field(None, description="Anno di rilascio del contenuto."),
+    minSeeders: Optional[int] = Field(None, ge=0, description="Numero minimo di seeders attivi richiesti."),
+    tags: Optional[List[str]] = Field(None, description="Filtra per tag associati ai torrent."),
+    orderBy: Optional[OrderByInput] = Field(None, description="Criterio di ordinamento dei risultati (default: seeders desc)."),
+    limit: int = Field(20, ge=1, le=100, description="Numero di elementi per pagina (default: 20, max: 100)."),
+    page: int = Field(1, ge=1, description="Numero di pagina (a partire da 1)."),
+    includeTotalCount: bool = Field(True, description="Se True, restituisce il conteggio totale dei risultati."),
+    maxFilesPerTorrent: int = Field(25, ge=0, le=100, description="Limite massimo di file dettagliati da includere per singolo torrent per contenere i token (default: 25).")
+) -> str:
+    """Esegue una ricerca avanzata su Bitmagnet combinando full-text, faccette video (risoluzione, sorgente), lingue, anno, seeders minimi, codec, tag, paginazione e aggregazioni."""
+    if not BITMAGNET_GRAPHQL_URL:
+        return "Bitmagnet non è configurato. Impostare BITMAGNET_GRAPHQL_URL o BITMAGNET_URL."
+
+    facets: Dict[str, Any] = {
+        "contentType": {"aggregate": True},
+        "videoResolution": {"aggregate": True},
+        "videoSource": {"aggregate": True},
+        "releaseYear": {"aggregate": True},
+        "language": {"aggregate": True},
+    }
+
+    if contentTypes:
+        facets["contentType"]["filter"] = contentTypes
+    if videoResolutions:
+        facets["videoResolution"]["filter"] = videoResolutions
+    if videoSources:
+        mapped_sources = set()
+        for src in videoSources:
+            if src == "WEB":
+                mapped_sources.update(["WEBDL", "WEBRip"])
+            elif src == "HDTV":
+                mapped_sources.add("TV")
+            else:
+                mapped_sources.add(src)
+        facets["videoSource"]["filter"] = list(mapped_sources)
+    if languages:
+        facets["language"]["filter"] = languages
+    if releaseYear is not None:
+        facets["releaseYear"]["filter"] = [releaseYear]
+    if tags:
+        facets["torrentTag"] = {"filter": tags}
+
+    order_clause = (
+        [{"field": orderBy.field, "descending": orderBy.descending}]
+        if orderBy
+        else [{"field": "seeders", "descending": True}]
+    )
+
+    input_vars: Dict[str, Any] = {
+        "limit": limit,
+        "page": page,
+        "totalCount": includeTotalCount,
+        "hasNextPage": True,
+        "orderBy": order_clause,
+        "facets": facets,
+    }
+
+    if queryString:
+        input_vars["queryString"] = queryString
+
+    try:
+        data = await _bitmagnet_execute_graphql(_BITMAGNET_COMPLEX_SEARCH_QUERY, {"input": input_vars})
+        search_res = data.get("torrentContent", {}).get("search", {})
+
+        items = _bitmagnet_enrich_items(
+            search_res.get("items", []),
+            min_seeders=minSeeders,
+            video_codecs=videoCodecs,
+            max_files_per_torrent=maxFilesPerTorrent,
+        )
+
+        result = {
+            "totalCount": search_res.get("totalCount"),
+            "hasNextPage": search_res.get("hasNextPage"),
+            "returnedCount": len(items),
+            "items": items,
+            "aggregations": search_res.get("aggregations", {})
+        }
+
+        return json.dumps(result, indent=2, ensure_ascii=False)
+    except Exception as error:
+        logger.error("bitmagnet_complex_search failed: %s", error)
+        return json.dumps({"error": str(error)}, indent=2, ensure_ascii=False)
 ```
 
-- **Funzione `_bitmagnet_enrich_items`**:
-  - Filtra per `min_seeders` (se specificato).
-  - Filtra per `video_codecs` (case-insensitive, con equivalenza `H265`/`x265` se applicabile).
-  - Calcola `torrent["sizeFormatted"]` e per ogni file `f["sizeFormatted"]`.
-  - Tronca `torrent["files"]` a `max_files_per_torrent` (default `25`), aggiungendo `torrent["filesTruncated"] = True` se il numero originale di file eccede la soglia.
+---
 
-### 2.3 Bonifica Struttura Directory e Suite di Test (`pytest`)
-- **Rimozione duplicati obsoleti nella root di `docker/mcp/in-house/arrstack-mcp/`**:
-  - Eliminazione di `docker/mcp/in-house/arrstack-mcp/server.py` e `docker/mcp/in-house/arrstack-mcp/ard.py` (residui del 6 ottobre pre-v1.1.0; il `Dockerfile` copia esclusivamente `src/`).
-- **Allineamento `requirements.txt` e `tests/`**:
-  - Aggiunta esplicita di `pydantic>=2.0.0` in `requirements.txt`.
-  - Aggiornamento di `tests/conftest.py` affinché inserisca `../src` nel `sys.path`.
-  - Creazione di `tests/test_bitmagnet.py` per testare unitariamente `bitmagnet_simple_search`, `bitmagnet_complex_search`, il mapping `WEB`/`HDTV`, il filtro `minSeeders`/`videoCodecs`, il troncamento `maxFilesPerTorrent` e la gestione errori GraphQL.
+### FASE 3: Test Unitari & Validazione
 
-### 2.4 Configurazione Runtime TrueNAS (`docker/mcp/docker-compose.yaml`)
-Aggiornamento del servizio `arrstack-mcp` alla versione **`1.2.0`**:
+#### Passo 3.1: Creazione file `tests/test_bitmagnet.py`
+Creare il file `/Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/tests/test_bitmagnet.py` con i tre test unitari (`test_bitmagnet_simple_search`, `test_bitmagnet_complex_search_filtering`, `test_bitmagnet_not_configured`):
+```python
+import json
+from unittest.mock import AsyncMock, patch
+import pytest
+import server
+
+
+@pytest.mark.asyncio
+async def test_bitmagnet_not_configured(monkeypatch):
+    """Verifica che i tool restituiscano un messaggio chiaro se Bitmagnet non è configurato."""
+    monkeypatch.setattr(server, "BITMAGNET_GRAPHQL_URL", "")
+
+    res_simple = await server.bitmagnet_simple_search(query="Ubuntu", contentType=None, limit=5)
+    assert "Bitmagnet non è configurato" in res_simple
+
+    res_complex = await server.bitmagnet_complex_search(
+        queryString="Ubuntu",
+        contentTypes=None,
+        videoResolutions=None,
+        videoSources=None,
+        videoCodecs=None,
+        languages=None,
+        releaseYear=None,
+        minSeeders=None,
+        tags=None,
+        orderBy=None,
+        limit=10,
+        page=1,
+        includeTotalCount=True,
+        maxFilesPerTorrent=25,
+    )
+    assert "Bitmagnet non è configurato" in res_complex
+
+
+@pytest.mark.asyncio
+async def test_bitmagnet_simple_search(monkeypatch):
+    """Verifica bitmagnet_simple_search e la formattazione di sizeFormatted."""
+    monkeypatch.setattr(server, "BITMAGNET_GRAPHQL_URL", "[http://10.10.20.50:3333/graphql](http://10.10.20.50:3333/graphql)")
+
+    mock_graphql_data = {
+        "torrentContent": {
+            "search": {
+                "items": [
+                    {
+                        "id": "tc-1",
+                        "infoHash": "abcdef1234567890",
+                        "title": "Beethoven Complete Symphonies FLAC",
+                        "contentType": "music",
+                        "seeders": 42,
+                        "leechers": 3,
+                        "publishedAt": "2026-01-15T10:00:00Z",
+                        "torrent": {
+                            "name": "Beethoven.Complete.Symphonies.FLAC",
+                            "size": 1073741824,
+                            "magnetUri": "magnet:?xt=urn:btih:abcdef1234567890",
+                            "filesCount": 9,
+                        },
+                    }
+                ]
+            }
+        }
+    }
+
+    with patch.object(server, "_bitmagnet_execute_graphql", new=AsyncMock(return_value=mock_graphql_data)) as mock_exec:
+        raw_out = await server.bitmagnet_simple_search(query="Beethoven", contentType="music", limit=5)
+        payload = json.loads(raw_out)
+
+        assert payload["count"] == 1
+        assert payload["items"][0]["seeders"] == 42
+        assert "sizeFormatted" in payload["items"][0]["torrent"]
+
+        called_query, called_vars = mock_exec.call_args[0]
+        assert called_vars["input"]["queryString"] == "Beethoven"
+        assert called_vars["input"]["limit"] == 5
+        assert called_vars["input"]["facets"] == {"contentType": {"filter": ["music"]}}
+
+
+@pytest.mark.asyncio
+async def test_bitmagnet_complex_search_filtering(monkeypatch):
+    """Verifica mappatura WEB->WEBDL/WEBRip, filtro post-query minSeeders/videoCodecs e troncamento file."""
+    monkeypatch.setattr(server, "BITMAGNET_GRAPHQL_URL", "[http://10.10.20.50:3333/graphql](http://10.10.20.50:3333/graphql)")
+
+    mock_graphql_data = {
+        "torrentContent": {
+            "search": {
+                "totalCount": 3,
+                "hasNextPage": False,
+                "items": [
+                    {
+                        "id": "1",
+                        "title": "Movie 4K HEVC Valid",
+                        "seeders": 25,
+                        "videoCodec": "H265",
+                        "torrent": {
+                            "size": 5000000000,
+                            "files": [
+                                {"index": 0, "path": "movie.mkv", "size": 4990000000},
+                                {"index": 1, "path": "subs.srt", "size": 50000},
+                                {"index": 2, "path": "info.nfo", "size": 1000},
+                            ],
+                        },
+                    },
+                    {
+                        "id": "2",
+                        "title": "Movie Low Seeders (Filtered Out)",
+                        "seeders": 2,
+                        "videoCodec": "x265",
+                        "torrent": {"size": 4000000000, "files": []},
+                    },
+                    {
+                        "id": "3",
+                        "title": "Movie Wrong Codec (Filtered Out)",
+                        "seeders": 50,
+                        "videoCodec": "x264",
+                        "torrent": {"size": 3000000000, "files": []},
+                    },
+                ],
+                "aggregations": {"contentType": [{"value": "movie", "count": 3}]},
+            }
+        }
+    }
+
+    with patch.object(server, "_bitmagnet_execute_graphql", new=AsyncMock(return_value=mock_graphql_data)) as mock_exec:
+        raw_out = await server.bitmagnet_complex_search(
+            queryString="Movie",
+            contentTypes=["movie"],
+            videoResolutions=["V2160p"],
+            videoSources=["WEB"],
+            videoCodecs=["x265"],
+            languages=["it", "en"],
+            releaseYear=2025,
+            minSeeders=10,
+            tags=["uhd"],
+            orderBy=None,
+            limit=20,
+            page=1,
+            includeTotalCount=True,
+            maxFilesPerTorrent=2,
+        )
+        payload = json.loads(raw_out)
+
+        assert payload["totalCount"] == 3
+        assert payload["returnedCount"] == 1
+        item = payload["items"][0]
+        assert item["id"] == "1"
+        assert item["torrent"]["filesTruncated"] is True
+        assert item["torrent"]["filesTotalCount"] == 3
+        assert len(item["torrent"]["files"]) == 2
+
+        _, called_vars = mock_exec.call_args[0]
+        facets = called_vars["input"]["facets"]
+        assert set(facets["videoSource"]["filter"]) == {"WEBDL", "WEBRip"}
+        assert facets["releaseYear"]["filter"] == [2025]
+        assert facets["torrentTag"] == {"filter": ["uhd"]}
+```
+
+#### Passo 3.2: Esecuzione verifica sintassi e test
+```bash
+python3 -m py_compile /Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/src/server.py /Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/src/ard.py
+uv run --with pytest --with pytest-mock --with pytest-asyncio --with httpx --with "mcp>=1.0.0,<2.0.0" --with pydantic pytest /Users/olindo/prj/k8s-lab/docker/mcp/in-house/arrstack-mcp/tests
+```
+
+---
+
+### FASE 4: Aggiornamento Dichiarativo `docker-compose.yaml` e Build GHCR
+
+#### Passo 4.1: Modifica di `docker/mcp/docker-compose.yaml`
 ```yaml
   arrstack-mcp:
     container_name: mcp-arrstack
@@ -122,53 +640,78 @@ Aggiornamento del servizio `arrstack-mcp` alla versione **`1.2.0`**:
     env_file: .env
     environment:
       - ENABLED_SERVICES=radarr,lidarr,prowlarr,qbittorrent,bitmagnet
-      - RADARR_URL=https://radarr-internal.pindaroli.org
+      - RADARR_URL=[https://radarr-internal.pindaroli.org](https://radarr-internal.pindaroli.org)
       - RADARR_API_KEY=${ARRSTACK_RADARR_API_KEY}
-      - LIDARR_URL=https://lidarr-internal.pindaroli.org
+      - LIDARR_URL=[https://lidarr-internal.pindaroli.org](https://lidarr-internal.pindaroli.org)
       - LIDARR_API_KEY=${ARRSTACK_LIDARR_API_KEY}
-      - PROWLARR_URL=http://10.10.20.50:9696
+      - PROWLARR_URL=[http://10.10.20.50:9696](http://10.10.20.50:9696)
       - PROWLARR_API_KEY=${ARRSTACK_PROWLARR_API_KEY}
-      - QBT_URL=http://10.10.20.50:8080
+      - QBT_URL=[http://10.10.20.50:8080](http://10.10.20.50:8080)
       - QBT_USER=admin
       - QBT_PASS=${ARRSTACK_QBT_PASS}
-      - BITMAGNET_GRAPHQL_URL=http://10.10.20.50:3333/graphql
+      - BITMAGNET_GRAPHQL_URL=[http://10.10.20.50:3333/graphql](http://10.10.20.50:3333/graphql)
       - BITMAGNET_TIMEOUT=30.0
       - MCP_ALLOWED_HOSTS=*
       - MCP_DNS_REBINDING_PROTECTION=false
 ```
 
+#### Passo 4.2: Git commit e push
+```bash
+git add docker/mcp/in-house/arrstack-mcp/ docker/mcp/docker-compose.yaml
+git commit -m "feat(arrstack-mcp): v1.2.0 estensione Bitmagnet GraphQL (simple & complex search)"
+git push origin main
+```
+Verifica completamento build GHCR (attesa sincrona fino al termine della pipeline):
+```bash
+sleep 5
+RUN_ID=$(gh run list --workflow=docker-arrstack-mcp.yml --limit=1 --json databaseId -q '.[0].databaseId')
+gh run watch "$RUN_ID" --exit-status
+```
+
 ---
 
-## 3. Fasi Operative Dettagliate (Protocollo Test-Driven)
+### FASE 5: Rollout TrueNAS e Test Live E2E
 
-### FASE 1: Bonifica Duplicati, Estensione Codice & Unit Test Locali
-- [ ] **Passo 1.1**: Rimozione dei file obsoleti duplicati nella root (`docker/mcp/in-house/arrstack-mcp/server.py` e `docker/mcp/in-house/arrstack-mcp/ard.py`) e aggiornamento di `requirements.txt` (`pydantic>=2.0.0`).
-  - *Verifica*: Controllo `ls -la docker/mcp/in-house/arrstack-mcp/` e `git status`.
-- [ ] **Passo 1.2**: Integrazione di Bitmagnet in `docker/mcp/in-house/arrstack-mcp/src/ard.py` e `docker/mcp/in-house/arrstack-mcp/src/server.py` (`SERVICE_CONFIG`, modelli Pydantic, query GraphQL `v0.10.1`, helper `execute_graphql`, `bitmagnet_simple_search` e `bitmagnet_complex_search`).
-  - *Verifica*: Compilazione sintattica `python3 -m py_compile docker/mcp/in-house/arrstack-mcp/src/server.py docker/mcp/in-house/arrstack-mcp/src/ard.py` e verifica `--list-services` con `BITMAGNET_GRAPHQL_URL=http://10.10.20.50:3333/graphql`.
-- [ ] **Passo 1.3**: Riallineamento `tests/conftest.py` su `../src`, creazione di `tests/test_bitmagnet.py` ed esecuzione dell'intera suite `pytest`.
-  - *Verifica*: Esecuzione di `pytest` su `docker/mcp/in-house/arrstack-mcp/tests/` con 100% dei test passati + test live delle funzioni Python contro `http://10.10.20.50:3333/graphql`.
+#### Passo 5.1: Sincronizzazione e restart container
+```bash
+scp -o BatchMode=yes docker/mcp/docker-compose.yaml olindo@10.10.20.50:/mnt/stripe/truenas-docker/mcp/docker-compose.yaml
+ssh -o BatchMode=yes olindo@10.10.20.50 "cd /mnt/stripe/truenas-docker/mcp && sudo docker compose pull arrstack-mcp && sudo docker compose up -d arrstack-mcp"
+```
 
-### FASE 2: Versioning `1.2.0`, Configurazione Dichiarativa & CI/CD GHCR
-- [ ] **Passo 2.1**: Aggiornamento di `docker/mcp/in-house/arrstack-mcp/VERSION` a `1.2.0` e aggiornamento di `docker/mcp/docker-compose.yaml` (`ghcr.io/pindaroli/arrstack-mcp:1.2.0`, `ENABLED_SERVICES` con `bitmagnet`, `BITMAGNET_GRAPHQL_URL=http://10.10.20.50:3333/graphql`).
-  - *Verifica*: Ispezione `git diff` su `VERSION` e `docker/mcp/docker-compose.yaml`.
-- [ ] **Passo 2.2**: Commit e push su `main` per innescare il workflow GitHub Actions `.github/workflows/docker-arrstack-mcp.yml`.
-  - *Verifica*: Monitoraggio del workflow CI fino a completamento (`gh run list` / `gh run watch`) e verifica della pubblicazione del tag `ghcr.io/pindaroli/arrstack-mcp:1.2.0`.
+#### Passo 5.2: Test E2E JSON-RPC via Traefik (:8100)
+```bash
+SESSION_ID=$(curl -si -X POST [http://10.10.20.50:8100/arrstack/mcp](http://10.10.20.50:8100/arrstack/mcp) \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"e2e-test","version":"1.0.0"}}}' \
+  | awk 'tolower($1)=="mcp-session-id:" {print $2}' | tr -d '\r')
 
-### FASE 3: Rollout GitOps su TrueNAS SCALE (`10.10.20.50`) & Validazione E2E
-- [ ] **Passo 3.1**: Sincronizzazione di `docker/mcp/docker-compose.yaml` su TrueNAS (`/mnt/stripe/truenas-docker/mcp/docker-compose.yaml`), pull dell'immagine `ghcr.io/pindaroli/arrstack-mcp:1.2.0` e ricreazione del container `mcp-arrstack`.
-  - *Verifica*: Controllo stato container (`healthy`), log di avvio (`🎬 arrstack-mcp starting (Radarr, Lidarr, Prowlarr, qBittorrent, Bitmagnet)`) e healthcheck HTTP.
-- [ ] **Passo 3.2**: Smoke test JSON-RPC End-to-End attraverso Traefik (`http://10.10.20.50:8100/arrstack/mcp`) verificando l'esposizione e il funzionamento reale di `bitmagnet_simple_search` e `bitmagnet_complex_search`.
-  - *Verifica*: Risposta `200 OK` JSON-RPC con risultati reali estratti dal DB PostgreSQL di Bitmagnet e conteggi `aggregations` valorizzati.
+curl -s -X POST [http://10.10.20.50:8100/arrstack/mcp](http://10.10.20.50:8100/arrstack/mcp) \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  ${SESSION_ID:+-H "Mcp-Session-Id: $SESSION_ID"} \
+  -d '{"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "bitmagnet_simple_search", "arguments": {"query": "Beethoven", "limit": 2}}}'
+```
 
-### FASE 4: Consolidamento Documentale & Chiusura Piano
-- [ ] **Passo 4.1**: Aggiornamento delle entità wiki [[MCP_Platform]] e [[Servarr]] con i nuovi tool Bitmagnet e la versione `1.2.0` di `arrstack-mcp`.
-- [ ] **Passo 4.2**: Sincronizzazione `todo.md`, archiviazione del piano e rigenerazione del contesto wiki (`python3 scripts/network/validate_network.py && python3 scripts/wiki/build_wiki_context.py`).
+---
+
+### FASE 6: Chiusura Documentale
+
+#### Passo 6.1: Aggiornamento Wiki
+- `wiki/entities/MCP_Platform.md`
+- `wiki/entities/Servarr.md`
+- `wiki/plans/arrstack-mcp-bitmagnet-graphql-extension.md` (`status: completed`)
+- `todo.md` (spunta task)
+
+#### Passo 6.2: Sincronizzazione finale
+```bash
+python3 scripts/network/validate_network.py && python3 scripts/wiki/build_wiki_context.py
+```
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Pianificazione Completata — In attesa di autorizzazione per Fase 1 (Passo 1.1)
-- **Ultima Azione Completata**: Verifica live dello schema GraphQL di Bitmagnet `v0.10.1` su `10.10.20.50:3333`, completamento dell'intervista `/grill-me` e stesura del piano `wiki/plans/arrstack-mcp-bitmagnet-graphql-extension.md`.
-- **Prossimo Passo Operativo**: Eseguire il Passo 1.1 (rimozione duplicati obsoleti `server.py`/`ard.py` nella root di `arrstack-mcp` e aggiornamento `requirements.txt`) previa approvazione esplicita dell'utente.
-- **Blocchi/Decisioni Pendenti**: Attesa autorizzazione dell'utente per avviare la Fase 1.
+- **Fase Attiva**: Piano Completato con Successo ✅
+- **Ultima Azione Completata**: Rollout su TrueNAS SCALE, test E2E JSON-RPC via Traefik Gateway (`:8100`) con esito positivo (55 tool attivi, inclusi `bitmagnet_simple_search` e `bitmagnet_complex_search`), aggiornamento entità Wiki (`MCP_Platform.md`, `Servarr.md`) e `todo.md`.
+- **Prossimo Passo Operativo**: Nessuno. Funzionalità integrata in produzione.
+- **Blocchi/Decisioni Pendenti**: Nessuno.
