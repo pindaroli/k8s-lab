@@ -342,11 +342,11 @@ services:
   # ============================================================================
   arrstack-mcp:
     container_name: mcp-arrstack
-    image: ghcr.io/pindaroli/arrstack-mcp:1.1.0
+    image: ghcr.io/pindaroli/arrstack-mcp:1.2.0
     restart: unless-stopped
     env_file: .env
     environment:
-      - ENABLED_SERVICES=radarr,lidarr,prowlarr,qbittorrent
+      - ENABLED_SERVICES=radarr,lidarr,prowlarr,qbittorrent,bitmagnet
       - RADARR_URL=https://radarr-internal.pindaroli.org
       - RADARR_API_KEY=${ARRSTACK_RADARR_API_KEY}
       - LIDARR_URL=https://lidarr-internal.pindaroli.org
@@ -356,6 +356,8 @@ services:
       - QBT_URL=http://10.10.20.50:8080
       - QBT_USER=admin
       - QBT_PASS=${ARRSTACK_QBT_PASS}
+      - BITMAGNET_GRAPHQL_URL=http://10.10.20.50:3333/graphql
+      - BITMAGNET_TIMEOUT=30.0
       - MCP_ALLOWED_HOSTS=*
       - MCP_DNS_REBINDING_PROTECTION=false
     command: ["--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8080"]

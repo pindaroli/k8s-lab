@@ -70,6 +70,7 @@ _SERVICE_QUERIES = {
     "lidarr": "add a new music artist to my library",
     "prowlarr": "search my indexers for a 1080p release",
     "qbittorrent": "what torrents are downloading right now",
+    "bitmagnet": "search the Bitmagnet DHT index for 4K BluRay or FLAC torrents",
     "sabnzbd": "pause my usenet download queue",
     "rdtclient": "add a magnet link to my Real-Debrid downloader",
     "jellyfin": "what was recently added to my media server",
@@ -78,7 +79,7 @@ _SERVICE_QUERIES = {
     "bookshelf": "search for a book to add to my library",
 }
 _QUERY_PRIORITY = [
-    "radarr", "sonarr", "qbittorrent", "romm", "lidarr",
+    "radarr", "sonarr", "qbittorrent", "bitmagnet", "romm", "lidarr",
     "jellyfin", "gamevault", "prowlarr", "sabnzbd", "rdtclient", "bookshelf",
 ]
 _GENERAL_QUERIES = [

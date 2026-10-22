@@ -2,8 +2,8 @@ import os
 import sys
 import pytest
 
-# Add parent directory (docker/mcp/in-house/arrstack-mcp) to sys.path so server.py can be imported
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Add src directory (docker/mcp/in-house/arrstack-mcp/src) to sys.path so server.py can be imported
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 
 # Set mock env vars for testing before server import if needed
 os.environ.setdefault("PROWLARR_URL", "http://localhost:9696")

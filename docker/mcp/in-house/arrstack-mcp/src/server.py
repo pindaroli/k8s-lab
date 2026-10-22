@@ -15,6 +15,8 @@ import logging
 import binascii
 from datetime import datetime, timezone
 from urllib.parse import urlparse, parse_qs, unquote, urljoin
+from typing import Optional, List, Literal, Dict, Any
+from pydantic import BaseModel, Field
 
 import httpx
 from mcp.server.fastmcp import FastMCP
@@ -40,6 +42,12 @@ LIDARR_API_KEY = os.environ.get("LIDARR_API_KEY", "")
 QBT_URL = os.environ.get("QBT_URL", "").rstrip("/")
 QBT_USER = os.environ.get("QBT_USER", "admin")
 QBT_PASS = os.environ.get("QBT_PASS", "")
+BITMAGNET_GRAPHQL_URL = os.environ.get("BITMAGNET_GRAPHQL_URL", "").rstrip("/")
+if not BITMAGNET_GRAPHQL_URL:
+    bitmagnet_base = os.environ.get("BITMAGNET_URL", "").rstrip("/")
+    if bitmagnet_base:
+        BITMAGNET_GRAPHQL_URL = f"{bitmagnet_base}/graphql" if not bitmagnet_base.endswith("/graphql") else bitmagnet_base
+BITMAGNET_TIMEOUT = float(os.environ.get("BITMAGNET_TIMEOUT", "30.0"))
 RDT_URL = os.environ.get("RDT_URL", "").rstrip("/")
 RDT_USER = os.environ.get("RDT_USER", "admin")
 RDT_PASS = os.environ.get("RDT_PASS", "")
@@ -104,6 +112,7 @@ SERVICE_CONFIG = {
     "lidarr": ("Lidarr", LIDARR_URL, "lidarr_"),
     "prowlarr": ("Prowlarr", PROWLARR_URL, "prowlarr_"),
     "qbittorrent": ("qBittorrent", QBT_URL, "qbt_"),
+    "bitmagnet": ("Bitmagnet", BITMAGNET_GRAPHQL_URL, "bitmagnet_"),
     "rdtclient": ("RDTClient", RDT_URL, "rdt_"),
     "sabnzbd": ("SABnzbd", SAB_URL, "sab_"),
     "jellyfin": ("Jellyfin", JELLYFIN_URL, "jellyfin_"),
@@ -3128,6 +3137,323 @@ def bookshelf_search_missing() -> str:
     result = _bookshelf("/command", method="POST", json={"name": "MissingBookSearch"})
     if isinstance(result, dict):
         return "🔍 Search triggered for all missing books."
+
+
+# ════════════════════════════════════════════════════════════════
+#  Bitmagnet Tools (GraphQL DHT & Torrent Search Engine)
+# ════════════════════════════════════════════════════════════════
+
+ContentTypeLiteral = Literal[
+    "movie", "tv_show", "music", "ebook", "comic",
+    "audiobook", "game", "software", "xxx", "null"
+]
+
+VideoResolutionLiteral = Literal[
+    "V360p", "V480p", "V540p", "V576p", "V720p", "V1080p", "V1440p", "V2160p", "V4320p"
+]
+
+VideoSourceLiteral = Literal[
+    "BluRay", "WEBDL", "WEBRip", "WEB", "TV", "HDTV",
+    "DVD", "CAM", "TELESYNC", "TELECINE", "WORKPRINT"
+]
+
+VideoCodecLiteral = Literal[
+    "x264", "x265", "H264", "H265", "AV1", "XviD", "DivX", "MPEG2", "MPEG4", "VC1", "VP9"
+]
+
+OrderFieldLiteral = Literal[
+    "relevance", "published_at", "updated_at", "size",
+    "files_count", "seeders", "leechers", "name", "info_hash"
+]
+
+
+class OrderByInput(BaseModel):
+    field: OrderFieldLiteral = Field(
+        default="seeders",
+        description="Campo su cui ordinare i risultati."
+    )
+    descending: bool = Field(
+        default=True,
+        description="Se True, ordina in modo decrescente."
+    )
+
+
+_BITMAGNET_SIMPLE_SEARCH_QUERY = """
+query SimpleTorrentSearch($input: TorrentContentSearchQueryInput!) {
+  torrentContent {
+    search(input: $input) {
+      items {
+        id
+        infoHash
+        title
+        contentType
+        seeders
+        leechers
+        publishedAt
+        torrent {
+          name
+          size
+          magnetUri
+          filesCount
+        }
+      }
+    }
+  }
+}
+"""
+
+_BITMAGNET_COMPLEX_SEARCH_QUERY = """
+query ComplexTorrentSearch($input: TorrentContentSearchQueryInput!) {
+  torrentContent {
+    search(input: $input) {
+      totalCount
+      hasNextPage
+      items {
+        id
+        infoHash
+        title
+        releaseGroup
+        contentType
+        languages {
+          id
+          name
+        }
+        videoResolution
+        videoSource
+        videoCodec
+        video3d
+        videoModifier
+        seeders
+        leechers
+        publishedAt
+        torrent {
+          name
+          size
+          magnetUri
+          filesCount
+          tagNames
+          files {
+            index
+            path
+            size
+          }
+        }
+        content {
+          title
+          releaseYear
+          overview
+          collections {
+            name
+            type
+          }
+        }
+      }
+      aggregations {
+        contentType { value count }
+        videoResolution { value count }
+        videoSource { value count }
+        releaseYear { value count }
+        language { value label count }
+      }
+    }
+  }
+}
+"""
+
+
+def _bitmagnet_enrich_items(
+    items: List[Dict[str, Any]],
+    min_seeders: Optional[int] = None,
+    video_codecs: Optional[List[str]] = None,
+    max_files_per_torrent: int = 25,
+) -> List[Dict[str, Any]]:
+    """Filtra per min_seeders e video_codecs, calcola sizeFormatted e limita i file restituiti."""
+    processed = []
+    allowed_codecs = {c.lower() for c in video_codecs} if video_codecs else None
+
+    if allowed_codecs:
+        if "x265" in allowed_codecs:
+            allowed_codecs.add("h265")
+        if "h265" in allowed_codecs:
+            allowed_codecs.add("x265")
+        if "x264" in allowed_codecs:
+            allowed_codecs.add("h264")
+        if "h264" in allowed_codecs:
+            allowed_codecs.add("x264")
+
+    for item in items:
+        seeders = item.get("seeders") or 0
+        if min_seeders is not None and seeders < min_seeders:
+            continue
+
+        if allowed_codecs:
+            codec = (item.get("videoCodec") or "").strip().lower()
+            if not codec or codec not in allowed_codecs:
+                continue
+
+        torrent = item.get("torrent")
+        if isinstance(torrent, dict):
+            if torrent.get("size") is not None:
+                torrent["sizeFormatted"] = _format_size(torrent["size"])
+
+            files = torrent.get("files")
+            if isinstance(files, list) and len(files) > 0:
+                total_files = len(files)
+                for f in files[:max_files_per_torrent]:
+                    if isinstance(f, dict) and f.get("size") is not None:
+                        f["sizeFormatted"] = _format_size(f["size"])
+                if total_files > max_files_per_torrent:
+                    torrent["files"] = files[:max_files_per_torrent]
+                    torrent["filesTruncated"] = True
+                    torrent["filesTotalCount"] = total_files
+
+        processed.append(item)
+    return processed
+
+
+async def _bitmagnet_execute_graphql(query: str, variables: Dict[str, Any]) -> Dict[str, Any]:
+    """Esegue la chiamata POST all'endpoint GraphQL di Bitmagnet con gestione errori sanitizzata."""
+    if not BITMAGNET_GRAPHQL_URL:
+        raise ValueError("Bitmagnet non è configurato. Impostare BITMAGNET_GRAPHQL_URL o BITMAGNET_URL.")
+
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    async with httpx.AsyncClient(timeout=BITMAGNET_TIMEOUT, verify=False) as client:
+        response = await client.post(
+            BITMAGNET_GRAPHQL_URL,
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        response.raise_for_status()
+        payload = response.json()
+
+        if "errors" in payload and payload["errors"]:
+            error_messages = "; ".join(err.get("message", str(err)) for err in payload["errors"])
+            raise RuntimeError(f"Errore GraphQL da Bitmagnet: {error_messages}")
+
+        return payload.get("data", {})
+
+
+@mcp.tool()
+async def bitmagnet_simple_search(
+    query: str = Field(..., description="Stringa di ricerca full-text (titolo, autore, album, software o infoHash)."),
+    contentType: Optional[ContentTypeLiteral] = Field(None, description="Filtra opzionalmente per tipo principale di contenuto."),
+    limit: int = Field(10, ge=1, le=50, description="Numero massimo di risultati da restituire (default: 10, max: 50).")
+) -> str:
+    """Esegue una ricerca testuale rapida su Bitmagnet per trovare torrent e contenuti multimediali tramite parole chiave. Ideale per query veloci con filtro opzionale sulla categoria."""
+    if not BITMAGNET_GRAPHQL_URL:
+        return "Bitmagnet non è configurato. Impostare BITMAGNET_GRAPHQL_URL o BITMAGNET_URL."
+
+    input_vars: Dict[str, Any] = {
+        "queryString": query,
+        "limit": limit,
+        "orderBy": [{"field": "seeders", "descending": True}]
+    }
+
+    if contentType:
+        input_vars["facets"] = {"contentType": {"filter": [contentType]}}
+
+    try:
+        data = await _bitmagnet_execute_graphql(_BITMAGNET_SIMPLE_SEARCH_QUERY, {"input": input_vars})
+        search_res = data.get("torrentContent", {}).get("search", {})
+        items = _bitmagnet_enrich_items(search_res.get("items", []))
+        return json.dumps({"count": len(items), "items": items}, indent=2, ensure_ascii=False)
+    except Exception as error:
+        logger.error("bitmagnet_simple_search failed: %s", error)
+        return json.dumps({"error": str(error)}, indent=2, ensure_ascii=False)
+
+
+@mcp.tool()
+async def bitmagnet_complex_search(
+    queryString: Optional[str] = Field(None, description="Query di ricerca testuale full-text."),
+    contentTypes: Optional[List[ContentTypeLiteral]] = Field(None, description="Elenco dei tipi di contenuto da includere (es. ['movie', 'music'])."),
+    videoResolutions: Optional[List[VideoResolutionLiteral]] = Field(None, description="Filtra per risoluzioni video (es. ['V1080p', 'V2160p'])."),
+    videoSources: Optional[List[VideoSourceLiteral]] = Field(None, description="Filtra per sorgente video (es. ['BluRay', 'WEBDL', 'WEB', 'HDTV'])."),
+    videoCodecs: Optional[List[VideoCodecLiteral]] = Field(None, description="Filtra per codec video (es. ['x265', 'AV1', 'H264'])."),
+    languages: Optional[List[str]] = Field(None, description="Codici lingua ISO 639-1 (es. ['it', 'en'])."),
+    releaseYear: Optional[int] = Field(None, description="Anno di rilascio del contenuto."),
+    minSeeders: Optional[int] = Field(None, ge=0, description="Numero minimo di seeders attivi richiesti."),
+    tags: Optional[List[str]] = Field(None, description="Filtra per tag associati ai torrent."),
+    orderBy: Optional[OrderByInput] = Field(None, description="Criterio di ordinamento dei risultati (default: seeders desc)."),
+    limit: int = Field(20, ge=1, le=100, description="Numero di elementi per pagina (default: 20, max: 100)."),
+    page: int = Field(1, ge=1, description="Numero di pagina (a partire da 1)."),
+    includeTotalCount: bool = Field(True, description="Se True, restituisce il conteggio totale dei risultati."),
+    maxFilesPerTorrent: int = Field(25, ge=0, le=100, description="Limite massimo di file dettagliati da includere per singolo torrent per contenere i token (default: 25).")
+) -> str:
+    """Esegue una ricerca avanzata su Bitmagnet combinando full-text, faccette video (risoluzione, sorgente), lingue, anno, seeders minimi, codec, tag, paginazione e aggregazioni."""
+    if not BITMAGNET_GRAPHQL_URL:
+        return "Bitmagnet non è configurato. Impostare BITMAGNET_GRAPHQL_URL o BITMAGNET_URL."
+
+    facets: Dict[str, Any] = {
+        "contentType": {"aggregate": True},
+        "videoResolution": {"aggregate": True},
+        "videoSource": {"aggregate": True},
+        "releaseYear": {"aggregate": True},
+        "language": {"aggregate": True},
+    }
+
+    if contentTypes:
+        facets["contentType"]["filter"] = contentTypes
+    if videoResolutions:
+        facets["videoResolution"]["filter"] = videoResolutions
+    if videoSources:
+        mapped_sources = set()
+        for src in videoSources:
+            if src == "WEB":
+                mapped_sources.update(["WEBDL", "WEBRip"])
+            elif src == "HDTV":
+                mapped_sources.add("TV")
+            else:
+                mapped_sources.add(src)
+        facets["videoSource"]["filter"] = list(mapped_sources)
+    if languages:
+        facets["language"]["filter"] = languages
+    if releaseYear is not None:
+        facets["releaseYear"]["filter"] = [releaseYear]
+    if tags:
+        facets["torrentTag"] = {"filter": tags}
+
+    order_clause = (
+        [{"field": orderBy.field, "descending": orderBy.descending}]
+        if orderBy
+        else [{"field": "seeders", "descending": True}]
+    )
+
+    input_vars: Dict[str, Any] = {
+        "limit": limit,
+        "page": page,
+        "totalCount": includeTotalCount,
+        "hasNextPage": True,
+        "orderBy": order_clause,
+        "facets": facets,
+    }
+
+    if queryString:
+        input_vars["queryString"] = queryString
+
+    try:
+        data = await _bitmagnet_execute_graphql(_BITMAGNET_COMPLEX_SEARCH_QUERY, {"input": input_vars})
+        search_res = data.get("torrentContent", {}).get("search", {})
+
+        items = _bitmagnet_enrich_items(
+            search_res.get("items", []),
+            min_seeders=minSeeders,
+            video_codecs=videoCodecs,
+            max_files_per_torrent=maxFilesPerTorrent,
+        )
+
+        result = {
+            "totalCount": search_res.get("totalCount"),
+            "hasNextPage": search_res.get("hasNextPage"),
+            "returnedCount": len(items),
+            "items": items,
+            "aggregations": search_res.get("aggregations", {})
+        }
+
+        return json.dumps(result, indent=2, ensure_ascii=False)
+    except Exception as error:
+        logger.error("bitmagnet_complex_search failed: %s", error)
+        return json.dumps({"error": str(error)}, indent=2, ensure_ascii=False)
+
 
 # ── MCP Prompts ──
 
