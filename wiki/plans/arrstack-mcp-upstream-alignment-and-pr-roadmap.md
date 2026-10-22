@@ -1,9 +1,10 @@
 ---
 title: "Piano: Allineamento Fork arrstack-mcp, Strategia Pull Request Upstream & Convergenza In-House Homelab"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-22
+completed_at: 2026-10-22
 tags:
   - "#plan"
   - "#mcp"
@@ -239,7 +240,13 @@ La Fase 5 è una **sostituzione**, non un refactor:
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Pianificazione completata e revisionata (grill-me 2026-10-22) — In attesa di approvazione per avvio FASE 1.
-- **Ultima Azione Completata**: Revisione di correttezza/completezza del piano (verifiche su upstream e diff in-house) e correzioni applicate al documento.
-- **Prossimo Passo Operativo**: Esecuzione Passo 1.1 (Sincronizzazione fast-forward di `pindaroli/arrstack-mcp` via `gh repo sync`).
-- **Blocchi/Decisioni Pendenti**: Nessuna decisione di design pendente (health, DNS rebinding, CI decisi). Restano i collaudi indicati al Passo 5.0 e l'attesa di approvazione formale dell'utente sul piano prima di eseguire qualsiasi comando.
+- **Fase Attiva**: Piano COMPLETATO con successo ✅ (Tutte le 5 Fasi eseguite e validate).
+- **Ultima Azione Completata**: Rollout container v1.3.0 su TrueNAS SCALE completato; test E2E eseguiti con successo su Traefik (`/arrstack/mcp`) per qBittorrent, Prowlarr e Bitmagnet.
+- **Riferimenti Contributi Upstream**:
+  - **PR 1 (qBt Extended REST Tools)**: [CT4nk3r/arrstack-mcp#16](https://github.com/CT4nk3r/arrstack-mcp/pull/16) (Aperta)
+  - **PR 2 (Prowlarr App Management & Stats)**: [CT4nk3r/arrstack-mcp#17](https://github.com/CT4nk3r/arrstack-mcp/pull/17) (Aperta)
+  - **RFC (Bitmagnet GraphQL Integration)**: [CT4nk3r/arrstack-mcp#18](https://github.com/CT4nk3r/arrstack-mcp/issues/18) (Aperta)
+  - **Branch Fork Homelab**: `pindaroli/arrstack-mcp@homelab` (`8da27d8466ab1fb067121fe2731fc8fdd1c13d7b`)
+  - **Immagine GHCR Produzione**: `ghcr.io/pindaroli/arrstack-mcp:1.3.0` (Attiva e healthy su TrueNAS)
+- **Prossimo Passo Operativo**: Monitoraggio delle revisioni e feedback dell'autore su PR #16, #17 e issue #18.
+- **Blocchi/Decisioni Pendenti**: Nessuno. Infrastructure e stack in produzione pienamente operativi.

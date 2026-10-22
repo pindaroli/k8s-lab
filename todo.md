@@ -1,11 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## 🚀 [ ] In Corso: Allineamento Fork arrstack-mcp, Strategia Pull Request Upstream & Convergenza In-House Homelab [[arrstack-mcp-upstream-alignment-and-pr-roadmap]]
-- [ ] Fase 1: Sincronizzazione fast-forward del fork GitHub (`pindaroli/arrstack-mcp`), eliminazione branch obsoleto e setup clone locale (`/Users/olindo/prj/arrstack-mcp`)
-- [ ] Fase 2: Sviluppo PR 1 per upstream — qBittorrent Extended REST Tools (categorie, tag, tracker, recheck, file inspection) con test di mock
-- [ ] Fase 3: Sviluppo PR 2 per upstream — Prowlarr Management Tools (elenco, sync e test app Servarr, statistiche indexer)
-- [ ] Fase 4: Apertura Issue RFC su GitHub per proposta integrazione Bitmagnet GraphQL nel package upstream
-- [ ] Fase 5: Convergenza architetturale package per il container in-house TrueNAS (`arrstack_mcp/`), build GHCR v1.3.0 e rollout con supporto Jellyseerr
+## 🚀 [x] ✅ COMPLETATO: Allineamento Fork arrstack-mcp, Strategia Pull Request Upstream & Convergenza In-House Homelab [[arrstack-mcp-upstream-alignment-and-pr-roadmap]]
+- [x] Fase 1: Sincronizzazione fast-forward del fork GitHub (`pindaroli/arrstack-mcp`), eliminazione branch obsoleto e setup clone locale (`/Users/olindo/prj/arrstack-mcp`) ✅
+- [x] Fase 2: Sviluppo PR 1 per upstream — qBittorrent Extended REST Tools (categorie, tag, tracker, recheck, file inspection) con test di mock e PR upstream #16 ✅
+- [x] Fase 3: Sviluppo PR 2 per upstream — Prowlarr Management Tools (elenco, sync e test app Servarr, statistiche indexer) e PR upstream #17 ✅
+- [x] Fase 4: Apertura Issue RFC #18 su GitHub per proposta integrazione Bitmagnet GraphQL nel package upstream ✅
+- [x] Fase 5: Convergenza architetturale package per il container in-house TrueNAS (`arrstack_mcp/`), build GHCR v1.3.0 e rollout healthy su TrueNAS SCALE con 61 tool attivi ✅
 
 ## 🚀 [x] ✅ COMPLETATO: Estensione GraphQL Bitmagnet per arrstack-mcp (v1.2.0) [[arrstack-mcp-bitmagnet-graphql-extension]]
 - [x] Fase 1: Bonifica duplicati obsoleti (`server.py`, `ard.py` nella root di `arrstack-mcp`), integrazione tool `bitmagnet_simple_search` e `bitmagnet_complex_search` in `src/server.py` e `src/ard.py`, e unit test `tests/test_bitmagnet.py` ✅
