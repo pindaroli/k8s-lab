@@ -1,0 +1,22 @@
+# Development dependencies for the k8s-lab homelab IaC repository.
+# Installed into the user site (pip install --user) by .cursor/environment.json.
+#
+# Kept intentionally lean: the base image already ships Python 3.12, git and the
+# apt "ansible" 9.x package. This file adds the third-party libraries imported by
+# the utility/validation scripts plus the lint tooling that gates the repo.
+
+# --- Libraries imported by scripts/ and ansible/playbooks/scripts/ ---
+requests
+PyYAML
+httpx
+beautifulsoup4
+pydantic
+python-dotenv
+
+# --- Lint / IaC tooling ---
+pre-commit
+yamllint
+ansible-lint
+# Keep ansible-core aligned with the apt-provided "ansible" 9.x metapackage so
+# ansible-lint does not silently upgrade the collection stack.
+ansible-core>=2.16,<2.17
