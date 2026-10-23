@@ -1,0 +1,86 @@
+model_list:
+  # 1. big-chat (qwen2.5:32b-instruct-q5_K_M)
+  - model_name: big-chat
+    litellm_params:
+      model: ollama_chat/qwen2.5:32b-instruct-q5_K_M
+      api_base: http://olindo-macstudio.pindaroli.org:11434
+      order: 1
+      timeout: 120
+      stream_timeout: 60
+  - model_name: big-chat
+    litellm_params:
+      model: ollama_chat/qwen2.5:32b-instruct-q5_K_M
+      api_base: http://lxc-ollama.pindaroli.org:11434
+      order: 2
+      timeout: 10
+      stream_timeout: 15
+
+  # 2. big-alt (gemma4:31b)
+  - model_name: big-alt
+    litellm_params:
+      model: ollama_chat/gemma4:31b
+      api_base: http://olindo-macstudio.pindaroli.org:11434
+      order: 1
+      timeout: 120
+      stream_timeout: 60
+  - model_name: big-alt
+    litellm_params:
+      model: ollama_chat/gemma4:31b
+      api_base: http://lxc-ollama.pindaroli.org:11434
+      order: 2
+      timeout: 10
+      stream_timeout: 15
+
+  # 3. vision (qwen3-vl:32b)
+  - model_name: vision
+    litellm_params:
+      model: ollama_chat/qwen3-vl:32b
+      api_base: http://olindo-macstudio.pindaroli.org:11434
+      order: 1
+      timeout: 120
+      stream_timeout: 60
+  - model_name: vision
+    litellm_params:
+      model: ollama_chat/qwen3-vl:32b
+      api_base: http://lxc-ollama.pindaroli.org:11434
+      order: 2
+      timeout: 10
+      stream_timeout: 15
+
+  # 4. vision-light (qwen2.5vl:7b-q4_K_M)
+  - model_name: vision-light
+    litellm_params:
+      model: ollama_chat/qwen2.5vl:7b-q4_K_M
+      api_base: http://olindo-macstudio.pindaroli.org:11434
+      order: 1
+      timeout: 60
+      stream_timeout: 30
+  - model_name: vision-light
+    litellm_params:
+      model: ollama_chat/qwen2.5vl:7b-q4_K_M
+      api_base: http://lxc-ollama.pindaroli.org:11434
+      order: 2
+      timeout: 10
+      stream_timeout: 15
+
+  # 5. embed (bge-m3:latest) — Mac Studio order 1 (attivo anche in lab_mode_off) + lxc-ollama order 2
+  - model_name: embed
+    litellm_params:
+      model: ollama/bge-m3:latest
+      api_base: http://olindo-macstudio.pindaroli.org:11434
+      order: 1
+      timeout: 60
+      stream_timeout: 30
+  - model_name: embed
+    litellm_params:
+      model: ollama/bge-m3:latest
+      api_base: http://lxc-ollama.pindaroli.org:11434
+      order: 2
+      timeout: 10
+      stream_timeout: 15
+
+router_settings:
+  model_group_alias:
+    chat: big-chat
+  allowed_fails: 1
+  cooldown_time: 30

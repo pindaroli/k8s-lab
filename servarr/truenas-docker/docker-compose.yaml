@@ -227,3 +227,84 @@ services:
     depends_on:
       bitmagnet-postgres:
         condition: service_healthy
+
+  # --- LiteLLM Dedicated Database ---
+  litellm-postgres:
+    image: postgres:16-alpine
+    container_name: litellm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD}
+    volumes:
+      - /mnt/stripe/truenas-docker/litellm-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # --- LiteLLM Proxy ---
+  litellm:
+    image: ghcr.io/berriai/litellm:1.106.2
+    container_name: litellm
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: "postgresql://litellm:${LITELLM_DB_PASSWORD}@litellm-postgres:5432/litellm"
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
+      UI_USERNAME: ${LITELLM_UI_USERNAME}
+      UI_PASSWORD: ${LITELLM_UI_PASSWORD}
+    volumes:
+      - /mnt/stripe/truenas-docker/litellm/config.yaml:/app/config.yaml:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    depends_on:
+      litellm-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+
+  # --- Hermes Agent ---
+  hermes-agent:
+    image: nousresearch/hermes-agent:v2026.7.20
+    container_name: hermes-agent
+    restart: unless-stopped
+    ports:
+      - "9119:9119"
+    environment:
+      HERMES_HOME: "/opt/data"
+      HERMES_DASHBOARD: "1"
+      HERMES_DASHBOARD_HOST: "0.0.0.0"
+      HERMES_DASHBOARD_PORT: "9119"
+      HERMES_AUTH_PROVIDER: "password"
+      HERMES_DASHBOARD_BASIC_AUTH_USERNAME: ${HERMES_DASHBOARD_USERNAME:-admin}
+      HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: ${HERMES_DASHBOARD_PASSWORD}
+      HERMES_DASHBOARD_PASSWORD: ${HERMES_DASHBOARD_PASSWORD}
+      OPENAI_API_BASE: "http://litellm:4000/v1"
+      OPENAI_API_KEY: ${HERMES_LITELLM_KEY}
+      LITELLM_API_KEY: ${HERMES_LITELLM_KEY}
+      KUBECONFIG: "/root/.kube/config"
+      TALOSCONFIG: "/root/.talos/config"
+    command: ["hermes", "gateway", "run"]
+    volumes:
+      - /mnt/stripe/hermes-agent:/opt/data
+      - /mnt/stripe/truenas-docker/hermes/kubeconfig:/root/.kube/config:ro
+      - /mnt/stripe/truenas-docker/hermes/talosconfig:/root/.talos/config:ro
+      - /mnt/stripe/truenas-docker/hermes/bin/kubectl:/usr/local/bin/kubectl:ro
+      - /mnt/stripe/truenas-docker/hermes/bin/talosctl:/usr/local/bin/talosctl:ro
+    depends_on:
+      litellm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9119/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

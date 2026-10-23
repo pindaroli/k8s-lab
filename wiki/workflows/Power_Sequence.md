@@ -23,7 +23,7 @@ L'infrastruttura è governata da tre entrypoint principali che eseguono la conve
 | Modalità Target | Script Eseguibile | Mattoni Atomici Eseguiti | Storage TrueNAS | Compute (PVE + K8s) | Notifiche Start & Stop |
 | :--- | :--- | :--- | :---: | :---: | :--- |
 | **Full Lab (Tutto Attivo)** | [`lab_mode_full.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_full.sh) | 1. `ensure_storage_on`<br>2. `ensure_compute_on` | **ONLINE** (ZFS sani) | **ONLINE** (3 nodi Ready, uncordoned) | Start: Telegram<br>Stop: TG + Email HTML |
-| **Eco Lab (Solo TrueNAS)** | [`lab_mode_eco.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_eco.sh) | 1. `ensure_storage_on`<br>2. `ensure_compute_off` | **ONLINE** (Servarr 24/7) | **OFFLINE** (PVE e K8s spenti) | Start: Telegram<br>Stop: TG + Email HTML |
+| **Eco Lab (Solo TrueNAS)** | [`lab_mode_eco.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_eco.sh) | 1. `ensure_storage_on`<br>2. `ensure_compute_off` | **ONLINE** (Servarr, Hermes, LiteLLM 24/7) | **OFFLINE** (PVE e K8s spenti) | Start: Telegram<br>Stop: TG + Email HTML |
 | **Rack Dark (Tutto Spento)** | [`lab_mode_off.sh`](file:///Users/olindo/prj/k8s-lab/scripts/infrastructure/lab_mode_off.sh) | 1. `ensure_compute_off`<br>2. `ensure_storage_off` | **OFFLINE** (Bare metal spento) | **OFFLINE** (PVE e K8s spenti) | Start: Telegram<br>Stop: TG + Email HTML |
 
 ---

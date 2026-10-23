@@ -1,44 +1,40 @@
 ---
 title: "LiteLLM (AI Inference Gateway & Router)"
-last_updated: "2026-10-21"
+last_updated: "2026-10-22"
 confidence: "High"
 tags:
   - "#litellm"
   - "#ollama"
   - "#hermes"
-  - "#kubernetes"
-  - "#helm"
-  - "#traefik"
-  - "#cnpg"
+  - "#docker"
+  - "#truenas"
 provenance:
-  - "litellm/litellm-values.yaml"
-  - "wiki/plans/litellm-proxy-kubernetes-deployment.md"
+  - "servarr/truenas-docker/docker-compose.yaml"
+  - "servarr/truenas-docker/litellm/config.yaml"
+  - "wiki/plans/hermes-agent-truenas-docker-migration.md"
 ---
 
 # LiteLLM (LLM Inference Gateway & High-Availability Router)
 
-**LiteLLM Proxy** è il gateway di inferenza e load balancer LLM centralizzato del cluster `k8s-lab`. Fornisce un'interfaccia compatibile con le OpenAI API (`/v1/chat/completions`, `/v1/models`, `/v1/embeddings`) con routing ad alta disponibilità e prioritario tra i server Ollama fisici del lab: Mac Studio (`olindo-macstudio.pindaroli.org:11434`, Metal 64GB) e `lxc-ollama` (`lxc-ollama.pindaroli.org:11434`, PVE3 Radeon 890M).
+**LiteLLM Proxy** è il gateway di inferenza e load balancer LLM centralizzato del lab. È in esecuzione come container Docker su **TrueNAS SCALE** (`10.10.20.50:4000`), integrato nello stack `servarr/truenas-docker/docker-compose.yaml`. Fornisce un'interfaccia compatibile con le OpenAI API (`/v1/chat/completions`, `/v1/models`, `/v1/embeddings`) con routing ad alta disponibilità e prioritario tra i server Ollama fisici del lab: Mac Studio (`olindo-macstudio.pindaroli.org:11434`, Metal 64GB) e `lxc-ollama` (`lxc-ollama.pindaroli.org:11434`, PVE3 Radeon 890M).
 
 ---
 
 ## 1. Dettagli di Deployment & Architettura
-- **Namespace**: `litellm`.
-- **Chart Ufficiale Upstream**: `oci://ghcr.io/berriai/litellm-helm` versione `1.106.2`.
+- **Piattaforma**: Docker su TrueNAS SCALE Bare Metal (`10.10.20.50`).
+- **Stack Compose**: `servarr/truenas-docker/docker-compose.yaml` (root `/mnt/stripe/truenas-docker/`).
 - **Immagine**: `ghcr.io/berriai/litellm:1.106.2` (con Prisma CLI e schema migration bundlati).
-- **File Valori Dichiarativo**: [`litellm/litellm-values.yaml`](file:///Users/olindo/prj/k8s-lab/litellm/litellm-values.yaml).
-- **CoreDNS Interno**: `http://litellm.litellm.svc.cluster.local:4000/`.
-- **Esposizione LAN / IngressRoute**: `https://litellm-internal.pindaroli.org/` (Traefik VIP `10.10.20.56`, TLS Wildcard `pindaroli-wildcard-tls`).
-- **Admin Console**: `https://litellm-internal.pindaroli.org/ui`.
-- **Affinity**: Programmato esclusivamente su nodi control-plane ad alta capacità (`talos-cp-01` e `talos-cp-02`), escludendo `talos-cp-03` (4 GB RAM vincolati).
+- **File Configurazione**: versionato in `servarr/truenas-docker/litellm/config.yaml` e montato `:ro` in `/app/config.yaml`.
+- **Rete Interna Docker**: raggiungibile dai container locali (es. Hermes Agent) all'URL `http://litellm:4000/v1`.
+- **Esposizione LAN**: `http://10.10.20.50:4000/` (Admin UI: `http://10.10.20.50:4000/ui`). Servizio esclusivamente interno, senza Ingress/Traefik.
 
 ---
 
-## 2. Persistenza & Database (CloudNativePG)
-- **Cluster PostgreSQL**: `postgres-main` (`postgres-main-rw.cnpg-system.svc.cluster.local:5432`) in namespace `cnpg-system`.
-- **Database & Ruolo Dedicato**: `litellm` gestito da CNPG CRD (`Database` e `managed.roles` in `postgres/cluster.yaml`).
-- **Segreti (SOPS)**:
-  - `secrets-sops/litellm-db-password.enc.yaml` (namespace `cnpg-system`).
-  - `secrets-sops/litellm-secrets.enc.yaml` (namespace `litellm`, contiene master key, salt key, UI password e virtual key Hermes).
+## 2. Persistenza & Database Dedicato (litellm-postgres)
+- **Container Database**: `postgres:16-alpine` dedicato (`container_name: litellm-postgres`), non esposto sull'host, comunicante via DNS Docker `litellm-postgres:5432`.
+- **Dataset ZFS**: dataset ZFS dedicato `/mnt/stripe/truenas-docker/litellm-postgres` con `recordsize=8k`, permessi `700` e ownership `999:999` (utente Postgres).
+- **Segreti (SOPS → .env)**: credenziali estratte da `secrets-sops/litellm-secrets.enc.yaml` e `litellm-db-password.enc.yaml` nel file runtime protetto `/mnt/stripe/truenas-docker/.env` (permessi `600`).
+- **Virtual Key Hermes**: ricreata in modo deterministico via API (`POST /key/generate`) per l'utente `hermes-agent`.
 
 ---
 

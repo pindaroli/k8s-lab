@@ -1,5 +1,23 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 In Corso: Failover Trasparente Servizi TrueNAS su Mac OrbStack in lab_mode_off [[orbstack-failover-truenas-services]]
+- [x] Fase 0: Raccolta Dati, Dossier e Allineamento (Dossier tecnico in `docs/orbstack_failover_gemini_context.md`, piano operativo e decisioni KISS) ✅
+- [ ] Fase 1: Allineamento `rete.json` (alias mcp/hermes/litellm/dozzle su truenas) e `litellm/config.yaml` (embed su Mac Studio)
+- [ ] Fase 2: Stack Docker Compose OrbStack (`docker/orbstack-failover/docker-compose.orbstack.yaml`, profilo lean 7 MCP, liteLLM stateless, Hermes e Dozzle)
+- [ ] Fase 3: Script Switchover DNS OPNsense Unbound (`scripts/network/switch_failover_dns.py` via REST API)
+- [ ] Fase 4: Libreria di Failover e Integrazione negli Script di Modalità (`scripts/infrastructure/orbstack_failover.sh`, `lab_mode_off.sh`, `lab_mode_eco.sh`, `lab_mode_full.sh`)
+- [ ] Fase 5: Standardizzazione Client FQDN (`~/.gemini/antigravity/mcp_config.json` -> `mcp.pindaroli.org`)
+- [ ] Fase 6: Test di Collaudo E2E, Validazione e Refresh Wiki (§12 & §13)
+
+## 🚀 In Corso: Migrazione Hermes Agent e LiteLLM da Kubernetes a Docker su TrueNAS SCALE [[hermes-agent-truenas-docker-migration]]
+- [x] Fase 0: Raccolta dati e pre-check (sola lettura: immagine, mount, kubeconfig statico, porte 4000/9119, Ollama) ✅
+- [x] Fase 1: Backup ZFS (snapshot hermes-agent), creazione dataset dedicato `stripe/truenas-docker/litellm-postgres` (8k, 999:999) ed estrazione segreti SOPS -> runtime (.env 600) ✅
+- [x] Fase 2: Deploy LiteLLM e Postgres su Docker TrueNAS, test migrazioni Prisma (98 tabelle), bootstrap deterministico virtual key Hermes e test inferenza su big-chat ✅
+- [x] Fase 3: Cutover dichiarativo Hermes (scale down K8s `replicaCount: 0`, avvio su Docker Compose v2026.7.20, binari statici kubectl/talosctl, test dashboard 9119 e bridge LiteLLM) ✅
+- [x] Fase 4: Allineamento Homepage (homepage-manager: rimozione esterna, aggiornamento interna/TrueNAS) e rimozione alias DNS Unbound OPNsense ✅
+- [ ] Fase 5: Decommissioning K8s (rimozione release Helm, PVC/PV, ns hermes e litellm, pulizia DB CNPG — pianificato al boot del cluster compute)
+- [x] Fase 6: Documentazione, Power_Sequence, archiviazione vecchi piani e validazione repository ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Allineamento Fork arrstack-mcp, Strategia Pull Request Upstream & Convergenza In-House Homelab [[arrstack-mcp-upstream-alignment-and-pr-roadmap]]
 - [x] Fase 1: Sincronizzazione fast-forward del fork GitHub (`pindaroli/arrstack-mcp`), eliminazione branch obsoleto e setup clone locale (`/Users/olindo/prj/arrstack-mcp`) ✅
 - [x] Fase 2: Sviluppo PR 1 per upstream — qBittorrent Extended REST Tools (categorie, tag, tracker, recheck, file inspection) con test di mock e PR upstream #16 ✅

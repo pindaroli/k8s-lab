@@ -43,7 +43,11 @@
       "domain": "pindaroli.org",
       "aliases": [
         "s3",
-        "nas-direct"
+        "nas-direct",
+        "mcp",
+        "hermes",
+        "litellm",
+        "dozzle"
       ],
       "memory": "48GB ECC (2x16GB Micron + 2x8GB SK Hynix DDR4 @ 2400 MT/s)",
       "management_ip": "10.10.20.50",
@@ -1097,11 +1101,8 @@
         "calibre-web",
         "firewall",
         "pve",
-        "hermes",
-        "hermes-internal",
         "ragflow",
         "ragflow-internal",
-        "mcp",
         "mcp-internal",
         "mcp-ui",
         "mcp-ui-internal",
@@ -1115,8 +1116,7 @@
         "kef-mcp-internal",
         "nowaikit-mcp-internal",
         "headlamp",
-        "headlamp-internal",
-        "litellm-internal"
+        "headlamp-internal"
       ],
       "notes": "MetalLB Layer 2 VIP. Entry point for all HTTP/HTTPS services."
     },

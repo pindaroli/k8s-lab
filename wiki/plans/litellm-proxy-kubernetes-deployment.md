@@ -3,6 +3,7 @@ title: "Piano: Installazione LiteLLM Proxy su Kubernetes con Routing Mac Studio 
 type: plan
 status: archived
 certified_for_ai: false
+superseded_by: "[[hermes-agent-truenas-docker-migration]]"
 created_at: 2026-10-21
 completed_at: 2026-10-21
 tags:

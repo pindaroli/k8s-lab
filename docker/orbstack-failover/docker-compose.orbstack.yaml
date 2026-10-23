@@ -1,0 +1,439 @@
+# ==============================================================================
+# FILE: docker/orbstack-failover/docker-compose.orbstack.yaml
+# DESCRIZIONE: Stack di Failover su Mac Studio (OrbStack - 10.10.20.100) per lab_mode_off
+#              Include:
+#              - socket-proxy (L7 Read-Only Docker Socket Proxy per Traefik e Dozzle)
+#              - traefik (:8100 Umbrella Gateway MCP)
+#              - I 7 Server MCP attivi a rack spento: opnsense, gemini-deepsearch,
+#                ollama (connesso a Ollama Metal locale :11434), kef, nowaikit, github, meross
+#              - litellm (:4000 Stateless Zero-DB con LITELLM_MASTER_KEY=${HERMES_LITELLM_KEY})
+#              - hermes-agent (:9119 con stato sincronizzato via rsync in ~/.homelab-failover/hermes-data)
+#              - dozzle (:8888 Log Viewer connesso via socket-proxy)
+# ==============================================================================
+name: orbstack-failover
+
+networks:
+  mcp-network:
+    name: orbstack-mcp-network
+    driver: bridge
+  mcp-socket-proxy:
+    name: orbstack-socket-proxy
+    driver: bridge
+    internal: true
+  ai-network:
+    name: orbstack-ai-network
+    driver: bridge
+
+services:
+  # ============================================================================
+  # 0A. DOCKER SOCKET PROXY
+  # ============================================================================
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy:v0.4.1
+    container_name: mcp-socket-proxy
+    restart: unless-stopped
+    privileged: false
+    read_only: true
+    tmpfs:
+      - /run
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - LOG_LEVEL=notice
+      - CONTAINERS=1
+      - NETWORKS=1
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      - INFO=1
+      - POST=0
+      - AUTH=0
+      - BUILD=0
+      - COMMIT=0
+      - CONFIGS=0
+      - DISTRIBUTION=0
+      - EXEC=0
+      - GRPC=0
+      - IMAGES=0
+      - NODES=0
+      - PLUGINS=0
+      - SECRETS=0
+      - SERVICES=0
+      - SESSION=0
+      - SWARM=0
+      - SYSTEM=0
+      - TASKS=0
+      - VOLUMES=0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - mcp-socket-proxy
+
+  # ============================================================================
+  # 0B. TRAEFIK UMBRELLA GATEWAY — Porta Host Unica 8100 & Streaming Tuning
+  # ============================================================================
+  traefik:
+    image: traefik:v3.3.4
+    container_name: mcp-traefik
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      - socket-proxy
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.endpoint=tcp://socket-proxy:2375"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=orbstack-mcp-network"
+      - "--entrypoints.mcp.address=:8100"
+      - "--entrypoints.mcp.transport.respondingTimeouts.readTimeout=0s"
+      - "--entrypoints.mcp.transport.respondingTimeouts.writeTimeout=0s"
+      - "--entrypoints.mcp.transport.respondingTimeouts.idleTimeout=3600s"
+      - "--serversTransport.forwardingTimeouts.dialTimeout=10s"
+      - "--serversTransport.forwardingTimeouts.responseHeaderTimeout=0s"
+      - "--serversTransport.forwardingTimeouts.idleConnTimeout=3600s"
+      - "--ping=true"
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--accesslog=true"
+      - "--log.level=INFO"
+    ports:
+      - "8100:8100"
+      - "8180:8080"
+    networks:
+      - mcp-network
+      - mcp-socket-proxy
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # ============================================================================
+  # 1. OPNSENSE MCP — REST API OPNsense MVC (Supergateway Stateful)
+  # ============================================================================
+  opnsense-mcp:
+    container_name: mcp-opnsense
+    platform: linux/amd64
+    image: ghcr.io/pindaroli/opnsense-mcp:0.5.3-r1
+    restart: unless-stopped
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    networks:
+      - mcp-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-opnsense.entrypoints=mcp"
+      - "traefik.http.routers.mcp-opnsense.rule=PathPrefix(`/opnsense`)"
+      - "traefik.http.middlewares.strip-opnsense.stripprefix.prefixes=/opnsense"
+      - "traefik.http.routers.mcp-opnsense.middlewares=strip-opnsense"
+      - "traefik.http.services.mcp-opnsense.loadbalancer.server.port=8080"
+      - "traefik.http.services.mcp-opnsense.loadbalancer.responseforwarding.flushinterval=-1ms"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ============================================================================
+  # 2. GEMINI DEEPSEARCH — LangGraph Web Search Agent (Python Streamable HTTP)
+  # ============================================================================
+  gemini-deepsearch-mcp:
+    container_name: mcp-gemini-deepsearch
+    platform: linux/amd64
+    image: ghcr.io/pindaroli/gemini-deepsearch-mcp:0.2.0
+    restart: unless-stopped
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    environment:
+      - MCP_TRANSPORT=streamable-http
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8080
+    networks:
+      - mcp-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-gemini.entrypoints=mcp"
+      - "traefik.http.routers.mcp-gemini.rule=PathPrefix(`/gemini`)"
+      - "traefik.http.middlewares.strip-gemini.stripprefix.prefixes=/gemini"
+      - "traefik.http.routers.mcp-gemini.middlewares=strip-gemini"
+      - "traefik.http.services.mcp-gemini.loadbalancer.server.port=8080"
+      - "traefik.http.services.mcp-gemini.loadbalancer.responseforwarding.flushinterval=-1ms"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request, urllib.error; req = urllib.request.Request('http://127.0.0.1:8080/mcp'); \ntry: urllib.request.urlopen(req, timeout=2)\nexcept urllib.error.HTTPError as e: assert e.code in (200, 400, 406)\" || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ============================================================================
+  # 3. OLLAMA MCP — Ollama REST API (Punta a Ollama Metal su Mac Studio :11434)
+  # ============================================================================
+  ollama-mcp:
+    container_name: mcp-ollama
+    platform: linux/amd64
+    image: ghcr.io/pindaroli/ollama-mcp:2.1.0-r1
+    restart: unless-stopped
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "olindo-macstudio.pindaroli.org:host-gateway"
+    networks:
+      - mcp-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-ollama.entrypoints=mcp"
+      - "traefik.http.routers.mcp-ollama.rule=PathPrefix(`/ollama`)"
+      - "traefik.http.middlewares.strip-ollama.stripprefix.prefixes=/ollama"
+      - "traefik.http.routers.mcp-ollama.middlewares=strip-ollama"
+      - "traefik.http.services.mcp-ollama.loadbalancer.server.port=8080"
+      - "traefik.http.services.mcp-ollama.loadbalancer.responseforwarding.flushinterval=-1ms"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ============================================================================
+  # 4. KEF MCP — KEF LSX II Speakers Control (FastAPI / SSE)
+  # ============================================================================
+  kef-mcp:
+    container_name: mcp-kef
+    platform: linux/amd64
+    image: ghcr.io/pindaroli/kef-mcp:1.0.0
+    restart: unless-stopped
+    environment:
+      - MCP_TRANSPORT=sse
+      - MCP_PORT=8080
+      - MCP_HOST=0.0.0.0
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    networks:
+      - mcp-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-kef.entrypoints=mcp"
+      - "traefik.http.routers.mcp-kef.rule=PathPrefix(`/kef`)"
+      - "traefik.http.middlewares.strip-kef.stripprefix.prefixes=/kef"
+      - "traefik.http.routers.mcp-kef.middlewares=strip-kef"
+      - "traefik.http.services.mcp-kef.loadbalancer.server.port=8080"
+      - "traefik.http.services.mcp-kef.loadbalancer.responseforwarding.flushinterval=-1ms"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/mcp', timeout=2)\" || exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ============================================================================
+  # 5. NOWAIKIT MCP — ServiceNow REST API (Supergateway Stateful)
+  # ============================================================================
+  nowaikit-mcp:
+    container_name: mcp-nowaikit
+    platform: linux/amd64
+    image: ghcr.io/pindaroli/nowaikit-mcp:4.15.1-r1
+    restart: unless-stopped
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    networks:
+      - mcp-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-nowaikit.entrypoints=mcp"
+      - "traefik.http.routers.mcp-nowaikit.rule=PathPrefix(`/nowaikit`)"
+      - "traefik.http.middlewares.strip-nowaikit.stripprefix.prefixes=/nowaikit"
+      - "traefik.http.routers.mcp-nowaikit.middlewares=strip-nowaikit"
+      - "traefik.http.services.mcp-nowaikit.loadbalancer.server.port=8080"
+      - "traefik.http.services.mcp-nowaikit.loadbalancer.responseforwarding.flushinterval=-1ms"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ============================================================================
+  # 6. GITHUB MCP — GitHub Cloud REST/GraphQL (Supergateway Stateful)
+  # ============================================================================
+  github-mcp:
+    container_name: mcp-github
+    platform: linux/amd64
+    image: ghcr.io/pindaroli/github-mcp-server:0.7.0-r1
+    restart: unless-stopped
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    networks:
+      - mcp-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-github.entrypoints=mcp"
+      - "traefik.http.routers.mcp-github.rule=PathPrefix(`/github`)"
+      - "traefik.http.middlewares.strip-github.stripprefix.prefixes=/github"
+      - "traefik.http.routers.mcp-github.middlewares=strip-github"
+      - "traefik.http.services.mcp-github.loadbalancer.server.port=8080"
+      - "traefik.http.services.mcp-github.loadbalancer.responseforwarding.flushinterval=-1ms"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ============================================================================
+  # 7. MEROSS MCP — Dual Gateway FastAPI REST + FastMCP (Homepage Widget & MCP)
+  # ============================================================================
+  meross-mcp:
+    container_name: mcp-meross
+    platform: linux/amd64
+    image: ghcr.io/pindaroli/meross-mcp:0.1.2
+    restart: unless-stopped
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    environment:
+      - MEROSS_API_BASE_URL=https://iotx-eu.meross.com
+      - MEROSS_GATEWAY_HOST=0.0.0.0
+      - MEROSS_GATEWAY_PORT=8112
+    networks:
+      - mcp-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-meross.entrypoints=mcp"
+      - "traefik.http.routers.mcp-meross.rule=PathPrefix(`/meross`)"
+      - "traefik.http.middlewares.strip-meross.stripprefix.prefixes=/meross"
+      - "traefik.http.routers.mcp-meross.middlewares=strip-meross"
+      - "traefik.http.services.mcp-meross.loadbalancer.server.port=8112"
+      - "traefik.http.services.mcp-meross.loadbalancer.responseforwarding.flushinterval=-1ms"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8112/healthz')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ============================================================================
+  # 8. LITELLM PROXY STATELESS — Porta Host 4000 (Zero Postgres)
+  # ============================================================================
+  litellm:
+    image: ghcr.io/berriai/litellm:1.106.2
+    container_name: litellm
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.ai
+    environment:
+      LITELLM_MASTER_KEY: ${HERMES_LITELLM_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
+      UI_USERNAME: ${LITELLM_UI_USERNAME:-admin}
+      UI_PASSWORD: ${LITELLM_UI_PASSWORD}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "olindo-macstudio.pindaroli.org:host-gateway"
+    volumes:
+      - ${ROOT_DIR:-/Users/olindo/prj/k8s-lab}/servarr/truenas-docker/litellm/config.yaml:/app/config.yaml:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    networks:
+      - ai-network
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ============================================================================
+  # 9. HERMES AGENT — Porta Host 9119 (Stato sincronizzato bidirezionalmente)
+  # ============================================================================
+  hermes-agent:
+    image: nousresearch/hermes-agent:v2026.7.20
+    container_name: hermes-agent
+    restart: unless-stopped
+    ports:
+      - "9119:9119"
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.ai
+    environment:
+      HERMES_HOME: "/opt/data"
+      HERMES_DASHBOARD: "1"
+      HERMES_DASHBOARD_HOST: "0.0.0.0"
+      HERMES_DASHBOARD_PORT: "9119"
+      HERMES_AUTH_PROVIDER: "password"
+      HERMES_DASHBOARD_BASIC_AUTH_USERNAME: ${HERMES_DASHBOARD_USERNAME:-admin}
+      HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: ${HERMES_DASHBOARD_PASSWORD}
+      HERMES_DASHBOARD_PASSWORD: ${HERMES_DASHBOARD_PASSWORD}
+      OPENAI_API_BASE: "http://litellm:4000/v1"
+      OPENAI_API_KEY: ${HERMES_LITELLM_KEY}
+      LITELLM_API_KEY: ${HERMES_LITELLM_KEY}
+    command: ["hermes", "gateway", "run"]
+    volumes:
+      - ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/hermes-data:/opt/data
+    depends_on:
+      litellm:
+        condition: service_healthy
+    networks:
+      - ai-network
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9119/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ============================================================================
+  # 10. DOZZLE LOG VIEWER — Porta Host 8888 (Protetto via Socket Proxy L7)
+  # ============================================================================
+  dozzle:
+    image: amir20/dozzle:v11.2.0
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "8888:8080"
+    depends_on:
+      - socket-proxy
+    volumes:
+      - ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/dozzle:/data
+    environment:
+      - DOZZLE_NO_ANALYTICS=true
+      - DOZZLE_LEVEL=info
+      - DOCKER_HOST=tcp://socket-proxy:2375
+    networks:
+      - mcp-socket-proxy
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ============================================================================
+  # 11. HOMEPAGE MAC — Porta Host 3000 (Dashboard Unificata Failover Mac Studio)
+  # ============================================================================
+  homepage:
+    image: ghcr.io/gethomepage/homepage:v2.4.0
+    container_name: homepage-mac
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Rome
+      - HOMEPAGE_ALLOWED_HOSTS=*
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    volumes:
+      - ${ROOT_DIR:-/Users/olindo/prj/k8s-lab}/docker/orbstack-failover/homepage-config:/app/config
+    ports:
+      - "3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "olindo-macstudio.pindaroli.org:host-gateway"
+    networks:
+      - mcp-network
+    depends_on:
+      - traefik
+      - socket-proxy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

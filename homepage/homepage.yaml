@@ -430,21 +430,11 @@ data:
             description: Workflow automation platform
             icon: n8n.png
             siteMonitor: http://n8n.n8n.svc.cluster.local:5678/healthz
-        - Hermes Agent:
-            href: https://hermes.pindaroli.org
-            description: LLM-based Kubernetes & Infra Agent
-            icon: hermes.png
-            siteMonitor: http://hermes-hermes-agent.hermes.svc.cluster.local:9119/health
         - RAGFlow:
             href: https://ragflow.pindaroli.org
             description: Enterprise RAG & DeepDoc Document Intelligence
             icon: https://raw.githubusercontent.com/infiniflow/ragflow/main/web/public/logo.svg
             siteMonitor: http://ragflow.ragflow-system.svc.cluster.local:80/
-        - LiteLLM:
-            href: https://litellm-internal.pindaroli.org/ui
-            description: LLM Gateway & Model Proxy Admin UI
-            icon: sh-litellm
-            siteMonitor: http://litellm.litellm.svc.cluster.local:4000/health/liveliness
         # - MCP Gateway & Fleet:
         #     href: https://mcp-ui.pindaroli.org
         #     description: Model Context Protocol Fleet Gateway & Web Console (Google OAuth2)

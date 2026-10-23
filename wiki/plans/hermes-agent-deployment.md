@@ -1,6 +1,7 @@
 ---
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+superseded_by: "[[hermes-agent-truenas-docker-migration]]"
 ---
 
 # Piano di Deployment per Hermes Agent in Kubernetes (k8s-lab) - REVISIONATO v3

@@ -1,17 +1,6 @@
 #!/usr/bin/env bash
-# Homelab a risparmio energetico: solo TrueNAS attivo, PVE e K8s spenti
+# Homelab a risparmio energetico: solo TrueNAS attivo (con failback da OrbStack), PVE e K8s spenti
 set -Eeuo pipefail
-# ==============================================================================
-# lab_mode_eco.sh
-# ==============================================================================
-# Convergenza dichiarativa e idempotente allo stato ECO HOMELAB:
-# 1. Garantisce TrueNAS Bare Metal ONLINE (ZFS stripe & oliraid, servizi media)
-# 2. Garantisce Compute Layer OFFLINE (K8s Talos quiesce + PVE shutdown ACPI)
-# 3. Notifiche conformi a [[hierarchical-automation-alerting-pattern]]:
-#    - Avvio: solo ping Telegram (Zero start emails)
-#    - Successo: report unificato Telegram + Email HTML
-#    - Errore: fail-fast immediato con log completo allegato
-# ==============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
@@ -19,6 +8,7 @@ cd "$ROOT_DIR" || exit 1
 
 source "$SCRIPT_DIR/procedure_scope.sh"
 source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/orbstack_failover.sh"
 
 PROCEDURE_NAME="lab_mode_eco"
 init_procedure_scope "$PROCEDURE_NAME"
@@ -27,7 +17,6 @@ LOG_DIR="${ROOT_DIR}/logs/automation"
 mkdir -p "$LOG_DIR"
 LOG_FILE="${LOG_DIR}/${PROCEDURE_NAME}_$(date +%Y%m%d_%H%M%S).log"
 
-# Cattura output completo su logfile dedicato e terminale
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 on_error() {
@@ -52,32 +41,30 @@ on_error() {
 trap 'on_error $LINENO' ERR
 
 echo "🚀 Avvio convergenza: ${PROCEDURE_NAME}..."
-echo "➡️  Stato Target: ECO LAB (TrueNAS ONLINE, Proxmox VE e Kubernetes OFFLINE)"
+echo "➡️  Stato Target: ECO LAB (TrueNAS ONLINE + Failback da OrbStack, Proxmox VE e Kubernetes OFFLINE)"
 echo "📄 Log di sessione: $LOG_FILE"
 echo ""
 
 if is_root_procedure; then
-    send_telegram "🚀 <b>Avvio ${PROCEDURE_NAME}</b>%0AConvergenza verso modalità Eco: TrueNAS ONLINE, spegnimento K8s e Proxmox VE..." "Homelab Mode"
+    send_telegram "🚀 <b>Avvio ${PROCEDURE_NAME}</b>%0AConvergenza verso modalità Eco: TrueNAS ONLINE, Failback da OrbStack, spegnimento K8s e Proxmox VE..." "Homelab Mode"
 fi
 
-# ------------------------------------------------------------------------------
 # FASE 1: GARANTISCE STORAGE TRUENAS BARE METAL ONLINE
-# ------------------------------------------------------------------------------
-echo "▶️  [Fase 1/2] Esecuzione: ensure_storage_on..."
+echo "▶️  [Fase 1/3] Esecuzione: ensure_storage_on..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_storage_on.yml
 
-# ------------------------------------------------------------------------------
-# FASE 2: GARANTISCE COMPUTE LAYER OFFLINE (K8S + PVE)
-# ------------------------------------------------------------------------------
-echo "▶️  [Fase 2/2] Esecuzione: ensure_compute_off..."
+# FASE 2: FAILBACK STATO HERMES, SERVIZI AI/MCP E DNS DA MAC STUDIO (ORBSTACK) A TRUENAS (10.10.20.50)
+echo "▶️  [Fase 2/3] Esecuzione: deactivate_orbstack_failover_to_truenas..."
+deactivate_orbstack_failover_to_truenas
+
+# FASE 3: GARANTISCE COMPUTE LAYER OFFLINE (K8S + PVE)
+echo "▶️  [Fase 3/3] Esecuzione: ensure_compute_off..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_compute_off.yml
 
-# ------------------------------------------------------------------------------
 # NOTIFICA FINALE RIASSUNTIVA DI SUCCESSO
-# ------------------------------------------------------------------------------
 if is_root_procedure; then
-    send_telegram "🎉 <b>${PROCEDURE_NAME} Completato!</b>%0AHomelab a regime di risparmio energetico: TrueNAS attivo, K8s e Proxmox disattivati." "Homelab Mode"
-    stop_table="<tr><td><b>Modalità:</b></td><td>ECO LAB (Risparmio Energetico)</td></tr><tr><td><b>Storage TrueNAS:</b></td><td>ONLINE (10.10.20.50, Servarr, ZFS)</td></tr><tr><td><b>Hypervisor PVE:</b></td><td>OFFLINE (pve1, pve2, pve3 spenti)</td></tr><tr><td><b>Kubernetes:</b></td><td>OFFLINE (Cluster Talos disattivato)</td></tr>"
+    send_telegram "🎉 <b>${PROCEDURE_NAME} Completato!</b>%0AHomelab a regime di risparmio energetico: TrueNAS attivo (DNS -> 10.10.20.50, OrbStack disattivato), K8s e Proxmox disattivati." "Homelab Mode"
+    stop_table="<tr><td><b>Modalità:</b></td><td>ECO LAB (Risparmio Energetico)</td></tr><tr><td><b>Storage TrueNAS:</b></td><td>ONLINE (10.10.20.50, Servarr, ZFS, MCP Fleet, Hermes, LiteLLM, Dozzle)</td></tr><tr><td><b>Failover OrbStack:</b></td><td>STANDBY (Stato Hermes sincronizzato su TrueNAS e container locali spenti)</td></tr><tr><td><b>Hypervisor PVE:</b></td><td>OFFLINE (pve1, pve2, pve3 spenti)</td></tr><tr><td><b>Kubernetes:</b></td><td>OFFLINE (Cluster Talos disattivato)</td></tr>"
     stop_html="$(build_html_email_template "🎉" "Completato: ${PROCEDURE_NAME}" "Homelab Mode Orchestration" "SUCCESSO" "#10b981" "$stop_table")"
     send_summary_email "$DEFAULT_EMAIL_RECIPIENT" "✅ [SUCCESS] ${PROCEDURE_NAME}" "$stop_html" "${PROCEDURE_NAME} completato con successo"
     complete_procedure_scope
