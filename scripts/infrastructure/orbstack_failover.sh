@@ -12,7 +12,9 @@
 # ==============================================================================
 
 export FAILOVER_RUNTIME_DIR="${HOME}/.homelab-failover"
-export ORBSTACK_COMPOSE_FILE="${ROOT_DIR}/docker/orbstack-failover/docker-compose.orbstack.yaml"
+export ORBSTACK_COMPOSE_FILE="${ROOT_DIR}/docker/orbstack/docker-compose.yaml"
+export HERMES_ROOT_LOCAL="/Users/olindo/hermesAgent"
+export HERMES_ROOT_REMOTE="/mnt/stripe/hermesAgent"
 export TRUENAS_HOST="10.10.20.50"
 export MAC_STUDIO_IP="10.10.20.100"
 
@@ -84,22 +86,25 @@ prepare_orbstack_runtime_env() {
 # Eseguito in lab_mode_off.sh PRIMA di ensure_storage_off.yml (Copre FULL->OFF, ECO->OFF, OFF->OFF)
 sync_hermes_state_from_truenas() {
     prepare_orbstack_runtime_env
+    mkdir -p "${HERMES_ROOT_LOCAL}/HermesMain"
+
     if _is_tcp_open "$TRUENAS_HOST" 22; then
         local ssh_user
         ssh_user="$(_resolve_truenas_ssh_user)"
         if [ -n "$ssh_user" ]; then
-            echo "📥 [State Sync] Sincronizzazione incrementale stato Hermes da TrueNAS (/mnt/stripe/hermes-agent/) a Mac Studio..."
-            # NOTA KISS: Non eseguiamo 'docker compose stop hermes-agent' su TrueNAS!
-            # Così il container mantiene lo stato 'running' prima dello shutdown dell'OS
-            # e la policy 'restart: unless-stopped' lo riavvierà da sola al successivo boot di TrueNAS.
+            echo "📥 [State Sync] Sincronizzazione incrementale stato Hermes da TrueNAS (${HERMES_ROOT_REMOTE}/) a Mac Studio (${HERMES_ROOT_LOCAL}/)..."
+            # Supporto transizione legacy se /mnt/stripe/hermesAgent non esiste ancora ma esiste /mnt/stripe/hermes-agent
+            ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
+                "if [ ! -d '${HERMES_ROOT_REMOTE}' ] && [ -d '/mnt/stripe/hermes-agent' ]; then sudo -n mkdir -p '${HERMES_ROOT_REMOTE}' && sudo -n cp -a /mnt/stripe/hermes-agent '${HERMES_ROOT_REMOTE}/HermesMain'; fi" 2>/dev/null || true
+
             rsync -auz -e "ssh -o BatchMode=yes" \
                 --rsync-path="sudo -n rsync" \
-                "${ssh_user}@${TRUENAS_HOST}:/mnt/stripe/hermes-agent/" \
-                "${FAILOVER_RUNTIME_DIR}/hermes-data/"
-            echo "✅ [State Sync] Stato Hermes Agent allineato in ${FAILOVER_RUNTIME_DIR}/hermes-data/."
+                "${ssh_user}@${TRUENAS_HOST}:${HERMES_ROOT_REMOTE}/" \
+                "${HERMES_ROOT_LOCAL}/"
+            echo "✅ [State Sync] Stato Hermes Agent allineato in ${HERMES_ROOT_LOCAL}/."
         fi
     else
-        echo "ℹ️  [State Sync] TrueNAS è già spento (transizione OFF -> OFF): utilizzo stato locale in ${FAILOVER_RUNTIME_DIR}/hermes-data/."
+        echo "ℹ️  [State Sync] TrueNAS è già spento (transizione OFF -> OFF): utilizzo stato locale in ${HERMES_ROOT_LOCAL}/."
     fi
 }
 
@@ -148,26 +153,27 @@ deactivate_orbstack_failover_to_truenas() {
     local ssh_user
     ssh_user="$(_resolve_truenas_ssh_user)"
 
-    # 1. Se hermes-agent era attivo su OrbStack (transizione da OFF -> ECO/FULL),
-    #    ferma hermes-agent locale e sincronizza i file più recenti verso TrueNAS (KISS #1: rsync -auz senza --delete).
+    # 1. Se hermes-main (o hermes-agent legacy) era attivo su OrbStack (transizione da OFF -> ECO/FULL),
+    #    ferma hermes-main locale e sincronizza i file più recenti verso TrueNAS (KISS #1: rsync -auz senza --delete).
     #    Se invece siamo in FULL->ECO, ECO->FULL, ECO->ECO o FULL->FULL, questo blocco viene saltato in 0ms!
-    if docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^hermes-agent$'; then
-        echo "🛑 [State Sync] Rilevato hermes-agent attivo su OrbStack: arresto per flush sessioni maturate in OFF..."
-        docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" stop hermes-agent
+    if docker ps --format '{{.Names}}' 2>/dev/null | grep -q -E '^(hermes-main|hermes-agent)$'; then
+        echo "🛑 [State Sync] Rilevato hermes attivo su OrbStack: arresto per flush sessioni maturate in OFF..."
+        docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" stop hermes-agent 2>/dev/null || true
 
-        if [ -n "$(ls -A "${FAILOVER_RUNTIME_DIR}/hermes-data" 2>/dev/null)" ] && [ -n "$ssh_user" ]; then
-            echo "📤 [State Sync] Sincronizzazione sicura (rsync -auz, zero delete) da Mac Studio -> TrueNAS (/mnt/stripe/hermes-agent/)..."
+        if [ -n "$(ls -A "${HERMES_ROOT_LOCAL}" 2>/dev/null)" ] && [ -n "$ssh_user" ]; then
+            echo "📤 [State Sync] Sincronizzazione sicura multi-agente (rsync -auz, zero delete) da Mac Studio (${HERMES_ROOT_LOCAL}/) -> TrueNAS (${HERMES_ROOT_REMOTE}/)..."
+            ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" "sudo -n mkdir -p '${HERMES_ROOT_REMOTE}'" 2>/dev/null || true
             rsync -auz -e "ssh -o BatchMode=yes" \
                 --rsync-path="sudo -n rsync" \
-                "${FAILOVER_RUNTIME_DIR}/hermes-data/" \
-                "${ssh_user}@${TRUENAS_HOST}:/mnt/stripe/hermes-agent/"
+                "${HERMES_ROOT_LOCAL}/" \
+                "${ssh_user}@${TRUENAS_HOST}:${HERMES_ROOT_REMOTE}/"
             ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-                "sudo -n docker restart hermes-agent 2>/dev/null || docker restart hermes-agent" || true
+                "sudo -n docker restart hermes-main 2>/dev/null || sudo -n docker restart hermes-agent 2>/dev/null || true" || true
         else
-            echo "⚠️  [State Sync] Cartella locale hermes-data vuota o SSH non disponibile: salto rsync verso TrueNAS."
+            echo "⚠️  [State Sync] Cartella locale ${HERMES_ROOT_LOCAL} vuota o SSH non disponibile: salto rsync verso TrueNAS."
         fi
     else
-        echo "ℹ️  [State Sync] Nessun container hermes-agent attivo su OrbStack (transizione tra stati con TrueNAS già primario)."
+        echo "ℹ️  [State Sync] Nessun container hermes attivo su OrbStack (transizione tra stati con TrueNAS già primario)."
     fi
 
     # 2. Auto-Healing KISS #5: Se anche una sola delle 4 porte su TrueNAS (8100, 9119, 4000, 8888)

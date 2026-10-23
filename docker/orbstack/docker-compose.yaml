@@ -332,7 +332,7 @@ services:
       - "host.docker.internal:host-gateway"
       - "olindo-macstudio.pindaroli.org:host-gateway"
     volumes:
-      - ${ROOT_DIR:-/Users/olindo/prj/k8s-lab}/servarr/truenas-docker/litellm/config.yaml:/app/config.yaml:ro
+      - ${ROOT_DIR:-/Users/olindo/prj/k8s-lab}/docker/truenas/litellm/config.yaml:/app/config.yaml:ro
     command: ["--config", "/app/config.yaml", "--port", "4000"]
     networks:
       - ai-network
@@ -344,11 +344,11 @@ services:
       start_period: 20s
 
   # ============================================================================
-  # 9. HERMES AGENT — Porta Host 9119 (Stato sincronizzato bidirezionalmente)
+  # 9. HERMES AGENT (HermesMain) — Porta Host 9119 (Multi-Agente & v0.22.5)
   # ============================================================================
   hermes-agent:
-    image: nousresearch/hermes-agent:v2026.7.20
-    container_name: hermes-agent
+    image: nousresearch/hermes-agent:v0.22.5
+    container_name: hermes-main
     restart: unless-stopped
     ports:
       - "9119:9119"
@@ -367,7 +367,7 @@ services:
       LITELLM_API_KEY: ${HERMES_LITELLM_KEY}
     command: ["hermes", "gateway", "run"]
     volumes:
-      - ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/hermes-data:/opt/data
+      - ${HERMES_ROOT_DIR:-/Users/olindo/hermesAgent}/HermesMain:/opt/data
     depends_on:
       litellm:
         condition: service_healthy
@@ -421,7 +421,7 @@ services:
       - HOMEPAGE_ALLOWED_HOSTS=*
       - NODE_TLS_REJECT_UNAUTHORIZED=0
     volumes:
-      - ${ROOT_DIR:-/Users/olindo/prj/k8s-lab}/docker/orbstack-failover/homepage-config:/app/config
+      - ${ROOT_DIR:-/Users/olindo/prj/k8s-lab}/docker/orbstack/homepage-config:/app/config
     ports:
       - "3000:3000"
     extra_hosts:
