@@ -1,7 +1,7 @@
 ---
 title: "Piano: Hermes Agent Workspace Condiviso common/prj, Web Shell Integrata e Sync Bidirezionale TrueNAS/Mac (v2.0 Certificata)"
 type: plan
-status: active
+status: completed
 version: "2.0"
 certified_for_ai: true
 created_at: 2026-10-24
@@ -19,8 +19,8 @@ tags:
 # Piano Operativo v2.0: Hermes Agent Workspace Condiviso `common/prj`, Web Shell Integrata e Sync Bidirezionale TrueNAS/Mac
 
 > [!NOTE]
-> **Stato**: `active` / `version: 2.0` / `certified_for_ai: true`.
-> Piano consolidato post-revisione architetturale SRE, conforme al modello operativo **Active/Passive a Mutua Esclusione** (`FULL`/`ECO` su TrueNAS ↔ `OFF` su Mac Studio OrbStack), al protocollo di verifica test-driven (§12) e alle Golden Rules homelab (`GEMINI.md`).
+> **Stato**: `completed` / `version: 2.0` / `certified_for_ai: true`.
+> Piano completato con successo post-collaudo E2E Active/Passive (§12) e conformità totale alle Golden Rules homelab (`GEMINI.md`).
 
 ---
 
@@ -348,10 +348,13 @@ Poiché i due stack **non sono mai attivi contemporaneamente**, la sincronizzazi
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Versione Piano**: `v2.0` (Consolidata post-revisione SRE con tutte le scelte approvate).
-- **Fase Attiva**: **FASE 2: Realizzazione Script `s6-overlay`, Proxy FastAPI (`subprotocol="tty"`) e Iniezione UI**
-- **Ultima Azione Completata**: FASE 1 completata al 100% con test di verifica oggettivo superato:
-  - Create cartelle `/Users/olindo/hermesAgent/common/prj` e `~/.homelab-failover/hermes/{bin,s6,web}`.
-  - Scaricati e verificati con `file` e `docker run alpine`: `ttyd` (Linux ARM64 ELF statico v1.7.7), `ttyd.x86_64` (Linux x86_64 ELF statico v1.7.7) e `kubectl` (Linux ARM64 ELF statico v1.36.2).
-- **Prossimo Passo Operativo**: Scrittura e test sintattico (`bash -n` e `python3 -m py_compile`) degli script in `~/.homelab-failover/hermes/s6/` (`99-hermes-terminal.sh`, `ttyd-run.sh`) e `~/.homelab-failover/hermes/web/` (`terminal_proxy.py`, `terminal-inject.js`).
-- **Blocchi/Decisioni Pendenti**: Nessun blocco tecnico; esecuzione fermata e stato persistito su richiesta esplicita dell'utente.
+- **Versione Piano**: `v2.0` (Consolidata e completamente eseguita con successo).
+- **Stato Piano**: **COMPLETATO AL 100% (Tutte le 6 Fasi Collaudate con Successo)**
+- **Riepilogo Fasi**:
+  - **FASE 1**: Directory e binari Linux ELF (`ttyd.aarch64`, `ttyd.x86_64`, `kubectl`) configurati e collaudati su Mac e TrueNAS.
+  - **FASE 2**: Script `s6-overlay` (`99-hermes-terminal.sh`, `ttyd-run.sh`) e moduli Web (`terminal_proxy.py`, `terminal-inject.js`) scritti e validati sintatticamente.
+  - **FASE 3**: Compose Mac OrbStack aggiornato con mount dichiarativi; container `hermes-main` ricreato e verificato (token JSON, umask `0002`, symlink `/hermesAgent/common/prj` -> `/opt/data/common/prj`, test idempotenza superato).
+  - **FASE 4**: Script `orbstack_failover.sh` aggiornato con logica di mutua esclusione, doppio `rsync` e permessi Git-safe (`u+rwX,g+rwX,o+rX`).
+  - **FASE 5**: TrueNAS SCALE bare metal avviato via WoL; compose e file runtime distribuiti in `/mnt/stripe/truenas-docker/hermes/`; container ricreato e verificato.
+  - **FASE 6**: Collaudo E2E Active/Passive completato: repo Git di test creato su TrueNAS, commutato a Mac con `lab_mode_off.sh` (git status pulito), modificato su Mac, riallineato su TrueNAS con `lab_mode_eco.sh` (commit e file perfettamente allineati senza alterazione permessi).
+- **Prossimo Passo Operativo**: Piano completato con successo. Nessuna azione pendente.

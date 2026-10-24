@@ -94,21 +94,39 @@ prepare_orbstack_runtime_env() {
 # Eseguito in lab_mode_off.sh PRIMA di ensure_storage_off.yml (Copre FULL->OFF, ECO->OFF, OFF->OFF)
 sync_hermes_state_from_truenas() {
     prepare_orbstack_runtime_env
-    mkdir -p "${HERMES_ROOT_LOCAL}/HermesMain"
+    mkdir -p "${HERMES_ROOT_LOCAL}/HermesMain" "${HERMES_ROOT_LOCAL}/common/prj"
 
     if _is_tcp_open "$TRUENAS_HOST" 22; then
         local ssh_user
         ssh_user="$(_resolve_truenas_ssh_user)"
         if [ -n "$ssh_user" ]; then
-            echo "📥 [State Sync] Sincronizzazione incrementale stato Hermes da TrueNAS (${HERMES_ROOT_REMOTE}/) a Mac Studio (${HERMES_ROOT_LOCAL}/)..."
-            # Supporto transizione legacy se /mnt/stripe/hermesAgent non esiste ancora ma esiste /mnt/stripe/hermes-agent
-            ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-                "if [ ! -d '${HERMES_ROOT_REMOTE}' ] && [ -d '/mnt/stripe/hermes-agent' ]; then sudo -n mkdir -p '${HERMES_ROOT_REMOTE}' && sudo -n cp -a /mnt/stripe/hermes-agent '${HERMES_ROOT_REMOTE}/HermesMain'; fi" 2>/dev/null || true
+            echo "🛑 [State Sync] Arresto preventivo container su entrambi i nodi per quiescenza SQLite WAL..."
+            docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" stop hermes-agent 2>/dev/null || true
+            ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" "sudo -n docker stop -t 25 hermes-main 2>/dev/null || true"
 
-            rsync -auz -e "ssh -o BatchMode=yes" \
+            echo "🔧 [State Sync] Pre-normalizzazione permessi su TrueNAS (${HERMES_ROOT_REMOTE})..."
+            ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
+                "sudo -n chown -R olindo:k8s '${HERMES_ROOT_REMOTE}' && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}'" 2>/dev/null || true
+
+            echo "📥 [State Sync] Sync Stato Istanza (HermesMain, rsync -az senza -u)..."
+            rsync -az --itemize-changes -e "ssh -o BatchMode=yes" \
                 --rsync-path="sudo -n rsync" \
-                "${ssh_user}@${TRUENAS_HOST}:${HERMES_ROOT_REMOTE}/" \
-                "${HERMES_ROOT_LOCAL}/"
+                --exclude='/common/**' \
+                --exclude='.DS_Store' \
+                --exclude='__pycache__/' \
+                --exclude='.pytest_cache/' \
+                "${ssh_user}@${TRUENAS_HOST}:${HERMES_ROOT_REMOTE}/HermesMain/" \
+                "${HERMES_ROOT_LOCAL}/HermesMain/"
+
+            echo "📥 [State Sync] Sync Workspace Condiviso (common, rsync -auz additivo)..."
+            rsync -auz --itemize-changes -e "ssh -o BatchMode=yes" \
+                --rsync-path="sudo -n rsync" \
+                --exclude='.DS_Store' \
+                --exclude='__pycache__/' \
+                --exclude='.pytest_cache/' \
+                "${ssh_user}@${TRUENAS_HOST}:${HERMES_ROOT_REMOTE}/common/" \
+                "${HERMES_ROOT_LOCAL}/common/"
+
             echo "✅ [State Sync] Stato Hermes Agent allineato in ${HERMES_ROOT_LOCAL}/."
         fi
     else
@@ -165,11 +183,11 @@ set_truenas_home_internal_backend() {
     if [ "$mode" = "full" ]; then
         echo "🔀 [Traefik Dynamic] Configurazione backend homepage TrueNAS -> K8s Ingress (https://10.10.20.56)..."
         ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-            "sudo sed -i 's|url: \"http://10.10.20.50:3000\"|url: \"https://10.10.20.56\"|g' /mnt/stripe/truenas-docker/mcp/dynamic.yaml 2>/dev/null || true"
+            "sudo -n sed -i 's|url: \"http://10.10.20.50:3000\"|url: \"https://10.10.20.56\"|g' /mnt/stripe/truenas-docker/mcp/dynamic.yaml 2>/dev/null || true"
     elif [ "$mode" = "eco" ]; then
         echo "🔀 [Traefik Dynamic] Configurazione backend homepage TrueNAS -> Locale (:3000)..."
         ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-            "sudo sed -i 's|url: \"https://10.10.20.56\"|url: \"http://10.10.20.50:3000\"|g' /mnt/stripe/truenas-docker/mcp/dynamic.yaml 2>/dev/null || true"
+            "sudo -n sed -i 's|url: \"https://10.10.20.56\"|url: \"http://10.10.20.50:3000\"|g' /mnt/stripe/truenas-docker/mcp/dynamic.yaml 2>/dev/null || true"
     fi
 }
 
@@ -195,14 +213,35 @@ deactivate_orbstack_failover_to_truenas() {
         docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" stop hermes-agent 2>/dev/null || true
 
         if [ -n "$(ls -A "${HERMES_ROOT_LOCAL}" 2>/dev/null)" ] && [ -n "$ssh_user" ]; then
-            echo "📤 [State Sync] Sincronizzazione sicura multi-agente (rsync -auz, zero delete) da Mac Studio (${HERMES_ROOT_LOCAL}/) -> TrueNAS (${HERMES_ROOT_REMOTE}/)..."
-            ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" "sudo -n mkdir -p '${HERMES_ROOT_REMOTE}'" 2>/dev/null || true
-            rsync -auz -e "ssh -o BatchMode=yes" \
-                --rsync-path="sudo -n rsync" \
-                "${HERMES_ROOT_LOCAL}/" \
-                "${ssh_user}@${TRUENAS_HOST}:${HERMES_ROOT_REMOTE}/"
+            echo "🛑 [State Sync] Arresto preventivo hermes-main su TrueNAS..."
+            ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" "sudo -n docker stop -t 25 hermes-main 2>/dev/null || true"
+
+            echo "🔧 [State Sync] Pre-normalizzazione permessi su TrueNAS prima del push..."
             ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-                "sudo -n docker restart hermes-main 2>/dev/null || sudo -n docker restart hermes-agent 2>/dev/null || true" || true
+                "sudo -n mkdir -p '${HERMES_ROOT_REMOTE}/HermesMain' '${HERMES_ROOT_REMOTE}/common/prj' && sudo -n chown -R olindo:k8s '${HERMES_ROOT_REMOTE}' && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}'" 2>/dev/null || true
+
+            echo "📤 [State Sync] Sync Stato Istanza HermesMain (Mac -> TrueNAS, rsync -az senza -u)..."
+            rsync -az --no-owner --no-group --itemize-changes -e "ssh -o BatchMode=yes" \
+                --rsync-path="sudo -n rsync" \
+                --exclude='/common/**' \
+                --exclude='.DS_Store' \
+                --exclude='__pycache__/' \
+                --exclude='.pytest_cache/' \
+                "${HERMES_ROOT_LOCAL}/HermesMain/" \
+                "${ssh_user}@${TRUENAS_HOST}:${HERMES_ROOT_REMOTE}/HermesMain/"
+
+            echo "📤 [State Sync] Sync Workspace Condiviso common (Mac -> TrueNAS, rsync -auz additivo)..."
+            rsync -auz --no-owner --no-group --itemize-changes -e "ssh -o BatchMode=yes" \
+                --rsync-path="sudo -n rsync" \
+                --exclude='.DS_Store' \
+                --exclude='__pycache__/' \
+                --exclude='.pytest_cache/' \
+                "${HERMES_ROOT_LOCAL}/common/" \
+                "${ssh_user}@${TRUENAS_HOST}:${HERMES_ROOT_REMOTE}/common/"
+
+            echo "🔧 [State Sync] Post-normalizzazione permessi Git-safe e SGID su TrueNAS..."
+            ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
+                "sudo -n chown -R olindo:k8s '${HERMES_ROOT_REMOTE}' && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}' && sudo -n find '${HERMES_ROOT_REMOTE}' -type d -exec chmod g+s {} + && (sudo -n docker start hermes-main 2>/dev/null || true)"
         else
             echo "⚠️  [State Sync] Cartella locale ${HERMES_ROOT_LOCAL} vuota o SSH non disponibile: salto rsync verso TrueNAS."
         fi

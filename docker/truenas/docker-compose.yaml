@@ -296,6 +296,7 @@ services:
       HERMES_DASHBOARD_BASIC_AUTH_USERNAME: ${HERMES_DASHBOARD_USERNAME:-admin}
       HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: ${HERMES_DASHBOARD_PASSWORD}
       HERMES_DASHBOARD_PASSWORD: ${HERMES_DASHBOARD_PASSWORD}
+      HERMES_HOST_NODE: "truenas"
       OPENAI_API_BASE: "http://litellm:4000/v1"
       OPENAI_API_KEY: ${HERMES_LITELLM_KEY}
       LITELLM_API_KEY: ${HERMES_LITELLM_KEY}
@@ -304,10 +305,16 @@ services:
     command: ["hermes", "gateway", "run"]
     volumes:
       - /mnt/stripe/hermesAgent/HermesMain:/opt/data
-      - /mnt/stripe/truenas-docker/hermes/kubeconfig:/root/.kube/config:ro
-      - /mnt/stripe/truenas-docker/hermes/talosconfig:/root/.talos/config:ro
+      - /mnt/stripe/hermesAgent/common:/opt/data/common
+      - /mnt/stripe/truenas-docker/hermes/bin/ttyd:/usr/local/bin/ttyd:ro
       - /mnt/stripe/truenas-docker/hermes/bin/kubectl:/usr/local/bin/kubectl:ro
       - /mnt/stripe/truenas-docker/hermes/bin/talosctl:/usr/local/bin/talosctl:ro
+      - /mnt/stripe/truenas-docker/hermes/kubeconfig:/root/.kube/config:ro
+      - /mnt/stripe/truenas-docker/hermes/talosconfig:/root/.talos/config:ro
+      - /mnt/stripe/truenas-docker/hermes/s6/99-hermes-terminal.sh:/etc/cont-init.d/99-hermes-terminal.sh:ro
+      - /mnt/stripe/truenas-docker/hermes/s6/ttyd-run.sh:/etc/services.d/ttyd/run:ro
+      - /mnt/stripe/truenas-docker/hermes/web/terminal_proxy.py:/opt/hermes/hermes_cli/terminal_proxy.py:ro
+      - /mnt/stripe/truenas-docker/hermes/web/terminal-inject.js:/opt/hermes/hermes_cli/web_dist/terminal-inject.js:ro
     depends_on:
       litellm:
         condition: service_healthy

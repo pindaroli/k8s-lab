@@ -1,12 +1,12 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## 🚀 In Corso: Hermes Agent Workspace Condiviso common/prj, Web Shell Integrata e Sync Bidirezionale TrueNAS/Mac (v2.0) [[hermes-agent-common-prj-and-web-terminal]]
-- [ ] Fase 1: Preparazione Struttura Directory (`/Users/olindo/hermesAgent/common/prj`) & Provisioning Binari Linux ELF (`ttyd.aarch64` + `kubectl` ARM64 su Mac, `ttyd.x86_64` per TrueNAS)
-- [ ] Fase 2: Script `s6-overlay` (`99-hermes-terminal.sh`, `ttyd-run.sh`), Router FastAPI Prepend (`terminal_proxy.py` subprotocol=tty) e Iniezione UI (`terminal-inject.js` iframe persistente)
-- [ ] Fase 3: Aggiornamento Dichiarativo Compose Mac OrbStack (`docker/orbstack/docker-compose.yaml`), Mount e Test di Idempotenza Locale
-- [ ] Fase 4: Aggiornamento Libreria `orbstack_failover.sh` (Stop preventivo TrueNAS -t 25, rsync split-path con esclusione /common/**, permessi Git-safe e SGID)
-- [ ] Fase 5: Aggiornamento Dichiarativo Compose TrueNAS (`docker/truenas/docker-compose.yaml`) & Predisposizione Binari/Script su TrueNAS
-- [ ] Fase 6: Collaudo E2E Active/Passive (`lab_mode_eco` ↔ `lab_mode_off`), Verifica Git Status e Chiusura Piano (§12 & §13)
+## 🚀 [x] ✅ COMPLETATO: Hermes Agent Workspace Condiviso common/prj, Web Shell Integrata e Sync Bidirezionale TrueNAS/Mac (v2.0) [[hermes-agent-common-prj-and-web-terminal]]
+- [x] Fase 1: Preparazione Struttura Directory (`/Users/olindo/hermesAgent/common/prj`) & Provisioning Binari Linux ELF (`ttyd.aarch64` + `kubectl` ARM64 su Mac, `ttyd.x86_64` per TrueNAS) ✅
+- [x] Fase 2: Script `s6-overlay` (`99-hermes-terminal.sh`, `ttyd-run.sh`), Router FastAPI Prepend (`terminal_proxy.py` subprotocol=tty) e Iniezione UI (`terminal-inject.js` iframe persistente) ✅
+- [x] Fase 3: Aggiornamento Dichiarativo Compose Mac OrbStack (`docker/orbstack/docker-compose.yaml`), Mount e Test di Idempotenza Locale ✅
+- [x] Fase 4: Aggiornamento Libreria `orbstack_failover.sh` (Stop preventivo TrueNAS -t 25, rsync split-path con esclusione /common/**, permessi Git-safe e SGID) ✅
+- [x] Fase 5: Aggiornamento Dichiarativo Compose TrueNAS (`docker/truenas/docker-compose.yaml`) & Predisposizione Binari/Script su TrueNAS ✅
+- [x] Fase 6: Collaudo E2E Active/Passive (`lab_mode_eco` ↔ `lab_mode_off`), Verifica Git Status e Chiusura Piano (§12 & §13) ✅
 
 ## 🚀 In Corso: Migrazione Garage S3 e Scrutiny da TrueNAS Apps a Docker Compose [[garage-scrutiny-truenas-docker-migration]]
 - [ ] Fase 1: Preparazione Volumi Scrutiny (`/mnt/stripe/truenas-docker/scrutiny`), Aggiornamento `garage.toml` (`rpc_public_addr` -> `10.10.20.50:3901`) e File Dichiarativi (`docker/truenas/docker-compose.yaml`, `ensure_storage_on.yml`, `storage.json`)
