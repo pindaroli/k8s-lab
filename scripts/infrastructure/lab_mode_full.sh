@@ -54,12 +54,16 @@ echo "▶️  [Fase 1/3] Esecuzione: ensure_storage_on..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_storage_on.yml
 
 # FASE 2: FAILBACK STATO HERMES, SERVIZI AI/MCP E DNS DA MAC STUDIO (ORBSTACK) A TRUENAS (10.10.20.50)
-echo "▶️  [Fase 2/3] Esecuzione: deactivate_orbstack_failover_to_truenas..."
-deactivate_orbstack_failover_to_truenas
+echo "▶️  [Fase 2/3] Esecuzione: deactivate_orbstack_failover_to_truenas (target full)..."
+deactivate_orbstack_failover_to_truenas "full"
 
-# FASE 3: GATELAYER COMPUTE (PROXMOX VE + TALOS KUBERNETES)
+# FASE 3: GATELAYER COMPUTE (PROXMOX VE + TALOS KUBERNETES) E SWITCH DNS FULL
 echo "▶️  [Fase 3/3] Esecuzione: ensure_compute_on..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_compute_on.yml
+
+echo "🌐 [Fase 3/3] Commutazione DNS Unbound -> FULL (K8s Ingress 10.10.20.56)..."
+python3 "${ROOT_DIR}/scripts/network/switch_failover_dns.py" --target full
+set_truenas_home_internal_backend "full"
 
 # NOTIFICA FINALE RIASSUNTIVA DI SUCCESSO
 if is_root_procedure; then

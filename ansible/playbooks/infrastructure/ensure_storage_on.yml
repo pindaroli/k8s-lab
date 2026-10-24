@@ -57,10 +57,10 @@
       retries: 24
       delay: 5
 
-    - name: "⏳ Gate 1.2: Attesa WebUI TrueNAS (Porta 443 o 80)"
+    - name: "⏳ Gate 1.2: Attesa WebUI TrueNAS (Porta 8443)"
       wait_for:
         host: "{{ truenas_ip }}"
-        port: 443
+        port: 8443
         state: started
         timeout: 60
 
@@ -89,6 +89,8 @@
         - { name: "Homepage Standalone", port: 3000 }
         - { name: "qBittorrent", port: 8080 }
         - { name: "Jellyfin", port: 8096 }
+        - { name: "Garage S3 API", port: 3900 }
+        - { name: "Scrutiny WebUI", port: 31054 }
 
     - name: "✅ TrueNAS Operativo al 100%"
       debug:

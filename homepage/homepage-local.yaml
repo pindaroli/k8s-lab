@@ -73,6 +73,9 @@ data:
         style: row
         columns: 4
   widgets.yaml: |
+    - greeting:
+        text_size: md
+        text: "🟢 Stato: FULL (K8s & TrueNAS Online)"
     - kubernetes:
         cluster:
           show: true

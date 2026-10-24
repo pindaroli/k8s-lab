@@ -1,0 +1,90 @@
+http:
+  serversTransports:
+    insecure-transport:
+      insecureSkipVerify: true
+
+  routers:
+    home-internal-https:
+      rule: "Host(`home-internal.pindaroli.org`)"
+      entryPoints:
+        - websecure
+      service: homepage-truenas-svc
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: "pindaroli.org"
+            sans:
+              - "*.pindaroli.org"
+
+    hermes-https:
+      rule: "Host(`hermes.pindaroli.org`) || Host(`hermes-internal.pindaroli.org`)"
+      entryPoints:
+        - websecure
+      service: hermes-svc
+      tls:
+        certResolver: cloudflare
+
+    litellm-https:
+      rule: "Host(`litellm.pindaroli.org`) || Host(`litellm-internal.pindaroli.org`)"
+      entryPoints:
+        - websecure
+      service: litellm-svc
+      tls:
+        certResolver: cloudflare
+
+    dozzle-https:
+      rule: "Host(`dozzle.pindaroli.org`)"
+      entryPoints:
+        - websecure
+      service: dozzle-svc
+      tls:
+        certResolver: cloudflare
+
+    mcp-gateway-https:
+      rule: "Host(`mcp.pindaroli.org`)"
+      entryPoints:
+        - websecure
+      service: mcp-loopback-svc
+      tls:
+        certResolver: cloudflare
+
+    truenas-gui-https:
+      rule: "Host(`truenas.pindaroli.org`)"
+      entryPoints:
+        - websecure
+      service: truenas-gui-svc
+      tls:
+        certResolver: cloudflare
+
+  services:
+    homepage-truenas-svc:
+      loadBalancer:
+        serversTransport: insecure-transport
+        servers:
+          - url: "http://10.10.20.50:3000"
+
+    hermes-svc:
+      loadBalancer:
+        servers:
+          - url: "http://10.10.20.50:9119"
+
+    litellm-svc:
+      loadBalancer:
+        servers:
+          - url: "http://10.10.20.50:4000"
+
+    dozzle-svc:
+      loadBalancer:
+        servers:
+          - url: "http://10.10.20.50:8888"
+
+    mcp-loopback-svc:
+      loadBalancer:
+        servers:
+          - url: "http://10.10.20.50:8100"
+
+    truenas-gui-svc:
+      loadBalancer:
+        serversTransport: insecure-transport
+        servers:
+          - url: "https://10.10.20.50:8443"

@@ -51,6 +51,9 @@
 
 - **Classical Music Curator Skill (`.agents/skills/classical-music-curator/`)**: Ogni volta che l'utente richiede di cercare o scaricare brani, sinfonie, concerti o quartetti di musica classica specificando autore/opera (con tracker opzionale), l'agente DEVE obbligatoriamente attivare ed eseguire la skill dedicata `classical-music-curator` (ricerca Prowlarr, selezione critica comparativa dei 7 migliori candidati per esecuzione artistica e qualità audiofila, GATE DI STOP vincolante con divieto di grab automatico, e download finale con categoria `lidarr-classical` solo dopo la scelta esplicita dell'utente).
 
+- **Consulto Piano Skill (`.agents/skills/consulto-piano/`)**: Ogni volta che l'utente scrive *"chiedo consulto su <piano>"*, *"consulto su <piano>"*, o richiede un consulto/revisione esperta su un piano operativo o architetturale, l'agente DEVE obbligatoriamente attivare ed eseguire la skill dedicata `consulto-piano` (rigenerazione preventiva di `wiki/wiki_context.md` tramite lo script previsto, generazione del file `contesto.md` con tutte le nozioni contestuali pertinenti e produzione del prompt specialistico per l'agente revisore con citazione esplicita dei 3 file: `<piano>.md`, `contesto.md` e `wiki/wiki_context.md`). È tassativamente vietato avviare autonomamente subagenti (`invoke_subagent`) o processi in background: l'agente deve limitarsi a preparare i file e presentare a video all'utente il prompt pronto all'uso in un blocco markdown copiabile.
+
+
 
 
 

@@ -35,7 +35,9 @@ TrueNAS è il fornitore centrale di storage per l'intera infrastruttura Lab.
 ## 3. Servizi e Condivisioni
 - **NFS**: Utilizzato per montare lo storage sul [[Talos_Cluster]] e sui nodi esterni come il Mac Studio.
 - **SMB**: Utilizzato per l'accesso amministrativo da Windows/macOS.
-- **S3 (MinIO)**: Utilizzato per i backup offsite.
+- **S3 Object Storage (Garage)**: Container `garage` v2.3.0 in `docker-compose.yaml` (dataset `/mnt/oliraid/garage-data`), porte 3900 (S3 API), 3901 (RPC su VLAN 20), 3902 (Web), 3903 (Admin). Buckets: `postgres-wal`, `velero`, `ragflow-docs`.
+- **Monitoraggio Dischi (Scrutiny)**: Container `scrutiny` v0.9.5-omnibus in `docker-compose.yaml` (dataset `/mnt/stripe/truenas-docker/scrutiny`), porte 31054 (WebUI/API) e 31055 (InfluxDB). Monitora tutti i dischi SATA e NVMe.
+- **Docker Compose Stack (`/mnt/stripe/truenas-docker`)**: Stack Docker permanente unificato per tutti i container host (Media/Failover, Hermes/LiteLLM, Dozzle, Garage, Scrutiny, Homepage). Tutte le app del catalogo nativo TrueNAS (`ix-apps`) sono state completamente migrate e decommissionate.
 - **NUT Server (UPS)**: Servizio UPS attivo in modalità Master (`10.10.20.50:3493`) per telemetria e broadcast di shutdown coordinato verso i nodi Proxmox. Monitoraggio sessioni TCP client con `HOSTSYNC 120` e soglia di sicurezza software al 40% di carica residua.
 
 ## 4. Integrazione Kubernetes

@@ -582,6 +582,9 @@ data:
             icon: si-prefect
             siteMonitor: http://prefect-server.prefect.svc.cluster.local:4200/api/health
   widgets.yaml: |
+    - greeting:
+        text_size: md
+        text: "🟢 Stato: FULL (K8s & TrueNAS Online)"
     - kubernetes:
         cluster:
           show: true
@@ -762,7 +765,7 @@ spec:
     secretName: pindaroli-wildcard-tls
 
 ---
-# TrueNAS su 10.10.20.50:443
+# TrueNAS su 10.10.20.50:8443 (WebGUI migrata per liberare 80/443 a Traefik Ingress)
 apiVersion: v1
 kind: Service
 metadata:
@@ -770,7 +773,7 @@ metadata:
 spec:
   ports:
   - port: 443
-    targetPort: 443
+    targetPort: 8443
 ---
 apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
@@ -780,7 +783,7 @@ metadata:
     kubernetes.io/service-name: truenas-external
 addressType: IPv4
 ports:
-  - port: 443
+  - port: 8443
     protocol: TCP
 endpoints:
   - addresses:

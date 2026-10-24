@@ -54,8 +54,9 @@ echo "▶️  [Fase 1/3] Esecuzione: ensure_storage_on..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_storage_on.yml
 
 # FASE 2: FAILBACK STATO HERMES, SERVIZI AI/MCP E DNS DA MAC STUDIO (ORBSTACK) A TRUENAS (10.10.20.50)
-echo "▶️  [Fase 2/3] Esecuzione: deactivate_orbstack_failover_to_truenas..."
-deactivate_orbstack_failover_to_truenas
+echo "▶️  [Fase 2/3] Esecuzione: deactivate_orbstack_failover_to_truenas (target eco)..."
+set_truenas_home_internal_backend "eco"
+deactivate_orbstack_failover_to_truenas "eco"
 
 # FASE 3: GARANTISCE COMPUTE LAYER OFFLINE (K8S + PVE)
 echo "▶️  [Fase 3/3] Esecuzione: ensure_compute_off..."

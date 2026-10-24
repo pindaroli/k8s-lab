@@ -67,7 +67,9 @@
         "vlan": "20",
         "tagged_vlan": "10"
       },
-      "notes": "LACP 802.3ad trunk. bond0 untagged sulla VLAN 20, un solo indirizzo 10.10.20.50/24, gateway 10.10.20.1. La VLAN 10 è taggata sul LAG solo per la VM PBS (vlan10 senza indirizzo sull'host).",
+      "notes": "LACP 802.3ad trunk. bond0 untagged sulla VLAN 20, un solo indirizzo 10.10.20.50/24, gateway 10.10.20.1. La VLAN 10 è taggata sul LAG solo per la VM PBS (vlan10 senza indirizzo sull'host). WebGUI spostata su porta HTTPS 8443 (HTTP 8088), porte standard 80 e 443 dedicate all'Ingress Traefik per home-internal.",
+      "webui_port": 8443,
+      "webui_http_port": 8088,
       "wol": {
         "supported": true,
         "enabled": true,

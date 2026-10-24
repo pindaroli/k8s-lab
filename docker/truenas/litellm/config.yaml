@@ -84,3 +84,6 @@ router_settings:
     chat: big-chat
   allowed_fails: 1
   cooldown_time: 30
+
+litellm_settings:
+  drop_params: true

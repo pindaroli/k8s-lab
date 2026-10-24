@@ -1,9 +1,11 @@
 ---
 title: "Traefik Alone Reverse Proxy su TrueNAS (Porta 8443)"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-09-19
+archived_at: 2026-10-24
+superseded_by: [[home-internal-dns-failover-and-https-ingress]]
 tags:
   - "#traefik"
   - "#truenas"

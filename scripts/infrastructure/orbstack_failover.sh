@@ -40,9 +40,7 @@ _resolve_truenas_ssh_user() {
 # oppure usando i file locali già presenti (con fallback SOPS minimale solo se assenti a freddo)
 prepare_orbstack_runtime_env() {
     echo "🔐 [OrbStack Failover] Verifica directory e file .env runtime in ${FAILOVER_RUNTIME_DIR}..."
-    mkdir -p \
-        "${FAILOVER_RUNTIME_DIR}/hermes-data" \
-        "${FAILOVER_RUNTIME_DIR}/dozzle"
+    mkdir -p "${FAILOVER_RUNTIME_DIR}/dozzle"
     chmod 700 "${FAILOVER_RUNTIME_DIR}"
 
     if _is_tcp_open "$TRUENAS_HOST" 22; then
@@ -57,6 +55,16 @@ prepare_orbstack_runtime_env() {
             ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
                 "sudo -n cat /mnt/stripe/truenas-docker/mcp/.env 2>/dev/null || cat /mnt/stripe/truenas-docker/mcp/.env" \
                 > "${FAILOVER_RUNTIME_DIR}/.env.mcp.tmp" && mv "${FAILOVER_RUNTIME_DIR}/.env.mcp.tmp" "${FAILOVER_RUNTIME_DIR}/.env.mcp"
+
+            mkdir -p "${FAILOVER_RUNTIME_DIR}/acme"
+            chmod 700 "${FAILOVER_RUNTIME_DIR}/acme"
+            if ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" "test -s /mnt/stripe/truenas-docker/mcp/acme/acme.json" 2>/dev/null; then
+                ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
+                    "sudo -n cat /mnt/stripe/truenas-docker/mcp/acme/acme.json 2>/dev/null || cat /mnt/stripe/truenas-docker/mcp/acme/acme.json" \
+                    > "${FAILOVER_RUNTIME_DIR}/acme/acme.json.tmp" && \
+                    chmod 600 "${FAILOVER_RUNTIME_DIR}/acme/acme.json.tmp" && \
+                    mv "${FAILOVER_RUNTIME_DIR}/acme/acme.json.tmp" "${FAILOVER_RUNTIME_DIR}/acme/acme.json"
+            fi
         fi
     fi
 
@@ -141,17 +149,43 @@ activate_orbstack_failover() {
     done
 
     # 4. Switchover atomico DNS Unbound su OPNsense verso Mac Studio (10.10.20.100)
-    python3 "${ROOT_DIR}/scripts/network/switch_failover_dns.py" --target orbstack
+    python3 "${ROOT_DIR}/scripts/network/switch_failover_dns.py" --target off
     echo "✅ [OrbStack Failover] Stack OrbStack ATTIVO e DNS commutato su ${MAC_STUDIO_IP}."
+}
+
+# Configura il backend Traefik su TrueNAS per home-internal:
+# - "full": proxy trasparente verso K8s VIP (https://10.10.20.56) per socket HTTP/2 riutilizzati
+# - "eco":  inoltro locale al container homepage TrueNAS (:3000)
+set_truenas_home_internal_backend() {
+    local mode="$1"
+    local ssh_user
+    ssh_user="$(_resolve_truenas_ssh_user)"
+    [ -n "$ssh_user" ] || return 0
+
+    if [ "$mode" = "full" ]; then
+        echo "🔀 [Traefik Dynamic] Configurazione backend homepage TrueNAS -> K8s Ingress (https://10.10.20.56)..."
+        ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
+            "sudo sed -i 's|url: \"http://10.10.20.50:3000\"|url: \"https://10.10.20.56\"|g' /mnt/stripe/truenas-docker/mcp/dynamic.yaml 2>/dev/null || true"
+    elif [ "$mode" = "eco" ]; then
+        echo "🔀 [Traefik Dynamic] Configurazione backend homepage TrueNAS -> Locale (:3000)..."
+        ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
+            "sudo sed -i 's|url: \"https://10.10.20.56\"|url: \"http://10.10.20.50:3000\"|g' /mnt/stripe/truenas-docker/mcp/dynamic.yaml 2>/dev/null || true"
+    fi
 }
 
 # Eseguito in lab_mode_eco.sh e lab_mode_full.sh DOPO ensure_storage_on.yml
 # Copre OFF->ECO, OFF->FULL, FULL->ECO, ECO->FULL, ECO->ECO, FULL->FULL e Stati Parziali/Sporchi
 deactivate_orbstack_failover_to_truenas() {
-    echo "🔄 [OrbStack Failback] Verifica stato tra Mac Studio e TrueNAS (${TRUENAS_HOST})..."
+    local target_mode="${1:-eco}"
+    echo "🔄 [OrbStack Failback] Verifica stato tra Mac Studio e TrueNAS (${TRUENAS_HOST}) per target ${target_mode}..."
 
     local ssh_user
     ssh_user="$(_resolve_truenas_ssh_user)"
+
+    local orbstack_was_active="false"
+    if [ -f "$ORBSTACK_COMPOSE_FILE" ] && [ -n "$(docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" ps -q 2>/dev/null)" ]; then
+        orbstack_was_active="true"
+    fi
 
     # 1. Se hermes-main (o hermes-agent legacy) era attivo su OrbStack (transizione da OFF -> ECO/FULL),
     #    ferma hermes-main locale e sincronizza i file più recenti verso TrueNAS (KISS #1: rsync -auz senza --delete).
@@ -200,11 +234,15 @@ deactivate_orbstack_failover_to_truenas() {
         done
     done
 
-    # 4. Switchover atomico e idempotente DNS Unbound su OPNsense verso TrueNAS (10.10.20.50)
-    python3 "${ROOT_DIR}/scripts/network/switch_failover_dns.py" --target truenas
+    # 4. Switchover atomico e idempotente DNS Unbound su OPNsense
+    if [ "$orbstack_was_active" = "true" ]; then
+        python3 "${ROOT_DIR}/scripts/network/switch_failover_dns.py" --target "$target_mode"
+    elif [ "$target_mode" = "eco" ]; then
+        python3 "${ROOT_DIR}/scripts/network/switch_failover_dns.py" --target eco
+    fi
 
     # 5. Arresto e rimozione pulita dello stack di failover su OrbStack (solo se ci sono container del progetto)
-    if [ -f "$ORBSTACK_COMPOSE_FILE" ] && [ -n "$(docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" ps -q 2>/dev/null)" ]; then
+    if [ "$orbstack_was_active" = "true" ]; then
         echo "🧹 [OrbStack Failback] Spegnimento stack orbstack-failover su Mac Studio..."
         docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" down --remove-orphans
     fi

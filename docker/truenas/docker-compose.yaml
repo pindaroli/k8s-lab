@@ -58,6 +58,9 @@ services:
       - /mnt/stripe/truenas-docker/prowlarr:/config
     ports:
       - 9696:9696
+    depends_on:
+      flaresolverr:
+        condition: service_healthy
     restart: unless-stopped
 
   flaresolverr:
@@ -70,6 +73,12 @@ services:
       - TZ=Europe/Rome
     ports:
       - 8191:8191
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8191/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 
   homepage:
@@ -308,3 +317,56 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+
+  # --- Garage S3 Object Storage ---
+  garage:
+    image: dxflrs/garage:v2.3.0
+    container_name: garage
+    network_mode: host
+    restart: unless-stopped
+    group_add:
+      - "568"
+    environment:
+      - TZ=Europe/Rome
+      - GARAGE_CONFIG_FILE=/var/lib/garage/garage.toml
+    volumes:
+      - /mnt/oliraid/garage-data:/var/lib/garage
+    healthcheck:
+      test: ["CMD", "/garage", "status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # --- Scrutiny S.M.A.R.T. Disk Health & InfluxDB ---
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:v0.9.5-omnibus
+    container_name: scrutiny
+    restart: unless-stopped
+    privileged: true
+    user: "0:0"
+    group_add:
+      - "568"
+    ports:
+      - "31054:8080"
+      - "31055:8086"
+    environment:
+      - TZ=Europe/Rome
+      - UMASK=002
+      - UMASK_SET=002
+      - SCRUTINY_WEB_LISTEN_HOST=0.0.0.0
+      - SCRUTINY_WEB_LISTEN_PORT=8080
+      - SCRUTINY_WEB_DATABASE_LOCATION=/opt/scrutiny/config/scrutiny.db
+      - SCRUTINY_WEB_INFLUXDB_HOST=127.0.0.1
+      - SCRUTINY_WEB_INFLUXDB_PORT=8086
+      - COLLECTOR_API_ENDPOINT=http://127.0.0.1:8080
+    volumes:
+      - /mnt/stripe/truenas-docker/scrutiny/config:/opt/scrutiny/config
+      - /mnt/stripe/truenas-docker/scrutiny/influxdb:/opt/scrutiny/influxdb
+      - /dev:/dev:ro
+      - /run/udev:/run/udev:ro
+    healthcheck:
+      test: ["CMD", "curl", "--request", "GET", "--silent", "--output", "/dev/null", "--show-error", "--fail", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # ==============================================================================
 # FILE: scripts/network/switch_failover_dns.py
-# DESCRIZIONE: Switchover atomico e idempotente degli Host Overrides Unbound
-#              su OPNsense tra TrueNAS (10.10.20.50) e Mac Studio (10.10.20.100).
+# DESCRIZIONE: Switchover atomico, tri-stato (FULL / ECO / OFF) e idempotente
+#              degli Host Overrides Unbound su OPNsense con TTL resiliente.
+#              - full: home-internal -> K8s VIP (10.10.20.56), AI/log -> TrueNAS (10.10.20.50)
+#              - eco:  tutti i 5 servizi -> TrueNAS (10.10.20.50)
+#              - off:  tutti i 5 servizi -> Mac Studio OrbStack (10.10.20.100)
 # ==============================================================================
 
 import argparse
@@ -29,22 +32,50 @@ OPNSENSE_ENDPOINTS = [
 DOMAIN = "pindaroli.org"
 
 TARGETS = {
-    "truenas": {
-        "ip": "10.10.20.50",
-        "label": "TrueNAS SCALE Bare-Metal (ECO/FULL Mode)",
+    "full": {
+        "label": "FULL LAB (Kubernetes Compute + TrueNAS Storage)",
+        "hosts": {
+            "home-internal": "10.10.20.56",
+            "mcp": "10.10.20.50",
+            "hermes": "10.10.20.50",
+            "litellm": "10.10.20.50",
+            "dozzle": "10.10.20.50",
+        },
     },
-    "orbstack": {
-        "ip": "10.10.20.100",
-        "label": "Mac Studio OrbStack Failover (RACK DARK / OFF Mode)",
+    "eco": {
+        "label": "ECO LAB (TrueNAS SCALE Storage Only - K8s Dark)",
+        "hosts": {
+            "home-internal": "10.10.20.50",
+            "mcp": "10.10.20.50",
+            "hermes": "10.10.20.50",
+            "litellm": "10.10.20.50",
+            "dozzle": "10.10.20.50",
+        },
+    },
+    "off": {
+        "label": "OFF / RACK DARK (Mac Studio OrbStack Failover)",
+        "hosts": {
+            "home-internal": "10.10.20.100",
+            "mcp": "10.10.20.100",
+            "hermes": "10.10.20.100",
+            "litellm": "10.10.20.100",
+            "dozzle": "10.10.20.100",
+        },
     },
 }
 
-FAILOVER_HOSTS = [
-    ("mcp", "MCP Fleet Traefik Umbrella Gateway (:8100)"),
-    ("hermes", "Hermes Agent AI Gateway & Dashboard (:9119)"),
-    ("litellm", "LiteLLM Inference Proxy & UI (:4000)"),
-    ("dozzle", "Dozzle Docker Log Viewer (:8888)"),
-]
+TARGET_ALIASES = {
+    "truenas": "eco",
+    "orbstack": "off",
+}
+
+HOST_DESCRIPTIONS = {
+    "home-internal": "Homepage Dashboard (Universal HTTPS Ingress)",
+    "mcp": "MCP Fleet Traefik Umbrella Gateway (:8100)",
+    "hermes": "Hermes Agent AI Gateway & Dashboard (:9119)",
+    "litellm": "LiteLLM Inference Proxy & UI (:4000)",
+    "dozzle": "Dozzle Docker Log Viewer (:8888)",
+}
 
 
 def load_opnsense_credentials() -> tuple[str, str]:
@@ -145,6 +176,19 @@ class OPNsenseUnboundClient:
         )
         return res.get("rows", [])
 
+    def save_override(self, endpoint: str, host_data: dict) -> dict:
+        """Salva un host override con fallback automatico se 'ttl' non è supportato."""
+        res = self.request(endpoint, {"host": host_data})
+        if res.get("result") == "saved":
+            return res
+        if "ttl" in host_data:
+            fallback = dict(host_data)
+            fallback.pop("ttl", None)
+            res = self.request(endpoint, {"host": fallback})
+            if res.get("result") == "saved":
+                return res
+        return res
+
 
 def flush_local_dns_cache() -> None:
     """Svuota la cache DNS di macOS per azzerare il TTL sui client locali."""
@@ -156,13 +200,13 @@ def flush_local_dns_cache() -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Switchover atomico DNS Unbound OPNsense per Failover TrueNAS <-> OrbStack"
+        description="Switchover atomico e tri-stato DNS Unbound OPNsense (FULL / ECO / OFF)"
     )
     parser.add_argument(
         "--target",
         required=True,
-        choices=["truenas", "orbstack"],
-        help="Destinazione dei record DNS: 'truenas' (10.10.20.50) o 'orbstack' (10.10.20.100)",
+        choices=["full", "eco", "off", "truenas", "orbstack"],
+        help="Target DNS mode: 'full' (K8s 10.10.20.56), 'eco' (TrueNAS 10.10.20.50), 'off' (Mac Studio 10.10.20.100)",
     )
     parser.add_argument(
         "--dry-run",
@@ -171,20 +215,22 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    target_cfg = TARGETS[args.target]
-    target_ip = target_cfg["ip"]
+    canonical_target = TARGET_ALIASES.get(args.target, args.target)
+    target_cfg = TARGETS[canonical_target]
+    target_hosts = target_cfg["hosts"]
 
     api_key, api_secret = load_opnsense_credentials()
     client = OPNsenseUnboundClient(api_key, api_secret)
 
     print(f"🌐 [DNS Switchover] Connesso a OPNsense ({client.base_url})")
-    print(f"🎯 Target richiesto: {args.target.upper()} -> {target_ip} ({target_cfg['label']})")
+    print(f"🎯 Target: {canonical_target.upper()} ({target_cfg['label']})")
 
     rows = client.list_overrides()
     changed = False
 
-    for hostname, desc_prefix in FAILOVER_HOSTS:
-        full_desc = f"{desc_prefix} [Managed Failover -> {args.target}]"
+    for hostname, target_ip in target_hosts.items():
+        desc_prefix = HOST_DESCRIPTIONS.get(hostname, hostname)
+        full_desc = f"{desc_prefix} [Managed Failover -> {canonical_target}]"
         matches = [
             r
             for r in rows
@@ -192,22 +238,20 @@ def main() -> int:
             and r.get("domain", "").lower() == DOMAIN.lower()
         ]
 
+        host_payload = {
+            "enabled": "1",
+            "hostname": hostname,
+            "domain": DOMAIN,
+            "rr": "A",
+            "server": target_ip,
+            "description": full_desc,
+            "ttl": "10",
+        }
+
         if not matches:
-            print(f"➕ Creazione Host Override: {hostname}.{DOMAIN} -> {target_ip}")
+            print(f"➕ Creazione Host Override: {hostname}.{DOMAIN} -> {target_ip} (TTL: 10s)")
             if not args.dry_run:
-                res = client.request(
-                    "/api/unbound/settings/addHostOverride",
-                    {
-                        "host": {
-                            "enabled": "1",
-                            "hostname": hostname,
-                            "domain": DOMAIN,
-                            "rr": "A",
-                            "server": target_ip,
-                            "description": full_desc,
-                        }
-                    },
-                )
+                res = client.save_override("/api/unbound/settings/addHostOverride", host_payload)
                 if res.get("result") != "saved":
                     raise RuntimeError(f"Errore creazione {hostname}.{DOMAIN}: {res}")
             changed = True
@@ -222,24 +266,12 @@ def main() -> int:
             else:
                 print(f"🔄 Aggiornamento {hostname}.{DOMAIN}: {current_ip} -> {target_ip} (UUID: {uuid})")
                 if not args.dry_run:
-                    res = client.request(
-                        f"/api/unbound/settings/setHostOverride/{uuid}",
-                        {
-                            "host": {
-                                "enabled": "1",
-                                "hostname": hostname,
-                                "domain": DOMAIN,
-                                "rr": "A",
-                                "server": target_ip,
-                                "description": full_desc,
-                            }
-                        },
-                    )
+                    res = client.save_override(f"/api/unbound/settings/setHostOverride/{uuid}", host_payload)
                     if res.get("result") != "saved":
                         raise RuntimeError(f"Errore aggiornamento {hostname}.{DOMAIN}: {res}")
                 changed = True
 
-            # Pulizia eventuali duplicati spuri creati in precedenza
+            # Pulizia eventuali duplicati spuri
             for dup in matches[1:]:
                 dup_uuid = dup["uuid"]
                 print(f"🧹 Rimozione Host Override duplicato per {hostname}.{DOMAIN} (UUID: {dup_uuid})")

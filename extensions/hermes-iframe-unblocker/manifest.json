@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Hermes Docs Iframe Unblocker",
+  "version": "1.0.0",
+  "description": "Rimuove X-Frame-Options e Content-Security-Policy per permettere la visualizzazione della documentazione di Hermes Agent in iframe.",
+  "permissions": [
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "*://hermes-agent.nousresearch.com/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_hermes",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
+}
