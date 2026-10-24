@@ -349,5 +349,9 @@ Poiché i due stack **non sono mai attivi contemporaneamente**, la sincronizzazi
 
 ## 💾 Stato di Ripristino (AI Save-State)
 - **Versione Piano**: `v2.0` (Consolidata post-revisione SRE con tutte le scelte approvate).
-- **Fase Attiva**: Pronta per l'esecuzione di **FASE 1** (Creazione struttura directory e provisioning binari Linux ELF `ttyd` + `kubectl`).
-- **Decisioni Chiuse**: Tutte le 6 decisioni architetturali sono state confermate e integrate.
+- **Fase Attiva**: **FASE 2: Realizzazione Script `s6-overlay`, Proxy FastAPI (`subprotocol="tty"`) e Iniezione UI**
+- **Ultima Azione Completata**: FASE 1 completata al 100% con test di verifica oggettivo superato:
+  - Create cartelle `/Users/olindo/hermesAgent/common/prj` e `~/.homelab-failover/hermes/{bin,s6,web}`.
+  - Scaricati e verificati con `file` e `docker run alpine`: `ttyd` (Linux ARM64 ELF statico v1.7.7), `ttyd.x86_64` (Linux x86_64 ELF statico v1.7.7) e `kubectl` (Linux ARM64 ELF statico v1.36.2).
+- **Prossimo Passo Operativo**: Scrittura e test sintattico (`bash -n` e `python3 -m py_compile`) degli script in `~/.homelab-failover/hermes/s6/` (`99-hermes-terminal.sh`, `ttyd-run.sh`) e `~/.homelab-failover/hermes/web/` (`terminal_proxy.py`, `terminal-inject.js`).
+- **Blocchi/Decisioni Pendenti**: Nessun blocco tecnico; esecuzione fermata e stato persistito su richiesta esplicita dell'utente.
