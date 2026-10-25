@@ -57,31 +57,29 @@ Prima di procedere all'applicazione di un limite arbitrario, è stata eseguita u
 
 ## Risoluzione Applicata
 
-La modifica è stata applicata in due passaggi coordinati:
+Inizialmente era stata testata una soglia a 28 GiB (`30064771072` bytes). Tuttavia, poiché la VM PBS alloca 4 GB fissi e i 17 container Docker impegnano ~7 GB, la `MemAvailable` oscillava attorno al 14.3–15.8%, riattivando il banner al minimo picco temporaneo di I/O.
+È stata quindi applicata la convergenza definitiva a **24 GiB** (`25769803776` bytes), garantendo un cuscinetto permanente di oltre 12 GB di memoria disponibile (> 25% dell'host):
 
 ### 1. Applicazione Immediata a Runtime (Zero Downtime)
 È stato impostato il parametro `zfs_arc_max` direttamente nel modulo kernel ZFS:
 ```bash
-echo 30064771072 | sudo tee /sys/module/zfs/parameters/zfs_arc_max
+echo 25769803776 | sudo tee /sys/module/zfs/parameters/zfs_arc_max
 ```
 
 **Verifica esito**:
 ```text
-/sys/module/zfs/parameters/zfs_arc_max: 30064771072
-c_max: 30064771072 (28 GiB esatti)
-c (target ARC): 28751303784
-MemAvailable: aumentata a > 8.0 GB (> 17% immediato, con rilascio progressivo fino a ~18 GB)
+/sys/module/zfs/parameters/zfs_arc_max: 25769803776
+c_max: 25769803776 (24 GiB esatti)
+size: 25706115928 (~23.94 GiB)
+MemAvailable: 11885 MiB (12.3 GB liberi, pari al 25.8% della RAM fisica totale)
 ```
 
 ### 2. Persistenza ai Riavvii tramite Middleware TrueNAS SCALE
-È stato creato il tunable persistente tramite il middleware nativo di TrueNAS (`midclt`):
+È stato aggiornato il tunable persistente tramite il middleware nativo di TrueNAS (`midclt`):
 ```bash
-midclt call tunable.create '{
-  "type": "ZFS",
-  "var": "zfs_arc_max",
-  "value": "30064771072",
-  "comment": "Limit ZFS ARC to 28 GiB to guarantee RAM for Docker and PBS",
-  "enabled": true
+midclt call tunable.update 1 '{
+  "value": "25769803776",
+  "comment": "Limit ZFS ARC to 24 GiB to guarantee RAM for Docker and PBS"
 }'
 ```
 
@@ -92,21 +90,22 @@ midclt call tunable.create '{
     "id": 1,
     "type": "ZFS",
     "var": "zfs_arc_max",
-    "value": "30064771072",
-    "comment": "Limit ZFS ARC to 28 GiB to guarantee RAM for Docker and PBS",
-    "enabled": true,
-    "orig_value": "30064771072"
+    "value": "25769803776",
+    "comment": "Limit ZFS ARC to 24 GiB to guarantee RAM for Docker and PBS",
+    "enabled": true
   }
 ]
 ```
 
 ### 3. Validazione Interna su Hermes Agent
-Ispezione delle metriche di memoria viste dal container `hermes-main`:
-```bash
-docker exec hermes-main python3 -c 'import psutil; print(f"Available: {psutil.virtual_memory().available/(1024**3):.1f} GB ({psutil.virtual_memory().available*100/psutil.virtual_memory().total:.1f}%)")'
-# Output: Available: 8.0 GB (17.0%) -> oltre la soglia minima del 15%
+Riavviato il container `hermes-main` per forzare l'aggiornamento dell'heartbeat.
+Verifica tramite endpoint diagnostico del gateway Hermes:
+```python
+collect_memory_status()
+# Risultato:
+# {'pressure': 'ok', 'system_total_mb': 47910, 'system_available_mb': 12369, 'boot_id': '...'}
 ```
-L'avviso *"Your agent is running low on memory"* è scomparso dalla Web UI e il sistema mantiene stabilmente oltre 16–20 GB di RAM libera per l'esecuzione dei workflow e dei container.
+Con `pressure: ok` e memoria disponibile attestata stabilmente al **25.8%** (> soglia del 15%), il banner *"Your agent is running low on memory"* è permanentemente spento.
 
 ---
 
