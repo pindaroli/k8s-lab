@@ -404,5 +404,5 @@ data:
 
 ## 🔗 Relazioni & Tracciabilità
 - Sostituisce: `classical-infrastructure-provisioning.md`
-- Collegato a: [[classical-music-strategy]]
+- Collegato a: `classical-music-strategy` (dismesso)
 - Monitorato da: [[todo]]

@@ -43,10 +43,6 @@ spec:
       login: true
       passwordSecret:
         name: ragflow-db-password
-    - name: litellm
-      login: true
-      passwordSecret:
-        name: litellm-db-password
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname

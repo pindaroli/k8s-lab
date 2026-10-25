@@ -155,7 +155,7 @@ La bonifica e la gestione sono affidate a **Beets** con i seguenti plugin critic
 La musica scaricata passa per la "Landing Zone" (`music_backup`) tramite il comando `beet import` prima di essere esposta ai media server e importata in `lidarr-pop`.
 
 ### Unificazione Artisti
-In caso di nomi duplicati (es. `Us3` vs `US3`), utilizzare `beet modify` per uniformare al nome ufficiale presente su MusicBrainz (vedere [[beets-music-rescue-pipeline]]).
+In caso di nomi duplicati (es. `Us3` vs `US3`), utilizzare `beet modify` per uniformare al nome ufficiale presente su MusicBrainz (vedere `beets-music-rescue-pipeline` (dismesso)).
 
 ### Modifica Massiva dei Dati (Regola di Sopravvivenza)
 > [!CAUTION]
@@ -184,4 +184,4 @@ La pipeline classica opera secondo un modello disaccoppiato ("Blackhole") orches
    - **Push (Finally):** Lo stato del DB Beets viene ricaricato atomicamente su MinIO, garantendo persistenza anche in caso di errore parziale.
 4. **Dual-Stack (Jellyfin + Navidrome):** Entrambi i media server montano il **medesimo PVC in sola lettura** sul dataset ZFS classico. Jellyfin opera con tutti gli scraper disabilitati (metadati embedded da Beets). Navidrome funge da server Subsonic per client mobili.
 
-Vedi il piano di refactoring dettagliato: [[prefect-beets-adaptation]].
+Vedi il piano di refactoring dettagliato: `prefect-beets-adaptation` (dismesso).

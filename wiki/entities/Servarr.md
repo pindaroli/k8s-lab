@@ -95,9 +95,9 @@ Per superare la dipendenza dai tracker pubblici soggetti a blocchi DNS, sequestr
 - Media Server: [[Jellyfin]] (LXC 2200 su PVE3 via `jellyfin-external-svc`).
 - Pattern Metadati: [[movie-metadata-and-artwork-architecture]].
 - Transcodifica: Inviata a [[Tdarr]].
-- Strategia Classica: [[classical-music-strategy]].
-- Orchestrazione Classica (Prefect): [[prefect-beets-adaptation]].
-- Bonifica Modern: [[beets-music-rescue-pipeline]].
+- Strategia Classica: `classical-music-strategy` (dismesso).
+- Orchestrazione Classica (Prefect): `prefect-beets-adaptation` (dismesso).
+- Bonifica Modern: `beets-music-rescue-pipeline` (dismesso).
 - Piani Correlati: [[bitmagnet-truenas-docker-integration]], [[flaresolverr-truenas-migration-and-declarative-sync]], [[arrstack-mcp-truenas-docker-migration]], [[servarr-truenas-permanent-migration]].
 - Incidenti: [[2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change]], [[2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict]].
 

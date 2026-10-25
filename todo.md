@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Procedura Diagnostica di Stato Homelab (`lab_mode_status.sh`) [[lab-mode-status-procedure]]
+- [x] Fase 1: Progettazione e formalizzazione piano [[lab-mode-status-procedure]] ✅
+- [x] Fase 2: Implementazione di `scripts/infrastructure/lab_mode_status.sh` (Dual-phase probe, regole di congruenza e spiegazione contraddizioni) ✅
+- [x] Fase 3: Integrazione nel launcher `scripts/go.py` e collaudo test-driven (FULL, ECO, OFF, INCONGRUENTE, flag `--raw` e `-v`) ✅
+- [x] Fase 4: Validazione network/wiki context e consolidamento documentale ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Riorganizzazione Unificata Homepage nelle 4 Modalità (`external`, `lab_mode_full`, `lab_mode_eco`, `lab_mode_off`) via Kustomize [[homepage-four-modes-reorganization]]
 - [x] Fase 1: Estrazione e creazione delle 4 cartelle di configurazione (`homepage/{external,lab_mode_full,lab_mode_eco,lab_mode_off}`) e validazione YAML ✅
 - [x] Fase 2: Creazione struttura Kubernetes Kustomize (`homepage/kustomization.yaml` e `homepage/k8s/*.yaml`) e verifica `kubectl kustomize homepage/` (48/48 risorse) ✅
@@ -68,13 +74,13 @@
 - [x] Fase 5: Standardizzazione Client FQDN (`~/.gemini/antigravity/mcp_config.json` -> `mcp.pindaroli.org`) ✅
 - [x] Fase 6: Test di Collaudo E2E, Validazione e Refresh Wiki (§12 & §13) ✅
 
-## 🚀 In Corso: Migrazione Hermes Agent e LiteLLM da Kubernetes a Docker su TrueNAS SCALE [[hermes-agent-truenas-docker-migration]]
+## 🚀 [x] ✅ COMPLETATO: Migrazione Hermes Agent e LiteLLM da Kubernetes a Docker su TrueNAS SCALE [[hermes-agent-truenas-docker-migration]]
 - [x] Fase 0: Raccolta dati e pre-check (sola lettura: immagine, mount, kubeconfig statico, porte 4000/9119, Ollama) ✅
 - [x] Fase 1: Backup ZFS (snapshot hermes-agent), creazione dataset dedicato `stripe/truenas-docker/litellm-postgres` (8k, 999:999) ed estrazione segreti SOPS -> runtime (.env 600) ✅
 - [x] Fase 2: Deploy LiteLLM e Postgres su Docker TrueNAS, test migrazioni Prisma (98 tabelle), bootstrap deterministico virtual key Hermes e test inferenza su big-chat ✅
 - [x] Fase 3: Cutover dichiarativo Hermes (scale down K8s `replicaCount: 0`, avvio su Docker Compose v2026.7.20, binari statici kubectl/talosctl, test dashboard 9119 e bridge LiteLLM) ✅
 - [x] Fase 4: Allineamento Homepage (homepage-manager: rimozione esterna, aggiornamento interna/TrueNAS) e rimozione alias DNS Unbound OPNsense ✅
-- [ ] Fase 5: Decommissioning K8s (rimozione release Helm, PVC/PV, ns hermes e litellm, pulizia DB CNPG — pianificato al boot del cluster compute)
+- [x] Fase 5: Decommissioning K8s (rimozione release Helm litellm, PVC/PV, clusterrolebinding, ns hermes e litellm, drop database/ruolo CNPG e archiviazione manifesti in _OLD_ARCHIVE) ✅
 - [x] Fase 6: Documentazione, Power_Sequence, archiviazione vecchi piani e validazione repository ✅
 
 ## 🚀 [x] ✅ COMPLETATO: Allineamento Fork arrstack-mcp, Strategia Pull Request Upstream & Convergenza In-House Homelab [[arrstack-mcp-upstream-alignment-and-pr-roadmap]]
@@ -774,7 +780,7 @@
 - [x] Verificare il corretto avvio in modalità regolare. (COMPLETED 2026-05-23)
 
 ## [x] Ripresa Bonifica e Spostamento Mozart 225 (COMPLETED 2026-05-21)
-> **Ref**: [[classical-music-taxonomy-optimization]]
+> **Ref**: `classical-music-taxonomy-optimization` (dismesso)
 - [x] **Rilevamento File (NFS Autofs)**: Identificato dataset ZFS figlio `/mnt/oliraid/arrdata/classical` non montato. Configurato automount nativo via `autofs` su macOS per `/Volumes/classical` e `/Volumes/media`, ripristinando l'accesso completo ai file fisici senza bisogno di rollback! (COMPLETED 2026-05-21)
 - [x] **Rimozione & Consolidamento Perdita**: Accettata la perdita dei dati originali di Mozart 225. Eseguita la rimozione forzata dal database classico di Beets (3.323 tracce) e pulizia completa sul filesystem `/Volumes/classical` di tutti i symlink a staging e delle relative cartelle orfane di Mozart 225. (COMPLETED 2026-05-21)
 *Vedi file di contesto dettagliato:* [/import_music/import_classical/context_resume_mozart225.md](file:///Users/olindo/prj/k8s-lab/import_music/import_classical/context_resume_mozart225.md)

@@ -1,10 +1,11 @@
 ---
 title: "Piano: Migrazione Hermes Agent e LiteLLM da Kubernetes a Docker su TrueNAS SCALE"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-22
-updated_at: 2026-10-22
+updated_at: 2026-10-25
+completed_at: 2026-10-25
 supersedes: "[[hermes-agent-deployment]], [[litellm-proxy-kubernetes-deployment]]"
 tags:
   - "#plan"
@@ -466,7 +467,7 @@ Poiché il decommissioning K8s (FASE 5) avviene solo dopo la validazione finale,
 4. **Ripartenza da zero del database LiteLLM**: perdita dello storico di spesa e delle chiavi create manualmente da UI. *Mitigazione*: bootstrap deterministico della virtual key di Hermes in FASE 2 e conservazione del DB `litellm` su CNPG fino alla FASE 5.
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Migrazione Completata con Successo (Fasi 0, 1, 2, 3, 4, 6 completate; Fase 5 pronta al riavvio cluster K8s)
-- **Ultima Azione Completata**: LiteLLM (con DB PostgreSQL ZFS 8k dedicato) e Hermes Agent (v2026.7.20 con binari statici kubectl e talosctl montati) sono 100% attivi, healthy e verificati su TrueNAS Docker (`10.10.20.50:4000` e `10.10.20.50:9119`). Inference test su big-chat eseguita con successo via Mac Studio Ollama. Homepage K8s e TrueNAS riallineate. Alias DNS rimossi da rete.json e Unbound OPNsense.
-- **Prossimo Passo Operativo**: Al prossimo avvio del cluster compute (PVE1/2/3), esecuzione di FASE 5 (decommissioning dichiarativo delle vecchie release K8s e pulizia DB su postgres-main).
-- **Blocchi/Decisioni Pendenti**: Nessun blocco. Workload perfettamente operativi su TrueNAS SCALE.
+- **Fase Attiva**: COMPLETATO ✅ (Fasi 0, 1, 2, 3, 4, 5, 6 tutte completate con successo)
+- **Ultima Azione Completata**: Fase 5 completata con successo. Eseguito il decommissioning completo su Kubernetes: rimossi release Helm litellm, deployment, service, ingressroute, job e PVC hermes-agent, cancellato il PV hermes-agent-pv (dati su /mnt/stripe/hermesAgent/HermesMain preservati intatti), eliminati i namespace hermes e litellm, clusterrolebinding hermes-admin-binding, secret litellm-db-password, rimosso ruolo litellm da postgres/cluster.yaml e droppati database/ruolo litellm su CNPG postgres-main. Archiviate le directory hermes-agent/ e litellm/ in _OLD_ARCHIVE/legacy_k8s_manifests/. Verificato accesso K8s da hermes-main su TrueNAS (talos-cp-01/02/03 Ready) e probe /api/health (200 OK).
+- **Prossimo Passo Operativo**: Nessuno. Piano concluso.
+- **Blocchi/Decisioni Pendenti**: Nessun blocco. Workload attivi, stabili e autonomi su TrueNAS SCALE bare metal.

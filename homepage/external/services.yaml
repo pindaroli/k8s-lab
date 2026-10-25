@@ -89,10 +89,6 @@
         widget:
           type: tdarr
           url: http://tdarr-server.tdarr.svc.cluster.local:8266
-    - Calibre-web:
-        href: https://calibre-web.pindaroli.org
-        description: Web-based ebook library management
-        icon: calibre-web.png
 
 - "Infrastructure":
     - Truenas:

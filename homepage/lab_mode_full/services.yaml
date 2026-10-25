@@ -99,10 +99,6 @@
         widget:
            type: tdarr
            url: https://tdarr-internal.pindaroli.org
-    - Calibre-web:
-        href: https://calibre-web.pindaroli.org
-        description: Web-based ebook library management
-        icon: calibre-web.png
 
 - "Infrastructure":
     - Truenas:

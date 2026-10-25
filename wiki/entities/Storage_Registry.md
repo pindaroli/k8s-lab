@@ -41,4 +41,4 @@ I nodi Proxmox mantengono dischi dedicati locali per il boot dell'hypervisor e i
 - Governa: `storage.json`
 - Fornito da: [[TrueNAS]], Proxmox Hypervisor
 - Utilizzato da: [[Talos_Cluster]], [[Tdarr]], Servarr Stack.
-- DB Pipeline Classica: MinIO → [[prefect-beets-adaptation]].
+- DB Pipeline Classica: MinIO → `prefect-beets-adaptation` (dismesso).
