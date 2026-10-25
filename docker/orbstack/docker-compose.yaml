@@ -39,6 +39,7 @@ services:
       - /tmp
     security_opt:
       - no-new-privileges:true
+    mem_limit: 256m
     environment:
       - LOG_LEVEL=notice
       - CONTAINERS=1
@@ -88,7 +89,7 @@ services:
       - /tmp
     depends_on:
       - socket-proxy
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
     environment:
       - DOCKER_API_VERSION=1.45
     volumes:
@@ -146,7 +147,8 @@ services:
     platform: linux/amd64
     image: ghcr.io/pindaroli/opnsense-mcp:0.5.3-r1
     restart: unless-stopped
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
+    mem_limit: 256m
     networks:
       - mcp-network
     labels:
@@ -172,7 +174,8 @@ services:
     platform: linux/amd64
     image: ghcr.io/pindaroli/gemini-deepsearch-mcp:0.2.0
     restart: unless-stopped
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
+    mem_limit: 768m
     environment:
       - MCP_TRANSPORT=streamable-http
       - MCP_HOST=0.0.0.0
@@ -202,7 +205,8 @@ services:
     platform: linux/amd64
     image: ghcr.io/pindaroli/ollama-mcp:2.1.0-r1
     restart: unless-stopped
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
+    mem_limit: 256m
     environment:
       - OLLAMA_HOST=http://host.docker.internal:11434
     extra_hosts:
@@ -237,7 +241,8 @@ services:
       - MCP_TRANSPORT=sse
       - MCP_PORT=8080
       - MCP_HOST=0.0.0.0
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
+    mem_limit: 256m
     networks:
       - mcp-network
     labels:
@@ -263,7 +268,8 @@ services:
     platform: linux/amd64
     image: ghcr.io/pindaroli/nowaikit-mcp:4.15.1-r1
     restart: unless-stopped
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
+    mem_limit: 768m
     networks:
       - mcp-network
     labels:
@@ -289,7 +295,8 @@ services:
     platform: linux/amd64
     image: ghcr.io/pindaroli/github-mcp-server:0.7.0-r1
     restart: unless-stopped
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
+    mem_limit: 512m
     networks:
       - mcp-network
     labels:
@@ -315,7 +322,8 @@ services:
     platform: linux/amd64
     image: ghcr.io/pindaroli/meross-mcp:0.1.2
     restart: unless-stopped
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.mcp
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
+    mem_limit: 256m
     environment:
       - MEROSS_API_BASE_URL=https://iotx-eu.meross.com
       - MEROSS_GATEWAY_HOST=0.0.0.0
@@ -346,7 +354,8 @@ services:
     restart: unless-stopped
     ports:
       - "4000:4000"
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.ai
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
+    mem_limit: 768m
     environment:
       LITELLM_MASTER_KEY: ${HERMES_LITELLM_KEY}
       LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
@@ -384,7 +393,7 @@ services:
     restart: unless-stopped
     ports:
       - "9119:9119"
-    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env.ai
+    env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
     environment:
       HERMES_HOME: "/opt/data"
       HERMES_DASHBOARD: "1"
@@ -436,6 +445,7 @@ services:
     image: amir20/dozzle:v11.2.0
     container_name: dozzle
     restart: unless-stopped
+    mem_limit: 256m
     ports:
       - "8888:8080"
     depends_on:
@@ -470,6 +480,7 @@ services:
     image: ghcr.io/gethomepage/homepage:v2.4.0
     container_name: homepage-mac
     restart: unless-stopped
+    mem_limit: 512m
     environment:
       - PUID=1000
       - PGID=1000

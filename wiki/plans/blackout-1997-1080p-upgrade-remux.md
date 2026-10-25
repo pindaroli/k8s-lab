@@ -1,8 +1,9 @@
 ---
 title: "Piano: Upgrade Risoluzione 1080p e Remux Audio Italiano di Blackout (1997) {tmdb-25690}"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-25
+certified_for_ai: false
 created_at: 2026-10-13
 tags:
   - "#plan"

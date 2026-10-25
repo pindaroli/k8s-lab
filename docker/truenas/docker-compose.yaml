@@ -2,6 +2,8 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:12.0ubu2604-ls48
     container_name: jellyfin
+    security_opt:
+      - no-new-privileges:true
     environment:
       - PUID=1000
       - PGID=1000
@@ -16,14 +18,24 @@ services:
       - /mnt/stripe/truenas-docker/jellyfin/root:/var/lib/jellyfin/root
       - /mnt/stripe/truenas-docker/jellyfin/custom-cont-init.d:/custom-cont-init.d:ro
     ports:
-      - 8096:8096
+      - "8096:8096"
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
+    networks:
+      - media-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8096/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:5.2.3_v2.0.13-ls468
     container_name: qbittorrent
+    security_opt:
+      - no-new-privileges:true
     environment:
       - PUID=1000
       - PGID=1000
@@ -39,16 +51,26 @@ services:
       - /mnt/oliraid/arrdata/media:/media
       - /mnt/oliraid/arrdata/media/downloads:/data/downloads
     ports:
-      - 8080:8080
-      - 30661:30661
-      - 30661:30661/udp
-      - 6881:6881
-      - 6881:6881/udp
+      - "8080:8080"
+      - "30661:30661"
+      - "30661:30661/udp"
+      - "6881:6881"
+      - "6881:6881/udp"
+    networks:
+      - media-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/v2/app/version || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    security_opt:
+      - no-new-privileges:true
     environment:
       - PUID=1000
       - PGID=1000
@@ -57,24 +79,36 @@ services:
     volumes:
       - /mnt/stripe/truenas-docker/prowlarr:/config
     ports:
-      - 9696:9696
+      - "9696:9696"
+    networks:
+      - media-net
     depends_on:
       flaresolverr:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9696/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
     container_name: flaresolverr
+    security_opt:
+      - no-new-privileges:true
     environment:
       - LOG_LEVEL=info
       - LOG_HTML=false
       - CAPTCHA_SOLVER=none
       - TZ=Europe/Rome
     ports:
-      - 8191:8191
+      - "8191:8191"
+    networks:
+      - media-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8191/"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8191/"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -84,6 +118,8 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:v2.4.0
     container_name: homepage
+    security_opt:
+      - no-new-privileges:true
     environment:
       - PUID=1000
       - PGID=1000
@@ -95,12 +131,23 @@ services:
     volumes:
       - /mnt/stripe/truenas-docker/homepage:/app/config
     ports:
-      - 3000:3000
+      - "3000:3000"
+    networks:
+      - media-net
+      - ai-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
 
   webhook-normalizer:
     image: ghcr.io/pindaroli/custom-normalizer:1.7.1
     container_name: webhook-normalizer
+    security_opt:
+      - no-new-privileges:true
     command: ["python3", "/app/webhook_server.py"]
     environment:
       - PUID=1000
@@ -121,7 +168,15 @@ services:
       - /mnt/stripe/truenas-docker/webhook-normalizer/songkong-license.properties:/etc/songkong/license.properties:ro
       - /mnt/stripe/truenas-docker/webhook-normalizer/filebot-license.psm:/etc/filebot/license.psm:ro
     ports:
-      - 9000:9000
+      - "9000:9000"
+    networks:
+      - media-net
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; s = socket.create_connection(('127.0.0.1', 9000), timeout=2); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
 
   minimserver:
@@ -141,6 +196,8 @@ services:
   minimserver-autosymlink:
     image: alpine:3.18
     container_name: minimserver-autosymlink
+    security_opt:
+      - no-new-privileges:true
     command:
       - /bin/sh
       - -c
@@ -165,20 +222,59 @@ services:
         done
     volumes:
       - /mnt/oliraid/arrdata/media:/media
+    networks:
+      - media-net
     restart: unless-stopped
+
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy:v0.4.1
+    container_name: truenas-socket-proxy
+    restart: unless-stopped
+    privileged: false
+    read_only: true
+    tmpfs:
+      - /run
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - LOG_LEVEL=notice
+      - CONTAINERS=1
+      - INFO=1
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      - POST=0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - truenas-socket-proxy
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:2375/version || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   dozzle:
     image: amir20/dozzle:v11.2.0
     container_name: dozzle
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - socket-proxy
     ports:
       - "8888:8080"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /mnt/stripe/truenas-docker/dozzle:/data
     environment:
       - DOZZLE_NO_ANALYTICS=true
       - DOZZLE_LEVEL=info
+      - DOCKER_HOST=tcp://socket-proxy:2375
+    networks:
+      - media-net
+      - truenas-socket-proxy
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
       interval: 30s
@@ -189,6 +285,8 @@ services:
     image: postgres:16-alpine
     container_name: bitmagnet-postgres
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     shm_size: 1g
     environment:
       - POSTGRES_DB=bitmagnet
@@ -197,6 +295,8 @@ services:
       - PGUSER=postgres
     volumes:
       - /mnt/stripe/truenas-docker/bitmagnet/postgres:/var/lib/postgresql/data
+    networks:
+      - db-bitmagnet-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d bitmagnet"]
       interval: 10s
@@ -208,6 +308,8 @@ services:
     image: ghcr.io/bitmagnet-io/bitmagnet:v0.10.1
     container_name: bitmagnet
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "3333:3333"
       - "3334:3334/tcp"
@@ -236,18 +338,25 @@ services:
     depends_on:
       bitmagnet-postgres:
         condition: service_healthy
+    networks:
+      - media-net
+      - db-bitmagnet-net
 
   # --- LiteLLM Dedicated Database ---
   litellm-postgres:
     image: postgres:16-alpine
     container_name: litellm-postgres
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     environment:
       POSTGRES_DB: litellm
       POSTGRES_USER: litellm
       POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD}
     volumes:
       - /mnt/stripe/truenas-docker/litellm-postgres:/var/lib/postgresql/data
+    networks:
+      - db-litellm-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
       interval: 5s
@@ -259,6 +368,8 @@ services:
     image: ghcr.io/berriai/litellm:1.106.2
     container_name: litellm
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "4000:4000"
     environment:
@@ -273,8 +384,11 @@ services:
     depends_on:
       litellm-postgres:
         condition: service_healthy
+    networks:
+      - ai-net
+      - db-litellm-net
     healthcheck:
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"]
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4000/health/liveliness')"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -318,8 +432,10 @@ services:
     depends_on:
       litellm:
         condition: service_healthy
+    networks:
+      - ai-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9119/health"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9119/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -371,9 +487,31 @@ services:
       - /mnt/stripe/truenas-docker/scrutiny/influxdb:/opt/scrutiny/influxdb
       - /dev:/dev:ro
       - /run/udev:/run/udev:ro
+    networks:
+      - media-net
     healthcheck:
       test: ["CMD", "curl", "--request", "GET", "--silent", "--output", "/dev/null", "--show-error", "--fail", "http://127.0.0.1:8080/api/health"]
       interval: 30s
       timeout: 5s
       retries: 5
       start_period: 15s
+
+networks:
+  media-net:
+    name: truenas-media-net
+    driver: bridge
+  ai-net:
+    name: truenas-ai-net
+    driver: bridge
+  db-bitmagnet-net:
+    name: truenas-bitmagnet-net
+    driver: bridge
+    internal: true
+  db-litellm-net:
+    name: truenas-litellm-net
+    driver: bridge
+    internal: true
+  truenas-socket-proxy:
+    name: truenas-socket-proxy-net
+    driver: bridge
+    internal: true

@@ -1,8 +1,9 @@
 ---
 title: "Piano: Allineamento Fork arrstack-mcp, Strategia Pull Request Upstream & Convergenza In-House Homelab"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-22
+certified_for_ai: false
 created_at: 2026-10-22
 completed_at: 2026-10-22
 tags:

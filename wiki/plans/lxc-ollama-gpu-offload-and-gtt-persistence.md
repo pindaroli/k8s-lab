@@ -1,8 +1,9 @@
 ---
 title: "Piano: Ottimizzazione 100% GPU Offload per Modelli 32B su LXC Ollama e Persistenza Kernel VRAM GTT/TTM su PVE3"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-21
+certified_for_ai: false
 created_at: 2026-10-21
 completed_at: 2026-10-21
 tags:

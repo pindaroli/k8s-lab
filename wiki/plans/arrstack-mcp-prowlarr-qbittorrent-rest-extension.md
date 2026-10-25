@@ -1,8 +1,9 @@
 ---
 title: "Piano: Estensione REST API arrstack-mcp per Prowlarr e qBittorrent"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-16
+certified_for_ai: false
 completed_at: 2026-10-16
 resolved: true
 resolved_at: "2026-10-16"

@@ -1,8 +1,9 @@
 ---
 title: "Piano: Pulsante di Controllo LXC Steam su Tutte le Istanze Homepage via custom.js e API Proxmox Native"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-06
+certified_for_ai: false
 created_at: 2026-10-06
 completed_at: 2026-10-06
 tags:

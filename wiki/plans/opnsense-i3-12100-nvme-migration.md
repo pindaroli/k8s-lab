@@ -1,8 +1,9 @@
 ---
 title: "Migrazione Macchina OPNsense su i3-12100, MSI PRO H610M-E DDR4 con NVMe, ZFS e Emulex 10G"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-18
+certified_for_ai: false
 created_at: 2026-09-26
 completed_at: 2026-10-18
 last_updated: 2026-10-18

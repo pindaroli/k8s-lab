@@ -1,9 +1,10 @@
 ---
 title: "Piano: Hermes Agent Workspace Condiviso common/prj, Web Shell Integrata e Sync Bidirezionale TrueNAS/Mac (v2.0 Certificata)"
 type: plan
-status: completed
+status: archived
+archived_at: 2026-10-25
 version: "2.0"
-certified_for_ai: true
+certified_for_ai: false
 created_at: 2026-10-24
 updated_at: 2026-10-24
 tags:

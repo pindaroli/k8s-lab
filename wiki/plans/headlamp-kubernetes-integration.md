@@ -1,9 +1,10 @@
 ---
 title: "Piano: Integrazione Headlamp Kubernetes Web UI via Helm in k8s-lab"
 type: plan
-status: completed
+status: archived
+archived_at: 2026-10-14
 completed_at: 2026-10-14
-certified_for_ai: true
+certified_for_ai: false
 created_at: 2026-10-14
 tags:
   - "#headlamp"

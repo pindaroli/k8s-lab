@@ -1,8 +1,9 @@
 ---
 title: "Piano: Configurazione Dichiarativa della Flotta Ollama tramite rete.json e Ansible"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-21
+certified_for_ai: false
 created_at: 2026-10-21
 completed_at: 2026-10-21
 tags:

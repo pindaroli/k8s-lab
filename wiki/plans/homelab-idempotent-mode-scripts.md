@@ -1,8 +1,9 @@
 ---
 title: "Piano: Script Idempotenti di Convergenza Stato Homelab (lab_mode_full, lab_mode_eco, lab_mode_off)"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-19
+certified_for_ai: false
 created_at: 2026-10-19
 completed_at: 2026-10-19
 tags:

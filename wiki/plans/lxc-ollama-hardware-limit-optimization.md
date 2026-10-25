@@ -1,8 +1,9 @@
 ---
 title: "Piano: Ottimizzazione e Dimensionamento al Limite Fisico di LXC Ollama su PVE3"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-11
+certified_for_ai: false
 created_at: 2026-10-11
 completed_at: 2026-10-11
 tags:

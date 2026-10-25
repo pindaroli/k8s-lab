@@ -1,7 +1,8 @@
 ---
 title: Piano di Decluttering e Clusterizzazione Tassonomica dei Segnalibri Chrome
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+archived_at: 2026-10-25
 author: Gemini
 created_at: 2026-10-13
 category: operational_plan

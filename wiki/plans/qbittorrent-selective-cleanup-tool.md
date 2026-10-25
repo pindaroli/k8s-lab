@@ -1,8 +1,9 @@
 ---
 title: "Piano: Tool CLI Interattivo per Pulizia Selettiva Torrent su qBittorrent"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-25
+certified_for_ai: false
 created_at: 2026-10-16
 tags:
   - "#servarr"

@@ -1,9 +1,10 @@
 ---
 title: "Piano: Integrazione Homepage Mac e Console Traefik su OrbStack Failover"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
 created_at: 2026-10-23
+archived_at: 2026-10-25
 tags:
   - "#core"
   - "#app"

@@ -1,8 +1,9 @@
 ---
 title: "Unificazione Versioni Multiple Film Jellyfin & Gestione Automatica Release Preesistenti"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+archived_at: 2026-10-25
 created_at: 2026-10-07
 tags:
   - "#servarr"

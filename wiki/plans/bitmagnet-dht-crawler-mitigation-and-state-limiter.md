@@ -1,8 +1,9 @@
 ---
 title: "Piano: Mitigazione Bitmagnet DHT Crawler, Ottimizzazione Scaling Factor e State Limiter OPNsense"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-17
+certified_for_ai: false
 completed_at: 2026-10-17
 resolved: true
 resolved_at: "2026-10-17"

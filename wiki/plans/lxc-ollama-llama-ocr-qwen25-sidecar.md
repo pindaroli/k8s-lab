@@ -1,8 +1,9 @@
 ---
 title: "Piano: Integrazione Sidecar llama-server Vulkan (Qwen2.5-VL-7B OCR) su LXC Ollama"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-12
+certified_for_ai: false
 created_at: 2026-10-11
 completed_at: 2026-10-12
 tags:

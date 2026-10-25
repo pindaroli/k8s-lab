@@ -1,8 +1,9 @@
 ---
 title: "Piano: Script Shell Interattivo per Benchmark GuideLLM con Naming Pattern Standard"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+archived_at: 2026-10-25
 created_at: 2026-10-11
 tags:
   - "#benchmarking"

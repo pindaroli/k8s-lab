@@ -1,8 +1,9 @@
 ---
 title: "Piano: Architettura UPS NUT Distribuita (TrueNAS Master & Proxmox PVE1/2/3 Client)"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+archived_at: 2026-10-25
 created_at: 2026-09-10
 tags:
   - "#plan"

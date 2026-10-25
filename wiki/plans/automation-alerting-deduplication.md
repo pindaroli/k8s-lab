@@ -1,8 +1,9 @@
 ---
 title: "Piano: Deduplicazione Alert nelle Procedure di Automazione Gerarchiche"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-19
+certified_for_ai: false
 created_at: 2026-10-19
 completed_at: 2026-10-19
 tags:

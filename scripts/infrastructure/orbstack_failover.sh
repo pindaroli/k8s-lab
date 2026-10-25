@@ -85,9 +85,24 @@ prepare_orbstack_runtime_env() {
         return 1
     fi
 
+    # Genera .env unificato combinando .env.mcp e .env.ai senza duplicati
+    {
+        echo "# Generated unified failover environment"
+        [ -f "${FAILOVER_RUNTIME_DIR}/.env.mcp" ] && cat "${FAILOVER_RUNTIME_DIR}/.env.mcp"
+        echo ""
+        [ -f "${FAILOVER_RUNTIME_DIR}/.env.ai" ] && cat "${FAILOVER_RUNTIME_DIR}/.env.ai"
+    } | awk '!seen[$0]++ || $0 ~ /^#|^$/' > "${FAILOVER_RUNTIME_DIR}/.env.tmp"
+    chmod 600 "${FAILOVER_RUNTIME_DIR}/.env.tmp"
+    mv -f "${FAILOVER_RUNTIME_DIR}/.env.tmp" "${FAILOVER_RUNTIME_DIR}/.env"
+
+    if [ ! -s "${FAILOVER_RUNTIME_DIR}/.env" ]; then
+        echo "❌ [OrbStack Failover] File .env unificato vuoto in ${FAILOVER_RUNTIME_DIR}!"
+        return 1
+    fi
+
     # Esporta le variabili in ambiente per l'interpolazione Compose
     set -a
-    source "${FAILOVER_RUNTIME_DIR}/.env.ai"
+    source "${FAILOVER_RUNTIME_DIR}/.env"
     set +a
 }
 
@@ -101,17 +116,22 @@ sync_hermes_state_from_truenas() {
         ssh_user="$(_resolve_truenas_ssh_user)"
         if [ -n "$ssh_user" ]; then
             echo "🛑 [State Sync] Arresto preventivo container su entrambi i nodi per quiescenza SQLite WAL..."
-            docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" stop hermes-agent 2>/dev/null || true
+            docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" stop hermes-agent 2>/dev/null || true
             ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" "sudo -n docker stop -t 25 hermes-main 2>/dev/null || true"
 
             echo "🔧 [State Sync] Pre-normalizzazione permessi su TrueNAS (${HERMES_ROOT_REMOTE})..."
             ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-                "sudo -n chown -R olindo:k8s '${HERMES_ROOT_REMOTE}' && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}'" 2>/dev/null || true
+                "sudo -n find '${HERMES_ROOT_REMOTE}' -path '${HERMES_ROOT_REMOTE}/common' -prune -o \( ! -uid 1000 -o ! -gid 1000 \) -exec chown -h olindo:k8s {} + && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}'" 2>/dev/null || true
 
             echo "📥 [State Sync] Sync Stato Istanza (HermesMain, rsync -az senza -u)..."
             rsync -az --itemize-changes -e "ssh -o BatchMode=yes" \
                 --rsync-path="sudo -n rsync" \
                 --exclude='/common/**' \
+                --exclude='*.sock' \
+                --exclude='*.sock.*' \
+                --exclude='/*.lock' \
+                --exclude='gateway-locks/' \
+                --exclude='.local/state/hermes/gateway-locks/' \
                 --exclude='.DS_Store' \
                 --exclude='__pycache__/' \
                 --exclude='.pytest_cache/' \
@@ -146,7 +166,7 @@ activate_orbstack_failover() {
     fi
 
     # 2. Avvio idempotente dello stack Docker Compose (11 container)
-    docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" up -d --remove-orphans
+    docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" up -d --remove-orphans
 
     # 3. Gate di verifica healthcheck sui servizi locali (:4000, :9119, :8100, :8180, :8888, :3000)
     echo "🩺 [OrbStack Failover] Verifica prontezza servizi locali (:4000, :9119, :8100, :8180, :8888, :3000)..."
@@ -160,7 +180,7 @@ activate_orbstack_failover() {
         retries=$((retries - 1))
         if [ "$retries" -le 0 ]; then
             echo "❌ [OrbStack Failover] Timeout healthcheck sullo stack OrbStack!"
-            docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" ps
+            docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" ps
             return 1
         fi
         sleep 2
@@ -201,7 +221,7 @@ deactivate_orbstack_failover_to_truenas() {
     ssh_user="$(_resolve_truenas_ssh_user)"
 
     local orbstack_was_active="false"
-    if [ -f "$ORBSTACK_COMPOSE_FILE" ] && [ -n "$(docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" ps -q 2>/dev/null)" ]; then
+    if [ -f "$ORBSTACK_COMPOSE_FILE" ] && [ -n "$(docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" ps -q 2>/dev/null)" ]; then
         orbstack_was_active="true"
     fi
 
@@ -210,7 +230,7 @@ deactivate_orbstack_failover_to_truenas() {
     #    Se invece siamo in FULL->ECO, ECO->FULL, ECO->ECO o FULL->FULL, questo blocco viene saltato in 0ms!
     if docker ps --format '{{.Names}}' 2>/dev/null | grep -q -E '^(hermes-main|hermes-agent)$'; then
         echo "🛑 [State Sync] Rilevato hermes attivo su OrbStack: arresto per flush sessioni maturate in OFF..."
-        docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" stop hermes-agent 2>/dev/null || true
+        docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" stop hermes-agent 2>/dev/null || true
 
         if [ -n "$(ls -A "${HERMES_ROOT_LOCAL}" 2>/dev/null)" ] && [ -n "$ssh_user" ]; then
             echo "🛑 [State Sync] Arresto preventivo hermes-main su TrueNAS..."
@@ -218,12 +238,17 @@ deactivate_orbstack_failover_to_truenas() {
 
             echo "🔧 [State Sync] Pre-normalizzazione permessi su TrueNAS prima del push..."
             ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-                "sudo -n mkdir -p '${HERMES_ROOT_REMOTE}/HermesMain' '${HERMES_ROOT_REMOTE}/common/prj' && sudo -n chown -R olindo:k8s '${HERMES_ROOT_REMOTE}' && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}'" 2>/dev/null || true
+                "sudo -n mkdir -p '${HERMES_ROOT_REMOTE}/HermesMain' '${HERMES_ROOT_REMOTE}/common/prj' && sudo -n find '${HERMES_ROOT_REMOTE}' -path '${HERMES_ROOT_REMOTE}/common' -prune -o \( ! -uid 1000 -o ! -gid 1000 \) -exec chown -h olindo:k8s {} + && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}'" 2>/dev/null || true
 
             echo "📤 [State Sync] Sync Stato Istanza HermesMain (Mac -> TrueNAS, rsync -az senza -u)..."
             rsync -az --no-owner --no-group --itemize-changes -e "ssh -o BatchMode=yes" \
                 --rsync-path="sudo -n rsync" \
                 --exclude='/common/**' \
+                --exclude='*.sock' \
+                --exclude='*.sock.*' \
+                --exclude='/*.lock' \
+                --exclude='gateway-locks/' \
+                --exclude='.local/state/hermes/gateway-locks/' \
                 --exclude='.DS_Store' \
                 --exclude='__pycache__/' \
                 --exclude='.pytest_cache/' \
@@ -241,7 +266,7 @@ deactivate_orbstack_failover_to_truenas() {
 
             echo "🔧 [State Sync] Post-normalizzazione permessi Git-safe e SGID su TrueNAS..."
             ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-                "sudo -n chown -R olindo:k8s '${HERMES_ROOT_REMOTE}' && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}' && sudo -n find '${HERMES_ROOT_REMOTE}' -type d -exec chmod g+s {} + && (sudo -n docker start hermes-main 2>/dev/null || true)"
+                "sudo -n find '${HERMES_ROOT_REMOTE}' -path '${HERMES_ROOT_REMOTE}/common' -prune -o \( ! -uid 1000 -o ! -gid 1000 \) -exec chown -h olindo:k8s {} + && sudo -n chmod -R u+rwX,g+rwX,o+rX '${HERMES_ROOT_REMOTE}' && sudo -n find '${HERMES_ROOT_REMOTE}' -type d -exec chmod g+s {} + && (sudo -n docker start hermes-main 2>/dev/null || true)"
         else
             echo "⚠️  [State Sync] Cartella locale ${HERMES_ROOT_LOCAL} vuota o SSH non disponibile: salto rsync verso TrueNAS."
         fi
@@ -283,7 +308,7 @@ deactivate_orbstack_failover_to_truenas() {
     # 5. Arresto e rimozione pulita dello stack di failover su OrbStack (solo se ci sono container del progetto)
     if [ "$orbstack_was_active" = "true" ]; then
         echo "🧹 [OrbStack Failback] Spegnimento stack orbstack-failover su Mac Studio..."
-        docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env.ai" -f "$ORBSTACK_COMPOSE_FILE" down --remove-orphans
+        docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" down --remove-orphans
     fi
 
     echo "✅ [OrbStack Failback] Servizi verificati su TrueNAS (${TRUENAS_HOST}), DNS allineato e OrbStack in standby."

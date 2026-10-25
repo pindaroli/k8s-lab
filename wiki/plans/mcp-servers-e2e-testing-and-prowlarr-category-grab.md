@@ -1,8 +1,9 @@
 ---
 title: "Piano: Integration Test Suite per MCP Servers e Gestione Categoria Prowlarr Grab"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-03
+certified_for_ai: false
 created_at: 2026-10-03
 completed_at: 2026-10-03
 tags:

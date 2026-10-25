@@ -1,8 +1,9 @@
 ---
 title: "Piano: Script di Gestione Energetica GPU Radeon 890M su PVE3 e Backup Host PBS"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-05
+certified_for_ai: false
 created_at: 2026-10-05
 completed_at: 2026-10-05
 tags:

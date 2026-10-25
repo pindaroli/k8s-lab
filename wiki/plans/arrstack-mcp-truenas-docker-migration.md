@@ -1,8 +1,9 @@
 ---
 title: "Piano: Containerizzazione e Migrazione arrstack-mcp su Docker TrueNAS (Porta 8110)"
 type: plan
-status: active
-certified_for_ai: true
+status: archived
+certified_for_ai: false
+archived_at: 2026-10-25
 created_at: 2026-10-03
 tags:
   - "#plan"

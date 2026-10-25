@@ -1,8 +1,9 @@
 ---
 title: "Piano: Traefik Umbrella Gateway, Socket Proxy, GitOps CI/CD e Sanificazione Tag per la Flotta MCP TrueNAS"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-25
+certified_for_ai: false
 created_at: 2026-10-19
 last_updated: 2026-10-20
 tags:

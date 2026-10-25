@@ -1,8 +1,9 @@
 ---
 title: "Piano: Integrazione Codec PyroWave su LXC Steam e Streaming su Client macOS"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-04
+certified_for_ai: false
 created_at: 2026-10-03
 completed_at: 2026-10-04
 tags:

@@ -1,8 +1,9 @@
 ---
 title: "Piano: Failover Trasparente Ingress HTTPS home-internal e Switch DNS Tri-Stato (FULL/ECO/OFF)"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-10-24
+certified_for_ai: false
 created_at: 2026-10-24
 completed_at: 2026-10-24
 tags:

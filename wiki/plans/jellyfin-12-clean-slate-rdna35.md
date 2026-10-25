@@ -1,8 +1,9 @@
 ---
 title: "Piano: Jellyfin 12.0 Clean Slate su Proxmox VE (RDNA 3.5 & Storage Ibrido NFS)"
 type: plan
-status: completed
-certified_for_ai: true
+status: archived
+archived_at: 2026-09-12
+certified_for_ai: false
 created_at: 2026-09-11
 completed_at: 2026-09-12
 tags:

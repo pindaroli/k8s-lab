@@ -1,5 +1,14 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Piano Master: Convergenza Hermes Agent (UID 1000, Sync & Web Terminal) e Cross-Hardening KISS Docker Compose (TrueNAS & OrbStack) [[homelab-hermes-convergence-and-compose-cross-hardening]]
+- [x] Fase 0: Pre-Flight Check in Sola Lettura e Snapshot ZFS Preventivo (`@pre-unified-hardening-20261025`) ✅
+- [x] Fase 1 (Wave 1): Aggiornamento Configurazione Container Hermes (`docker/hermes/s6/99-hermes-terminal.sh` & `docker/hermes/web/terminal-inject.js`) ✅
+- [x] Fase 2 (Wave 1): Distribuzione Asset Hermes su Mac Studio e TrueNAS (`~/.homelab-failover/hermes/` & `/mnt/stripe/truenas-docker/hermes/`) ✅
+- [x] Fase 3 (Wave 1 Gate): Refactoring Atomico di `orbstack_failover.sh` (esclusioni `rsync` IPC, `chown` 1000:1000 con `-prune`, `.env` unificato) e Collaudo Hermes ✅
+- [x] Fase 4 (Wave 2): Hardening `docker/orbstack/docker-compose.yaml` (`mem_limit` 256m/512m/768m e singolo `env_file` `.env`) ✅
+- [x] Fase 5 (Wave 2): Hardening `docker/truenas/docker-compose.yaml` (Healthcheck `127.0.0.1`, `no-new-privileges`, 5 Reti Bridge L3/L4, `socket-proxy` Dozzle) ✅
+- [x] Fase 6 (Wave 2 Gate): Deploy Dichiarativo su TrueNAS, Collaudo E2E (6 Gate) e Chiusura Wiki (§12 & §13) ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Hermes Agent Workspace Condiviso common/prj, Web Shell Integrata e Sync Bidirezionale TrueNAS/Mac (v2.0) [[hermes-agent-common-prj-and-web-terminal]]
 - [x] Fase 1: Preparazione Struttura Directory (`/Users/olindo/hermesAgent/common/prj`) & Provisioning Binari Linux ELF (`ttyd.aarch64` + `kubectl` ARM64 su Mac, `ttyd.x86_64` per TrueNAS) ✅
 - [x] Fase 2: Script `s6-overlay` (`99-hermes-terminal.sh`, `ttyd-run.sh`), Router FastAPI Prepend (`terminal_proxy.py` subprotocol=tty) e Iniezione UI (`terminal-inject.js` iframe persistente) ✅
@@ -8,11 +17,11 @@
 - [x] Fase 5: Aggiornamento Dichiarativo Compose TrueNAS (`docker/truenas/docker-compose.yaml`) & Predisposizione Binari/Script su TrueNAS ✅
 - [x] Fase 6: Collaudo E2E Active/Passive (`lab_mode_eco` ↔ `lab_mode_off`), Verifica Git Status e Chiusura Piano (§12 & §13) ✅
 
-## 🚀 In Corso: Migrazione Garage S3 e Scrutiny da TrueNAS Apps a Docker Compose [[garage-scrutiny-truenas-docker-migration]]
-- [ ] Fase 1: Preparazione Volumi Scrutiny (`/mnt/stripe/truenas-docker/scrutiny`), Aggiornamento `garage.toml` (`rpc_public_addr` -> `10.10.20.50:3901`) e File Dichiarativi (`docker/truenas/docker-compose.yaml`, `ensure_storage_on.yml`, `storage.json`)
-- [ ] Fase 2: Cutover da TrueNAS Apps a Docker Compose (`garage` e `scrutiny`) e Verifica Healthcheck/S3/SMART
-- [ ] Fase 3: Eliminazione Definitiva dal Catalogo Apps di TrueNAS (`midclt call app.delete garage/scrutiny`)
-- [ ] Fase 4: Allineamento Homepage TrueNAS (Modalità `ECO`) e Validazione Finale (§12 & §13)
+## 🚀 [x] ✅ COMPLETATO: Migrazione Garage S3 e Scrutiny da TrueNAS Apps a Docker Compose [[garage-scrutiny-truenas-docker-migration]]
+- [x] Fase 1: Preparazione Volumi Scrutiny (`/mnt/stripe/truenas-docker/scrutiny`), Aggiornamento `garage.toml` (`rpc_public_addr` -> `10.10.20.50:3901`) e File Dichiarativi (`docker/truenas/docker-compose.yaml`, `ensure_storage_on.yml`, `storage.json`) ✅
+- [x] Fase 2: Cutover da TrueNAS Apps a Docker Compose (`garage` e `scrutiny`) e Verifica Healthcheck/S3/SMART ✅
+- [x] Fase 3: Eliminazione Definitiva dal Catalogo Apps di TrueNAS (`midclt call app.delete garage/scrutiny`) ✅
+- [x] Fase 4: Allineamento Homepage TrueNAS (Modalità `ECO`) e Validazione Finale (§12 & §13) ✅
 
 ## 🚀 [x] ✅ COMPLETATO: Widget di Stato Homelab (FULL/ECO/OFF) su Tutte le Istanze Homepage [[homepage-lab-mode-status-widget]]
 - [x] Fase 1: Aggiornamento Dashboard TrueNAS Bare Metal (Modalità ECO - Attualmente Live) ✅
@@ -30,14 +39,14 @@
 - [x] Fase 6: Aggiornamento Link Dashboard Homepage (WebGUI TrueNAS :8443) & Resilienza `custom.js` ✅
 - [x] Fase 7: Collaudo E2E Isolato delle 3 Modalità, Transizioni e Validazione di Rete (§12 & §13) ✅
 
-## 🚀 In Corso: Failover Trasparente Servizi TrueNAS su Mac OrbStack in lab_mode_off [[orbstack-failover-truenas-services]]
+## 🚀 [x] ✅ COMPLETATO: Failover Trasparente Servizi TrueNAS su Mac OrbStack in lab_mode_off [[orbstack-failover-truenas-services]]
 - [x] Fase 0: Raccolta Dati, Dossier e Allineamento (Dossier tecnico in `docs/orbstack_failover_gemini_context.md`, piano operativo e decisioni KISS) ✅
-- [ ] Fase 1: Allineamento `rete.json` (alias mcp/hermes/litellm/dozzle su truenas) e `litellm/config.yaml` (embed su Mac Studio)
-- [ ] Fase 2: Stack Docker Compose OrbStack (`docker/orbstack-failover/docker-compose.orbstack.yaml`, profilo lean 7 MCP, liteLLM stateless, Hermes e Dozzle)
-- [ ] Fase 3: Script Switchover DNS OPNsense Unbound (`scripts/network/switch_failover_dns.py` via REST API)
-- [ ] Fase 4: Libreria di Failover e Integrazione negli Script di Modalità (`scripts/infrastructure/orbstack_failover.sh`, `lab_mode_off.sh`, `lab_mode_eco.sh`, `lab_mode_full.sh`)
-- [ ] Fase 5: Standardizzazione Client FQDN (`~/.gemini/antigravity/mcp_config.json` -> `mcp.pindaroli.org`)
-- [ ] Fase 6: Test di Collaudo E2E, Validazione e Refresh Wiki (§12 & §13)
+- [x] Fase 1: Allineamento `rete.json` (alias mcp/hermes/litellm/dozzle su truenas) e `litellm/config.yaml` (embed su Mac Studio) ✅
+- [x] Fase 2: Stack Docker Compose OrbStack (`docker/orbstack-failover/docker-compose.orbstack.yaml`, profilo lean 7 MCP, liteLLM stateless, Hermes e Dozzle) ✅
+- [x] Fase 3: Script Switchover DNS OPNsense Unbound (`scripts/network/switch_failover_dns.py` via REST API) ✅
+- [x] Fase 4: Libreria di Failover e Integrazione negli Script di Modalità (`scripts/infrastructure/orbstack_failover.sh`, `lab_mode_off.sh`, `lab_mode_eco.sh`, `lab_mode_full.sh`) ✅
+- [x] Fase 5: Standardizzazione Client FQDN (`~/.gemini/antigravity/mcp_config.json` -> `mcp.pindaroli.org`) ✅
+- [x] Fase 6: Test di Collaudo E2E, Validazione e Refresh Wiki (§12 & §13) ✅
 
 ## 🚀 In Corso: Migrazione Hermes Agent e LiteLLM da Kubernetes a Docker su TrueNAS SCALE [[hermes-agent-truenas-docker-migration]]
 - [x] Fase 0: Raccolta dati e pre-check (sola lettura: immagine, mount, kubeconfig statico, porte 4000/9119, Ollama) ✅
