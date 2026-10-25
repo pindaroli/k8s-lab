@@ -20,6 +20,7 @@ TrueNAS è il fornitore centrale di storage per l'intera infrastruttura Lab.
 - **IP Gestione**: `10.10.20.50/24` su `bond0` (LACP 802.3ad, hash L3+L4, rate slow), gateway `10.10.20.1`. Membri `enp1s0f0np0` e `enp1s0f1np1`. Sullo switch Extreme il LAG ha master la porta 4 e membro la porta 8: VLAN client untagged, VLAN server taggata. L'host non ha un indirizzo sulla VLAN 10. La VM PBS è attaccata a `vlan10` (tag 10, senza IP sull'host) e resta `10.10.10.100`.
 - **IP OOB**: `192.168.100.50` (VLAN 99 OOB 2.5G, `enp8s0`)
 - **OS**: TrueNAS SCALE 25.10.6 (Debian-based).
+- **RAM & Gestione Memoria (ZFS ARC Tuning)**: Host dotato di 48 GB di RAM (senza swap). Per prevenire la saturazione della memoria da parte dell'ARC e proteggere i 17 container Docker e la VM PBS dall'OOM killer, il parametro `zfs_arc_max` è configurato in modo permanente tramite tunable TrueNAS (`midclt call tunable.create`) a **28 GiB** (`30064771072` bytes). Questo garantisce permanentemente 20 GB di RAM libera per Docker, PBS e processi host, eliminando l'allarme di low memory in [[Hermes_Agent]] (Rif: [[2026-10-25-truenas-zfs-arc-memory-starvation-hermes-warning]]).
 - **UPS**: Master NUT. Il cavo USB dell'UPS Tecnoware Exa 1000 è attestato fisicamente su TrueNAS (Vendor ID `0665:5161`). Driver `nutdrv_qx`, soglia software 40% (`ignorelb`), `HOSTSYNC: 120`.
 
 ## 2. Pool e Dataset
