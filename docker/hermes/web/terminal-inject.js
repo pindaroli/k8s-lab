@@ -78,23 +78,39 @@
     }
   }
 
-  function createNavButton(referenceNode) {
+  const TERMINAL_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5 shrink-0"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line></svg>';
+
+  function createNavItem(referenceLink) {
+    const li = document.createElement('li');
+    li.id = 'hermes-terminal-nav-item';
+
     const btn = document.createElement('a');
     btn.id = BTN_ID;
     btn.href = '#terminal';
-    btn.className = referenceNode ? referenceNode.className : '';
-    btn.style.cssText = [
-      'display:flex', 'align-items:center', 'gap:10px',
-      'padding:8px 12px', 'border-radius:8px', 'cursor:pointer',
-      'text-decoration:none', 'color:inherit', 'font-weight:500'
-    ].join(';');
-    btn.innerHTML = '<span>&gt;_</span><span>Terminale</span>';
+
+    const baseClasses = 'group/nav relative flex items-center gap-3 px-5 py-2.5 font-sans text-display uppercase text-sm tracking-[0.12em] whitespace-nowrap transition-colors cursor-pointer text-text-secondary hover:text-midground';
+    if (referenceLink && referenceLink.className) {
+      let refClasses = referenceLink.className.replace(/\btext-midground\b/g, '').trim();
+      btn.className = refClasses + ' text-text-secondary hover:text-midground';
+    } else {
+      btn.className = baseClasses;
+    }
+    btn.style.clipPath = 'var(--component-tab-clip-path)';
+
+    btn.innerHTML = [
+      TERMINAL_SVG,
+      '<span class="truncate transition-opacity duration-300 lg:opacity-100">Terminale</span>',
+      '<span aria-hidden="true" class="absolute inset-y-0.5 left-1.5 right-1.5 bg-midground opacity-0 pointer-events-none transition-opacity duration-200 group-hover/nav:opacity-5"></span>'
+    ].join('');
+
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       toggleTerminal();
     });
-    return btn;
+
+    li.appendChild(btn);
+    return li;
   }
 
   function ensureFloatingFallback(showFallback) {
@@ -130,9 +146,14 @@
     }
 
     const chatLink = document.querySelector('a[href*="/chat"], nav a, aside a');
-    if (chatLink && chatLink.parentElement) {
-      const navBtn = createNavButton(chatLink);
-      chatLink.insertAdjacentElement('afterend', navBtn);
+    if (chatLink) {
+      const navItem = createNavItem(chatLink);
+      const parentLi = chatLink.closest('li');
+      if (parentLi && parentLi.parentElement) {
+        parentLi.insertAdjacentElement('afterend', navItem);
+      } else if (chatLink.parentElement) {
+        chatLink.insertAdjacentElement('afterend', navItem);
+      }
       ensureFloatingFallback(false);
     } else {
       ensureFloatingFallback(true);

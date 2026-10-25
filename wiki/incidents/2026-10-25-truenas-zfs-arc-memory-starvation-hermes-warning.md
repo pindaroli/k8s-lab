@@ -6,7 +6,7 @@ certified_for_ai: false
 date: 2026-10-25
 severity: P3
 resolved: true
-resolved_at: 2026-10-25T09:41:00+01:00
+resolved_at: 2026-10-25T10:04:00+01:00
 tags:
   - "#incident"
   - "#truenas"

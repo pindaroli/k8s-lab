@@ -64,11 +64,11 @@ if command -v git >/dev/null 2>&1; then
     git config --global --add safe.directory '*' 2>/dev/null || true
 fi
 
-# 6. Aggancio idempotente con cache-buster (?v=2.2) di terminal-inject.js in web_dist/index.html
+# 6. Aggancio idempotente con cache-buster (?v=2.3) di terminal-inject.js in web_dist/index.html
 INDEX_HTML="/opt/hermes/hermes_cli/web_dist/index.html"
 if [ -f "${INDEX_HTML}" ]; then
     sed -i '/terminal-inject\.js/d' "${INDEX_HTML}"
-    sed -i 's|</body>|  <script src="/terminal-inject.js?v=2.2" defer></script>\n</body>|' "${INDEX_HTML}"
+    sed -i 's|</body>|  <script src="/terminal-inject.js?v=2.3" defer></script>\n</body>|' "${INDEX_HTML}"
 fi
 
 # 7. Aggancio idempotente del modulo terminal_proxy.py nell'app FastAPI di Hermes
