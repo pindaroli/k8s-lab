@@ -1,88 +1,74 @@
-# Quadro Contestuale & Vincoli Architetturali per il Consulto Tecnico
-
-> **Riferimento Piano**: [`wiki/plans/hermes-agent-common-prj-and-web-terminal.md`](file:///Users/olindo/prj/k8s-lab/wiki/plans/hermes-agent-common-prj-and-web-terminal.md)  
-> **Data di Generazione**: 2026-10-24  
-> **Infrastruttura**: GEMINI Homelab (Dominio `pindaroli.org`)
-
----
+# Quadro Contestuale e Vincoli Specifici per il Consulto Architetturale
 
 ## 1. Scheda del Piano in Esame
-
-* **Titolo**: Hermes Agent Workspace Condiviso `common/prj`, Web Shell Integrata e Sync Bidirezionale TrueNAS/Mac
-* **File del Piano**: `wiki/plans/hermes-agent-common-prj-and-web-terminal.md`
-* **Stato**: `active` (`certified_for_ai: true`)
-* **Stack Tecnologico**:
-  * **Hermes Agent**: `nousresearch/hermes-agent:v0.22.5` (FastAPI Web Dashboard, s6-overlay, PTY/xterm.js, Python 3.14).
-  * **Web Shell**: `ttyd` (standalone static binary compiled with musl/libuv, WebSockets, xterm.js).
-  * **Runtime Container**: Docker Compose su TrueNAS SCALE 25.10 (Linux AMD64) e OrbStack su macOS Sequoia (Apple Silicon ARM64 / M2 Ultra).
-  * **Storage & Sync**: ZFS pool `stripe` su TrueNAS, directory locale macOS in `/Users/olindo/hermesAgent`, protocollo `rsync -auz` bidirezionale gestito da `scripts/infrastructure/orbstack_failover.sh`.
-* **Obiettivo Principale**:
-  1. Configurare una directory comune host `/hermesAgent/common/prj` montata simmetricamente in tutte le istanze Hermes Agent (`HermesMain`), visibile nativamente nel menu Files della WebGUI.
-  2. Integrare una Web Shell Linux bash interattiva (`ttyd` come `root`, cwd `/opt/data`) direttamente nella WebGUI di Hermes con autenticazione trasparente.
-  3. Ottimizzare e garantire la sincronizzazione bidirezionale tra TrueNAS e Mac (flush preventivo database/container, preservazione dati e normalizzazione permessi).
+- **Titolo del Piano**: Cross-Hardening e Allineamento KISS Docker Compose (TrueNAS & OrbStack)
+- **Percorso del File**: `wiki/plans/docker-compose-cross-hardening-and-kiss-alignment.md`
+- **Stato**: `active` (`certified_for_ai: true`)
+- **Dominio / Tecnologie**: Docker Compose v2, TrueNAS SCALE 25.10 (Linux Debian x86_64, ZFS), Mac Studio M2 Max (macOS Apple Silicon ARM64, OrbStack, Rosetta), Bridge Networking, Tecnativa Docker Socket Proxy L7, Traefik v3, PostgreSQL 16, Security Options (`no-new-privileges`), Container Healthchecks, Cgroups v2 Memory Limits.
+- **Obiettivo Principale**: Formalizzare ed eseguire il cross-hardening dei due stack Docker Compose (`docker/truenas/docker-compose.yaml` e `docker/orbstack/docker-compose.yaml`), adottando in modo mirato e ordinato per priorità KISS (da 5/5 a 4/5) i pattern virtuosi emersi dall'analisi comparativa (healthcheck universali, security hardening, segmentazione L3/L4 reti bridge per isolamento database, socket-proxy L7 per Dozzle, memory limit su container MCP emulati x86, e consolidamento file `.env`), vietando categoricamente anti-pattern che romperebbero il KISS (divieto di eliminare `dynamic.yaml` per label dinamiche cross-stack su TrueNAS, e divieto di portare PostgreSQL su Mac in failover).
 
 ---
 
-## 2. Nodi, Indirizzamento IP e Rete (da `rete.json`)
-
-| Nodo / Servizio | Indirizzo IP / FQDN | VLAN | Ruolo Infrastrutturale | Note Operative |
-| :--- | :--- | :--- | :--- | :--- |
-| **TrueNAS SCALE** | `10.10.20.50` (`truenas.pindaroli.org`) | VLAN 20 (Client/LAN) | Storage primario ZFS bare-metal, Host Docker Compose Servarr/AI | Attivo in modalità `FULL` ed `ECO`. Esegue `hermes-main` sulla porta host `9119`. |
-| **Mac Studio** | `10.10.20.100` (`olindo-macstudio.pindaroli.org`) | VLAN 20 (Client/LAN) | Workstation principale (M2 Ultra), Host OrbStack Docker per failover `OFF` | Attivo in modalità `OFF` (rack spento). Esegue `hermes-main` sulla porta host `9119`. |
-| **OPNsense Router** | `10.10.20.1` / `192.168.100.1` | VLAN 20 / VLAN 99 | Router di confine, DNS Unbound e Gateway | Gestisce gli Host Overrides DNS per la commutazione dinamica TrueNAS ↔ Mac (`switch_failover_dns.py`). |
-| **LiteLLM Proxy** | `10.10.20.50:4000` / `10.10.20.100:4000` | VLAN 20 | Proxy HA OpenAI-compatible per modelli Ollama | Backend LLM primario per Hermes Agent (`http://litellm:4000/v1`). |
-| **Hermes Web Dashboard** | Porta `9119` (TCP) | VLAN 20 | UI web di gestione agenti, sessioni e file manager | Endpoint di destinazione per l'utente, protetto da Basic Auth (`admin`). |
-| **ttyd Web Shell** | Porta interna `7681` (TCP) | Loopback / Interna | Server Web Shell per sessione bash PTY | Non esposto direttamente sull'host; proxato/integrato dalla WebGUI porta 9119. |
-
----
-
-## 3. Storage ZFS, Directory Host e Mount dei Container (da `storage.json`)
-
-### 3.1 Mappatura Percorsi Host
-* **Mac Studio (Failover OrbStack)**:
-  * Root Hermes: `/Users/olindo/hermesAgent`
-  * Istanza Principale: `/Users/olindo/hermesAgent/HermesMain`
-  * Cartella Comune: `/Users/olindo/hermesAgent/common/prj`
-  * Binario Web Shell: `/Users/olindo/.homelab-failover/hermes/bin/ttyd` (architettura `aarch64`)
-* **TrueNAS SCALE (Bare Metal)**:
-  * Pool ZFS: `stripe`
-  * Root Hermes: `/mnt/stripe/hermesAgent` (permessi standard homelab `777` o `775`, owner `olindo:k8s`)
-  * Istanza Principale: `/mnt/stripe/hermesAgent/HermesMain`
-  * Cartella Comune: `/mnt/stripe/hermesAgent/common/prj`
-  * Binario Web Shell: `/mnt/stripe/truenas-docker/hermes/bin/ttyd` (architettura `x86_64`)
-
-### 3.2 Mount Dichiarativi all'Interno del Container `hermes-main`
-* `/opt/data`: mount dell'istanza (`HermesMain`). Costituisce la `HERMES_HOME` e la root di sicurezza `HERMES_WRITE_SAFE_ROOT`.
-* `/opt/data/common`: mount del blocco comune (`common/`), contenente `prj/`.
-* `/usr/local/bin/ttyd`: mount `:ro` del binario statico compilato di `ttyd`.
-* Symlink interno: `/hermesAgent/common -> /opt/data/common` (o `/hermesAgent -> /opt/data`) per risolvere qualsiasi chiamata a percorso assoluto.
+## 2. Nodi, IP e Topologia di Rete Pertinenti (Fonte: `rete.json`)
+- **TrueNAS SCALE Bare Metal (`truenas`)**:
+  - IP: `10.10.20.50` su interfaccia VLAN 20 (`bond0.20` / `enp3s0`).
+  - Ruolo: Host primario stateful per i carichi di produzione in modalità `FULL` ed `ECO`.
+  - Servizi attivi nello stack `docker/truenas/docker-compose.yaml`:
+    - Media Stack: `jellyfin` (:8096, GPU passthrough `/dev/dri/renderD128`), `qbittorrent` (:8080, :30661, :6881), `prowlarr` (:9696), `flaresolverr` (:8191), `webhook-normalizer` (:9000).
+    - Audio & S3 in `network_mode: host`: `minimserver` (multicast SSDP UPnP/DLNA porta 1900 UDP), `garage` (porte cluster RPC e S3 API :3900-:3903).
+    - Database relazionali dedicati: `bitmagnet-postgres` (:5432), `litellm-postgres` (:5432).
+    - AI & Management: `bitmagnet` (:3333, :3334), `litellm` (:4000), `hermes-agent` (:9119), `scrutiny` (:31054, :31055, privileged/SMART `/dev`), `dozzle` (:8888), `homepage` (:3000).
+  - Architettura Ingress su TrueNAS: Lo stack `docker/mcp` è isolato e include `mcp-traefik` (:80, :443, :8100). Traefik instrada verso i servizi applicativi di `docker/truenas` tramite file provider statico [`docker/mcp/dynamic.yaml`](file:///Users/olindo/prj/k8s-lab/docker/mcp/dynamic.yaml) su `http://10.10.20.50:<porta>`.
+- **Mac Studio M2 Max (`mac-studio`)**:
+  - IP: `10.10.20.100` su interfaccia VLAN 20.
+  - Ruolo: Host secondario di failover per la modalità *rack-dark* (`lab_mode_off`) tramite motore OrbStack (attivo a rack fisico spento).
+  - Servizi dello stack `docker/orbstack/docker-compose.yaml`:
+    - Gateway & Sicurezza: `socket-proxy` (L7 read-only interno), `traefik` (:80, :443, :8100, :8180).
+    - Flotta MCP Lean (7 server attivi a freddo): `opnsense-mcp`, `gemini-deepsearch-mcp`, `ollama-mcp` (connesso a Ollama Metal locale Mac :11434), `kef-mcp`, `nowaikit-mcp`, `github-mcp`, `meross-mcp`.
+    - AI & Management: `litellm` (:4000, **Stateless Zero-DB**), `hermes-agent` (:9119), `dozzle` (:8888 via socket-proxy), `homepage` (:3000).
+  - Topologia Reti OrbStack: 3 bridge dedicati (`orbstack-mcp-network`, `orbstack-socket-proxy` con `internal: true`, `orbstack-ai-network`).
+- **OPNsense Firewall & DNS (`opnsense`)**:
+  - IP VLAN 20 Gateway / DNS: `10.10.20.1` (Unbound DNS con Host Overrides dinamici).
+  - FQDN gestiti con switch tri-stato: `home-internal.pindaroli.org`, `hermes.pindaroli.org`, `litellm.pindaroli.org`, `dozzle.pindaroli.org`, `mcp.pindaroli.org`.
 
 ---
 
-## 4. Vincoli Architetturali e Golden Rules Applicabili (da `GEMINI.md`)
-
-1. **Configurazione Dichiarativa Immutabile**:
-   * Qualsiasi modifica ai container Docker deve essere espressa esclusivamente all'interno dei file Compose versionati: `docker/orbstack/docker-compose.yaml` e `docker/truenas/docker-compose.yaml`.
-   * Vietate modifiche manuali a caldo o container non dichiarati.
-2. **Schema Permessi ZFS / NFS Homelab**:
-   * Tutti i dati residenti sul pool `stripe` destinati ai workload devono tassativamente rispettare l'ownership `olindo:k8s` con permessi `chmod 775` o `777`, garantendo compatibilità universale con init-container root (UID 0) e processi unprivileged (UID 1000 `hermes`).
-3. **Autenticazione Passwordless SSH**:
-   * Qualsiasi comando di sincronizzazione o automazione verso TrueNAS (`10.10.20.50`) deve basarsi esclusivamente su scambio di chiavi pubbliche (`ssh -o BatchMode=yes`).
-4. **Zero Data Loss & Safe Additive Sync**:
-   * La sincronizzazione dello stato di Hermes non deve mai cancellare arbitrariamente file di lavoro (`rsync -auz` senza `--delete` automatico distruttivo).
-5. **Protocollo Test-Driven (§12)**:
-   * Ogni singolo step di modifica deve essere seguito da un test di verifica reale oggettivo (ispezione curl, validazione permessi, test di binding porta, esecuzione del comando dentro il container).
+## 3. Storage ZFS e Mappa dei Volumi (Fonte: `storage.json`)
+- **Pool ZFS `stripe` su TrueNAS (NVMe ad alte prestazioni)**:
+  - Root configurazioni e DB: `/mnt/stripe/truenas-docker/` (jellyfin, qbittorrent, prowlarr, homepage, dozzle, bitmagnet, litellm-postgres, scrutiny, hermes).
+  - Sicurezza preventiva: Dataset ZFS protetto da snapshot immediato prima di ogni riconfigurazione (`stripe/truenas-docker@pre-cross-hardening-20261025`).
+- **Pool ZFS `oliraid` su TrueNAS (Archiviazione Massiva)**:
+  - `/mnt/oliraid/arrdata/media`: montato da Jellyfin, qBittorrent, Webhook-Normalizer, MinimServer.
+  - `/mnt/oliraid/garage-data`: storage persistente per l'Object Storage S3 Garage.
+- **Storage Locale Mac Studio (macOS APFS)**:
+  - `~/.homelab-failover/`: runtime directory di failover (`acme/`, `.env`, `dozzle/`, `hermes/`).
+  - `/Users/olindo/hermesAgent/`: directory dati e workspace condiviso per Hermes Agent sincronizzati via rsync bidirezionale.
 
 ---
 
-## 5. Aree di Attenzione Critica & Quesiti Specifici per la Revisione
+## 4. Vincoli Architetturali e Golden Rules Homelab (Fonte: `GEMINI.md`)
+1. **User Decision Sovereignty (Propose, Never Decide)**:
+   - Divieto assoluto di eseguire modifiche a caldo, cancellare dati o fermare container senza previa autorizzazione esplicita dell'utente.
+2. **Principio KISS (Keep It Simple, Stupid) — Divieto di Unificazione Forzata**:
+   - È vietato fondere i due file `docker-compose.yaml` in un unico mega-compose parametrizzato o basato su profili/override complessi. I due ambienti mantengono file separati e specializzati.
+3. **Preservazione del Disaccoppiamento Ingress TrueNAS**:
+   - Vietato eliminare `docker/mcp/dynamic.yaml` per rimpiazzarlo con etichette Traefik su `docker/truenas`: i due stack su TrueNAS devono rimanere autonomi al boot.
+4. **Preservazione Zero-DB su Mac Studio (Failover)**:
+   - È categoricamente vietato introdurre database relazionali (PostgreSQL) su Mac Studio: LiteLLM deve rimanere rigorosamente stateless durante il failover.
+5. **Protocollo di Verifica Test-Driven (§12 di `wiki/SCHEMA.md`)**:
+   - Ogni modifica dichiarativa deve essere preceduta da `docker compose config` (dry-run) e seguita da test di raggiungibilità reale e verifica dell'integrità dei container.
 
-1. **Iniezione del Tab "Terminale" nella WebGUI di Hermes**:
-   * Il frontend di Hermes Agent v0.22.5 è un bundle SPA compilato servito da FastAPI (`HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist`).
-   * Qual è il meccanismo più robusto, pulito e mantenibile per integrare la voce "Terminale" nella UI e garantire che le connessioni WebSocket di `ttyd` (`127.0.0.1:7681`) vengano veicolate senza conflitti con i router WebSocket nativi di Hermes (`/api/chat/ws`)?
-2. **Ciclo di Vita del Processo `ttyd` e Supervisore s6**:
-   * Il container Hermes utilizza `s6-overlay`. È preferibile avviare `ttyd` come servizio s6 dedicato (`/run/service` o `/etc/s6-overlay/s6-rc.d`), oppure tramite un wrapper di entrypoint trasparente?
-3. **Flush e Coerenza dei Database SQLite durante il Sync TrueNAS → Mac**:
-   * L'arresto preventivo di `hermes-main` prima dell'rsync su TrueNAS azzera i rischi di corruzione WAL di SQLite. È necessario prevedere un timeout di sicurezza o un fallback nel caso in cui `docker stop` impieghi più tempo del previsto?
-4. **Gestione Conflitti e Risoluzione Permessi su Mac**:
-   * Su macOS, i file in `/Users/olindo/hermesAgent/common/prj` appartengono all'utente `olindo` (UID 501). Quando vengono sincronizzati su TrueNAS (dove `olindo` è tipicamente UID 1000 e `k8s` è GID 1000), il comando di normalizzazione `chown -R olindo:k8s` in `orbstack_failover.sh` è sufficiente a prevenire discrepanze di accesso?
+---
+
+## 5. Aree di Attenzione & Quesiti Specifici per il Consulto
+1. **Interazione tra Reti Bridge e Porte Pubblicate (`ports:`) su TrueNAS**:
+   - L'introduzione delle 3 reti bridge (`media-net`, `ai-net`, `db-bitmagnet-net`) altera l'accessibilità da parte di Traefik (che risiede nello stack `docker/mcp` e usa `http://10.10.20.50:<porta>`)?
+   - *Verifica*: In Docker, la direttiva `ports: host:container` vincola l'ascolto sull'IP dell'host indipendentemente dalla rete bridge interna usata.
+2. **Invarianza dei Container in `network_mode: host`**:
+   - La presenza di container con `network_mode: host` (`minimserver`, `garage`) convive senza conflitti con la definizione delle nuove reti bridge all'interno dello stesso compose?
+3. **Socket-Proxy per Dozzle su TrueNAS: Condiviso vs Dedicato**:
+   - Su TrueNAS esiste già un `socket-proxy` attivo in `docker/mcp`. È preferibile collegare Dozzle di `docker/truenas` al proxy esistente (creando una rete esterna condivisa `truenas-socket-proxy`) oppure aggiungere un socket-proxy dedicato leggerissimo dentro `docker/truenas` per preservare il 100% di autonomia tra i due compose?
+4. **Memory Limits su OrbStack (cgroups v2)**:
+   - La direttiva `mem_limit: 256m / 512m` applicata ai container MCP in `docker/orbstack` interagisce correttamente con il motore OrbStack senza provocare OOM-kill spuri durante carichi di picco (es. ricerche estese con NowAIKit o Gemini DeepSearch)?
+5. **Solidità del Piano di Rollback**:
+   - La strategia di ripristino istantaneo tramite snapshot ZFS su TrueNAS (`zfs rollback`) e checkout Git su Mac Studio garantisce tempi di ripristino < 30 secondi in caso di imprevisti?
