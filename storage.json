@@ -128,6 +128,12 @@
         "protocol": "hostpath/docker",
         "notes": "Mappato direttamente al container garage in /mnt/stripe/truenas-docker/docker-compose.yaml su TrueNAS. Buckets: postgres-wal, velero, ragflow-docs."
       },
+      "hermes_agent": {
+        "path": "/mnt/stripe/hermesAgent/HermesMain",
+        "description": "Dataset ZFS NVMe per Hermes Agent (SQLite journal_mode=DELETE, config.yaml, sessioni e stato)",
+        "protocol": "hostpath/docker",
+        "notes": "Montato in /opt/data nel container hermes-main (uid:gid 1000:1000 olindo:k8s) e sincronizzato via rsync 1:1 con /Users/olindo/hermesAgent/HermesMain su Mac Studio in lab_mode_off."
+      },
       "jellyfin_trickplay": {
         "path": "/mnt/oliraid/jellyfin-trickplay",
         "description": "Specialized ZFS Dataset for Jellyfin Trickplay (BIF) files",

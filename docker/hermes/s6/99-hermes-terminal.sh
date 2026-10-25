@@ -51,6 +51,74 @@ if [ -d /opt/data ]; then
         -exec chown -h hermes:hermes {} +
 fi
 
+# --- Self-Healing SQLite journal_mode (virtiofs / ZFS convergence on /opt/data) ---
+if ! command -v sqlite3 >/dev/null 2>&1; then
+    cat << 'WRAPPER_EOF' > /usr/local/bin/sqlite3
+#!/usr/bin/env python3
+import sys, sqlite3
+
+args = sys.argv[1:]
+sql_args = []
+db = None
+
+i = 0
+while i < len(args):
+    arg = args[i]
+    if arg == "-cmd":
+        i += 2
+        continue
+    elif db is None and not arg.startswith("-"):
+        db = arg
+    else:
+        sql_args.append(arg)
+    i += 1
+
+if not db or not sql_args:
+    sys.exit(1)
+
+query = " ".join(sql_args)
+try:
+    con = sqlite3.connect(f"file:{db}?timeout=10", uri=True)
+    cur = con.cursor()
+    for statement in query.split(";"):
+        stmt = statement.strip()
+        if not stmt:
+            continue
+        cur.execute(stmt)
+        for row in cur.fetchall():
+            print("|".join(str(c) for c in row))
+    con.close()
+except Exception as e:
+    sys.stderr.write(f"sqlite3 wrapper error: {e}\n")
+    sys.exit(1)
+WRAPPER_EOF
+    chmod 0755 /usr/local/bin/sqlite3
+fi
+
+if [ -d "/opt/data" ]; then
+    echo "[cont-init] Ensuring SQLite databases in /opt/data use journal_mode=DELETE..."
+    find /opt/data -path /opt/data/common -prune -o -maxdepth 3 -type f -name "*.db" -print 2>/dev/null | while read -r db_file; do
+        [ -f "$db_file" ] || continue
+        current_mode=$(sqlite3 -cmd ".timeout 5000" "$db_file" "PRAGMA journal_mode;" 2>/dev/null | tr '[:upper:]' '[:lower:]')
+        if [ "$current_mode" = "wal" ]; then
+            echo "[cont-init] Converting $db_file from WAL to DELETE (with TRUNCATE checkpoint)..."
+            new_mode=$(sqlite3 -cmd ".timeout 10000" "$db_file" "PRAGMA wal_checkpoint(TRUNCATE); PRAGMA journal_mode=DELETE;" 2>/dev/null | tail -n 1 | tr '[:upper:]' '[:lower:]')
+            if [ "$new_mode" = "delete" ]; then
+                rm -f "${db_file}-wal" "${db_file}-shm"
+                chown 1000:1000 "$db_file"
+                echo "[cont-init] Successfully converted $db_file to DELETE (uid:gid 1000:1000)."
+            else
+                echo "[cont-init] WARNING: Failed to convert $db_file (mode is still '$new_mode'). Preserving -wal/-shm to prevent data loss!"
+            fi
+        elif [ "$current_mode" = "delete" ]; then
+            # Rimuove esclusivamente eventuali file orfani -wal/-shm residui su DB già certificati in DELETE
+            rm -f "${db_file}-wal" "${db_file}-shm"
+            chown 1000:1000 "$db_file"
+        fi
+    done
+fi
+
+
 # 5. Configurazione prompt bash contestuale per nodo, umask 0002 e Git safe.directory
 cat << 'EOF' > /etc/profile.d/hermes_env.sh
 umask 0002

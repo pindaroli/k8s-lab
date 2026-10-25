@@ -100,10 +100,20 @@ prepare_orbstack_runtime_env() {
         return 1
     fi
 
-    # Esporta le variabili in ambiente per l'interpolazione Compose
-    set -a
-    source "${FAILOVER_RUNTIME_DIR}/.env"
-    set +a
+    # Esporta le variabili in ambiente per l'interpolazione Compose in modo sicuro
+    # (previene fallimenti di 'source' in presenza di valori Docker non quotati con spazi)
+    while IFS='=' read -r key val || [ -n "$key" ]; do
+        [[ "$key" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "$key" ]] && continue
+        key="$(echo -n "$key" | xargs)"
+        if [[ "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+            val="${val%\"}"
+            val="${val#\"}"
+            val="${val%\'}"
+            val="${val#\'}"
+            export "$key=$val"
+        fi
+    done < "${FAILOVER_RUNTIME_DIR}/.env"
 }
 
 # Eseguito in lab_mode_off.sh PRIMA di ensure_storage_off.yml (Copre FULL->OFF, ECO->OFF, OFF->OFF)

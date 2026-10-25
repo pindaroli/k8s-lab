@@ -1,5 +1,19 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Convergenza Strutturale SQLite journal_mode DELETE e Hardening Endpoint Health Homepage per Hermes Agent [[hermes-sqlite-journal-mode-and-homepage-health-hardening]]
+- [x] Fase 0: Pre-Flight Backup Atomico Locale (Fail-Safe, `HermesMain.bak-pre-delete-*`) ✅
+- [x] Fase 1: Aggiornamento Configurazione Dichiarativa `config.yaml` (`database.journal_mode: delete`) ✅
+- [x] Fase 2: Hardening dello Script s6 `99-hermes-terminal.sh` (Conversione atomica WAL -> DELETE con TRUNCATE checkpoint, chown 1000:1000 e wrapper sqlite3) ✅
+- [x] Fase 3: Riallineamento Simmetrico Probe `/api/health` (Homepage OrbStack/K8s/TrueNAS & Docker Compose) ✅
+- [x] Fase 4: Censimento Canonico `storage.json` (`/mnt/stripe/hermesAgent/HermesMain`) e Bonifica Wiki ✅
+- [x] Fase 5: Riavvio Stack OrbStack, Validazione Runtime (7 DB convertiti a DELETE, /api/health 200 OK, container healthy) e Governance Wiki (§13) ✅
+
+## 🚀 Pianificato: Integrazione Locale MCP Microsoft Office (`office_mac` + `macos_automator`) e Skill `macos-office-automation` [[macos-office-mcp-and-skill-integration]]
+- [ ] Fase 1: Verifica Prerequisiti Desktop (`/Applications/Microsoft *.app`), Clone `vAirpower/macos-office365-mcp-server` in `scripts/office-mac-mcp/` e Smoke Test CLI con `uv run`
+- [ ] Fase 2: Registrazione Dichiarativa di `office_mac` e `macos_automator` in `~/.gemini/antigravity/mcp_config.json`
+- [ ] Fase 3: Creazione della Skill `macos-office-automation` (`SKILL.md`) e Regole di Routing
+- [ ] Fase 4: Collaudo End-to-End (OOXML + AppleScript) e Onboarding Permessi TCC macOS (`Automazione` / `Accessibilità`)
+
 ## 🚀 [x] ✅ COMPLETATO: Piano Master: Convergenza Hermes Agent (UID 1000, Sync & Web Terminal) e Cross-Hardening KISS Docker Compose (TrueNAS & OrbStack) [[homelab-hermes-convergence-and-compose-cross-hardening]]
 - [x] Fase 0: Pre-Flight Check in Sola Lettura e Snapshot ZFS Preventivo (`@pre-unified-hardening-20261025`) ✅
 - [x] Fase 1 (Wave 1): Aggiornamento Configurazione Container Hermes (`docker/hermes/s6/99-hermes-terminal.sh` & `docker/hermes/web/terminal-inject.js`) ✅

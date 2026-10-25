@@ -413,7 +413,7 @@ data:
             href: http://10.10.20.50:9119
             description: LLM-based Kubernetes & Infra Agent (TrueNAS Docker)
             icon: hermes.png
-            siteMonitor: http://10.10.20.50:9119/health
+            siteMonitor: http://10.10.20.50:9119/api/health
         - RAGFlow:
             href: https://ragflow-internal.pindaroli.org
             description: Enterprise RAG & DeepDoc Document Intelligence (Internal)

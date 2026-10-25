@@ -28,7 +28,7 @@ tags:
 | 1 | LiteLLM | **Migra anche LiteLLM** su Docker TrueNAS insieme a Hermes |
 | 2 | Privilegi K8s di Hermes | **A**: stessi di oggi (`cluster-admin` equivalente), comportamento invariato |
 | 3 | Esposizione | **Solo interna**: nessun accesso esterno / Cloudflare / OAuth2 |
-| 4 | Dati Hermes | **Riuso as-is** di `/mnt/stripe/hermes-agent` (nessuna copia/pulizia) |
+| 4 | Dati Hermes | **Riuso as-is** di `/mnt/stripe/hermesAgent/HermesMain` (nessuna copia/pulizia) |
 | 5 | Alias DNS | **Rimossi** (`hermes`, `hermes-internal`, `litellm-internal`): accesso solo IP:porta |
 | 6 | Dati LiteLLM | **Database nuovo** (nessun dump/restore da CNPG) |
 
@@ -89,7 +89,7 @@ flowchart LR
 
 1. **LiteLLM** (`ghcr.io/berriai/litellm:1.106.2`, porta host `4000`, da verificare libera) con `config.yaml` derivato da `proxy_config` del values, versionato nel repo e montato `:ro`.
 2. **`litellm-postgres`**: container PostgreSQL pinnato dedicato (`postgres:16-alpine`, pattern `bitmagnet-postgres`), dati sul dataset ZFS dedicato `/mnt/stripe/truenas-docker/litellm-postgres` (`recordsize=8k`, `999:999`), sulla rete compose di default, senza porte esposte sull'host. Sostituisce il database `litellm` su CNPG.
-3. **Hermes** (`nousresearch/hermes-agent:<TAG_PINNATO>`, porta host `9119`) con bind mount diretto `/mnt/stripe/hermes-agent` (dataset già con permessi `777`, `olindo:k8s`) e mount `:ro` di `kubeconfig` e `talosconfig`.
+3. **Hermes** (`nousresearch/hermes-agent:<TAG_PINNATO>`, porta host `9119`) con bind mount diretto `/mnt/stripe/hermesAgent/HermesMain` montato in `/opt/data` (dataset già con permessi `777`, `olindo:k8s`) e mount `:ro` di `kubeconfig` e `talosconfig`.
 4. **Indirizzamento**: Hermes → LiteLLM tramite nome servizio compose `http://litellm:4000/v1` sulla rete di default dello stack, senza IP hardcoded. Ordine di avvio governato da `depends_on` con `condition: service_healthy`.
 5. **Segreti e credenziali runtime**: `.env` su TrueNAS e file `kubeconfig`/`talosconfig` estratti da SOPS con permessi `600` (directory `700`), mai committati in chiaro in git.
 6. **Solo interno**: nessun Traefik / OAuth2 / Cloudflare. L'accesso avviene esclusivamente su `http://10.10.20.50:9119` e `http://10.10.20.50:4000`.
@@ -159,21 +159,21 @@ Frammento da integrare nella sezione `services:` del file `servarr/truenas-docke
       KUBECONFIG: "/root/.kube/config"
       TALOSCONFIG: "/root/.talos/config"
     volumes:
-      - /mnt/stripe/hermes-agent:/app/data
+      - /mnt/stripe/hermesAgent/HermesMain:/opt/data
       - /mnt/stripe/truenas-docker/hermes/kubeconfig:/root/.kube/config:ro
       - /mnt/stripe/truenas-docker/hermes/talosconfig:/root/.talos/config:ro
     depends_on:
       litellm:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9119/health"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD", "curl", "-fsS", "http://localhost:9119/api/health"]
+      interval: 30s
+      timeout: 10s
       retries: 3
-      start_period: 15s
+      start_period: 30s
 ```
 
-*(Nota: i path interni al container di Hermes — `/app/data`, `/root/.kube/config`, `/root/.talos/config` e i nomi esatti delle variabili d'ambiente — verranno confermati in FASE 0 ispezionando il Deployment K8s attuale prima del commit).*
+*(Nota: i path interni al container di Hermes — `/opt/data`, `/root/.kube/config`, `/root/.talos/config` e i nomi esatti delle variabili d'ambiente — verranno confermati in FASE 0 ispezionando il Deployment K8s attuale prima del commit).*
 
 ## 4. Decisioni risolte e conseguenze
 
@@ -206,7 +206,7 @@ Da eseguire rigorosamente tramite la skill `.agents/skills/homepage-manager/` (a
 | :--- | :--- | :--- |
 | `homepage/homepage.yaml` (K8s esterna) | Hermes | Rimozione della card: servizio solo interno, nessun accesso esterno |
 | `homepage/homepage.yaml` | LiteLLM | Se presente, rimozione per lo stesso motivo |
-| `homepage/homepage-local.yaml` (K8s interna) | Hermes | `href: http://10.10.20.50:9119`, `siteMonitor: http://10.10.20.50:9119/health`, descrizione `(TrueNAS Docker)` |
+| `homepage/homepage-local.yaml` (K8s interna) | Hermes | `href: http://10.10.20.50:9119`, `siteMonitor: http://10.10.20.50:9119/api/health`, descrizione `(TrueNAS Docker)` |
 | `homepage/homepage-local.yaml` | LiteLLM | `href: http://10.10.20.50:4000/ui`, `siteMonitor: http://10.10.20.50:4000/health/liveliness`, descrizione `(TrueNAS Docker)` |
 | Homepage TrueNAS (`/mnt/stripe/truenas-docker/homepage/services.yaml`) | Hermes e LiteLLM | Nuove card simmetriche con gli stessi URL e `siteMonitor` (sorgente repo verificata in FASE 0) |
 
@@ -371,7 +371,7 @@ Ogni singolo passo prevede spiegazione preventiva, approvazione esplicita dell'u
 3. **Test di verifica completi di Hermes su Docker**:
    - *Verifica stato `healthy` e HTTP dashboard*:
      ```bash
-     curl -sf http://10.10.20.50:9119/health && echo "Hermes Health OK"
+     curl -sf http://10.10.20.50:9119/api/health && echo "Hermes Health OK"
      ```
    - *Verifica comunicazione interna Docker `hermes-agent` → `http://litellm:4000/v1`*:
      ```bash
@@ -393,7 +393,7 @@ Ogni singolo passo prevede spiegazione preventiva, approvazione esplicita dell'u
 1. **Aggiornamento delle 3 istanze Homepage tramite la skill `homepage-manager`**:
    - Rimozione di Hermes (e LiteLLM se presente) da `homepage/homepage.yaml` (esterna).
    - Aggiornamento di `homepage/homepage-local.yaml` (interna) e del `services.yaml` di TrueNAS con:
-     - Hermes: `href: http://10.10.20.50:9119`, `siteMonitor: http://10.10.20.50:9119/health`
+     - Hermes: `href: http://10.10.20.50:9119`, `siteMonitor: http://10.10.20.50:9119/api/health`
      - LiteLLM: `href: http://10.10.20.50:4000/ui`, `siteMonitor: http://10.10.20.50:4000/health/liveliness`
    - Verifica dei 7 livelli icone (`hermes.png`, `sh-litellm`), rollout K8s e restart Homepage TrueNAS.
 
