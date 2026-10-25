@@ -1,0 +1,63 @@
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: skip-verify
+  namespace: default
+spec:
+  insecureSkipVerify: true
+---
+# Proxmox PVE3 API su 10.10.10.31:8006
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxmox-pve3
+  namespace: default
+spec:
+  ports:
+    - port: 8006
+      targetPort: 8006
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: proxmox-pve3-1
+  namespace: default
+  labels:
+    kubernetes.io/service-name: proxmox-pve3
+addressType: IPv4
+ports:
+  - port: 8006
+    protocol: TCP
+endpoints:
+  - addresses:
+      - "10.10.10.31"
+    conditions:
+      ready: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: steam-api-rewrite
+  namespace: default
+spec:
+  replacePathRegex:
+    regex: "^/api/steam/(.*)"
+    replacement: "/api2/json/nodes/pve3/lxc/301/$1"
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: steam-api-headers
+  namespace: default
+spec:
+  headers:
+    customRequestHeaders:
+      Authorization: "PVEAPIToken=steam-ui@pve!btn=e60111fa-7be8-4289-9ce7-a93e61f61c22"
+    accessControlAllowMethods:
+      - "GET"
+      - "POST"
+      - "OPTIONS"
+    accessControlAllowOriginList:
+      - "*"
+    accessControlAllowHeaders:
+      - "*"

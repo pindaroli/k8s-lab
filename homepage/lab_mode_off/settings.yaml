@@ -1,0 +1,16 @@
+---
+title: "Mac Studio Failover Dashboard"
+background:
+  opacity: 85
+theme: dark
+color: slate
+layout:
+  AI & Agenti:
+    style: row
+    columns: 3
+  Infrastruttura & Routing:
+    style: row
+    columns: 3
+  Model Context Protocol (MCP):
+    style: row
+    columns: 4

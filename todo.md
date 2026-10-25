@@ -1,5 +1,11 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Riorganizzazione Unificata Homepage nelle 4 Modalità (`external`, `lab_mode_full`, `lab_mode_eco`, `lab_mode_off`) via Kustomize [[homepage-four-modes-reorganization]]
+- [x] Fase 1: Estrazione e creazione delle 4 cartelle di configurazione (`homepage/{external,lab_mode_full,lab_mode_eco,lab_mode_off}`) e validazione YAML ✅
+- [x] Fase 2: Creazione struttura Kubernetes Kustomize (`homepage/kustomization.yaml` e `homepage/k8s/*.yaml`) e verifica `kubectl kustomize homepage/` (48/48 risorse) ✅
+- [x] Fase 3: Aggiornamento Stack OrbStack (`docker/orbstack/docker-compose.yaml`), test live `homepage-mac` (`HTTP 200 OK`) e Script Sync TrueNAS (`scripts/infrastructure/orbstack_failover.sh`) ✅
+- [x] Fase 4: Allineamento Skill `homepage-manager`, `wiki/entities/Homepage.md` e Governance Wiki (§13) ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Convergenza Strutturale SQLite journal_mode DELETE e Hardening Endpoint Health Homepage per Hermes Agent [[hermes-sqlite-journal-mode-and-homepage-health-hardening]]
 - [x] Fase 0: Pre-Flight Backup Atomico Locale (Fail-Safe, `HermesMain.bak-pre-delete-*`) ✅
 - [x] Fase 1: Aggiornamento Configurazione Dichiarativa `config.yaml` (`database.journal_mode: delete`) ✅

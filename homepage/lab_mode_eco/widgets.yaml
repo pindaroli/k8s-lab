@@ -1,0 +1,11 @@
+- greeting:
+    text_size: md
+    text: "🟡 Stato: ECO (TrueNAS Online — K8s Dark)"
+- resources:
+    backend: resources
+    expanded: true
+    cpu: true
+    memory: true
+- search:
+    provider: duckduckgo
+    target: _blank

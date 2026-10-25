@@ -14,7 +14,7 @@
   - **Ultima Azione Completata**: [Descrizione sintetica del comando/azione eseguita con successo]
   - **Prossimo Passo Operativo**: [Comando esatto o modifica da fare successivamente]
   - **Blocchi/Decisioni Pendenti**: [Attesa via libera, info mancanti o discussioni aperte]
-- **Gestione Dashboard Homepage (Homepage Operations Mandate)**: Qualsiasi modifica, aggiunta di servizi o configurazione delle dashboard Homepage (`homepage/homepage.yaml` e `homepage/homepage-local.yaml`) DEVE tassativamente attivare e seguire la skill `.agents/skills/homepage-manager/` (allineamento simmetrico, verifica preventiva raggiungibilità icone a 7 livelli, fallback standard MDI e rollout automatico K8s).
+- **Gestione Dashboard Homepage (Homepage Operations Mandate)**: Qualsiasi modifica, aggiunta di servizi o configurazione delle 4 dashboard Homepage (`homepage/external/`, `homepage/lab_mode_full/`, `homepage/lab_mode_eco/`, `homepage/lab_mode_off/`) DEVE tassativamente attivare e seguire la skill `.agents/skills/homepage-manager/` (allineamento simmetrico, verifica preventiva raggiungibilità icone a 7 livelli, fallback standard MDI e rollout automatico Kustomize/Docker).
 
 - **Gestione Switch Extreme via Ansible (Ansible Mandate)**: Per lo switch Extreme Networks, i comandi CLI/SSH di sola lettura (es. `show vlan`, `show configuration`, ispezioni di stato) sono liberamente consentiti per la diagnostica. Qualsiasi operazione di modifica della configurazione DEVE essere obbligatoriamente automatizzata tramite Playbook Ansible permanenti salvati nel repository.
 

@@ -1,7 +1,0 @@
-apiVersion: traefik.io/v1alpha1
-kind: ServersTransport
-metadata:
-  name: skip-verify
-  namespace: default
-spec:
-  insecureSkipVerify: true

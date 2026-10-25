@@ -85,5 +85,12 @@ router_settings:
   allowed_fails: 1
   cooldown_time: 30
 
+general_settings:
+  pass_through_endpoints:
+    - path: "/v1/models"
+      auth: false
+    - path: "/models"
+      auth: false
+
 litellm_settings:
   drop_params: true

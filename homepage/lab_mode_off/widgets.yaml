@@ -1,0 +1,13 @@
+---
+- greeting:
+    text_size: md
+    text: "⚫ Stato: OFF (Rack Dark — Mac Studio Failover)"
+- resources:
+    cpu: true
+    memory: true
+    disk: /app/config
+- datetime:
+    format:
+      timeStyle: short
+      dateStyle: short
+      hourCycle: h23

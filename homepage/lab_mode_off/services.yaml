@@ -1,0 +1,23 @@
+---
+- AI & Agenti:
+    - Hermes Agent:
+        icon: hermes.png
+        href: http://hermes.pindaroli.org:9119
+        description: "Autonomous Agent Gateway & Web Dashboard"
+        siteMonitor: http://hermes-agent:9119/api/health
+
+- Infrastruttura & Routing:
+    - Dozzle:
+        icon: dozzle.png
+        href: http://dozzle.pindaroli.org:8888
+        description: "Realtime Container Log Viewer"
+        ping: http://dozzle:8080/healthcheck
+    - Traefik Console:
+        icon: traefik.png
+        href: http://10.10.20.100:8180/dashboard/
+        description: "Local Umbrella Gateway Console"
+        ping: http://traefik:8080/ping
+    - OPNsense:
+        icon: opnsense.png
+        href: https://192.168.2.254
+        description: "Perimeter Router, Firewall & DNS Unbound"

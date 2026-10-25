@@ -1,6 +1,6 @@
 ---
 title: "Homepage Dashboard"
-last_updated: "2026-10-14"
+last_updated: "2026-10-25"
 confidence: "High"
 tags:
   - "#app"
@@ -8,18 +8,22 @@ tags:
   - "#ui"
   - "#mcp"
 provenance:
-  - "homepage/README.md"
+  - "homepage/kustomization.yaml"
+  - "wiki/plans/homepage-four-modes-reorganization.md"
   - "wiki/plans/homepage-upgrade-v2.4.0.md"
 ---
 
 # Homepage Dashboard
 
-Homepage è la dashboard centrale del lab, che fornisce una vista aggregata di tutti i servizi, lo stato del cluster Kubernetes e le metriche in tempo reale. Tutte le istanze sono allineate alla versione **v2.4.0** (`ghcr.io/gethomepage/homepage:v2.4.0`) a seguito del piano [[homepage-upgrade-v2.4.0]].
+Homepage è la dashboard centrale del lab, che fornisce una vista aggregata di tutti i servizi, lo stato del cluster Kubernetes e le metriche in tempo reale. Tutte le istanze sono allineate alla versione **v2.4.0** (`ghcr.io/gethomepage/homepage:v2.4.0`) e riorganizzate sotto l'unica directory canonica `homepage/` a seguito del piano [[homepage-four-modes-reorganization]].
 
-## 1. Accesso & Istanze
-- **K8s Esterno**: `https://home.pindaroli.org` (Protetto da [[OAuth2_Proxy]] e [[Traefik]]). MCP disabilitato (`HOMEPAGE_MCP_ENABLED: "false"`).
-- **K8s Interno**: `https://home-internal.pindaroli.org` (Accesso diretto LAN/VPN senza OAuth2). MCP abilitato con Bearer token.
-- **Docker TrueNAS**: `http://10.10.20.50:3000` (Stack nativo bare-metal in `servarr/truenas-docker/docker-compose.yaml`). MCP abilitato con Bearer token.
+## 1. Accesso & Le 4 Modalità Unificate in `homepage/`
+Tutte e 4 le varianti di Homepage sono versionate su Git in sottocartelle omogenee di `homepage/` contenenti i file nativi YAML/CSS/JS (`services.yaml`, `widgets.yaml`, `settings.yaml`, `bookmarks.yaml`, `custom.css`, `custom.js`):
+- **1. Esterna (`homepage/external/`)**: `https://home.pindaroli.org` (Kubernetes, protetta da [[OAuth2_Proxy]] e [[Traefik]]). MCP disabilitato (`HOMEPAGE_MCP_ENABLED: "false"`).
+- **2. Interna `FULL` (`homepage/lab_mode_full/`)**: `https://home-internal.pindaroli.org` (Kubernetes, accesso diretto LAN/VPN senza OAuth2). MCP abilitato con Bearer token.
+- **3. Interna `ECO` (`homepage/lab_mode_eco/`)**: `https://home-internal.pindaroli.org` / `http://10.10.20.50:3000` (Docker TrueNAS in `docker/truenas/docker-compose.yaml`, sincronizzata automaticamente via `rsync` verso `/mnt/stripe/truenas-docker/homepage/`). MCP abilitato con Bearer token.
+- **4. Interna `OFF` (`homepage/lab_mode_off/`)**: `https://home-internal.pindaroli.org` / `http://10.10.20.100:3000` (Docker Mac Studio OrbStack in `docker/orbstack/docker-compose.yaml`, montata direttamente in bind-mount).
+- **Manifesti Infrastrutturali Kubernetes (`homepage/k8s/` + `homepage/kustomization.yaml`)**: Deployment, Service, RBAC, IngressRoute e Middleware Steam sono separati dai contenuti e applicati tramite **`kubectl apply -k homepage/`** (`configMapGenerator` con hash suffix automatico).
 
 ## 2. Model Context Protocol (MCP Endpoint)
 Homepage espone nativamente un endpoint MCP su `POST /api/mcp` abilitato sui canali interni fidati:

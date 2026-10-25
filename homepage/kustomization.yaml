@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - k8s/rbac.yaml
+  - k8s/steam-proxy.yaml
+  - k8s/external-deploy.yaml
+  - k8s/internal-deploy.yaml
+
+configMapGenerator:
+  - name: homepage
+    namespace: default
+    options:
+      labels:
+        app.kubernetes.io/name: homepage
+    files:
+      - external/bookmarks.yaml
+      - external/custom.css
+      - external/custom.js
+      - external/docker.yaml
+      - external/kubernetes.yaml
+      - external/services.yaml
+      - external/settings.yaml
+      - external/widgets.yaml
+
+  - name: homepage-local
+    namespace: default
+    options:
+      labels:
+        app.kubernetes.io/name: homepage-local
+    files:
+      - lab_mode_full/bookmarks.yaml
+      - lab_mode_full/custom.css
+      - lab_mode_full/custom.js
+      - lab_mode_full/docker.yaml
+      - lab_mode_full/kubernetes.yaml
+      - lab_mode_full/services.yaml
+      - lab_mode_full/settings.yaml
+      - lab_mode_full/widgets.yaml

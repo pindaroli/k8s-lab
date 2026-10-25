@@ -1,0 +1,146 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage-local
+  namespace: default
+  labels:
+    app.kubernetes.io/name: homepage-local
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: homepage-local
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homepage-local
+  namespace: default
+  labels:
+    app.kubernetes.io/name: homepage-local
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: homepage-local
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: homepage-local
+    spec:
+      serviceAccountName: homepage-local
+      automountServiceAccountToken: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      containers:
+        - name: homepage
+          image: "ghcr.io/gethomepage/homepage:v2.4.0"
+          imagePullPolicy: Always
+          env:
+            - name: HOMEPAGE_ALLOWED_HOSTS
+              value: "home,home-internal.pindaroli.org"
+            - name: NODE_OPTIONS
+              value: "--max-http-header-size=32768"
+            - name: HOMEPAGE_MCP_ENABLED
+              value: "true"
+            - name: HOMEPAGE_MCP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-mcp-secret
+                  key: HOMEPAGE_MCP_TOKEN
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app/config/custom.js
+              name: homepage-config
+              subPath: custom.js
+            - mountPath: /app/config/custom.css
+              name: homepage-config
+              subPath: custom.css
+            - mountPath: /app/config/bookmarks.yaml
+              name: homepage-config
+              subPath: bookmarks.yaml
+            - mountPath: /app/config/docker.yaml
+              name: homepage-config
+              subPath: docker.yaml
+            - mountPath: /app/config/kubernetes.yaml
+              name: homepage-config
+              subPath: kubernetes.yaml
+            - mountPath: /app/config/services.yaml
+              name: homepage-config
+              subPath: services.yaml
+            - mountPath: /app/config/settings.yaml
+              name: homepage-config
+              subPath: settings.yaml
+            - mountPath: /app/config/widgets.yaml
+              name: homepage-config
+              subPath: widgets.yaml
+            - mountPath: /app/config/logs
+              name: logs
+      volumes:
+        - name: homepage-config
+          configMap:
+            name: homepage-local
+        - name: logs
+          emptyDir: {}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: homepage-local-cache-control
+  namespace: default
+spec:
+  headers:
+    customResponseHeaders:
+      Cache-Control: "no-cache, no-store, must-revalidate"
+      Pragma: "no-cache"
+      Expires: "0"
+---
+# Internal Access (Direct / No OAuth2)
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homepage-ingress-internal
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`home-internal.pindaroli.org`) && PathPrefix(`/api/steam`)
+      kind: Rule
+      services:
+        - name: proxmox-pve3
+          port: 8006
+          scheme: https
+          serversTransport: skip-verify
+      middlewares:
+        - name: steam-api-rewrite
+          namespace: default
+        - name: steam-api-headers
+          namespace: default
+    - match: Host(`home-internal.pindaroli.org`)
+      kind: Rule
+      services:
+        - name: homepage-local
+          port: 3000
+      middlewares:
+        - name: homepage-local-cache-control
+          namespace: default
+  tls:
+    secretName: pindaroli-wildcard-tls

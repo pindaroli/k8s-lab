@@ -500,7 +500,7 @@ services:
       - HOMEPAGE_ALLOWED_HOSTS=*
       - NODE_TLS_REJECT_UNAUTHORIZED=0
     volumes:
-      - ${ROOT_DIR:-/Users/olindo/prj/k8s-lab}/docker/orbstack/homepage-config:/app/config
+      - ${ROOT_DIR:-/Users/olindo/prj/k8s-lab}/homepage/lab_mode_off:/app/config
     ports:
       - "3000:3000"
     extra_hosts:

@@ -1,0 +1,27 @@
+title: "Home Dashboard (Internal)"
+subtitle: "Pindaroli Lab - LAN Access"
+background:
+  image: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+  blur: "sm"
+  saturate: 50
+  brightness: 50
+layout:
+  "Kubernetes Services":
+    style: row
+    columns: 4
+  "AI services":
+    style: row
+    columns: 4
+  "ArrServices":
+    style: row
+    columns: 4
+  "Infrastructure":
+    style: row
+    columns: 4
+  "Network Infrastructure":
+    style: row
+    columns: 4
+
+  "GitOps":
+    style: row
+    columns: 4

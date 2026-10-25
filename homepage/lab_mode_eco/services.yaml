@@ -1,0 +1,89 @@
+- "Failover Services (TrueNAS)":
+    - Jellyfin:
+        href: http://10.10.20.50:8096
+        description: Media Server (Jellyfin 12 - TrueNAS Failover)
+        icon: jellyfin.png
+        siteMonitor: http://10.10.20.50:8096/health
+    - MinimServer:
+        href: http://10.10.20.50:9790
+        description: Audio DLNA/UPnP library server
+        icon: minimserver.png
+        siteMonitor: http://10.10.20.50:9790
+    - qBittorrent:
+        href: http://10.10.20.50:8080
+        description: BitTorrent Downloader (TrueNAS Failover)
+        icon: qbittorrent.png
+        siteMonitor: http://10.10.20.50:8080
+    - Prowlarr:
+        href: http://10.10.20.50:9696
+        description: Indexer Management (SQLite Failover)
+        icon: prowlarr.png
+        siteMonitor: http://10.10.20.50:9696/ping
+    - Bitmagnet:
+        href: http://10.10.20.50:3333/webui/torrents
+        description: DHT Crawler & Torrent Indexer
+        icon: bitmagnet.png
+        siteMonitor: http://10.10.20.50:3333/webui
+
+- "Infrastructure Hosts":
+    - TrueNAS:
+        href: https://10.10.20.50:8443
+        description: TrueNAS SCALE Bare Metal (Storage Engine)
+        icon: https://www.svgrepo.com/show/331613/truenas.svg
+        siteMonitor: https://10.10.20.50:8443
+    - Garage:
+        href: http://10.10.20.50:3903/health
+        description: S3 Object Storage (TrueNAS Docker)
+        icon: garage.png
+        siteMonitor: http://10.10.20.50:3903/health
+    - Scrutiny:
+        href: http://10.10.20.50:31054
+        description: Hard Drive Health & S.M.A.R.T. Monitoring
+        icon: scrutiny.png
+        siteMonitor: http://10.10.20.50:31054
+    - Dozzle:
+        href: http://10.10.20.50:8888
+        description: TrueNAS Docker Logs & Container Monitor
+        icon: dozzle.png
+        siteMonitor: http://10.10.20.50:8888/healthcheck
+    - PBS:
+        href: https://10.10.10.100:8007
+        description: Proxmox Backup Server (KVM VM su TrueNAS)
+        icon: proxmox.png
+
+- "Network Infrastructure":
+    - OPNsense:
+        href: https://192.168.2.254
+        description: OPNsense Core Firewall & Router
+        icon: opnsense.png
+        siteMonitor: https://192.168.2.254
+    - Core Switch:
+        href: http://192.168.2.1
+        description: Extreme Networks X620-16x (10G Core Switch)
+        icon: mdi-switch
+        siteMonitor: http://192.168.2.1
+    - Switch Letto:
+        href: http://192.168.2.2
+        description: Switch 2.5G Bed Room
+        icon: mdi-switch
+    - Switch Server:
+        href: http://192.168.2.3
+        description: Switch 2.5G Server Room
+        icon: mdi-switch
+    - Access Point:
+        href: http://10.10.20.103
+        description: Cudy AP11000 Wi-Fi 7 Access Point
+        icon: mdi-wifi
+        siteMonitor: http://10.10.20.103
+
+- "AI & Automation":
+    - Hermes Agent:
+        href: http://10.10.20.50:9119
+        description: LLM-based Kubernetes & Infra Agent (TrueNAS Docker)
+        icon: hermes.png
+        siteMonitor: http://10.10.20.50:9119/api/health
+    - LiteLLM:
+        href: http://10.10.20.50:4000/ui
+        description: LLM Gateway & Model Proxy Admin UI (TrueNAS Docker)
+        icon: sh-litellm
+        siteMonitor: http://10.10.20.50:4000/health/liveliness

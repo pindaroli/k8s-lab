@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: opnsense-truenas-replication-ssh
+    namespace: truenas-system
+type: Opaque
+stringData:
+    host: ENC[AES256_GCM,data:LOvqtkNZTo+YYH/7jg==,iv:Ko9X36UAZRYa77US9qfFU4u9AExo7zyMia1KrNhkZb0=,tag:4QaHcEH8NV5Oa41ZWl16qw==,type:str]
+    port: ENC[AES256_GCM,data:yWM=,iv:eCQ8pRgaPabd///15/woD3MQvCvEXy4tKGH+OKOqScw=,tag:0x0l+YnA6pp/Xmva2naXHw==,type:str]
+    username: ENC[AES256_GCM,data:viVHfw==,iv:ydyWoX5t3dWegzzqcYKaWupsV/9Zj/P4Kkcb1RYKT1g=,tag:44qIp1PwY5Wuh2RbC7LT4A==,type:str]
+    remote_host_key: ENC[AES256_GCM,data:cPXqbQhy5MtaVjhOCNU91DKxQOJA7LirOSFKVJ7vczqukHjA5UY/y306zDHY7qJwJblp4t537dE8cV7vv4GHfG993Lyx0qakH0/u17FnyBj4yoEQQ1oud7D4ogVLAfaemo5DNqO+BgtBlPHWDeT/Ex94xkxTnTfxifxNvF011X4BWVxqeo1uAEPCoztNVPNqU5jc4vEY6gggH2NIU7JhTaYFjYnfCubk0KObIA0k2TOi9ZoJrQHKi8/ts6mTo16QMaLEH3d4B6cdxPZNcKSAnvGJm8PQRno4Q5jZsT5n8jB25mY2YOr5hB5Gf71fsu/FsWxLKTPJ2F/52MHxv+l37ir0m4Mbee5T9QnTU9bbxVASBhwNxbggPaVHj5o033w4nSd4RBdBHC+iSSRMtzNAFcasYiscoUu38KIBa6vxBxBo7lX2m2zhH6JyFRw+BMjau/1cVlzswYUw82ftARxMo1Opbqs2ssVochLqjdZxKO5aT2RRI9+JulMZaZZtMC4zjtWZdsisw31HmCzD7sKQeKQkayti4Qem0ZbniwKpZhiQEbgiY3f7ZSCWoSTHA90wjqt1cOH9Z24+Q+YcRvxcGwcGy8LNCr9gRgmK9wxnh0NyBwvNEhcLcmmnmisuUucoiHWD1id0xqnDlhZ0yd1QfEppSWqhJbfE/r9nSAi7/6r3Jhy0Svz82gVrFfwd5k6A6BuOHKdL3DRw/4XOKxgouvB3iHq3FHIsT1MvAbMBOG64gPNxlPtW33ap7RTBOX8rOhMH4oSdSVJ4jIQejjM5u2fH/ymc04HE2OUz1ymkPo359iKXhgV4APzybnPT0UAyGTTfG6/Jim+zGswTWCM8sAr+ce3GwoyTGIUBR8U4cVnQn3xWjhlrKRFNHvJkiaQWvYlu3p8i4alFrXJtqge3SmdPFMp8Agzdtm8pq7KNoIZt7tKxLzz0f33PL3E6f8J2Ec8QH0wtnOu6DUUNv5geiX7BafV68sUlfdQMT149UKboZJ9H0iWbYedt85YIEypw9YUfpJaMTWXRRpOY6R9t39oAywUDhnqUdPcR,iv:RvvpEgyI4E0Jqrx1rSDS+v5UGCWkkO3IAHsV24hvHQM=,tag:d7ykS33k+d30Ii62SBmUZg==,type:str]
+sops:
+    age:
+        - recipient: age1x5pmv4jqhp99mzt089nrm4wn8cd6y4vlt88n8mq0xe30wngasuaqxl4ytl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBnbUROT2JKK2JoVjE2Qjll
+            UGN5dDBENG5LU2hKeXRDaHJVT21qeW5ZSTFvCkF5cjBqci8wdUlnUml4TUNJcGZ2
+            QTBVQ1FOMER2ZTB5cUR3UXJiRUFlVUkKLS0tIEpyK1JGSm9FUnhqaGl3U2lHa2lJ
+            ZklWT2N2QVY4V1RvSTZnUVM4bmhKZncKxkwriTFJ5IXv1tsNfjtvWHykteS3aAfN
+            zBWFhmn0yGglmI/GO3S2J36vrd6AGdYhEM31zVYexezHZ83ErHuHHg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-10-25T15:04:26Z"
+    mac: ENC[AES256_GCM,data:jtunVsgvrAvvnWzY+9RbA+Iyt7D6HWV6GYz0Qs+ByxfwhOvGAsRfzZ3I6WoXdkg7gdhohjKWdekGt8hV1q/zm0hNcEoVGzId2TcO/hDOPijr07cmi4D89W7vebnCjVJLAvPK4ypiQk9qUQJp6nQDcQDUzmrpriqMeOKGFdxcwpE=,iv:r8Z6lRx+7abdh/6frUi4bWApVpubvyv21sfckTT/U7c=,tag:o+O7yGtiwyYM6SZKMAmmcA==,type:str]
+    encrypted_regex: ^(data|stringData|password|secret|token|key|apiKey|client.*)$
+    version: 3.12.2

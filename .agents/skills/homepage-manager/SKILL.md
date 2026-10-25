@@ -1,14 +1,15 @@
 ---
 name: homepage-manager
 type: skill
-description: "Gestione e manutenzione dashboard Homepage (homepage.yaml e homepage-local.yaml): aggiunta e modifica servizi, correzione, aggiornamento o sostituzione di icone rotte, mancanti o invisibili, risoluzione icone con verifica preventiva di raggiungibilità a 7 livelli, fallback standard MDI e rollout automatico K8s."
-when_to_use: "Quando l'utente richiede di aggiungere, rimuovere, aggiornare o modificare servizi, correggere o sostituire icone rotte o mancanti, sistemare link o widget nelle dashboard Homepage (homepage.yaml, homepage-local.yaml, home.pindaroli.org, home-internal.pindaroli.org)."
+description: "Gestione e manutenzione dashboard Homepage nelle 4 modalità (homepage/external, homepage/lab_mode_full, homepage/lab_mode_eco, homepage/lab_mode_off): aggiunta e modifica servizi, correzione, aggiornamento o sostituzione di icone rotte, mancanti o invisibili, risoluzione icone con verifica preventiva di raggiungibilità a 7 livelli, fallback standard MDI e rollout automatico Kustomize/Docker."
+when_to_use: "Quando l'utente richiede di aggiungere, rimuovere, aggiornare o modificare servizi, correggere o sostituire icone rotte o mancanti, sistemare link o widget nelle dashboard Homepage (homepage/external, homepage/lab_mode_full, homepage/lab_mode_eco, homepage/lab_mode_off, home.pindaroli.org, home-internal.pindaroli.org)."
 status: active
 tags:
   - homepage
   - dashboard
   - icons
   - kubernetes
+  - kustomize
 ---
 
 # Homepage Manager Skill (`homepage-manager`)
@@ -26,10 +27,14 @@ La skill si attiva automaticamente quando l'utente scrive o richiede comandi com
 ---
 
 ## 🎯 Obiettivo
-Governare in modo deterministico e impeccabile l'intero ciclo di vita delle dashboard Homepage del lab:
-1. **Allineamento Simmetrico Obbligatorio (Dual-Dashboard)**: Ogni servizio aggiunto o modificato deve essere aggiornato contemporaneamente sia in [homepage.yaml](file:///Users/olindo/prj/k8s-lab/homepage/homepage.yaml) (accesso esterno protetto da OAuth2) sia in [homepage-local.yaml](file:///Users/olindo/prj/k8s-lab/homepage/homepage-local.yaml) (accesso interno LAN / K8s DNS).
+Governare in modo deterministico e impeccabile l'intero ciclo di vita delle **4 dashboard Homepage** del lab, tutte centralizzate in `homepage/`:
+1. **Allineamento Simmetrico Multi-Modalità**:
+   - **Esterna (`home.pindaroli.org`)**: [homepage/external/services.yaml](file:///Users/olindo/prj/k8s-lab/homepage/external/services.yaml) (K8s protetto da OAuth2).
+   - **Interna `FULL` (`home-internal.pindaroli.org` su K8s)**: [homepage/lab_mode_full/services.yaml](file:///Users/olindo/prj/k8s-lab/homepage/lab_mode_full/services.yaml).
+   - **Interna `ECO` (`home-internal.pindaroli.org` su TrueNAS Docker)**: [homepage/lab_mode_eco/services.yaml](file:///Users/olindo/prj/k8s-lab/homepage/lab_mode_eco/services.yaml) (sincronizzata via `rsync` su `/mnt/stripe/truenas-docker/homepage/`).
+   - **Interna `OFF` (`home-internal.pindaroli.org` su Mac OrbStack)**: [homepage/lab_mode_off/services.yaml](file:///Users/olindo/prj/k8s-lab/homepage/lab_mode_off/services.yaml).
 2. **Risoluzione Icone con Verifica Preventiva (7 Livelli)**: Prima di salvare qualsiasi configurazione, testare preventivamente la reale raggiungibilità HTTP 200 dell'asset, evitando icone rotte o invisibili.
-3. **Rollout e Verifica Automatica K8s**: Applicare i manifesti ed eseguire il rollout restart immediato con verifica dello stato `1/1 Running`.
+3. **Rollout e Verifica Automatica K8s (`kubectl apply -k homepage/`)**: Applicare tramite Kustomize (`configMapGenerator` con hash suffix automatico) e verificare lo stato `1/1 Running`.
 
 ---
 
@@ -89,17 +94,25 @@ Qualora tutti i 7 livelli di ricerca preventiva abbiano dato esito negativo (nes
 
 ## 🛠️ Procedura Operativa di Rollout e Verifica
 
-Ogni modifica alle configurazioni delle dashboard richiede l'esecuzione tassativa di questa sequenza:
+1. **In modalità `FULL` (Kubernetes — `homepage/external/` e `homepage/lab_mode_full/`)**:
+   Il `configMapGenerator` di Kustomize calcola automaticamente il nuovo hash della ConfigMap e aggiorna i Deployment innescando il RollingUpdate:
+   ```bash
+   kubectl apply -k homepage/
+   kubectl rollout status deployment/homepage -n default && kubectl rollout status deployment/homepage-local -n default
+   kubectl get pods -n default -l 'app.kubernetes.io/name in (homepage,homepage-local)'
+   ```
 
-```bash
-kubectl apply -f homepage/homepage.yaml && kubectl apply -f homepage/homepage-local.yaml && kubectl rollout restart deployment/homepage deployment/homepage-local -n default
-```
+2. **In modalità `ECO` (TrueNAS Docker — `homepage/lab_mode_eco/`)**:
+   Sincronizzare i file verso TrueNAS e riavviare il container `homepage`:
+   ```bash
+   rsync -az --no-owner --no-group -e "ssh -o BatchMode=yes" --rsync-path="sudo -n rsync" --exclude='.DS_Store' --exclude='logs/' homepage/lab_mode_eco/ olindo@10.10.20.50:/mnt/stripe/truenas-docker/homepage/ && ssh -o BatchMode=yes olindo@10.10.20.50 "sudo -n docker restart homepage"
+   ```
 
-Verificare il completamento del rollout e la salute dei pod:
-```bash
-kubectl rollout status deployment/homepage -n default && kubectl rollout status deployment/homepage-local -n default
-kubectl get pods -n default -l 'app.kubernetes.io/name in (homepage,homepage-local)'
-```
+3. **In modalità `OFF` (Mac Studio OrbStack — `homepage/lab_mode_off/`)**:
+   Il bind mount `${ROOT_DIR}/homepage/lab_mode_off:/app/config` è diretto; riavviare il container locale se necessario:
+   ```bash
+   docker restart homepage-mac
+   ```
 
 Al termine, eseguire la congruenza di rete e la rigenerazione del wiki:
 ```bash

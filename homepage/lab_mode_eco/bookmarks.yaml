@@ -1,0 +1,4 @@
+- "OOB Management":
+    - TrueNAS OOB:
+        - href: https://192.168.100.50:8443
+          icon: https://www.svgrepo.com/show/331613/truenas.svg

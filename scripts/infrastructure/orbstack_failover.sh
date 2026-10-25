@@ -284,6 +284,17 @@ deactivate_orbstack_failover_to_truenas() {
         echo "ℹ️  [State Sync] Nessun container hermes attivo su OrbStack (transizione tra stati con TrueNAS già primario)."
     fi
 
+    # 1b. Sincronizzazione dichiarativa della configurazione Homepage ECO (Git -> TrueNAS)
+    if [ -n "$ssh_user" ] && [ -d "${ROOT_DIR}/homepage/lab_mode_eco" ]; then
+        echo "📤 [Homepage Sync] Allineamento homepage/lab_mode_eco/ -> TrueNAS (/mnt/stripe/truenas-docker/homepage/)..."
+        rsync -az --no-owner --no-group -e "ssh -o BatchMode=yes" \
+            --rsync-path="sudo -n rsync" \
+            --exclude='.DS_Store' \
+            --exclude='logs/' \
+            "${ROOT_DIR}/homepage/lab_mode_eco/" \
+            "${ssh_user}@${TRUENAS_HOST}:/mnt/stripe/truenas-docker/homepage/" || true
+    fi
+
     # 2. Auto-Healing KISS #5: Se anche una sola delle 4 porte su TrueNAS (8100, 9119, 4000, 8888)
     #    non è già aperta (es. container fermato manualmente o primo avvio), forza 'docker compose up -d' su TrueNAS
     if ! _is_tcp_open "$TRUENAS_HOST" 8100 || ! _is_tcp_open "$TRUENAS_HOST" 9119 || ! _is_tcp_open "$TRUENAS_HOST" 4000 || ! _is_tcp_open "$TRUENAS_HOST" 8888; then
