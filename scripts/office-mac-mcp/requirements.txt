@@ -1,0 +1,16 @@
+# MCP Server Requirements
+mcp>=0.1.0
+
+# Office Document Libraries
+python-pptx>=0.6.21
+python-docx>=0.8.11
+openpyxl>=3.0.0
+
+# macOS Integration
+pyobjc-framework-Cocoa>=10.0
+
+# Async Support
+aiofiles>=23.0.0
+
+# Optional but recommended
+typing-extensions>=4.0.0

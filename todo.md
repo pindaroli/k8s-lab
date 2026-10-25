@@ -8,11 +8,11 @@
 - [x] Fase 4: Censimento Canonico `storage.json` (`/mnt/stripe/hermesAgent/HermesMain`) e Bonifica Wiki ✅
 - [x] Fase 5: Riavvio Stack OrbStack, Validazione Runtime (7 DB convertiti a DELETE, /api/health 200 OK, container healthy) e Governance Wiki (§13) ✅
 
-## 🚀 Pianificato: Integrazione Locale MCP Microsoft Office (`office_mac` + `macos_automator`) e Skill `macos-office-automation` [[macos-office-mcp-and-skill-integration]]
-- [ ] Fase 1: Verifica Prerequisiti Desktop (`/Applications/Microsoft *.app`), Clone `vAirpower/macos-office365-mcp-server` in `scripts/office-mac-mcp/` e Smoke Test CLI con `uv run`
-- [ ] Fase 2: Registrazione Dichiarativa di `office_mac` e `macos_automator` in `~/.gemini/antigravity/mcp_config.json`
-- [ ] Fase 3: Creazione della Skill `macos-office-automation` (`SKILL.md`) e Regole di Routing
-- [ ] Fase 4: Collaudo End-to-End (OOXML + AppleScript) e Onboarding Permessi TCC macOS (`Automazione` / `Accessibilità`)
+## 🚀 [x] ✅ COMPLETATO: Integrazione Locale MCP Microsoft Office (`office_mac` + `macos_automator`) e Skill `macos-office-automation` [[macos-office-mcp-and-skill-integration]]
+- [x] Fase 1: Verifica Prerequisiti Desktop (`/Applications/Microsoft *.app`), Clone `vAirpower/macos-office365-mcp-server` in `scripts/office-mac-mcp/`, Hardening Controller/Bridge e Smoke Test CLI con `uv run` ✅
+- [x] Fase 2: Registrazione Dichiarativa di `office_mac` e `macos_automator` in `~/.gemini/antigravity/mcp_config.json` e generazione schemi MCP ✅
+- [x] Fase 3: Creazione della Skill `macos-office-automation` (`SKILL.md` workspace + globale) e Regole di Routing in `.agents/AGENTS.md` ✅
+- [x] Fase 4: Collaudo End-to-End (OOXML `.xlsx`/`.docx`/`.pptx` + AppleScript + PDF Quartz export) e Onboarding Permessi TCC macOS (`Automazione`) ✅
 
 ## 🚀 [x] ✅ COMPLETATO: Piano Master: Convergenza Hermes Agent (UID 1000, Sync & Web Terminal) e Cross-Hardening KISS Docker Compose (TrueNAS & OrbStack) [[homelab-hermes-convergence-and-compose-cross-hardening]]
 - [x] Fase 0: Pre-Flight Check in Sola Lettura e Snapshot ZFS Preventivo (`@pre-unified-hardening-20261025`) ✅

@@ -1,6 +1,6 @@
 ---
 title: Integrazione Locale MCP Microsoft Office (office_mac + macos_automator) e Skill macos-office-automation
-status: active
+status: completed
 certified_for_ai: true
 author: Gemini
 created_at: 2026-10-25
@@ -17,7 +17,7 @@ tags:
 # Piano Operativo: Integrazione Locale MCP Microsoft Office (`office_mac` + `macos_automator`) e Skill `macos-office-automation`
 
 > [!IMPORTANT]
-> **Current Status**: **IN ATTESA DI DECISIONI ARCHITETTURALI E AVVIO FASE 1**
+> **Current Status**: **COMPLETATO E VALIDATO END-TO-END ✅**
 > **Contesto**: Automazione 100% locale su macOS di Microsoft Word, Excel e PowerPoint tramite accoppiata di server MCP (`office_mac` per motore OOXML + session check; `macos_automator` per AppleScript/JXA nativo e controllo GUI) governati dalla skill dedicata `macos-office-automation`.
 
 ---
@@ -160,28 +160,28 @@ Ricorri a `execute_script` (AppleScript / JXA) **esclusivamente** nei seguenti c
 
 ## 5. Fasi Operative di Implementazione (Protocollo Test-Driven)
 
-### [ ] Fase 1: Verifica Prerequisiti Desktop & Acquisizione `office_mac`
+### [x] Fase 1: Verifica Prerequisiti Desktop & Acquisizione `office_mac` ✅
 - Verifica presenza di `Microsoft Word.app`, `Microsoft Excel.app` e `Microsoft PowerPoint.app` in `/Applications`.
 - Clone del repository `https://github.com/vAirpower/macos-office365-mcp-server.git` in `/Users/olindo/prj/k8s-lab/scripts/office-mac-mcp/` (rimuovendo `.git` nidificato).
-- Ispezione dei tool esposti in `src/office365_mcp_server.py` e test di avvio CLI tramite `/opt/homebrew/bin/uv run`.
+- Hardening locale dei controller e del bridge (`stderr` logging per protocollo stdio puro, disattivazione auto-open GUI dei file temporanei per evitare split-brain, rilevamento processi `pgrep` e finestre GUI attive via `osascript`) e test di avvio JSON-RPC tramite `/opt/homebrew/bin/uv run` (24 tool attivi).
 
-### [ ] Fase 2: Registrazione Dichiarativa in `~/.gemini/antigravity/mcp_config.json`
+### [x] Fase 2: Registrazione Dichiarativa in `~/.gemini/antigravity/mcp_config.json` ✅
 - Aggiunta delle voci `office_mac` e `macos_automator` in `~/.gemini/antigravity/mcp_config.json`.
-- Verifica caricamento schemi MCP in Antigravity.
+- Popolamento e verifica caricamento schemi MCP in `~/.gemini/antigravity/mcp/office_mac/` (24 tool) e `~/.gemini/antigravity/mcp/macos_automator/` (2 tool).
 
-### [ ] Fase 3: Creazione della Skill `macos-office-automation`
-- Scrittura del file `SKILL.md` nel percorso scelto dall'utente (Workspace `.agents/skills/` o Globale `~/.gemini/config/skills/`).
-- Eventuale registrazione della regola di attivazione in `.agents/AGENTS.md` (se di workspace).
+### [x] Fase 3: Creazione della Skill `macos-office-automation` ✅
+- Scrittura del file `SKILL.md` sia nel workspace (`.agents/skills/macos-office-automation/SKILL.md`) sia globalmente (`~/.gemini/config/skills/macos-office-automation/SKILL.md`).
+- Registrazione della regola di attivazione mandatoria in `.agents/AGENTS.md`.
 
-### [ ] Fase 4: Collaudo End-to-End e Onboarding Permessi TCC macOS
-- Esecuzione di `check_office_status` e `list_active_*` su `office_mac`.
-- Creazione di test in `/tmp` di un file `.xlsx`, `.docx` e `.pptx` via `office_mac`.
-- Test di attivazione finestra ed esportazione PDF via `macos_automator` (`execute_script`) con verifica dei permessi macOS `Automazione`.
+### [x] Fase 4: Collaudo End-to-End e Onboarding Permessi TCC macOS ✅
+- Esecuzione di `check_office_status` (`word_available: True`, `excel_available: True`, `powerpoint_available: True`) e `list_active_*` su `office_mac`.
+- Creazione e validazione in `/tmp` di file `.xlsx` (4964 B), `.docx` (36821 B) e `.pptx` (29096 B) via `office_mac`.
+- Test di interrogazione versioni (`Word=16.114.1, Excel=16.114.1`) ed esportazione PDF Quartz (`25914 B`) via `macos_automator` (`execute_script`) con verifica dei permessi macOS `Automazione` e best-practice App Sandbox (`POSIX file` in `~/Library/Containers/com.microsoft.Word/Data/Documents/`).
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 0 (Pianificazione completata e persistita su Wiki)
-- **Ultima Azione Completata**: Redazione e salvataggio del piano `wiki/plans/macos-office-mcp-and-skill-integration.md` e sincronizzazione con `todo.md` e `GEMINI.md`.
-- **Prossimo Passo Operativo**: Attendere le decisioni dell'utente sui punti critici (in particolare: collocazione della Skill Globale vs Workspace) e l'autorizzazione per avviare la **Fase 1** (verifica app in `/Applications` e clone di `macos-office365-mcp-server` in `scripts/office-mac-mcp/`).
-- **Blocchi/Decisioni Pendenti**: Scelta percorso Skill (`~/.gemini/config/skills/` vs `.agents/skills/`) e via libera esplicito dell'utente per l'esecuzione della Fase 1.
+- **Fase Attiva**: COMPLETATO (Tutte le fasi 1-4 eseguite e validate)
+- **Ultima Azione Completata**: Collaudo E2E di `office_mac` (OOXML `.xlsx`, `.docx`, `.pptx` + `check_office_status`) e `macos_automator` (AppleScript + PDF export Quartz), consolidamento Wiki (`MCP_Platform.md`, `todo.md`) e validazione script di governance.
+- **Prossimo Passo Operativo**: Nessuno (Piano completato).
+- **Blocchi/Decisioni Pendenti**: Nessuno.

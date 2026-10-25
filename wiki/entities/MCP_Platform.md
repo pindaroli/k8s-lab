@@ -161,6 +161,8 @@ Server autonomi distribuiti ed eseguiti on-demand come pacchetti effimeri senza 
 | Server | Progetto & Repository | Trasporto Client | Target & Architettura | Funzionalità Esposte |
 | :--- | :--- | :--- | :--- | :--- |
 | **`meross`** | [`pindaroli/meross-mcp`](https://github.com/pindaroli/meross-mcp) | Stdio (`uvx`) & HTTP/SSE porta `8112` | Meross Cloud MQTT over TLS & REST API Gateway (`/api/v1/devices`) | 6 tool MCP per controllo relè, commutazione canali e telemetria energetica ($W, V, A$) su prese e ciabatte Meross (MSS310, MSS210, MSS425E) |
+| **`office_mac`** | `vAirpower/macos-office365-mcp-server` (`scripts/office-mac-mcp/`) | Stdio (`uv run`) | Motore OOXML (`python-docx`, `openpyxl`, `python-pptx`) + Bridge AppleScript/pgrep | 24 tool per creazione/modifica veloce e atomica di file `.docx`, `.xlsx`, `.pptx` su disco e ispezione sessioni attive (`check_office_status`, `list_active_*`) |
+| **`macos_automator`** | `@steipete/macos-automator-mcp` | Stdio (`npx -y`) | Runtime nativo AppleScript / JXA & Knowledge Base SDEF | 2 tool (`execute_script`, `get_scripting_tips`) per controllo live finestre Word/Excel/PowerPoint, esecuzione macro VBA ed esportazione PDF Quartz |
 
 ---
 
