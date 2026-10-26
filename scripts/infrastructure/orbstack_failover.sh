@@ -210,15 +210,37 @@ set_truenas_home_internal_backend() {
     ssh_user="$(_resolve_truenas_ssh_user)"
     [ -n "$ssh_user" ] || return 0
 
+    local target_url=""
     if [ "$mode" = "full" ]; then
-        echo "🔀 [Traefik Dynamic] Configurazione backend homepage TrueNAS -> K8s Ingress (https://10.10.20.56)..."
-        ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-            "sudo -n sed -i 's|url: \"http://10.10.20.50:3000\"|url: \"https://10.10.20.56\"|g' /mnt/stripe/truenas-docker/mcp/dynamic.yaml 2>/dev/null || true"
+        target_url="https://10.10.20.56"
+        echo "🔀 [Traefik Dynamic] Configurazione backend homepage TrueNAS -> K8s Ingress (${target_url})..."
     elif [ "$mode" = "eco" ]; then
-        echo "🔀 [Traefik Dynamic] Configurazione backend homepage TrueNAS -> Locale (:3000)..."
-        ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
-            "sudo -n sed -i 's|url: \"https://10.10.20.56\"|url: \"http://10.10.20.50:3000\"|g' /mnt/stripe/truenas-docker/mcp/dynamic.yaml 2>/dev/null || true"
+        target_url="http://10.10.20.50:3000"
+        echo "🔀 [Traefik Dynamic] Configurazione backend homepage TrueNAS -> Locale (${target_url})..."
+    else
+        return 0
     fi
+
+    ssh -o BatchMode=yes "${ssh_user}@${TRUENAS_HOST}" \
+        "sudo -n python3 -c '
+import re, subprocess
+path = \"/mnt/stripe/truenas-docker/mcp/dynamic.yaml\"
+try:
+    with open(path, \"r\") as f:
+        content = f.read()
+    new_content = re.sub(
+        r\"(homepage-truenas-svc:.*?servers:\s*-\s*url:\s*\")[^\"]+(\")\",
+        rf\"\g<1>${target_url}\g<2>\",
+        content,
+        flags=re.DOTALL
+    )
+    if new_content != content:
+        with open(path, \"w\") as f:
+            f.write(new_content)
+        subprocess.run([\"docker\", \"restart\", \"mcp-traefik\"], check=False)
+except Exception as e:
+    print(f\"Warning: failed to update dynamic.yaml: {e}\")
+' 2>/dev/null || true"
 }
 
 # Eseguito in lab_mode_eco.sh e lab_mode_full.sh DOPO ensure_storage_on.yml

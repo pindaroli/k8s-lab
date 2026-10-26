@@ -1,0 +1,309 @@
+version: "1.0"
+server:
+  name: "homelab-scripts-mcp"
+  description: "Server MCP dinamico per l'automazione, diagnostica e orchestrazione operativa del homelab (Python, Bash, Ansible)"
+
+tools:
+  # ============================================================================
+  # INFRASTRUCTURE & LAB MODES
+  # ============================================================================
+  - name: "get_lab_mode_status"
+    description: "Diagnostica dello stato operativo attuale del homelab: rileva se l'infrastruttura si trova in stato FULL, ECO, OFF o INCONGRUENTE"
+    type: "bash"
+    path: "scripts/infrastructure/lab_mode_status.sh"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 45
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "check_lab_health"
+    description: "Diagnostica approfondita del homelab: verifica nodi Proxmox VE, TrueNAS SCALE, nodi Talos K8s e interfacce di rete via API/SSH"
+    type: "python"
+    path: "scripts/infrastructure/check_lab.py"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 60
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "set_lab_mode_full"
+    description: "Porta l'homelab a pieno regime (FULL): avvia TrueNAS, nodi Proxmox VE e cluster Kubernetes Talos con failback da OrbStack"
+    type: "bash"
+    path: "scripts/infrastructure/lab_mode_full.sh"
+    read_only: false
+    async_capable: true
+    timeout_seconds: 300
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "set_lab_mode_eco"
+    description: "Porta l'homelab in risparmio energetico (ECO): mantiene solo TrueNAS attivo con failback da OrbStack e spegne i nodi Proxmox/K8s"
+    type: "bash"
+    path: "scripts/infrastructure/lab_mode_eco.sh"
+    read_only: false
+    async_capable: true
+    timeout_seconds: 240
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "set_lab_mode_off"
+    description: "Esegue lo spegnimento totale del rack homelab (OFF): spegne K8s, nodi Proxmox e TrueNAS e attiva il failover su Mac OrbStack"
+    type: "bash"
+    path: "scripts/infrastructure/lab_mode_off.sh"
+    read_only: false
+    async_capable: true
+    timeout_seconds: 300
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  # ============================================================================
+  # NETWORK & DNS
+  # ============================================================================
+  - name: "validate_network_topology"
+    description: "Valida la coerenza formale di rete.json: integrità CIDR, indirizzi IP, MAC address univoci e record DNS autoritativi"
+    type: "python"
+    path: "scripts/network/validate_network.py"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 30
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "wake_on_lan_node"
+    description: "Invia un Magic Packet Wake-on-LAN (WoL) su porta 9 a uno dei nodi fisici dell'homelab o a tutti"
+    type: "python"
+    path: "scripts/network/wake_node.py"
+    read_only: false
+    async_capable: false
+    timeout_seconds: 30
+    parameters:
+      type: object
+      properties:
+        node:
+          type: string
+          enum: ["pve1", "pve2", "pve3", "truenas", "all"]
+          description: "Nome del nodo fisico da accendere via WoL"
+        dry_run:
+          type: boolean
+          description: "Esegue solo una simulazione senza inviare il pacchetto di rete"
+          default: false
+      required: ["node"]
+    cli_mapping:
+      args:
+        - flag: "{{ node }}"
+          type: "positional"
+        - flag: "--dry-run"
+          bind: "dry_run"
+          type: "boolean_flag"
+
+  - name: "switch_failover_dns"
+    description: "Switchover atomico e tri-stato (full, eco, off) degli Host Overrides DNS Unbound su OPNsense per home-internal e servizi"
+    type: "python"
+    path: "scripts/network/switch_failover_dns.py"
+    read_only: false
+    async_capable: false
+    timeout_seconds: 45
+    parameters:
+      type: object
+      properties:
+        target:
+          type: string
+          enum: ["full", "eco", "off", "truenas", "orbstack"]
+          description: "Modalità DNS target da applicare su OPNsense Unbound"
+        dry_run:
+          type: boolean
+          description: "Visualizza i record che verrebbero modificati senza applicare il cambio"
+          default: false
+      required: ["target"]
+    cli_mapping:
+      args:
+        - flag: "--target"
+          bind: "target"
+          type: "option"
+        - flag: "--dry-run"
+          bind: "dry_run"
+          type: "boolean_flag"
+
+  - name: "test_unbound_dns"
+    description: "Esegue il test di risoluzione DNS di tutti gli host registrati in rete.json contro il resolver OPNsense Unbound"
+    type: "bash"
+    path: "scripts/network/test_dns.sh"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 60
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "exos_bounce_sfp_port10"
+    description: "Controllo e ripristino idempotente SerDes SFP+ sulla porta 10 dello switch Extreme EXOS se in stallo o down"
+    type: "python"
+    path: "scripts/network/exos/bounce_port10.py"
+    read_only: false
+    async_capable: false
+    timeout_seconds: 40
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  # ============================================================================
+  # KUBERNETES & CONTAINERS
+  # ============================================================================
+  - name: "check_kubernetes_diagnostics"
+    description: "Analisi diagnostica approfondita del cluster Kubernetes Talos: nodi, etcd, PVC, pods in crash e bilanciamento carichi"
+    type: "python"
+    path: "scripts/kubernetes/check_k8s.py"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 60
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "check_nova_helm_updates"
+    description: "Controlla la disponibilità di versioni aggiornate per i grafici Helm e immagini container K8s tramite Nova"
+    type: "bash"
+    path: "scripts/kubernetes/check_nova_updates.sh"
+    read_only: true
+    async_capable: true
+    timeout_seconds: 90
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "check_truenas_docker_updates"
+    description: "Verifica gli aggiornamenti delle immagini dei container Docker in esecuzione su TrueNAS SCALE tramite registry OCI V2"
+    type: "bash"
+    path: "scripts/truenas/check_truenas_docker_updates.sh"
+    read_only: true
+    async_capable: true
+    timeout_seconds: 120
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  # ============================================================================
+  # STORAGE & DISKS
+  # ============================================================================
+  - name: "analyze_zfs_special_vdev"
+    description: "Analisi di allocazione, frammentazione e salute SMART dei dischi membri dello Special VDEV (mirror-2) nel pool oliraid"
+    type: "python"
+    path: "scripts/storage/analyze_special_frag.py"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 60
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "audit_proxmox_smart_disks"
+    description: "Playbook Ansible per audit dello stato SMART hardware dei dischi fisici (NVMe/SSD/HDD) sui tre nodi Proxmox VE"
+    type: "ansible"
+    path: "ansible/proxmox_smart_audit.yml"
+    inventory: "ansible/inventory.ini"
+    read_only: true
+    async_capable: true
+    timeout_seconds: 180
+    parameters:
+      type: object
+      properties:
+        target_node:
+          type: string
+          enum: ["pve1", "pve2", "pve3", "all"]
+          description: "Nodo o gruppo Proxmox da sottoporre ad audit"
+          default: "all"
+      required: ["target_node"]
+    ansible_mapping:
+      limit: "{{ target_node }}"
+
+  # ============================================================================
+  # SECURITY & CERTIFICATES
+  # ============================================================================
+  - name: "check_sops_encryption_status"
+    description: "Verifica che tutti i file sensibili e secrets-sops contengano regolarmente i metadati di cifratura SOPS"
+    type: "bash"
+    path: "scripts/security/check-sops-encrypted.sh"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 30
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "check_tls_certificates"
+    description: "Ispezione e diagnostica della validità e scadenza dei certificati SSL/TLS, secret K8s e sincronizzazione Traefik"
+    type: "bash"
+    path: "scripts/security/check_certificate.sh"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 45
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  # ============================================================================
+  # MEDIA & SERVARR
+  # ============================================================================
+  - name: "sync_prowlarr_flaresolverr"
+    description: "Riconciliazione dichiarativa e sincronizzazione delle impostazioni FlareSolverr e tag degli indexer su Prowlarr"
+    type: "python"
+    path: "scripts/servarr/sync_prowlarr_flaresolverr.py"
+    read_only: false
+    async_capable: false
+    timeout_seconds: 45
+    parameters:
+      type: object
+      properties:
+        dry_run:
+          type: boolean
+          description: "Esegue il test di configurazione senza applicare modifiche a Prowlarr"
+          default: false
+      required: []
+
+  - name: "audit_movie_duplicates"
+    description: "Audit della libreria multimediale film su TrueNAS: rilevamento duplicati, versioni multi-file o anomalie di naming"
+    type: "python"
+    path: "scripts/servarr/audit_movie_duplicates.py"
+    read_only: true
+    async_capable: true
+    timeout_seconds: 90
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  # ============================================================================
+  # WIKI & DOCUMENTATION
+  # ============================================================================
+  - name: "build_wiki_context"
+    description: "Compila e rigenera wiki/wiki_context.md aggregando entità, architettura di rete, storage e piani attivi per i modelli LLM"
+    type: "python"
+    path: "scripts/wiki/build_wiki_context.py"
+    read_only: false
+    async_capable: false
+    timeout_seconds: 60
+    parameters:
+      type: object
+      properties: {}
+      required: []
