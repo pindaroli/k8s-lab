@@ -59,17 +59,19 @@
         siteMonitor: https://192.168.2.254
     - Core Switch:
         href: http://192.168.2.1
-        description: Extreme Networks X620-16x (10G Core Switch)
+        description: Extreme Networks X620-X10 (10G Core Switch)
         icon: mdi-switch
         siteMonitor: http://192.168.2.1
     - Switch Letto:
         href: http://192.168.2.2
-        description: Switch 2.5G Bed Room
+        description: Switch 2.5G Bed Room (GT-ST024M)
         icon: mdi-switch
+        siteMonitor: http://192.168.2.2
     - Switch Server:
         href: http://192.168.2.3
-        description: Switch 2.5G Server Room
+        description: Switch 2.5G Server Room (ZX-310S-8T2XS)
         icon: mdi-switch
+        siteMonitor: http://192.168.2.3
     - Access Point:
         href: http://10.10.20.103
         description: Cudy AP11000 Wi-Fi 7 Access Point

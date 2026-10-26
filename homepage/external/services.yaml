@@ -142,13 +142,13 @@
         href: https://sw-core.pindaroli.org
         description: Switch 10G (Main)
         icon: mdi-switch
-    - Bed Room Switch:
+    - Switch Letto:
         href: https://sw-letto.pindaroli.org
         description: Switch 2.5G (Letto)
         icon: mdi-switch
-    - Server Switch:
+    - Switch Server:
         href: https://sw-server.pindaroli.org
-        description: Switch 2.5G (Server) - NON OPERATIVO
+        description: Switch 2.5G (Server)
         icon: mdi-switch
     - Access Point:
         href: https://ap.pindaroli.org
