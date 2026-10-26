@@ -1,7 +1,7 @@
 ---
 name: consulto-piano
 type: skill
-description: "Prepara il materiale completo e produce il prompt strutturato per richiedere un consulto/revisione esperta su un piano architetturale o operativo (<piano>), rigenerando wiki/wiki_context.md ed estraendo tutte le nozioni contestuali in contesto.md."
+description: "Prepara il materiale completo e produce il prompt strutturato per richiedere un consulto/revisione esperta su un piano architetturale o operativo (<piano>), rigenerando wiki/wiki_context.md ed estraendo tutte le nozioni contestuali in <piano>-contesto.md."
 when_to_use: "Quando l'utente scrive 'chiedo consulto su <piano>', 'consulto su <piano>', 'chiedi consulto sul piano <piano>' o richiede un parere/consulto tecnico specialistico su un piano architetturale o operativo del homelab."
 status: active
 tags:
@@ -37,13 +37,13 @@ La skill si attiva automaticamente quando l'utente richiede una revisione o un c
 Fornire un processo rigoroso, guidato e completo per preparare il materiale di consulto di qualsiasi piano operativo del lab per la revisione critica da parte dell'utente o di un modello esterno:
 1. **Materializzazione da Sessione (se mancante)**: Se il piano non è ancora presente su disco, l'agente lo redige e lo salva in `wiki/plans/<piano>.md` sintetizzando direttamente il contesto cognitivo, i requisiti e l'architettura discussi durante la sessione.
 2. **Aggiornamento dello Stato Globale**: Rigenerazione preventiva del contesto unificato `wiki/wiki_context.md` tramite lo script previsto, in modo che includa anche il nuovo piano.
-3. **Cristallizzazione del Contesto Specifico**: Generazione del file `contesto.md` nella radice del progetto, contenente tutte le nozioni contestuali, nodi, IP, VLAN, storage ZFS, vincoli e Golden Rules pertinenti al piano.
-4. **Produzione e Presentazione del Prompt**: Stampa a video all'utente di un prompt specialistico pronto all'uso in un blocco markdown copiabile, vincolando l'analisi ai tre file fondamentali (`wiki/plans/<piano>.md`, `contesto.md`, `wiki/wiki_context.md`).
+3. **Cristallizzazione del Contesto Specifico**: Generazione del file `<piano>-contesto.md` nella radice del progetto, contenente tutte le nozioni contestuali, nodi, IP, VLAN, storage ZFS, vincoli e Golden Rules pertinenti al piano.
+4. **Produzione e Presentazione del Prompt**: Stampa a video all'utente di un prompt specialistico pronto all'uso in un blocco markdown copiabile, vincolando l'analisi ai tre file fondamentali (`wiki/plans/<piano>.md`, `<piano>-contesto.md`, `wiki/wiki_context.md`).
 
 > [!CRITICAL]
 > **DIVIETO ASSOLUTO DI AVVIO AUTOMATICO SUBAGENTI (NO AUTO-SUBAGENT / NO BACKGROUND EXECUTION)**:
 > L'agente **NON DEVE MAI** invocare subagenti (`invoke_subagent`), né avviare processi o task in background per svolgere autonomamente il consulto.
-> Il mandato della skill termina tassativamente con la generazione dei file (`contesto.md`, `wiki_context.md`) e la stampa a schermo del prompt formattato per l'utente. Sarà esclusivamente l'utente a decidere se, quando e dove sottoporre il prompt (es. in un modello esterno, un'altra chat o un subagente manuale).
+> Il mandato della skill termina tassativamente con la generazione dei file (`<piano>-contesto.md`, `wiki_context.md`) e la stampa a schermo del prompt formattato per l'utente. Sarà esclusivamente l'utente a decidere se, quando e dove sottoporre il prompt (es. in un modello esterno, un'altra chat o un subagente manuale).
 
 ---
 
@@ -86,8 +86,8 @@ python3 scripts/network/validate_network.py && python3 scripts/wiki/build_wiki_c
 
 *Verificare che l'operazione si concluda con codice 0. Poiché il piano ha `status: active` e `certified_for_ai: true`, viene automaticamente incluso nel nuovo `wiki/wiki_context.md`.*
 
-### Fase 3: Creazione del File `contesto.md`
-Generare e salvare nella radice del workspace (`/Users/olindo/prj/k8s-lab/contesto.md`) il documento strutturato che aggrega le nozioni contestuali pertinenti al piano in esame:
+### Fase 3: Creazione del File `<piano>-contesto.md`
+Generare e salvare nella radice del workspace (`/Users/olindo/prj/k8s-lab/<piano>-contesto.md`) il documento strutturato che aggrega le nozioni contestuali pertinenti al piano in esame:
 - **1. Scheda del Piano**: Titolo, percorso, stato, tecnologie e indice sezioni.
 - **2. Nodi, IP e Rete Pertinenti**: Estrazione mirata da `rete.json` di tutti i server, hypervisor (`pve1`, `pve2`, `pve3`), TrueNAS, OPNsense, Switch, VM, LXC, VIP e VLAN coinvolti.
 - **3. Storage ZFS & Share NFS Pertinenti**: Estrazione mirata da `storage.json` dei dataset, mountpoint, share NFS e reti autorizzate toccate dal piano.
@@ -102,7 +102,7 @@ Il prompt deve tassativamente:
 1. Definire il ruolo dell'agente revisore come **Senior Principal Systems Architect & Site Reliability Engineer**.
 2. **Citare espressamente e obbligatoriamente come riferimenti di studio i tre file**:
    - `wiki/plans/<piano>.md`
-   - `contesto.md`
+   - `<piano>-contesto.md`
    - `wiki/wiki_context.md`
 3. Articolare i criteri di valutazione (Conformità ai vincoli, Safety & blast radius, Idempotenza, Test-Driven Verification, alternative architetturali).
 4. Richiedere una struttura di risposta standardizzata:
@@ -127,7 +127,7 @@ Sei incaricato di effettuare una **revisione critica, obiettiva, approfondita e 
 Per svolgere la revisione hai a disposizione e **DEVI CONSULTARE CONGIUNTAMENTE** questi 3 documenti:
 1. **Piano Operativo in Esame**: `wiki/plans/<nome-piano>.md`  
    *(Contiene l'architettura proposta, le decisioni tecniche, la sequenza delle fasi, i comandi operativi e i test)*.
-2. **Quadro Contestuale e Vincoli Specifici**: `contesto.md`  
+2. **Quadro Contestuale e Vincoli Specifici**: `<nome-piano>-contesto.md`  
    *(Contiene la mappatura puntuale dei nodi, IP, VLAN, storage ZFS, Golden Rules rilevanti e i quesiti critici estratti per questo piano)*.
 3. **Contesto Globale Homelab**: `wiki/wiki_context.md`  
    *(Contiene lo stato globale consolidato della wiki: entità, pattern architetturali, workflow attivi, inventario completo `rete.json` e `storage.json`)*.
@@ -137,7 +137,7 @@ Per svolgere la revisione hai a disposizione e **DEVI CONSULTARE CONGIUNTAMENTE*
 ### 🎯 OBIETTIVO DEL CONSULTO
 Analizzare criticamente il piano `<nome-piano>.md` (<titolo-piano>) per:
 - Validarne la fattibilità tecnica reale e la congruenza con l'infrastruttura descritta in `rete.json` e `storage.json`.
-- Rilevare qualsiasi violazione di policy o vincolo di governance del homelab documentati in `contesto.md` e `wiki/wiki_context.md`.
+- Rilevare qualsiasi violazione di policy o vincolo di governance del homelab documentati in `<nome-piano>-contesto.md` e `wiki/wiki_context.md`.
 - Identificare potenziali **blind spot**, race condition, rischi di perdita dati, downtime imprevisti o single point of failure (SPOF).
 - Verificare la robustezza dell'**idempotenza**, la solidità del **piano di rollback** e la granularità del **protocollo di verifica Test-Driven**.
 - Proporre ottimizzazioni concrete, semplificazioni secondo il principio KISS e miglioramenti operativi prima dell'esecuzione reale.
