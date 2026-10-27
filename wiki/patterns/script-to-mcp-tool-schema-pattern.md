@@ -47,7 +47,12 @@ Ogni elemento in `tools` supporta:
 - `path`: Percorso relativo dello script/playbook rispetto alla root del repo.
 - `read_only`: Boolean. Se `true`, indica all'LLM che l'operazione non altera lo stato del sistema.
 - `async_capable`: Boolean (default: `false`). Se `true`, indica che il tool è idoneo per l'esecuzione asincrona/background (es. job lunghi, orchestrazioni cluster, scan massivi). Il server MCP o il runtime dell'agente può eseguire il comando come task disaccoppiato restituendo un Job ID o notifica a termine esecuzione.
-- `executionType`: String enum (`"SYNCHRONOUS"` | `"ASYNCHRONOUS"`). Mappatura canonica del protocollo MCP 2.0 che definisce il modello di esecuzione del tool: `"SYNCHRONOUS"` per chiamate sincrone inline bloccanti (richiesta $\rightarrow$ risposta diretta); `"ASYNCHRONOUS"` per chiamate asincrone disaccoppiate (job background, task differiti o polling).
+- `executionType`: String enum (`"task"` | `"direct"`). Mappatura canonica del protocollo MCP 2.0 che definisce il modello di esecuzione del tool: `"direct"` per chiamate sincrone inline dirette (richiesta $\rightarrow$ risposta immediata); `"task"` per chiamate che possono essere gestite ed eseguite come task asincrono differito o background.
+- `taskOptions`: Oggetto contenente i parametri di configurazione del task conformi alle specifiche MCP 2.0:
+  - `supported`: Boolean. Indica se il tool supporta l'esecuzione via task runner.
+  - `defaultMode`: String (`"async"` per i tool di tipo task/background, `"sync"` per i tool diretti).
+  - `asyncTriggerThresholdSeconds`: Integer. Soglia di secondi oltre la quale il tool viene sganciato in background/task asincrono (es. 5s per tool lunghi, 0s per sincroni).
+  - `maxTtlSeconds`: Integer. Durata massima di conservazione dello stato e dell'output del task (es. 86400s per task complessi, 3600s per tool diretti).
 - `timeout_seconds`: Timeout massimo di esecuzione del comando (default: 60s).
 - `parameters`: Oggetto JSON Schema (o schema semplificato) che definisce gli input accettati.
 - `command_template`: Mapping di interpolazione degli argomenti CLI o variabili extra (`extra_vars` per Ansible).
@@ -62,6 +67,12 @@ server:
   name: "homelab-ops-mcp"
   description: "Server MCP dinamico per l'automazione e gestione del homelab - MCP 2.0"
   protocol_version: "2.0"
+  capabilities:
+    tools:
+      listChanged: true
+    tasks:
+      supported: true
+      maxTtlSeconds: 86400
 
 tools:
   - name: "validate_network_dns"
@@ -70,7 +81,12 @@ tools:
     path: "scripts/network/validate_network.py"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 30
     parameters:
       type: object
@@ -93,6 +109,12 @@ tools:
     inventory: "ansible/inventory.ini"
     read_only: true
     async_capable: true
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 120
     parameters:
       type: object

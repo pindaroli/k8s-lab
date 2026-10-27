@@ -6,9 +6,9 @@ server:
   capabilities:
     tools:
       listChanged: true
-    executionTypes:
-      - "SYNCHRONOUS"   # Invocazione sincrona inline bloccante (richiesta -> risposta immediata)
-      - "ASYNCHRONOUS"  # Invocazione asincrona disaccoppiata (task background o job polling)
+    tasks:
+      supported: true
+      maxTtlSeconds: 86400
 
 tools:
   # ============================================================================
@@ -20,7 +20,12 @@ tools:
     path: "scripts/infrastructure/lab_mode_status.sh"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 45
     parameters:
       type: object
@@ -33,7 +38,12 @@ tools:
     path: "scripts/infrastructure/check_lab.py"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 60
     parameters:
       type: object
@@ -46,7 +56,12 @@ tools:
     path: "scripts/infrastructure/lab_mode_full.sh"
     read_only: false
     async_capable: true
-    executionType: "ASYNCHRONOUS"
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 300
     parameters:
       type: object
@@ -59,7 +74,12 @@ tools:
     path: "scripts/infrastructure/lab_mode_eco.sh"
     read_only: false
     async_capable: true
-    executionType: "ASYNCHRONOUS"
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 240
     parameters:
       type: object
@@ -72,7 +92,12 @@ tools:
     path: "scripts/infrastructure/lab_mode_off.sh"
     read_only: false
     async_capable: true
-    executionType: "ASYNCHRONOUS"
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 300
     parameters:
       type: object
@@ -85,7 +110,12 @@ tools:
     path: "scripts/infrastructure/pve3-gpu-mode.sh"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 30
     parameters:
       type: object
@@ -98,7 +128,12 @@ tools:
     path: "scripts/infrastructure/pve3-gpu-eco.sh"
     read_only: false
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 30
     parameters:
       type: object
@@ -111,7 +146,12 @@ tools:
     path: "scripts/infrastructure/pve3-gpu-turbo.sh"
     read_only: false
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 30
     parameters:
       type: object
@@ -127,7 +167,12 @@ tools:
     path: "scripts/network/validate_network.py"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 30
     parameters:
       type: object
@@ -140,7 +185,12 @@ tools:
     path: "scripts/network/wake_node.py"
     read_only: false
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 30
     parameters:
       type: object
@@ -168,7 +218,12 @@ tools:
     path: "scripts/network/switch_failover_dns.py"
     read_only: false
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 45
     parameters:
       type: object
@@ -197,7 +252,12 @@ tools:
     path: "scripts/network/test_dns.sh"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 60
     parameters:
       type: object
@@ -210,7 +270,12 @@ tools:
     path: "scripts/network/test_dhcp.sh"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 60
     parameters:
       type: object
@@ -223,7 +288,12 @@ tools:
     path: "scripts/network/exos/bounce_port10.py"
     read_only: false
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 40
     parameters:
       type: object
@@ -239,7 +309,12 @@ tools:
     path: "scripts/kubernetes/check_k8s.py"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 60
     parameters:
       type: object
@@ -252,7 +327,12 @@ tools:
     path: "scripts/kubernetes/check_nova_updates.sh"
     read_only: true
     async_capable: true
-    executionType: "ASYNCHRONOUS"
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 90
     parameters:
       type: object
@@ -265,7 +345,12 @@ tools:
     path: "scripts/truenas/check_truenas_docker_updates.sh"
     read_only: true
     async_capable: true
-    executionType: "ASYNCHRONOUS"
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 120
     parameters:
       type: object
@@ -281,7 +366,12 @@ tools:
     path: "scripts/storage/analyze_special_frag.py"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 60
     parameters:
       type: object
@@ -295,7 +385,12 @@ tools:
     inventory: "ansible/inventory.ini"
     read_only: true
     async_capable: true
-    executionType: "ASYNCHRONOUS"
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 180
     parameters:
       type: object
@@ -318,7 +413,12 @@ tools:
     path: "scripts/security/check-sops-encrypted.sh"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 30
     parameters:
       type: object
@@ -331,7 +431,12 @@ tools:
     path: "scripts/security/check_certificate.sh"
     read_only: true
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 45
     parameters:
       type: object
@@ -347,7 +452,12 @@ tools:
     path: "scripts/servarr/sync_prowlarr_flaresolverr.py"
     read_only: false
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 45
     parameters:
       type: object
@@ -364,7 +474,12 @@ tools:
     path: "scripts/servarr/audit_movie_duplicates.py"
     read_only: true
     async_capable: true
-    executionType: "ASYNCHRONOUS"
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 90
     parameters:
       type: object
@@ -380,7 +495,12 @@ tools:
     path: "scripts/wiki/build_wiki_context.py"
     read_only: false
     async_capable: false
-    executionType: "SYNCHRONOUS"
+    executionType: "direct"
+    taskOptions:
+      supported: false
+      defaultMode: "sync"
+      asyncTriggerThresholdSeconds: 0
+      maxTtlSeconds: 3600
     timeout_seconds: 60
     parameters:
       type: object
@@ -396,7 +516,12 @@ tools:
     path: "scripts/benchmarks/run_promptfoo_ocr.sh"
     read_only: true
     async_capable: true
-    executionType: "ASYNCHRONOUS"
+    executionType: "task"
+    taskOptions:
+      supported: true
+      defaultMode: "async"
+      asyncTriggerThresholdSeconds: 5
+      maxTtlSeconds: 86400
     timeout_seconds: 300
     parameters:
       type: object
