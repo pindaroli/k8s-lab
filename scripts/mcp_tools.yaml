@@ -67,6 +67,42 @@ tools:
       properties: {}
       required: []
 
+  - name: "get_pve3_gpu_status"
+    description: "Mostra lo stato operativo, la modalità DPM e il clock attivo della GPU AMD Radeon 890M su PVE3"
+    type: "bash"
+    path: "scripts/infrastructure/pve3-gpu-mode.sh"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 30
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "set_pve3_gpu_eco"
+    description: "Imposta la GPU AMD Radeon 890M di PVE3 in modalità ECO (auto-scaling dinamico delle frequenze via Ansible)"
+    type: "bash"
+    path: "scripts/infrastructure/pve3-gpu-eco.sh"
+    read_only: false
+    async_capable: false
+    timeout_seconds: 30
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "set_pve3_gpu_turbo"
+    description: "Imposta la GPU AMD Radeon 890M di PVE3 in modalità TURBO (prestazioni massime fisse a 2900MHz via Ansible)"
+    type: "bash"
+    path: "scripts/infrastructure/pve3-gpu-turbo.sh"
+    read_only: false
+    async_capable: false
+    timeout_seconds: 30
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
   # ============================================================================
   # NETWORK & DNS
   # ============================================================================
@@ -141,6 +177,18 @@ tools:
     description: "Esegue il test di risoluzione DNS di tutti gli host registrati in rete.json contro il resolver OPNsense Unbound"
     type: "bash"
     path: "scripts/network/test_dns.sh"
+    read_only: true
+    async_capable: false
+    timeout_seconds: 60
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+  - name: "test_opnsense_dhcp"
+    description: "Health check e diagnostica OPNsense Kea DHCP: verifica raggiungibilità API, subnet attive, reservation statiche e congruenza ARP"
+    type: "bash"
+    path: "scripts/network/test_dhcp.sh"
     read_only: true
     async_capable: false
     timeout_seconds: 60
@@ -307,3 +355,56 @@ tools:
       type: object
       properties: {}
       required: []
+
+  # ============================================================================
+  # AI & BENCHMARKS
+  # ============================================================================
+  - name: "run_promptfoo_ocr_benchmark"
+    description: "Benchmark runner per suite OCR con Promptfoo su modelli Vision locali o remoti (lxc-ollama, pve3, mac-local)"
+    type: "bash"
+    path: "scripts/benchmarks/run_promptfoo_ocr.sh"
+    read_only: true
+    async_capable: true
+    timeout_seconds: 300
+    parameters:
+      type: object
+      properties:
+        node:
+          type: string
+          enum: ["mac-local", "lxc-ollama", "pve3", "localhost"]
+          description: "Identificativo del nodo di inferenza target"
+          default: "mac-local"
+        model:
+          type: string
+          description: "Nome del modello Vision/OCR da testare (es. qwen2.5vl:7b-q4_K_M)"
+        fixture:
+          type: string
+          description: "Documento immagine di test (es. fattura_test.png)"
+          default: "fattura_test.png"
+        task:
+          type: string
+          enum: ["all", "markdown", "json"]
+          description: "Tipo di benchmark OCR da eseguire"
+          default: "all"
+        dry_run:
+          type: boolean
+          description: "Valida la sintassi e configurazione senza lanciare il benchmark"
+          default: false
+      required: []
+    cli_mapping:
+      args:
+        - flag: "-n"
+          bind: "node"
+          type: "option"
+        - flag: "-m"
+          bind: "model"
+          type: "option"
+        - flag: "-f"
+          bind: "fixture"
+          type: "option"
+        - flag: "-t"
+          bind: "task"
+          type: "option"
+        - flag: "--dry-run"
+          bind: "dry_run"
+          type: "boolean_flag"
