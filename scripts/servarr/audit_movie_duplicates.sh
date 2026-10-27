@@ -8,8 +8,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$ROOT_DIR"
 
-NAS_HOST="10.10.20.50"
-NAS_USER="olindo"
+TRUENAS_TARGET="${TRUENAS_SSH_TARGET:-olindo@10.10.20.50}"
+if [[ "$TRUENAS_TARGET" == *"@"* ]]; then
+  NAS_USER="${TRUENAS_TARGET%@*}"
+  NAS_HOST="${TRUENAS_TARGET#*@}"
+else
+  NAS_USER="olindo"
+  NAS_HOST="$TRUENAS_TARGET"
+fi
 MEDIA_DIR="/mnt/oliraid/arrdata/media/movies"
 
 echo -e "\033[1;36m============================================================\033[0m"

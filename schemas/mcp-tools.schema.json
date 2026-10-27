@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://k8s-lab.pindaroli.org/schemas/mcp-tools.schema.json",
+  "title": "Homelab MCP Tools Configuration Schema",
+  "description": "JSON Schema formale per la validazione della specifica dichiarativa scripts/mcp_tools.yaml",
+  "type": "object",
+  "required": ["version", "server", "tools"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Versione della specifica del server MCP (es. '2.0')"
+    },
+    "server": {
+      "type": "object",
+      "required": ["name", "description"],
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "protocol_version": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "object"
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "type",
+          "path",
+          "read_only",
+          "async_capable",
+          "executionType",
+          "parameters"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]+$",
+            "description": "Identificativo snake_case del tool"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["bash", "python", "ansible"]
+          },
+          "path": {
+            "type": "string"
+          },
+          "inventory": {
+            "type": "string"
+          },
+          "read_only": {
+            "type": "boolean"
+          },
+          "async_capable": {
+            "type": "boolean"
+          },
+          "executionType": {
+            "type": "string",
+            "enum": ["direct", "task"]
+          },
+          "taskOptions": {
+            "type": "object",
+            "required": ["supported", "defaultMode"],
+            "additionalProperties": true,
+            "properties": {
+              "supported": {
+                "type": "boolean"
+              },
+              "defaultMode": {
+                "type": "string",
+                "enum": ["sync", "async"]
+              },
+              "asyncTriggerThresholdSeconds": {
+                "type": "integer"
+              },
+              "maxTtlSeconds": {
+                "type": "integer"
+              }
+            }
+          },
+          "timeout_seconds": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "parameters": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["object"]
+              },
+              "properties": {
+                "type": "object"
+              },
+              "required": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "cli_mapping": {
+            "type": "object",
+            "properties": {
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["type"],
+                  "properties": {
+                    "flag": {
+                      "type": "string"
+                    },
+                    "bind": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": ["option", "boolean_flag", "positional"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "ansible_mapping": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+  }
+}

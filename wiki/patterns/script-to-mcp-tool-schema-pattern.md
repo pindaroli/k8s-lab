@@ -1,16 +1,21 @@
 ---
+id: script-to-mcp-tool-schema-pattern
 title: "Pattern: Script to MCP Tool Schema & Registration"
 type: pattern
 status: active
 certified_for_ai: true
-date: 2026-10-25
+created_at: 2026-10-25
+last_updated: 2026-10-27
+in_use_by:
+  - project: "k8s-lab"
+    paths:
+      - "scripts/mcp_tools.yaml"
+      - "schemas/mcp-tools.schema.json"
 tags:
   - "#pattern"
   - "#mcp"
   - "#automation"
   - "#scripting"
-in_use_by:
-  - "scripts/mcp_tools.yaml"
 ---
 
 # Pattern: Script to MCP Tool Schema & Registration

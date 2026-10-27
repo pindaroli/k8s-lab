@@ -1,5 +1,19 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 🚀 [x] ✅ COMPLETATO: Hardening Gestione Errori, Health Gate CNPG e Probe Cross-Platform [[infrastructure-error-handling-and-probe-hardening]]
+- [x] Fase 1: Hardening Fail-Fast e rimozione `ignore_errors: true` su VM Talos e Gate CNPG in `ansible/playbooks/infrastructure/ensure_compute_on.yml` ✅
+- [x] Fase 2: Ottimizzazione Connect Timeout macOS (`-G 1`) e allineamento nomi container failover in `scripts/infrastructure/lab_mode_status.sh` ✅
+- [x] Fase 3: Test di sintassi Ansible e benchmark di velocità diagnostica `lab_mode_status.sh` su macOS (1.14s) ✅
+- [x] Fase 4: Validazione congruenza rete e rigenerazione contesto wiki (§13) ✅
+
+## 🚀 [x] ✅ COMPLETATO: Convergenza Wiki Karpathy llmwiki (Fork Multi-Cartella Locale stdio) e Hardening mcp_tools.yaml [[llmwiki-mcp-sse-convergence-and-tools-hardening]]
+- [x] Fase 0: Setup Fork GitHub `llmwiki` (`v0.9.1-k8slab`) con supporto `paths.content_dirs` e `status: active` per i piani ✅
+- [x] Fase 1: Bonifica deterministica delle sezioni CJK nei 7 concetti e creazione di `config.yaml` monolingue (`bare_body: true`) ✅
+- [x] Fase 2: Configurazione `~/.gemini/antigravity/mcp_config.json` e riallineamento `scripts/llmwiki/launcher.py` ✅
+- [x] Fase 3: Hardening script container runner (`test_dhcp.sh`, `ingestion_stats.sh`, `audit_movie_duplicates.sh`, `check-sops-encrypted.sh`) ✅
+- [x] Fase 4: Correzione e validazione automatica `scripts/mcp_tools.yaml` con JSON Schema Draft 2020-12 ✅
+- [x] Fase 5: Validazione finale e consolidamento (§13) ✅
+
 ## 🚀 [x] ✅ COMPLETATO: Migrazione Ansible Integrale per GPU PVE3, Failover OrbStack e Portabilità Docker per `go.py` [[ansible-migration-pve3-and-orbstack-failover]]
 - [x] Fase 0: Intervista `/grill-me`, rimozione `orbstack_failover.sh` dal menu di `go.py` (`chmod -x`) e redazione piano [[ansible-migration-pve3-and-orbstack-failover]] ✅
 - [x] Fase 1: Aggiornamento `ansible/inventory.ini` con il gruppo `[mac_studio]` (`10.10.20.100`) e test connettività SSH ✅

@@ -1,16 +1,19 @@
 {
-  "opnsense-system-automation": [
-    "opnsense-cron-job-scheduling",
-    "opnsense-configd-architecture",
-    "opnsense-shell-script-creation"
-  ],
   "gitops-provisioning-autobrr": [
-    "servicenow-k8s-discovery",
-    "gitops-methodology-autobrr-implementation"
+    "gitops-methodology-autobrr-implementation",
+    "servicenow-k8s-discovery"
   ],
   "gitops-methodology-autobrr-implementation": [
-    "servicenow-k8s-discovery",
+    "gitops-provisioning-autobrr",
+    "servicenow-k8s-discovery"
+  ],
+  "servicenow-k8s-discovery": [
     "gitops-provisioning-autobrr"
+  ],
+  "opnsense-system-automation": [
+    "opnsense-configd-architecture",
+    "opnsense-cron-job-scheduling",
+    "opnsense-shell-script-creation"
   ],
   "opnsense-configd-architecture": [
     "opnsense-system-automation"
@@ -21,7 +24,298 @@
   "opnsense-cron-job-scheduling": [
     "opnsense-system-automation"
   ],
-  "servicenow-k8s-discovery": [
-    "gitops-provisioning-autobrr"
+  "Network_Registry": [
+    "Ansible_Extreme_EXOS",
+    "Ollama",
+    "guidellm-benchmark-profile-levels"
+  ],
+  "Servarr": [
+    "Custom_Docker_Images",
+    "Homepage",
+    "Xray",
+    "movie-metadata-and-artwork-architecture",
+    "scripts-architecture-realignment",
+    "media-normalization-pipeline"
+  ],
+  "Talos_Cluster": [
+    "Headlamp",
+    "Homepage",
+    "Monitoring",
+    "Network_Registry",
+    "OPNsense",
+    "Secret_Registry",
+    "Servarr",
+    "Storage_Registry",
+    "Tdarr",
+    "Traefik",
+    "TrueNAS",
+    "guidellm-report-naming-pattern",
+    "homepage-upgrade-v2.4.0",
+    "scripts-architecture-realignment",
+    "Certificate_Renewal",
+    "Power_Sequence"
+  ],
+  "Traefik": [
+    "Headlamp",
+    "Homepage",
+    "Monitoring",
+    "Network_Registry",
+    "OAuth2_Proxy",
+    "OPNsense",
+    "Secret_Registry",
+    "Talos_Cluster",
+    "Tdarr",
+    "out-of-band-automation-engine",
+    "Certificate_Renewal"
+  ],
+  "OAuth2_Proxy": [
+    "Headlamp",
+    "Homepage",
+    "Monitoring",
+    "Secret_Registry",
+    "Servarr",
+    "Traefik"
+  ],
+  "Homepage": [
+    "Headlamp",
+    "Monitoring",
+    "homepage-upgrade-v2.4.0",
+    "meross-mcp-docker-validation"
+  ],
+  "homepage-four-modes-reorganization": [
+    "Homepage"
+  ],
+  "Monitoring": [
+    "Homepage",
+    "qbittorrent-exporter-sidecar-integration"
+  ],
+  "homepage-steam-lxc-control-button": [
+    "Homepage"
+  ],
+  "Tdarr": [
+    "Homepage",
+    "Servarr",
+    "Storage_Registry",
+    "TrueNAS"
+  ],
+  "movie-metadata-and-artwork-architecture": [
+    "Jellyfin",
+    "Servarr",
+    "media-normalization-pipeline"
+  ],
+  "2026-09-13-jellyfin-duplicate-posters-and-nfo-metadata-conflict": [
+    "Jellyfin",
+    "Servarr",
+    "movie-metadata-and-artwork-architecture"
+  ],
+  "jellyfin-12-clean-slate-rdna35": [
+    "Jellyfin"
+  ],
+  "gemini#3.-security-&-operational-policies-(the-golden-rules)": [
+    "MCP_Platform"
+  ],
+  "mcp-secret-projection-pattern": [
+    "MCP_Platform",
+    "mcp-registry-package-pattern",
+    "mcp-upstream-tracking-pattern",
+    "zero-install-executable-package-pattern",
+    "meross-mcp-docker-validation"
+  ],
+  "zero-install-executable-package-pattern": [
+    "MCP_Platform"
+  ],
+  "TrueNAS": [
+    "NUT_UPS",
+    "Network_Registry",
+    "Servarr",
+    "Storage_Registry",
+    "Talos_Cluster",
+    "Tdarr",
+    "ansible-smart-telemetry-integration",
+    "homepage-upgrade-v2.4.0",
+    "out-of-band-automation-engine",
+    "scripts-architecture-realignment",
+    "Power_Sequence"
+  ],
+  "nut-distributed-ups-orchestration": [
+    "NUT_UPS"
+  ],
+  "truenas-baremetal-migration-pve1-reconfig": [
+    "NUT_UPS"
+  ],
+  "OPNsense": [
+    "Network_Registry",
+    "Talos_Cluster",
+    "Traefik",
+    "Certificate_Renewal",
+    "Power_Sequence"
+  ],
+  "Ansible_Extreme_EXOS": [
+    "Network_Registry",
+    "OPNsense"
+  ],
+  "exos-port10-sfp-boot-recovery": [
+    "Network_Registry"
+  ],
+  "purpose": [
+    "OAuth2_Proxy"
+  ],
+  "2026-05-03-dns-split-horizon-conflict": [
+    "OPNsense",
+    "Talos_Cluster"
+  ],
+  "2026-05-03-dnsbl-filtering-failure": [
+    "OPNsense"
+  ],
+  "2026-05-16-dnsbl-automation-payload-mismatch": [
+    "OPNsense"
+  ],
+  "opnsense-documentation-extraction-and-ragflow": [
+    "OPNsense"
+  ],
+  "opnsense-i3-12100-nvme-migration": [
+    "OPNsense"
+  ],
+  "lxc-ollama-hardware-limit-optimization": [
+    "Ollama"
+  ],
+  "pve3-lxc-ollama-nfs-stripe-storage": [
+    "Ollama",
+    "guidellm-report-naming-pattern"
+  ],
+  "guidellm-benchmark-script": [
+    "Ollama",
+    "guidellm-benchmark-profile-levels"
+  ],
+  "todo": [
+    "Secret_Registry"
+  ],
+  "2026-09-02-qbittorrent-5.2-auth-cookie-breaking-change": [
+    "Servarr",
+    "qbittorrent-exporter-sidecar-integration"
+  ],
+  "media-normalization-pipeline": [
+    "Servarr",
+    "movie-metadata-and-artwork-architecture"
+  ],
+  "bitmagnet-truenas-docker-integration": [
+    "Servarr"
+  ],
+  "Jellyfin": [
+    "Servarr",
+    "movie-metadata-and-artwork-architecture"
+  ],
+  "flaresolverr-truenas-migration-and-declarative-sync": [
+    "Servarr"
+  ],
+  "arrstack-mcp-truenas-docker-migration": [
+    "Servarr",
+    "ragflow-mcp-truenas-docker-migration"
+  ],
+  "servarr-truenas-permanent-migration": [
+    "Servarr",
+    "minimserver-truenas-migration",
+    "media-normalization-pipeline"
+  ],
+  "pve3-hybrid-controlplane-lxc-convergence": [
+    "Talos_Cluster",
+    "guidellm-report-naming-pattern"
+  ],
+  "Ghostty_Workaround": [
+    "Tdarr"
+  ],
+  "hermes_agent": [
+    "TrueNAS"
+  ],
+  "2026-10-25-truenas-zfs-arc-memory-starvation-hermes-warning": [
+    "TrueNAS"
+  ],
+  "NUT_UPS": [
+    "TrueNAS"
+  ],
+  "oliraid-expansion-special-vdev-evacuation": [
+    "TrueNAS"
+  ],
+  "nfs-symlink-portability": [
+    "music-library-governance"
+  ],
+  "schema": [
+    "guidellm-report-naming-pattern",
+    "mcp-registry-package-pattern",
+    "mcp-secret-projection-pattern",
+    "mcp-upstream-tracking-pattern",
+    "movie-metadata-and-artwork-architecture",
+    "zero-install-executable-package-pattern",
+    "guidellm-benchmark-profile-levels",
+    "meross-mcp-docker-validation"
+  ],
+  "Power_Sequence": [
+    "hierarchical-automation-alerting-pattern"
+  ],
+  "homelab-full-power-automation": [
+    "hierarchical-automation-alerting-pattern"
+  ],
+  "MCP_Platform": [
+    "mcp-registry-package-pattern",
+    "mcp-secret-projection-pattern",
+    "mcp-upstream-tracking-pattern",
+    "zero-install-executable-package-pattern",
+    "homepage-mcp-servers-integration",
+    "meross-mcp-docker-validation",
+    "out-of-band-automation-engine",
+    "ragflow-mcp-truenas-docker-migration",
+    "scripts-architecture-realignment"
+  ],
+  "mcp-upstream-tracking-pattern": [
+    "mcp-registry-package-pattern",
+    "meross-mcp-docker-validation"
+  ],
+  "Secret_Registry": [
+    "mcp-secret-projection-pattern",
+    "out-of-band-automation-engine"
+  ],
+  "mcp-registry-package-pattern": [
+    "zero-install-executable-package-pattern",
+    "meross-mcp-docker-validation"
+  ],
+  "proxmox": [
+    "ansible-smart-telemetry-integration",
+    "out-of-band-automation-engine"
+  ],
+  "guidellm-report-naming-pattern": [
+    "guidellm-benchmark-profile-levels"
+  ],
+  "hierarchical-automation-alerting-pattern": [
+    "homelab-full-power-automation",
+    "Power_Sequence"
+  ],
+  "meross-mcp-server-project": [
+    "meross-mcp-docker-validation"
+  ],
+  "minimserver-deployment": [
+    "minimserver-truenas-migration"
+  ],
+  "mcp-servers-truenas-docker-migration": [
+    "ragflow-mcp-truenas-docker-migration"
+  ],
+  "go-launcher-script-pattern": [
+    "scripts-architecture-realignment",
+    "Power_Sequence"
+  ],
+  "truenas-docker-image-updates-checker": [
+    "scripts-architecture-realignment",
+    "truenas-docker-image-updates-checker"
+  ],
+  "truenas-vlan20": [
+    "talos-startup-and-truenas-vlan20-realign"
+  ],
+  "homelab-idempotent-mode-scripts": [
+    "Power_Sequence"
+  ],
+  "sops-secret-sovereignty": [
+    "Power_Sequence"
+  ],
+  "jellyfin-multi-version-sanitization": [
+    "media-normalization-pipeline"
   ]
 }

@@ -132,5 +132,796 @@
         "url": "/Users/olindo/prj/k8s-lab/raw/servicenow-k8s-discovery-guide.html"
       }
     ]
+  },
+  {
+    "slug": "Ansible_Extreme_EXOS",
+    "title": "Ansible Extreme EXOS Automation",
+    "summary": "",
+    "tags": [
+      "ansible",
+      "network",
+      "exos",
+      "extreme"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Custom_Docker_Images",
+    "title": "Custom Docker Images Configuration",
+    "summary": "",
+    "tags": [
+      "docker",
+      "custom-images",
+      "qbittorrent",
+      "ghcr",
+      "github-actions",
+      "helm"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Headlamp",
+    "title": "Headlamp (Kubernetes Web UI Dashboard)",
+    "summary": "",
+    "tags": [
+      "kubernetes",
+      "dashboard",
+      "headlamp",
+      "helm",
+      "traefik"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Homepage",
+    "title": "Homepage Dashboard",
+    "summary": "",
+    "tags": [
+      "app",
+      "dashboard",
+      "ui",
+      "mcp"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Jellyfin",
+    "title": "Jellyfin Media Server",
+    "summary": "",
+    "tags": [
+      "jellyfin",
+      "media",
+      "gpu",
+      "rdna35",
+      "proxmox",
+      "nfs"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "LiteLLM",
+    "title": "LiteLLM (AI Inference Gateway & Router)",
+    "summary": "",
+    "tags": [
+      "litellm",
+      "ollama",
+      "hermes",
+      "docker",
+      "truenas"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "MCP_Platform",
+    "title": "MCP Platform (Model Context Protocol Hub & Inspector)",
+    "summary": "",
+    "tags": [
+      "mcp",
+      "ai",
+      "infrastructure",
+      "docker",
+      "truenas"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Monitoring",
+    "title": "Monitoring Stack (VictoriaMetrics)",
+    "summary": "",
+    "tags": [
+      "observability",
+      "monitoring",
+      "grafana"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "NUT_UPS",
+    "title": "NUT UPS Architecture & Monitoring",
+    "summary": "",
+    "tags": [
+      "infrastructure",
+      "ups",
+      "nut",
+      "truenas",
+      "proxmox",
+      "power"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Network_Registry",
+    "title": "Network Registry (rete.json)",
+    "summary": "",
+    "tags": [
+      "network",
+      "core",
+      "dns"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "OAuth2_Proxy",
+    "title": "OAuth2 Proxy (Security Shield)",
+    "summary": "",
+    "tags": [
+      "security",
+      "auth",
+      "oauth2"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "OPNsense",
+    "title": "OPNsense (Firewall & Gateway)",
+    "summary": "",
+    "tags": [
+      "network",
+      "core",
+      "opnsense"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Ollama",
+    "title": "Ollama LLM Fleet",
+    "summary": "",
+    "tags": [
+      "llm",
+      "ollama",
+      "ai",
+      "vulkan",
+      "metal",
+      "pve3",
+      "mac",
+      "ansible"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Secret_Registry",
+    "title": "Secret Registry (Security Source of Truth)",
+    "summary": "",
+    "tags": [
+      "security",
+      "secrets",
+      "ansible-vault",
+      "k8s"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Servarr",
+    "title": "Servarr Stack & qBittorrent",
+    "summary": "",
+    "tags": [
+      "app",
+      "media",
+      "torrent"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Storage_Registry",
+    "title": "Storage Registry (storage.json)",
+    "summary": "",
+    "tags": [
+      "storage",
+      "core",
+      "nfs"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Talos_Cluster",
+    "title": "Talos Cluster (Kubernetes Control Plane)",
+    "summary": "",
+    "tags": [
+      "compute",
+      "k8s",
+      "talos"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Tdarr",
+    "title": "Tdarr (Distributed Transcoding)",
+    "summary": "",
+    "tags": [
+      "app",
+      "media",
+      "transcoding"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Traefik",
+    "title": "Traefik (Ingress Controller)",
+    "summary": "",
+    "tags": [
+      "network",
+      "ingress",
+      "traefik"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "TrueNAS",
+    "title": "TrueNAS (Storage & Management)",
+    "summary": "",
+    "tags": [
+      "storage",
+      "nas",
+      "truenas"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Xray",
+    "title": "Xray Proxy",
+    "summary": "",
+    "tags": [
+      "network",
+      "proxy",
+      "xray"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "jellyfin-classic-setup",
+    "title": "Jellyfin Classic - Setup & Scelte di Configurazione",
+    "summary": "",
+    "tags": [
+      "jellyfin",
+      "classical",
+      "metadata"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "music-library-governance",
+    "title": "Music Library Governance",
+    "summary": "",
+    "tags": [
+      "core",
+      "storage"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "nfs-symlink-portability",
+    "title": "NFS Symlink Portability Governance",
+    "summary": "",
+    "tags": [
+      "core",
+      "storage",
+      "network",
+      "active"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "go-launcher-script-pattern",
+    "title": "Pattern: Go Launcher Script Integration",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "automation",
+      "scripting"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "guidellm-report-naming-pattern",
+    "title": "Pattern: Convenzione di Naming dei Report Benchmark GuideLLM",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "guidellm",
+      "benchmarking",
+      "llm",
+      "naming-convention",
+      "ollama",
+      "vllm"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "hierarchical-automation-alerting-pattern",
+    "title": "Pattern: Hierarchical Automation Alerting",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "automation",
+      "alerting",
+      "notifications"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "mcp-registry-package-pattern",
+    "title": "Pattern: Registry-Backed Packaging for Published MCP Servers",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "mcp",
+      "packaging",
+      "npm",
+      "pypi",
+      "kubernetes",
+      "docker"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "mcp-secret-projection-pattern",
+    "title": "Pattern: MCP Secret Projection & Workload Immutability",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "mcp",
+      "security",
+      "kubernetes",
+      "toolhive"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "mcp-upstream-tracking-pattern",
+    "title": "Pattern: Controlled Upstream Tracking for Custom MCP Containers",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "mcp",
+      "cicd",
+      "gitops",
+      "kubernetes"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "movie-metadata-and-artwork-architecture",
+    "title": "Pattern: Architettura Metadati e Artwork Ibrida (Jellyfin / Radarr / FileBot)",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "servarr",
+      "radarr",
+      "jellyfin",
+      "filebot",
+      "storage"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "script-to-mcp-tool-schema-pattern",
+    "title": "Pattern: Script to MCP Tool Schema & Registration",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "mcp",
+      "automation",
+      "scripting"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "zero-install-executable-package-pattern",
+    "title": "Pattern: Zero-Install Executable Package (Packaging per Caricamento On-Demand ed Esecuzione Effimera)",
+    "summary": "",
+    "tags": [
+      "pattern",
+      "mcp",
+      "packaging",
+      "python",
+      "uvx",
+      "npx",
+      "pypi",
+      "zero-install"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "aggiunta-utente-esterno-home-oauth2",
+    "title": "Aggiunta Nuovo Utente Esterno su home.pindaroli.org (OAuth2-Proxy)",
+    "summary": "",
+    "tags": [
+      "plan",
+      "oauth2",
+      "security",
+      "traefik",
+      "homepage"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "ansible-smart-telemetry-integration",
+    "title": "Automazione Rilevazione Dati SMART via Ansible",
+    "summary": "",
+    "tags": [
+      "plan",
+      "ansible",
+      "storage",
+      "monitoring",
+      "truenas",
+      "proxmox"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "classical-music-curator-skill",
+    "title": "Piano: Sviluppo Skill Classical Music Curator per Ricerca Critica e Download Assistito",
+    "summary": "",
+    "tags": [
+      "plan",
+      "music",
+      "skill",
+      "servarr"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "dynamic-k8s-job-qbittorrent",
+    "title": "Piano: Orchestrazione Dinamica K8s Job da qBittorrent",
+    "summary": "",
+    "tags": [
+      "plan",
+      "kubernetes",
+      "qbittorrent",
+      "servarr"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "guidellm-benchmark-profile-levels",
+    "title": "Piano: Integrazione Livelli di Benchmark Guidati (1, 2, 3) in GuideLLM Launcher",
+    "summary": "",
+    "tags": [
+      "benchmarking",
+      "guidellm",
+      "llm",
+      "ollama",
+      "pve3",
+      "automation"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "homelab-full-power-automation",
+    "title": "Piano: Automazione Full Power Homelab (WoL Idempotente, Checkpoint e Alerting Multi-Canale)",
+    "summary": "",
+    "tags": [
+      "plan",
+      "automation",
+      "startup",
+      "shutdown",
+      "wol",
+      "ansible",
+      "notifications"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "homepage-app-scaling-buttons",
+    "title": "Homepage App Scaling Buttons",
+    "summary": "",
+    "tags": [],
+    "sources": []
+  },
+  {
+    "slug": "homepage-mcp-servers-integration",
+    "title": "Integrazione MCP Server per le Due Homepage (K8s & TrueNAS)",
+    "summary": "",
+    "tags": [
+      "mcp",
+      "homepage",
+      "k8s",
+      "truenas",
+      "tooling"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "homepage-upgrade-v2.4.0",
+    "title": "Aggiornamento Homepage v2.4.0 (K8s & Docker TrueNAS)",
+    "summary": "",
+    "tags": [
+      "homepage",
+      "upgrade",
+      "k8s",
+      "docker",
+      "truenas",
+      "mcp",
+      "sops"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "meross-mcp-docker-validation",
+    "title": "Piano: Test Locale, Pipeline CI/CD GHCR, Docker TrueNAS & Widget Homepage Meross MCP",
+    "summary": "",
+    "tags": [
+      "plan",
+      "meross",
+      "mcp",
+      "docker",
+      "truenas",
+      "ghcr",
+      "cicd",
+      "homepage",
+      "iot",
+      "power-monitoring"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "minimserver-truenas-migration",
+    "title": "MinimServer da Kubernetes a Docker su TrueNAS",
+    "summary": "",
+    "tags": [
+      "migration",
+      "docker",
+      "truenas",
+      "minimserver"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "nic-10g-triangle-swap-and-proxmox-lacp-bond",
+    "title": "Triangolo Schede 10G SFP+ (PVE1, TrueNAS, OPNsense) & Bond LACP 802.3ad sui Nodi Proxmox",
+    "summary": "",
+    "tags": [
+      "network",
+      "hardware",
+      "proxmox",
+      "truenas",
+      "opnsense",
+      "extreme",
+      "lacp",
+      "plan"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "normalizer-reporting-and-email-redesign",
+    "title": "Riprogettazione Reportistica ed Email Normalizzatori (Audio & Video)",
+    "summary": "",
+    "tags": [
+      "normalizer",
+      "songkong",
+      "filebot",
+      "email",
+      "reporting",
+      "apprise"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "out-of-band-automation-engine",
+    "title": "Piano Operativo: Out-of-Band Automation Engine (LXC su TrueNAS NFS oliraid + Semaphore + MCP Gateway)",
+    "summary": "",
+    "tags": [
+      "plan",
+      "proxmox",
+      "storage",
+      "mcp",
+      "ansible"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "poc-servicenow-k8s-discovery",
+    "title": "Piano POC Minimale — Discovery Kubernetes su ServiceNow PDI",
+    "summary": "",
+    "tags": [
+      "servicenow",
+      "kubernetes",
+      "discovery",
+      "itom",
+      "cmdb"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "pve3-lxc-steam-ollama-gpu-orchestration",
+    "title": "Piano: Orchestrazione Energetica GPU e Alternanza LXC Steam/Ollama su PVE3",
+    "summary": "",
+    "tags": [
+      "pve3",
+      "gpu",
+      "power-management",
+      "lxc",
+      "steam",
+      "ollama",
+      "automation",
+      "notifications"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "qbittorrent-exporter-sidecar-integration",
+    "title": "Piano: Integrazione Sidecar qBittorrent Exporter & Monitoring",
+    "summary": "",
+    "tags": [
+      "plan",
+      "servarr",
+      "qbittorrent",
+      "monitoring",
+      "victoriametrics",
+      "helm"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "qbittorrent-selective-category-trigger",
+    "title": "Qbittorrent Selective Category Trigger",
+    "summary": "",
+    "tags": [],
+    "sources": []
+  },
+  {
+    "slug": "ragflow-mcp-truenas-docker-migration",
+    "title": "Piano: Containerizzazione e Migrazione ragflow-mcp su Docker TrueNAS (Porta 8111)",
+    "summary": "",
+    "tags": [
+      "plan",
+      "mcp",
+      "truenas",
+      "docker",
+      "ragflow"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "scripts-architecture-realignment",
+    "title": "Piano: Bonifica Script Obsoleti e Riallineamento Diagnostica all'Architettura Homelab Corrente",
+    "summary": "",
+    "tags": [
+      "plan",
+      "scripts",
+      "maintenance",
+      "diagnostics",
+      "truenas",
+      "kubernetes"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "servarr-truenas-permanent-migration",
+    "title": "Migrazione Definitiva Servarr: K8s -> Docker su TrueNAS",
+    "summary": "",
+    "tags": [
+      "migration",
+      "docker",
+      "truenas",
+      "servarr"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "servicenow-full-xml-backup-strategy",
+    "title": "Piano Backup XML Nativo Automatico e Completo per ServiceNow PDI",
+    "summary": "",
+    "tags": [
+      "servicenow",
+      "backup",
+      "xml",
+      "automation"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "talos-startup-and-truenas-vlan20-realign",
+    "title": "Piano: Risoluzione Timeout Startup Talos & Riallineamento Rete TrueNAS VLAN 20",
+    "summary": "",
+    "tags": [
+      "plan",
+      "talos",
+      "kubernetes",
+      "proxmox",
+      "postgres",
+      "ansible",
+      "vlan20"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "truenas-docker-image-updates-checker",
+    "title": "Script di Controllo Aggiornamenti Immagini Docker su TrueNAS",
+    "summary": "",
+    "tags": [
+      "truenas",
+      "docker",
+      "maintenance",
+      "scripts"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "truenas-backup-restore",
+    "title": "Procedura: Backup e Ripristino della Configurazione di TrueNAS",
+    "summary": "",
+    "tags": [
+      "procedure",
+      "storage",
+      "truenas"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Certificate_Renewal",
+    "title": "Workflow: TLS Certificate Management",
+    "summary": "",
+    "tags": [
+      "security",
+      "tls",
+      "cert-manager"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Ghostty_Workaround",
+    "title": "Workaround Sicurezza Ghostty: Avvio Automatico Tdarr Node",
+    "summary": "",
+    "tags": [
+      "ghostty",
+      "tdarr",
+      "macos"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "Node_Maintenance",
+    "title": "Node Maintenance",
+    "summary": "",
+    "tags": [],
+    "sources": []
+  },
+  {
+    "slug": "Power_Sequence",
+    "title": "Workflow: Safe Shutdown & Startup Sequence",
+    "summary": "",
+    "tags": [
+      "workflow",
+      "maintenance",
+      "automation",
+      "power",
+      "wol"
+    ],
+    "sources": []
+  },
+  {
+    "slug": "media-normalization-pipeline",
+    "title": "Workflow: Pipeline di Normalizzazione Multimediale e Multi-Versione (FileBot AMC & SongKong)",
+    "summary": "",
+    "tags": [
+      "workflow",
+      "servarr",
+      "filebot",
+      "jellyfin",
+      "truenas",
+      "docker"
+    ],
+    "sources": []
   }
 ]

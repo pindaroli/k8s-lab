@@ -4,6 +4,7 @@
 # Python Caches
 __pycache__/
 *.py[cod]
+*.lock
 *pippo*
 
 # SSL Certificate files (sensitive)

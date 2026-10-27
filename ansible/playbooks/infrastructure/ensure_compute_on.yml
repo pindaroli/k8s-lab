@@ -90,7 +90,6 @@
       shell: ssh -o BatchMode=yes -o ConnectTimeout=5 root@{{ item.ip }} "qm status {{ item.vmid }} | grep -q running || qm start {{ item.vmid }}"
       loop: "{{ pve_nodes_map }}"
       changed_when: false
-      ignore_errors: true
 
     - name: "🔔 Notifica Telegram: Hypervisor PVE Online"
       command: >
@@ -186,7 +185,6 @@
       retries: 15
       delay: 5
       changed_when: false
-      ignore_errors: true
 
     - name: "🔔 Notifica Telegram: Health Check Superato"
       command: >

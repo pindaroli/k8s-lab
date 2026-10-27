@@ -1,0 +1,40 @@
+# Configurazione canonica llmwiki per k8s-lab (v0.9.1-k8slab)
+paths:
+  wiki: wiki
+  raw: raw
+  meta: wiki/_meta
+  concepts: wiki/concepts
+  outputs: wiki/outputs
+  content_dirs:
+    concept: wiki/concepts
+    entity: wiki/entities
+    pattern: wiki/patterns
+    workflow: wiki/workflows
+    procedure: wiki/procedures
+    plan: wiki/plans
+
+languages:
+  default: single
+  profiles:
+    single:
+      default_lang: it
+      api_default_lang: it
+      sections:
+        - code: it
+          key: italian
+          header: ""
+          label: Italiano
+          icon: IT
+
+llm:
+  base_url: "http://10.10.20.50:4000/v1"
+  model: "deepseek-r1:32b"
+  max_tokens: 16384
+
+compile:
+  backlinks: true
+  batch_size: 10
+
+health:
+  auto_fix_broken_links: true
+  max_stubs_per_run: 10

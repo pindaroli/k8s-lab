@@ -283,9 +283,10 @@ tools:
       required: []
 
   - name: "exos_bounce_sfp_port10"
-    description: "Controllo e ripristino idempotente SerDes SFP+ sulla porta 10 dello switch Extreme EXOS se in stallo o down"
-    type: "python"
-    path: "scripts/network/exos/bounce_port10.py"
+    description: "Controllo e ripristino idempotente SerDes SFP+ sulla porta 10 dello switch Extreme EXOS tramite Ansible Playbook"
+    type: "ansible"
+    path: "ansible/playbooks/infrastructure/exos_port10_boot_recovery.yml"
+    inventory: "ansible/inventory.ini"
     read_only: false
     async_capable: false
     executionType: "direct"
@@ -294,7 +295,7 @@ tools:
       defaultMode: "sync"
       asyncTriggerThresholdSeconds: 0
       maxTtlSeconds: 3600
-    timeout_seconds: 40
+    timeout_seconds: 60
     parameters:
       type: object
       properties: {}
@@ -381,7 +382,7 @@ tools:
   - name: "audit_proxmox_smart_disks"
     description: "Playbook Ansible per audit dello stato SMART hardware dei dischi fisici (NVMe/SSD/HDD) sui tre nodi Proxmox VE"
     type: "ansible"
-    path: "ansible/proxmox_smart_audit.yml"
+    path: "ansible/playbooks/infrastructure/proxmox_smart_audit.yml"
     inventory: "ansible/inventory.ini"
     read_only: true
     async_capable: true
@@ -469,9 +470,9 @@ tools:
       required: []
 
   - name: "audit_movie_duplicates"
-    description: "Audit della libreria multimediale film su TrueNAS: rilevamento duplicati, versioni multi-file o anomalie di naming"
-    type: "python"
-    path: "scripts/servarr/audit_movie_duplicates.py"
+    description: "Audit della libreria multimediale film su TrueNAS via wrapper SSH: rilevamento duplicati, versioni multi-file o anomalie di naming"
+    type: "bash"
+    path: "scripts/servarr/audit_movie_duplicates.sh"
     read_only: true
     async_capable: true
     executionType: "task"

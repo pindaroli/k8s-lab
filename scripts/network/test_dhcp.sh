@@ -20,16 +20,30 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 RETE_JSON="${RETE_JSON_PATH:-$ROOT_DIR/rete.json}"
-export APIKEY_FILE="$(dirname "$RETE_JSON")/ansible/OPNsense.internal_root_apikey.txt"
+API_KEY="${OPNSENSE_API_KEY:-}"
+API_SECRET="${OPNSENSE_API_SECRET:-}"
+
+if [[ -z "$API_KEY" || -z "$API_SECRET" ]]; then
+  APIKEY_FILE="$(dirname "$RETE_JSON")/ansible/OPNsense.internal_root_apikey.txt"
+  if [[ -f "$APIKEY_FILE" ]]; then
+    API_KEY=$(grep '^key=' "${APIKEY_FILE}" | cut -d'=' -f2-)
+    API_SECRET=$(grep '^secret=' "${APIKEY_FILE}" | cut -d'=' -f2-)
+  elif [[ -f "$ROOT_DIR/secrets-sops/opnsense-mcp-credentials.enc.yaml" ]] && command -v sops >/dev/null 2>&1; then
+    SOPS_DECRYPT=$(sops -d "$ROOT_DIR/secrets-sops/opnsense-mcp-credentials.enc.yaml" 2>/dev/null || true)
+    API_KEY=$(echo "$SOPS_DECRYPT" | awk -F': ' '/OPNSENSE_API_KEY:/ {print $2}' | tr -d '"\r\n' || true)
+    API_SECRET=$(echo "$SOPS_DECRYPT" | awk -F': ' '/OPNSENSE_API_SECRET:/ {print $2}' | tr -d '"\r\n' || true)
+  fi
+fi
+
+if [[ -z "$API_KEY" || -z "$API_SECRET" ]]; then
+  echo "❌ Impossibile recuperare le credenziali API di OPNsense (né da file né da SOPS)."
+  exit 1
+fi
 
 if [ -z "${OPNSENSE_URL:-}" ]; then
   OPNSENSE_IP=$(python3 -c "import json; print(next(n for n in json.load(open('${RETE_JSON}'))['nodi'] if n['id']=='opnsense')['management_ip'])")
   export OPNSENSE_URL="https://${OPNSENSE_IP}"
 fi
-
-# Leggi credenziali dal file
-API_KEY=$(grep '^key=' "${APIKEY_FILE}" | cut -d'=' -f2-)
-API_SECRET=$(grep '^secret=' "${APIKEY_FILE}" | cut -d'=' -f2-)
 
 # --- Colori ---
 RED='\033[0;31m'
@@ -250,6 +264,9 @@ done
 echo ""
 echo -e "${BOLD}[5] ARP — Verifica MAC address${RESET}"
 
+# Interrogazione preventiva tabella ARP via API OPNsense
+OPNSENSE_ARP_JSON=$(api_get "/api/diagnostics/interface/getArp" 2>/dev/null || echo "[]")
+
 # Aggiorna la tabella ARP pingSweep leggero
 for ip in 10.10.20.141 10.10.20.142 10.10.20.143 10.10.20.100 10.10.20.103; do
   ping -c 1 -W 1 -q "${ip}" &>/dev/null || true
@@ -262,9 +279,34 @@ for item in ${MACS_CHECK}; do
   expected_mac=$(echo "${item}" | cut -d':' -f2-7)
   label=$(echo "${item}" | cut -d':' -f8)
 
-  # macOS: arp -n <ip>
-  arp_output=$(arp -n "${ip}" 2>/dev/null || echo "")
-  actual_mac=$(echo "${arp_output}" | grep -oE '([0-9a-f]{1,2}:){5}[0-9a-f]{1,2}' | head -1 | tr '[:upper:]' '[:lower:]' || echo "")
+  actual_mac=""
+
+  # 1. API OPNsense
+  if [[ -n "${OPNSENSE_ARP_JSON:-}" && "${OPNSENSE_ARP_JSON}" != "[]" ]]; then
+    actual_mac=$(echo "${OPNSENSE_ARP_JSON}" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    rows = data if isinstance(data, list) else data.get('rows', [])
+    for r in rows:
+        if r.get('ip') == '${ip}':
+            print(r.get('mac', '').lower())
+            break
+except Exception:
+    pass
+" 2>/dev/null || true)
+  fi
+
+  # 2. Linux ip neigh
+  if [[ -z "${actual_mac}" ]] && command -v ip >/dev/null 2>&1; then
+    actual_mac=$(ip neigh show "${ip}" 2>/dev/null | grep -oE '([0-9a-f]{1,2}:){5}[0-9a-f]{1,2}' | head -1 | tr '[:upper:]' '[:lower:]' || true)
+  fi
+
+  # 3. macOS / standard arp -n
+  if [[ -z "${actual_mac}" ]]; then
+    arp_output=$(arp -n "${ip}" 2>/dev/null || echo "")
+    actual_mac=$(echo "${arp_output}" | grep -oE '([0-9a-f]{1,2}:){5}[0-9a-f]{1,2}' | head -1 | tr '[:upper:]' '[:lower:]' || true)
+  fi
 
   if [[ -z "${actual_mac}" ]]; then
     warn "${label} (${ip}) — MAC non in tabella ARP (host offline?)"

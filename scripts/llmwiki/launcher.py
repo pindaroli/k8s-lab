@@ -49,8 +49,18 @@ def resolve_project_root(cwd: str) -> str:
 
 
 def main():
-    # 1. Mappatura trasparente variabili LLM generiche -> upstream
-    base_url = os.getenv("LLM_BASE_URL", "http://10.10.20.100:11434/v1")
+    # 1. Risoluzione della directory root del progetto conforme a go-launcher-script-pattern
+    cwd = os.getcwd()
+    target_base_dir = resolve_project_root(cwd)
+    os.chdir(target_base_dir)
+    os.environ["WIKI_PATH"] = target_base_dir
+
+    config_path = os.path.join(target_base_dir, "config.yaml")
+    if os.path.isfile(config_path):
+        os.environ["LLMWIKI_CONFIG"] = config_path
+
+    # 2. Mappatura trasparente variabili LLM generiche -> upstream (LiteLLM / Ollama)
+    base_url = os.getenv("LLM_BASE_URL", "http://10.10.20.50:4000/v1")
     api_key = os.getenv("LLM_API_KEY", "ollama")
     model = os.getenv("LLM_MODEL", "deepseek-r1:32b")
 
@@ -62,20 +72,14 @@ def main():
     os.environ["LLMBASE_MODEL"] = model
     os.environ["MODEL"] = model
 
-    # 2. --base-dir è sempre la root del progetto, mai .../wiki.
-    cwd = os.getcwd()
-    target_base_dir = resolve_project_root(cwd)
-    os.environ["WIKI_PATH"] = target_base_dir
-
     # Log diagnostico su STDERR (mai su STDOUT che è riservato a JSON-RPC)
-    sys.stderr.write(f"[llmwiki-launcher] Active CWD: {cwd}\n")
-    sys.stderr.write(f"[llmwiki-launcher] Target Base Dir: {target_base_dir}\n")
+    sys.stderr.write(f"[llmwiki-launcher] CWD sincronizzato: {target_base_dir}\n")
+    sys.stderr.write(f"[llmwiki-launcher] Config: {config_path if os.path.isfile(config_path) else 'defaults'}\n")
     sys.stderr.write(f"[llmwiki-launcher] Wiki: {os.path.join(target_base_dir, 'wiki')}\n")
-    sys.stderr.write(f"[llmwiki-launcher] Raw: {os.path.join(target_base_dir, 'raw')}\n")
     sys.stderr.write(f"[llmwiki-launcher] LLM Endpoint: {base_url} (Model: {model})\n")
     sys.stderr.flush()
 
-    # 3. Avvio di llmwiki con la base-dir del progetto corrente
+    # 3. Avvio di llmwiki in modalità stdio locale
     cmd = [sys.executable, "-m", "llmwiki", "--base-dir", target_base_dir]
     if len(sys.argv) > 1:
         cmd.extend(sys.argv[1:])

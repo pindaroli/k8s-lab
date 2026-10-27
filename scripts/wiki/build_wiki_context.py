@@ -47,6 +47,8 @@ SECTION_ORDER = [
     ("entities",   "🏗️ Entità Infrastrutturali"),
     ("patterns",   "📐 Pattern Architetturali"),
     ("workflows",  "🔄 Workflow Operativi"),
+    ("procedures", "🛠️ Procedure Operative"),
+    ("concepts",   "🧠 Concetti Compilati (LLM Wiki)"),
     ("istruzioni", "📖 Istruzioni Tecniche"),
     ("plans",      "🗺️ Piani Attivi"),
 ]

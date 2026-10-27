@@ -111,17 +111,37 @@
 
             - name: Quiescenza container Hermes su entrambi i nodi
               block:
+                - name: Verifica presenza socket OrbStack su Mac Studio
+                  ansible.builtin.stat:
+                    path: "{{ ansible_env.HOME | default('/Users/olindo') }}/.orbstack/run/docker.sock"
+                  register: orbstack_socket_pre_sync
+
+                - name: Verifica se hermes-main è attivo su OrbStack
+                  when: orbstack_socket_pre_sync.stat.exists
+                  ansible.builtin.command: docker ps --filter "name=hermes-main" --filter "status=running" -q
+                  register: hermes_orbstack_pre_sync
+                  changed_when: false
+
                 - name: Stop locale preventivo hermes-agent su Mac Studio (se attivo)
+                  when:
+                    - orbstack_socket_pre_sync.stat.exists
+                    - hermes_orbstack_pre_sync.stdout | default('') | trim != ''
                   ansible.builtin.command: >
                     docker compose --env-file "{{ failover_runtime_dir }}/.env"
                     -f "{{ failover_runtime_dir }}/docker-compose.yaml" stop hermes-agent
-                  ignore_errors: true
 
-                - name: Stop preventivo hermes-main su TrueNAS
+                - name: Verifica se hermes-main è attivo su TrueNAS
+                  delegate_to: truenas
+                  become: true
+                  ansible.builtin.command: docker ps --filter "name=hermes-main" --filter "status=running" -q
+                  register: hermes_truenas_pre_sync
+                  changed_when: false
+
+                - name: Stop preventivo hermes-main su TrueNAS (se attivo)
+                  when: hermes_truenas_pre_sync.stdout | default('') | trim != ''
                   delegate_to: truenas
                   become: true
                   ansible.builtin.command: docker stop -t 25 hermes-main
-                  ignore_errors: true
 
             - name: Pre-normalizzazione permessi su TrueNAS prima del sync
               delegate_to: truenas
@@ -247,25 +267,33 @@
 
         - name: Verifica se container hermes è attivo su OrbStack
           when: orbstack_stat_checks.results[1].stat.exists
-          ansible.builtin.command: docker ps --filter "name=hermes" --filter "status=running" -q
+          ansible.builtin.command: docker ps --filter "name=hermes-main" --filter "status=running" -q
           register: hermes_running_stat
           changed_when: false
-          ignore_errors: true
 
         - name: Failback dello stato Hermes da Mac Studio a TrueNAS (se failover era attivo)
           when: failover_marker_stat.stat.exists or (hermes_running_stat.stdout | default('') | trim != '')
           block:
-            - name: Stop preventivo hermes locale su Mac Studio
+            - name: Stop preventivo hermes locale su Mac Studio (se attivo)
+              when:
+                - orbstack_stat_checks.results[1].stat.exists
+                - hermes_running_stat.stdout | default('') | trim != ''
               ansible.builtin.command: >
                 docker compose --env-file "{{ failover_runtime_dir }}/.env"
                 -f "{{ failover_runtime_dir }}/docker-compose.yaml" stop hermes-agent
-              ignore_errors: true
 
-            - name: Stop preventivo hermes-main su TrueNAS
+            - name: Verifica se hermes-main è attivo su TrueNAS
+              delegate_to: truenas
+              become: true
+              ansible.builtin.command: docker ps --filter "name=hermes-main" --filter "status=running" -q
+              register: hermes_truenas_running_failback
+              changed_when: false
+
+            - name: Stop preventivo hermes-main su TrueNAS (se attivo)
+              when: hermes_truenas_running_failback.stdout | default('') | trim != ''
               delegate_to: truenas
               become: true
               ansible.builtin.command: docker stop -t 25 hermes-main
-              ignore_errors: true
 
             - name: Pre-normalizzazione permessi su TrueNAS prima del push
               delegate_to: truenas
