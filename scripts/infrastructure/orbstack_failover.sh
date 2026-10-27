@@ -252,6 +252,22 @@ deactivate_orbstack_failover_to_truenas() {
     local ssh_user
     ssh_user="$(_resolve_truenas_ssh_user)"
 
+    # Rilevamento dello stato di OrbStack e avvio transitorio se inattivo
+    local orbstack_was_running="false"
+    if orbctl status >/dev/null 2>&1 || [ -S "$HOME/.orbstack/run/docker.sock" ]; then
+        orbstack_was_running="true"
+    else
+        echo "⚙️  [OrbStack Failback] OrbStack è inattivo: avvio transitorio per disattivazione stack..."
+        orbctl start >/dev/null 2>&1 || true
+        local o_wait=30
+        until [ -S "$HOME/.orbstack/run/docker.sock" ] || [ "$o_wait" -le 0 ]; do
+            sleep 1
+            o_wait=$((o_wait - 1))
+        done
+    fi
+
+    prepare_orbstack_runtime_env
+
     local orbstack_was_active="false"
     if [ -f "$ORBSTACK_COMPOSE_FILE" ] && [ -n "$(docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" ps -q 2>/dev/null)" ]; then
         orbstack_was_active="true"
@@ -348,10 +364,20 @@ deactivate_orbstack_failover_to_truenas() {
         python3 "${ROOT_DIR}/scripts/network/switch_failover_dns.py" --target eco
     fi
 
-    # 5. Arresto e rimozione pulita dello stack di failover su OrbStack (solo se ci sono container del progetto)
-    if [ "$orbstack_was_active" = "true" ]; then
-        echo "🧹 [OrbStack Failback] Spegnimento stack orbstack-failover su Mac Studio..."
-        docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" down --remove-orphans
+    # 5. Arresto e rimozione pulita dello stack di failover su OrbStack (idempotente)
+    if [ -f "$ORBSTACK_COMPOSE_FILE" ] && [ -S "$HOME/.orbstack/run/docker.sock" ]; then
+        if [ "$orbstack_was_active" = "true" ] || [ -n "$(docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" ps -q 2>/dev/null)" ]; then
+            echo "🧹 [OrbStack Failback] Spegnimento stack orbstack-failover su Mac Studio..."
+            docker compose --env-file "${FAILOVER_RUNTIME_DIR}/.env" -f "$ORBSTACK_COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
+        else
+            echo "ℹ️  [OrbStack Failback] Nessun container attivo nello stack orbstack-failover."
+        fi
+    fi
+
+    # 6. Se OrbStack era spento prima della disattivazione, lo richiudiamo ordinatamente
+    if [ "$orbstack_was_running" = "false" ]; then
+        echo "💤 [OrbStack Failback] OrbStack era inattivo all'avvio della procedura: chiusura applicazione..."
+        orbctl stop >/dev/null 2>&1 || osascript -e 'tell application "OrbStack" to quit' 2>/dev/null || true
     fi
 
     echo "✅ [OrbStack Failback] Servizi verificati su TrueNAS (${TRUENAS_HOST}), DNS allineato e OrbStack in standby."

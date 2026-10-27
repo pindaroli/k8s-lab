@@ -31,7 +31,7 @@ services:
   socket-proxy:
     image: tecnativa/docker-socket-proxy:v0.4.1
     container_name: mcp-socket-proxy
-    restart: unless-stopped
+    restart: "no"
     privileged: false
     read_only: true
     tmpfs:
@@ -82,7 +82,7 @@ services:
   traefik:
     image: traefik:v3.7.16
     container_name: mcp-traefik
-    restart: unless-stopped
+    restart: "no"
     read_only: true
     security_opt:
       - no-new-privileges:true
@@ -152,7 +152,7 @@ services:
     container_name: mcp-opnsense
     platform: linux/amd64
     image: ghcr.io/pindaroli/opnsense-mcp:0.5.3-r1
-    restart: unless-stopped
+    restart: "no"
     env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
     mem_limit: 256m
     networks:
@@ -179,7 +179,7 @@ services:
     container_name: mcp-gemini-deepsearch
     platform: linux/amd64
     image: ghcr.io/pindaroli/gemini-deepsearch-mcp:0.2.0
-    restart: unless-stopped
+    restart: "no"
     env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
     mem_limit: 768m
     environment:
@@ -210,7 +210,7 @@ services:
     container_name: mcp-ollama
     platform: linux/amd64
     image: ghcr.io/pindaroli/ollama-mcp:2.1.0-r1
-    restart: unless-stopped
+    restart: "no"
     env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
     mem_limit: 256m
     environment:
@@ -242,7 +242,7 @@ services:
     container_name: mcp-kef
     platform: linux/amd64
     image: ghcr.io/pindaroli/kef-mcp:1.0.0
-    restart: unless-stopped
+    restart: "no"
     environment:
       - MCP_TRANSPORT=sse
       - MCP_PORT=8080
@@ -273,7 +273,7 @@ services:
     container_name: mcp-nowaikit
     platform: linux/amd64
     image: ghcr.io/pindaroli/nowaikit-mcp:4.15.1-r1
-    restart: unless-stopped
+    restart: "no"
     env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
     mem_limit: 768m
     networks:
@@ -300,7 +300,7 @@ services:
     container_name: mcp-github
     platform: linux/amd64
     image: ghcr.io/pindaroli/github-mcp-server:0.7.0-r1
-    restart: unless-stopped
+    restart: "no"
     env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
     mem_limit: 512m
     networks:
@@ -327,7 +327,7 @@ services:
     container_name: mcp-meross
     platform: linux/amd64
     image: ghcr.io/pindaroli/meross-mcp:0.1.2
-    restart: unless-stopped
+    restart: "no"
     env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
     mem_limit: 256m
     environment:
@@ -357,7 +357,7 @@ services:
   litellm:
     image: ghcr.io/berriai/litellm:1.106.2
     container_name: litellm
-    restart: unless-stopped
+    restart: "no"
     ports:
       - "4000:4000"
     env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
@@ -396,7 +396,7 @@ services:
   hermes-agent:
     image: nousresearch/hermes-agent:v0.22.5
     container_name: hermes-main
-    restart: unless-stopped
+    restart: "no"
     ports:
       - "9119:9119"
     env_file: ${FAILOVER_RUNTIME_DIR:-/Users/olindo/.homelab-failover}/.env
@@ -450,7 +450,7 @@ services:
   dozzle:
     image: amir20/dozzle:v11.2.0
     container_name: dozzle
-    restart: unless-stopped
+    restart: "no"
     security_opt:
       - no-new-privileges:true
     mem_limit: 256m
@@ -491,7 +491,7 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:v2.4.0
     container_name: homepage-mac
-    restart: unless-stopped
+    restart: "no"
     mem_limit: 512m
     environment:
       - PUID=1000

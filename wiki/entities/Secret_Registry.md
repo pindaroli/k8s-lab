@@ -35,6 +35,7 @@ L'architettura segue il principio della **Separazione tra Configurazione e Crede
 | `cloudflare-token-secret` | `cert-manager` | `cloudflare_api_token` | DNS-01 Challenge |
 | `deepseek-apikey` | `default` | `deepseek_api_key` | DeepSeek API Key per Hermes Agent (SOPS) |
 | `discogs-token` | N/A (Mac Studio) | `discogs_token` | Beets Metadata (Music Rescue Pipeline) |
+| `macos-admin-credentials` | N/A (Mac Studio Local Only) | `mac_sudo_password` | Password sudo locale Mac Studio (M2 Max) - Vietato l'uso su nodi remoti (SOPS) |
 
 
 

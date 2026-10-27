@@ -191,11 +191,41 @@ class OPNsenseUnboundClient:
 
 
 def flush_local_dns_cache() -> None:
-    """Svuota la cache DNS di macOS per azzerare il TTL sui client locali."""
+    """Svuota la cache DNS di macOS per azzerare il TTL sui client locali in modo trasparente e silenzioso."""
     if sys.platform != "darwin":
         return
     subprocess.run(["dscacheutil", "-flushcache"], check=False)
-    subprocess.run(["sudo", "-n", "killall", "-HUP", "mDNSResponder"], check=False)
+    # Se presente la credenziale macos-admin-credentials in secrets-sops, usa sudo -S; altrimenti prova sudo -n silenzioso
+    mac_sops_file = os.path.join(ROOT_DIR, "secrets-sops", "macos-admin-credentials.enc.yaml")
+    sudo_pass = None
+    if os.path.isfile(mac_sops_file):
+        try:
+            res = subprocess.run(
+                ["sops", "-d", "--extract", '["stringData"]["mac_sudo_password"]', mac_sops_file],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if res.returncode == 0 and res.stdout.strip():
+                sudo_pass = res.stdout.strip()
+        except Exception:
+            pass
+
+    if sudo_pass:
+        subprocess.run(
+            ["sudo", "-S", "killall", "-HUP", "mDNSResponder"],
+            input=f"{sudo_pass}\n",
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    else:
+        # Fallback sicuro senza sporcare stderr con 'sudo: a password is required'
+        subprocess.run(
+            ["sudo", "-n", "killall", "-HUP", "mDNSResponder"],
+            capture_output=True,
+            check=False,
+        )
 
 
 def main() -> int:
