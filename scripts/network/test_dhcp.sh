@@ -17,11 +17,9 @@
 set -euo pipefail
 
 # --- Configurazione ---
-if [ -z "${RETE_JSON_PATH:-}" ]; then
-  echo "❌ Errore: RETE_JSON_PATH non impostata nell'ambiente!" >&2
-  exit 1
-fi
-RETE_JSON="$RETE_JSON_PATH"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+RETE_JSON="${RETE_JSON_PATH:-$ROOT_DIR/rete.json}"
 export APIKEY_FILE="$(dirname "$RETE_JSON")/ansible/OPNsense.internal_root_apikey.txt"
 
 if [ -z "${OPNSENSE_URL:-}" ]; then

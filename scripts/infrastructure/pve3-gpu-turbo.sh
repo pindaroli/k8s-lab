@@ -1,4 +1,10 @@
-#!/bin/bash
-set -e
-echo high > /sys/class/drm/card0/device/power_dpm_force_performance_level
-echo "GPU PVE3: TURBO (2900MHz / high)"
+#!/usr/bin/env bash
+# Imposta la GPU AMD Radeon 890M di PVE3 in modalita' TURBO (high performance 2900MHz).
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$ROOT_DIR" || exit 1
+
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/pve3_gpu_power.yml -e gpu_mode=turbo

@@ -8,7 +8,6 @@ cd "$ROOT_DIR" || exit 1
 
 source "$SCRIPT_DIR/procedure_scope.sh"
 source "$SCRIPT_DIR/utils.sh"
-source "$SCRIPT_DIR/orbstack_failover.sh"
 
 PROCEDURE_NAME="lab_mode_eco"
 init_procedure_scope "$PROCEDURE_NAME"
@@ -54,9 +53,8 @@ echo "▶️  [Fase 1/3] Esecuzione: ensure_storage_on..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_storage_on.yml
 
 # FASE 2: FAILBACK STATO HERMES, SERVIZI AI/MCP E DNS DA MAC STUDIO (ORBSTACK) A TRUENAS (10.10.20.50)
-echo "▶️  [Fase 2/3] Esecuzione: deactivate_orbstack_failover_to_truenas (target eco)..."
-set_truenas_home_internal_backend "eco"
-deactivate_orbstack_failover_to_truenas "eco"
+echo "▶️  [Fase 2/3] Esecuzione: orbstack_failover.yml (deactivate target eco)..."
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/orbstack_failover.yml -e failover_action=deactivate -e target_mode=eco
 
 # FASE 3: GARANTISCE COMPUTE LAYER OFFLINE (K8S + PVE)
 echo "▶️  [Fase 3/3] Esecuzione: ensure_compute_off..."

@@ -1,13 +1,13 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
-## 🚀 [ ] IN CORSO: Migrazione Ansible Integrale per GPU/Backup PVE3, Failover OrbStack e Portabilità Docker per `go.py` [[ansible-migration-pve3-and-orbstack-failover]]
+## 🚀 [x] ✅ COMPLETATO: Migrazione Ansible Integrale per GPU PVE3, Failover OrbStack e Portabilità Docker per `go.py` [[ansible-migration-pve3-and-orbstack-failover]]
 - [x] Fase 0: Intervista `/grill-me`, rimozione `orbstack_failover.sh` dal menu di `go.py` (`chmod -x`) e redazione piano [[ansible-migration-pve3-and-orbstack-failover]] ✅
-- [ ] Fase 1: Aggiornamento `ansible/inventory.ini` con il gruppo `[mac_studio]` (`10.10.20.100`) e test connettività SSH
-- [ ] Fase 2: Creazione playbook `ansible/playbooks/infrastructure/pve3_gpu_power.yml` e allineamento wrapper `pve3-gpu-{eco,mode,turbo}.sh`
-- [ ] Fase 3: Creazione playbook `ansible/playbooks/infrastructure/pve3_host_backup_pbs.yml` e allineamento wrapper `pve3-host-backup-pbs.sh`
-- [ ] Fase 4: Creazione playbook `ansible/playbooks/infrastructure/orbstack_failover.yml`, aggiornamento `lab_mode_{full,eco,off}.sh` e dismissione `orbstack_failover.sh`
-- [ ] Fase 5: Micro-fix POSIX per compatibilità 100% container Docker (`lab_mode_status.sh`, `test_dns.sh`, `test_dhcp.sh`, `run_promptfoo_ocr.sh`)
-- [ ] Fase 6: Validazione finale (`validate_network.py` + `build_wiki_context.py`) e chiusura piano
+- [x] Fase 1: Aggiornamento `ansible/inventory.ini` con il gruppo `[mac_studio]` (`10.10.20.100`) e test connettività SSH ✅
+- [x] Fase 2: Creazione playbook `ansible/playbooks/infrastructure/pve3_gpu_power.yml` e allineamento wrapper `pve3-gpu-{eco,mode,turbo}.sh` ✅
+- [x] Fase 3: Dismissione e rimozione script PBS host obsoleto (`pve3-host-backup-pbs.sh`, Opzione B0) ✅
+- [x] Fase 4: Creazione playbook `ansible/playbooks/infrastructure/orbstack_failover.yml`, aggiornamento `lab_mode_{full,eco,off}.sh` e dismissione `orbstack_failover.sh` ✅
+- [x] Fase 5: Micro-fix POSIX per compatibilità 100% container Docker (`lab_mode_status.sh`, `test_dns.sh`, `test_dhcp.sh`, `run_promptfoo_ocr.sh`) ✅
+- [x] Fase 6: Validazione finale (`validate_network.py` + `build_wiki_context.py`) e chiusura piano ✅
 
 ## 🚀 [x] ✅ COMPLETATO: Procedura Diagnostica di Stato Homelab (`lab_mode_status.sh`) [[lab-mode-status-procedure]]
 - [x] Fase 1: Progettazione e formalizzazione piano [[lab-mode-status-procedure]] ✅

@@ -61,14 +61,16 @@ DNS_SERVER="10.10.20.1"
 # ==============================================================================
 # PROBE TCP RAPIDI (PARALLELI, TIMEOUT 1s)
 # ==============================================================================
-TMP_DIR="$(mktemp -d -t homelab_status_XXXXXX)"
+SYS_TMPDIR="${TMPDIR:-/tmp}"
+SYS_TMPDIR="${SYS_TMPDIR%/}"
+TMP_DIR="$(mktemp -d "${SYS_TMPDIR}/homelab_status_XXXXXX")"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 _probe() {
     local key="$1"
     local host="$2"
     local port="$3"
-    if nc -z -G 1 "$host" "$port" >/dev/null 2>&1; then
+    if nc -z -w 1 "$host" "$port" >/dev/null 2>&1; then
         echo "1" > "$TMP_DIR/$key"
     else
         echo "0" > "$TMP_DIR/$key"
@@ -144,12 +146,17 @@ DNS_HOME_INTERNAL=$(_resolve_host "home-internal.pindaroli.org")
 DNS_MCP=$(_resolve_host "mcp.pindaroli.org")
 
 # ==============================================================================
-# PROBE CONTAINER FAILOVER ORBSTACK (Mac Studio locale)
+# PROBE CONTAINER FAILOVER ORBSTACK (Mac Studio locale o remoto)
 # ==============================================================================
 ORBSTACK_ACTIVE=false
 if command -v docker >/dev/null 2>&1; then
     running_failover=$(docker ps --filter "name=homepage-mac" --filter "name=hermes-agent" --filter "name=litellm-proxy" --format '{{.Names}}' 2>/dev/null || true)
     if [ -n "$running_failover" ]; then
+        ORBSTACK_ACTIVE=true
+    fi
+fi
+if [ "$ORBSTACK_ACTIVE" = false ]; then
+    if nc -z -w 1 "$MAC_STUDIO_IP" 9119 >/dev/null 2>&1 || nc -z -w 1 "$MAC_STUDIO_IP" 8180 >/dev/null 2>&1; then
         ORBSTACK_ACTIVE=true
     fi
 fi

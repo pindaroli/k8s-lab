@@ -472,7 +472,7 @@ if [[ "$EXT_LOWER" == "jpg" || "$EXT_LOWER" == "jpeg" ]]; then
   MIME_TYPE="image/jpeg"
 fi
 
-FIXTURE_B64=$(base64 -i "$FIXTURE_PATH" | tr -d '\n\r')
+FIXTURE_B64=$(base64 < "$FIXTURE_PATH" | tr -d '\n\r')
 DATA_URI="data:${MIME_TYPE};base64,${FIXTURE_B64}"
 
 # Normalizzazione stringhe per naming report conforme a [[guidellm-report-naming-pattern]]
@@ -487,7 +487,9 @@ REPORT_JSON="${REPORT_PREFIX}.json"
 REPORT_HTML="${REPORT_PREFIX}.html"
 
 # File temporaneo per promptfooconfig dinamico
-TMP_BASE=$(mktemp "${TMPDIR:-/tmp}promptfoo_ocr_XXXXXX")
+SYS_TMPDIR="${TMPDIR:-/tmp}"
+SYS_TMPDIR="${SYS_TMPDIR%/}"
+TMP_BASE=$(mktemp "${SYS_TMPDIR}/promptfoo_ocr_XXXXXX")
 TMP_CONFIG="${TMP_BASE}.yaml"
 trap 'rm -f "$TMP_BASE" "$TMP_CONFIG"' EXIT
 

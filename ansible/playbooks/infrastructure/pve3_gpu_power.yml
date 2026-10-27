@@ -1,0 +1,51 @@
+---
+- name: Gestione Energetica GPU AMD Radeon 890M su PVE3
+  hosts: 10.10.10.31
+  gather_facts: false
+  vars:
+    gpu_mode: "status"
+
+  pre_tasks:
+    - name: Validazione parametro gpu_mode
+      ansible.builtin.assert:
+        that:
+          - gpu_mode in ['eco', 'turbo', 'status']
+        fail_msg: "Parametro gpu_mode '{{ gpu_mode }}' non valido. Valori ammessi: eco, turbo, status."
+
+  tasks:
+    - name: Lettura stato corrente DPM
+      ansible.builtin.slurp:
+        src: /sys/class/drm/card0/device/power_dpm_force_performance_level
+      register: current_dpm
+      when: gpu_mode in ['eco', 'turbo']
+
+    - name: Impostazione GPU in modalità ECO (auto-scaling)
+      ansible.builtin.shell: echo auto > /sys/class/drm/card0/device/power_dpm_force_performance_level
+      when:
+        - gpu_mode == 'eco'
+        - (current_dpm.content | b64decode | trim) != 'auto'
+
+    - name: Impostazione GPU in modalità TURBO (high / 2900MHz)
+      ansible.builtin.shell: echo high > /sys/class/drm/card0/device/power_dpm_force_performance_level
+      when:
+        - gpu_mode == 'turbo'
+        - (current_dpm.content | b64decode | trim) != 'high'
+
+    - name: Lettura stato e frequenze GPU (status)
+      when: gpu_mode == 'status'
+      block:
+        - name: Lettura livello DPM
+          ansible.builtin.command: cat /sys/class/drm/card0/device/power_dpm_force_performance_level
+          register: dpm_status
+          changed_when: false
+
+        - name: Lettura clock attivo SCLK
+          ansible.builtin.shell: grep "\*" /sys/class/drm/card0/device/pp_dpm_sclk || true
+          register: sclk_status
+          changed_when: false
+
+        - name: Riepilogo stato GPU
+          ansible.builtin.debug:
+            msg:
+              - "GPU Mode: {{ dpm_status.stdout }}"
+              - "Clock: {{ sclk_status.stdout }}"

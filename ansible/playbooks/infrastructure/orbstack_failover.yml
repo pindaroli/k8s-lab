@@ -1,0 +1,422 @@
+---
+- name: Orchestrazione Failover e Failback OrbStack (Mac Studio <-> TrueNAS)
+  hosts: mac_studio
+  gather_facts: false
+  vars:
+    failover_action: "activate"
+    target_mode: "eco"
+    truenas_host: "10.10.20.50"
+    mac_studio_ip: "10.10.20.100"
+    failover_runtime_dir: "{{ ansible_env.HOME | default('/Users/olindo') }}/.homelab-failover"
+    hermes_root_local: "{{ ansible_env.HOME | default('/Users/olindo') }}/hermesAgent"
+    hermes_root_remote: "/mnt/stripe/hermesAgent"
+    controller_repo_root: "{{ playbook_dir | dirname | dirname | dirname }}"
+  environment:
+    PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH | default('/usr/bin:/bin') }}"
+
+  pre_tasks:
+    - name: Validazione parametro failover_action
+      ansible.builtin.assert:
+        that:
+          - failover_action in ['sync_from_truenas', 'activate', 'deactivate', 'set_backend']
+        fail_msg: "Azione failover_action '{{ failover_action }}' non valida. Valori ammessi: sync_from_truenas, activate, deactivate, set_backend."
+
+    - name: Validazione parametro target_mode
+      ansible.builtin.assert:
+        that:
+          - target_mode in ['full', 'eco', 'off']
+        fail_msg: "Parametro target_mode '{{ target_mode }}' non valido. Valori ammessi: full, eco, off."
+
+  tasks:
+    # ==========================================================================
+    # AZIONE 1: sync_from_truenas (Pre-shutdown sync prima di spegnere TrueNAS)
+    # ==========================================================================
+    - name: Esecuzione sync_from_truenas
+      when: failover_action == 'sync_from_truenas'
+      block:
+        - name: Creazione directory di runtime locali su Mac Studio
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: directory
+            mode: "0755"
+          loop:
+            - "{{ failover_runtime_dir }}"
+            - "{{ failover_runtime_dir }}/dozzle"
+            - "{{ failover_runtime_dir }}/acme"
+            - "{{ hermes_root_local }}/HermesMain"
+            - "{{ hermes_root_local }}/common/prj"
+
+        - name: Verifica connettività SSH TrueNAS (:22)
+          ansible.builtin.wait_for:
+            host: "{{ truenas_host }}"
+            port: 22
+            timeout: 3
+            state: started
+          register: truenas_ssh_check
+          ignore_errors: true
+
+        - name: Sincronizzazione da TrueNAS a Mac Studio (se TrueNAS è online)
+          when: truenas_ssh_check is succeeded
+          block:
+            - name: Lettura file .env da TrueNAS
+              delegate_to: truenas
+              become: true
+              ansible.builtin.slurp:
+                src: "{{ item.src }}"
+              register: truenas_env_slurp
+              loop:
+                - { src: "/mnt/stripe/truenas-docker/.env", dest: "{{ failover_runtime_dir }}/.env.ai" }
+                - { src: "/mnt/stripe/truenas-docker/mcp/.env", dest: "{{ failover_runtime_dir }}/.env.mcp" }
+              ignore_errors: true
+
+            - name: Scrittura file .env.ai e .env.mcp su Mac Studio
+              ansible.builtin.copy:
+                content: "{{ item.content | b64decode }}"
+                dest: "{{ item.item.dest }}"
+                mode: "0600"
+              loop: "{{ truenas_env_slurp.results }}"
+              when: item.content is defined
+
+            - name: Lettura eventuale certificato acme.json da TrueNAS
+              delegate_to: truenas
+              become: true
+              ansible.builtin.slurp:
+                src: "/mnt/stripe/truenas-docker/mcp/acme/acme.json"
+              register: truenas_acme_slurp
+              ignore_errors: true
+
+            - name: Scrittura acme.json su Mac Studio
+              ansible.builtin.copy:
+                content: "{{ truenas_acme_slurp.content | b64decode }}"
+                dest: "{{ failover_runtime_dir }}/acme/acme.json"
+                mode: "0600"
+              when: truenas_acme_slurp.content is defined
+
+            - name: Generazione .env unificato su Mac Studio
+              ansible.builtin.shell: |
+                {
+                  echo "# Generated unified failover environment"
+                  [ -f "{{ failover_runtime_dir }}/.env.mcp" ] && cat "{{ failover_runtime_dir }}/.env.mcp"
+                  echo ""
+                  [ -f "{{ failover_runtime_dir }}/.env.ai" ] && cat "{{ failover_runtime_dir }}/.env.ai"
+                } | awk '!seen[$0]++ || $0 ~ /^#|^$/' > "{{ failover_runtime_dir }}/.env"
+                chmod 600 "{{ failover_runtime_dir }}/.env"
+              changed_when: true
+
+            - name: Copia docker-compose.yaml di failover su Mac Studio
+              ansible.builtin.copy:
+                src: "{{ controller_repo_root }}/docker/orbstack/docker-compose.yaml"
+                dest: "{{ failover_runtime_dir }}/docker-compose.yaml"
+                mode: "0644"
+
+            - name: Quiescenza container Hermes su entrambi i nodi
+              block:
+                - name: Stop locale preventivo hermes-agent su Mac Studio (se attivo)
+                  ansible.builtin.command: >
+                    docker compose --env-file "{{ failover_runtime_dir }}/.env"
+                    -f "{{ failover_runtime_dir }}/docker-compose.yaml" stop hermes-agent
+                  ignore_errors: true
+
+                - name: Stop preventivo hermes-main su TrueNAS
+                  delegate_to: truenas
+                  become: true
+                  ansible.builtin.command: docker stop -t 25 hermes-main
+                  ignore_errors: true
+
+            - name: Pre-normalizzazione permessi su TrueNAS prima del sync
+              delegate_to: truenas
+              become: true
+              ansible.builtin.shell: >
+                find '{{ hermes_root_remote }}' -path '{{ hermes_root_remote }}/common' -prune
+                -o \( ! -uid 1000 -o ! -gid 1000 \) -exec chown -h olindo:k8s {} +
+                && chmod -R u+rwX,g+rwX,o+rX '{{ hermes_root_remote }}'
+              changed_when: true
+
+            - name: Sync Stato Istanza HermesMain (TrueNAS -> Mac Studio, rsync -az)
+              ansible.builtin.command: >
+                rsync -az --itemize-changes -e "ssh -o BatchMode=yes"
+                --rsync-path="sudo -n rsync"
+                --exclude='/common/**'
+                --exclude='*.sock'
+                --exclude='*.sock.*'
+                --exclude='/*.lock'
+                --exclude='gateway-locks/'
+                --exclude='.local/state/hermes/gateway-locks/'
+                --exclude='.DS_Store'
+                --exclude='__pycache__/'
+                --exclude='.pytest_cache/'
+                olindo@{{ truenas_host }}:{{ hermes_root_remote }}/HermesMain/
+                {{ hermes_root_local }}/HermesMain/
+              changed_when: true
+
+            - name: Sync Workspace Condiviso common (TrueNAS -> Mac Studio, rsync -auz additivo)
+              ansible.builtin.command: >
+                rsync -auz --itemize-changes -e "ssh -o BatchMode=yes"
+                --rsync-path="sudo -n rsync"
+                --exclude='.DS_Store'
+                --exclude='__pycache__/'
+                --exclude='.pytest_cache/'
+                olindo@{{ truenas_host }}:{{ hermes_root_remote }}/common/
+                {{ hermes_root_local }}/common/
+              changed_when: true
+
+        - name: Notifica stato TrueNAS offline durante sync
+          when: truenas_ssh_check is failed
+          ansible.builtin.debug:
+            msg: "TrueNAS è già spento (transizione OFF -> OFF). Utilizzo dello stato locale in {{ hermes_root_local }}."
+
+    # ==========================================================================
+    # AZIONE 2: activate (Avvio stack OrbStack e switchover DNS verso Mac Studio)
+    # ==========================================================================
+    - name: Esecuzione activate
+      when: failover_action == 'activate'
+      block:
+        - name: Copia docker-compose.yaml di failover su Mac Studio
+          ansible.builtin.copy:
+            src: "{{ controller_repo_root }}/docker/orbstack/docker-compose.yaml"
+            dest: "{{ failover_runtime_dir }}/docker-compose.yaml"
+            mode: "0644"
+
+        - name: Verifica e avvio motore OrbStack su macOS
+          ansible.builtin.shell: |
+            if ! orbctl status >/dev/null 2>&1; then
+              orbctl start
+            fi
+            o_wait=30
+            until [ -S "$HOME/.orbstack/run/docker.sock" ] || docker info >/dev/null 2>&1 || [ "$o_wait" -le 0 ]; do
+              sleep 1
+              o_wait=$((o_wait - 1))
+            done
+          changed_when: true
+
+        - name: Avvio stack Docker Compose di Failover (OrbStack)
+          ansible.builtin.command: >
+            docker compose --env-file "{{ failover_runtime_dir }}/.env"
+            -f "{{ failover_runtime_dir }}/docker-compose.yaml" up -d --remove-orphans
+          changed_when: true
+
+        - name: Gate di verifica prontezza HTTP e TCP su OrbStack (:4000, :9119, :8100, :8180, :8888, :3000)
+          ansible.builtin.shell: |
+            retries=30
+            until curl -sf "http://127.0.0.1:4000/health/liveliness" >/dev/null 2>&1 \
+               && curl -sf "http://127.0.0.1:9119/health" >/dev/null 2>&1 \
+               && nc -z -w 1 127.0.0.1 8100 >/dev/null 2>&1 \
+               && nc -z -w 1 127.0.0.1 8180 >/dev/null 2>&1 \
+               && nc -z -w 1 127.0.0.1 8888 >/dev/null 2>&1 \
+               && nc -z -w 1 127.0.0.1 3000 >/dev/null 2>&1; do
+              retries=$((retries - 1))
+              if [ "$retries" -le 0 ]; then
+                echo "Timeout healthcheck sullo stack OrbStack"
+                docker compose --env-file "{{ failover_runtime_dir }}/.env" -f "{{ failover_runtime_dir }}/docker-compose.yaml" ps
+                exit 1
+              fi
+              sleep 2
+            done
+          changed_when: false
+
+        - name: Creazione file marker .failover_active (Guardrail D1)
+          ansible.builtin.file:
+            path: "{{ failover_runtime_dir }}/.failover_active"
+            state: touch
+            mode: "0600"
+
+        - name: Switchover DNS Unbound su OPNsense -> OFF (10.10.20.100)
+          delegate_to: localhost
+          ansible.builtin.command: >
+            python3 "{{ controller_repo_root }}/scripts/network/switch_failover_dns.py" --target off
+          changed_when: true
+
+    # ==========================================================================
+    # AZIONE 3: deactivate (Failback da OrbStack a TrueNAS per ECO o FULL)
+    # ==========================================================================
+    - name: Esecuzione deactivate
+      when: failover_action == 'deactivate'
+      block:
+        - name: Verifica presenza marker .failover_active
+          ansible.builtin.stat:
+            path: "{{ failover_runtime_dir }}/.failover_active"
+          register: failover_marker_stat
+
+        - name: Verifica esistenza file compose e socket OrbStack su Mac Studio
+          ansible.builtin.stat:
+            path: "{{ item }}"
+          loop:
+            - "{{ failover_runtime_dir }}/docker-compose.yaml"
+            - "{{ ansible_env.HOME | default('/Users/olindo') }}/.orbstack/run/docker.sock"
+          register: orbstack_stat_checks
+
+        - name: Verifica se container hermes è attivo su OrbStack
+          when: orbstack_stat_checks.results[1].stat.exists
+          ansible.builtin.command: docker ps --filter "name=hermes" --filter "status=running" -q
+          register: hermes_running_stat
+          changed_when: false
+          ignore_errors: true
+
+        - name: Failback dello stato Hermes da Mac Studio a TrueNAS (se failover era attivo)
+          when: failover_marker_stat.stat.exists or (hermes_running_stat.stdout | default('') | trim != '')
+          block:
+            - name: Stop preventivo hermes locale su Mac Studio
+              ansible.builtin.command: >
+                docker compose --env-file "{{ failover_runtime_dir }}/.env"
+                -f "{{ failover_runtime_dir }}/docker-compose.yaml" stop hermes-agent
+              ignore_errors: true
+
+            - name: Stop preventivo hermes-main su TrueNAS
+              delegate_to: truenas
+              become: true
+              ansible.builtin.command: docker stop -t 25 hermes-main
+              ignore_errors: true
+
+            - name: Pre-normalizzazione permessi su TrueNAS prima del push
+              delegate_to: truenas
+              become: true
+              ansible.builtin.shell: >
+                mkdir -p '{{ hermes_root_remote }}/HermesMain' '{{ hermes_root_remote }}/common/prj'
+                && find '{{ hermes_root_remote }}' -path '{{ hermes_root_remote }}/common' -prune
+                -o \( ! -uid 1000 -o ! -gid 1000 \) -exec chown -h olindo:k8s {} +
+                && chmod -R u+rwX,g+rwX,o+rX '{{ hermes_root_remote }}'
+              changed_when: true
+
+            - name: Push HermesMain da Mac Studio a TrueNAS (rsync -az)
+              ansible.builtin.command: >
+                rsync -az --no-owner --no-group --itemize-changes -e "ssh -o BatchMode=yes"
+                --rsync-path="sudo -n rsync"
+                --exclude='/common/**'
+                --exclude='*.sock'
+                --exclude='*.sock.*'
+                --exclude='/*.lock'
+                --exclude='gateway-locks/'
+                --exclude='.local/state/hermes/gateway-locks/'
+                --exclude='.DS_Store'
+                --exclude='__pycache__/'
+                --exclude='.pytest_cache/'
+                {{ hermes_root_local }}/HermesMain/
+                olindo@{{ truenas_host }}:{{ hermes_root_remote }}/HermesMain/
+              changed_when: true
+
+            - name: Push Workspace Condiviso common da Mac Studio a TrueNAS (rsync -auz additivo)
+              ansible.builtin.command: >
+                rsync -auz --no-owner --no-group --itemize-changes -e "ssh -o BatchMode=yes"
+                --rsync-path="sudo -n rsync"
+                --exclude='.DS_Store'
+                --exclude='__pycache__/'
+                --exclude='.pytest_cache/'
+                {{ hermes_root_local }}/common/
+                olindo@{{ truenas_host }}:{{ hermes_root_remote }}/common/
+              changed_when: true
+
+            - name: Post-normalizzazione permessi e avvio hermes-main su TrueNAS
+              delegate_to: truenas
+              become: true
+              ansible.builtin.shell: >
+                find '{{ hermes_root_remote }}' -path '{{ hermes_root_remote }}/common' -prune
+                -o \( ! -uid 1000 -o ! -gid 1000 \) -exec chown -h olindo:k8s {} +
+                && chmod -R u+rwX,g+rwX,o+rX '{{ hermes_root_remote }}'
+                && find '{{ hermes_root_remote }}' -type d -exec chmod g+s {} +
+                && (docker start hermes-main || true)
+              changed_when: true
+
+            - name: Rimozione file marker .failover_active
+              ansible.builtin.file:
+                path: "{{ failover_runtime_dir }}/.failover_active"
+                state: absent
+
+        - name: Sincronizzazione dichiarativa homepage/lab_mode_eco -> TrueNAS
+          ansible.builtin.command: >
+            rsync -az --no-owner --no-group -e "ssh -o BatchMode=yes"
+            --rsync-path="sudo -n rsync"
+            --exclude='.DS_Store'
+            --exclude='logs/'
+            {{ controller_repo_root }}/homepage/lab_mode_eco/
+            olindo@{{ truenas_host }}:/mnt/stripe/truenas-docker/homepage/
+          changed_when: true
+
+        - name: Self-healing porte TrueNAS (:8100, :9119, :4000, :8888)
+          block:
+            - name: Check rapido porte TrueNAS
+              ansible.builtin.wait_for:
+                host: "{{ truenas_host }}"
+                port: "{{ item }}"
+                timeout: 2
+                state: started
+              loop: [8100, 9119, 4000, 8888]
+              register: truenas_ports_initial_check
+              ignore_errors: true
+
+            - name: Riavvio docker compose su TrueNAS se una porta è chiusa
+              when: truenas_ports_initial_check is failed
+              delegate_to: truenas
+              become: true
+              ansible.builtin.shell: >
+                cd /mnt/stripe/truenas-docker && docker compose up -d litellm-postgres litellm hermes-agent dozzle
+                && cd /mnt/stripe/truenas-docker/mcp && docker compose up -d
+              changed_when: true
+
+        - name: Gate di verifica porte attive su TrueNAS (:8100, :9119, :4000, :8888)
+          ansible.builtin.wait_for:
+            host: "{{ truenas_host }}"
+            port: "{{ item }}"
+            timeout: 30
+            state: started
+          loop: [8100, 9119, 4000, 8888]
+
+        - name: Configurazione backend Traefik su TrueNAS per home-internal (ECO)
+          delegate_to: truenas
+          become: true
+          block:
+            - name: Aggiornamento URL backend in dynamic.yaml su TrueNAS (ECO)
+              ansible.builtin.replace:
+                path: /mnt/stripe/truenas-docker/mcp/dynamic.yaml
+                regexp: '(homepage-truenas-svc:[\s\S]*?servers:\s*-\s*url:\s*")[^"]+(")'
+                replace: '\g<1>http://10.10.20.50:3000\g<2>'
+              register: traefik_eco_update
+
+            - name: Restart mcp-traefik su TrueNAS se dynamic.yaml modificato
+              ansible.builtin.command: docker restart mcp-traefik
+              when: traefik_eco_update.changed
+
+        - name: Switchover DNS Unbound su OPNsense -> {{ target_mode }}
+          delegate_to: localhost
+          ansible.builtin.command: >
+            python3 "{{ controller_repo_root }}/scripts/network/switch_failover_dns.py" --target "{{ target_mode }}"
+          changed_when: true
+
+        - name: Arresto e rimozione stack di failover OrbStack su Mac Studio
+          when:
+            - orbstack_stat_checks.results[0].stat.exists
+            - orbstack_stat_checks.results[1].stat.exists
+          ansible.builtin.command: >
+            docker compose --env-file "{{ failover_runtime_dir }}/.env"
+            -f "{{ failover_runtime_dir }}/docker-compose.yaml" down --remove-orphans
+          ignore_errors: true
+
+    # ==========================================================================
+    # AZIONE 4: set_backend (Aggiornamento backend Traefik TrueNAS + DNS switch)
+    # ==========================================================================
+    - name: Esecuzione set_backend
+      when: failover_action == 'set_backend'
+      block:
+        - name: Determinazione URL backend target per Traefik
+          ansible.builtin.set_fact:
+            target_traefik_backend_url: "{{ 'https://10.10.20.56' if target_mode == 'full' else 'http://10.10.20.50:3000' }}"
+
+        - name: Aggiornamento dynamic.yaml su TrueNAS
+          delegate_to: truenas
+          become: true
+          ansible.builtin.replace:
+            path: /mnt/stripe/truenas-docker/mcp/dynamic.yaml
+            regexp: '(homepage-truenas-svc:[\s\S]*?servers:\s*-\s*url:\s*")[^"]+(")'
+            replace: '\g<1>{{ target_traefik_backend_url }}\g<2>'
+          register: traefik_backend_update
+
+        - name: Restart mcp-traefik su TrueNAS se dynamic.yaml modificato
+          when: traefik_backend_update.changed
+          delegate_to: truenas
+          become: true
+          ansible.builtin.command: docker restart mcp-traefik
+
+        - name: Switchover DNS Unbound su OPNsense -> {{ target_mode }}
+          delegate_to: localhost
+          ansible.builtin.command: >
+            python3 "{{ controller_repo_root }}/scripts/network/switch_failover_dns.py" --target "{{ target_mode }}"
+          changed_when: true

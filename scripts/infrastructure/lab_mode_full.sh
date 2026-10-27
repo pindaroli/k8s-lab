@@ -8,7 +8,6 @@ cd "$ROOT_DIR" || exit 1
 
 source "$SCRIPT_DIR/procedure_scope.sh"
 source "$SCRIPT_DIR/utils.sh"
-source "$SCRIPT_DIR/orbstack_failover.sh"
 
 PROCEDURE_NAME="lab_mode_full"
 init_procedure_scope "$PROCEDURE_NAME"
@@ -54,16 +53,15 @@ echo "▶️  [Fase 1/3] Esecuzione: ensure_storage_on..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_storage_on.yml
 
 # FASE 2: FAILBACK STATO HERMES, SERVIZI AI/MCP E DNS DA MAC STUDIO (ORBSTACK) A TRUENAS (10.10.20.50)
-echo "▶️  [Fase 2/3] Esecuzione: deactivate_orbstack_failover_to_truenas (target full)..."
-deactivate_orbstack_failover_to_truenas "full"
+echo "▶️  [Fase 2/3] Esecuzione: orbstack_failover.yml (deactivate target eco per boot senza 502)..."
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/orbstack_failover.yml -e failover_action=deactivate -e target_mode=eco
 
 # FASE 3: GATELAYER COMPUTE (PROXMOX VE + TALOS KUBERNETES) E SWITCH DNS FULL
 echo "▶️  [Fase 3/3] Esecuzione: ensure_compute_on..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_compute_on.yml
 
-echo "🌐 [Fase 3/3] Commutazione DNS Unbound -> FULL (K8s Ingress 10.10.20.56)..."
-python3 "${ROOT_DIR}/scripts/network/switch_failover_dns.py" --target full
-set_truenas_home_internal_backend "full"
+echo "🌐 [Fase 3/3] Commutazione backend Traefik e DNS Unbound -> FULL (K8s Ingress 10.10.20.56)..."
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/orbstack_failover.yml -e failover_action=set_backend -e target_mode=full
 
 # NOTIFICA FINALE RIASSUNTIVA DI SUCCESSO
 if is_root_procedure; then

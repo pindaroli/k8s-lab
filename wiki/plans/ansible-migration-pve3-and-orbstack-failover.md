@@ -1,9 +1,10 @@
 ---
 title: "Piano: Migrazione Ansible Integrale per GPU PVE3, Failover OrbStack e Portabilità Docker per go.py"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-27
+completed_at: 2026-10-27
 tags:
   - "#ansible"
   - "#pve3"
@@ -154,6 +155,6 @@ Creazione del playbook unificato `ansible/playbooks/infrastructure/orbstack_fail
 
 ## 💾 Stato di Ripristino (AI Save-State)
 
-* **Fase Attiva**: Pronto per l'esecuzione della Fase 1.
-* **Ultima Azione Completata**: Approvazione delle scelte architetturali (Dual-Mode, A1, B0, C1, D1) e riscrittura del piano.
-* **Prossimo Passo Operativo**: Iniziare l'applicazione della Fase 1 (`ansible/inventory.ini` e bootstrap SSH).
+* **Fase Attiva**: Piano Completato con Successo ✅
+* **Ultima Azione Completata**: Esecuzione integrale di tutte le fasi del piano: inventory Ansible aggiornato con `mac_studio`, playbook `pve3_gpu_power.yml` e `orbstack_failover.yml` implementati e validati, script wrapper e micro-fix POSIX allineati, script obsoleti dismessi, validazione di rete e rigenerazione wiki context superate al 100%.
+* **Prossimo Passo Operativo**: Nessuno. Launcher `go.py` ed intero parco script 100% Location-Independent ed eseguibili sia su Mac Studio locale sia in container Docker.

@@ -8,7 +8,6 @@ cd "$ROOT_DIR" || exit 1
 
 source "$SCRIPT_DIR/procedure_scope.sh"
 source "$SCRIPT_DIR/utils.sh"
-source "$SCRIPT_DIR/orbstack_failover.sh"
 
 PROCEDURE_NAME="lab_mode_off"
 init_procedure_scope "$PROCEDURE_NAME"
@@ -54,16 +53,16 @@ echo "▶️  [Fase 1/4] Esecuzione: ensure_compute_off..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_compute_off.yml
 
 # FASE 2: SINCRONIZZAZIONE STATO HERMES E FILE .ENV PRIMA DELLO SPEGNIMENTO DI TRUENAS
-echo "▶️  [Fase 2/4] Esecuzione: sync_hermes_state_from_truenas..."
-sync_hermes_state_from_truenas
+echo "▶️  [Fase 2/4] Esecuzione: orbstack_failover.yml (sync_from_truenas)..."
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/orbstack_failover.yml -e failover_action=sync_from_truenas
 
 # FASE 3: FLUSH E SPEGNIMENTO FISICO TRUENAS BARE METAL
 echo "▶️  [Fase 3/4] Esecuzione: ensure_storage_off..."
 ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/ensure_storage_off.yml
 
 # FASE 4: ATTIVAZIONE STACK ORBSTACK SU MAC STUDIO E SWITCHOVER DNS UNBOUND (10.10.20.100)
-echo "▶️  [Fase 4/4] Esecuzione: activate_orbstack_failover..."
-activate_orbstack_failover
+echo "▶️  [Fase 4/4] Esecuzione: orbstack_failover.yml (activate)..."
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/orbstack_failover.yml -e failover_action=activate
 
 # NOTIFICA FINALE RIASSUNTIVA DI SUCCESSO
 if is_root_procedure; then

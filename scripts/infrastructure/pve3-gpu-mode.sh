@@ -1,6 +1,10 @@
-#!/bin/bash
-set -e
-printf "GPU Mode: "
-cat /sys/class/drm/card0/device/power_dpm_force_performance_level
-printf "Clock: "
-grep "*" /sys/class/drm/card0/device/pp_dpm_sclk || true
+#!/usr/bin/env bash
+# Mostra lo stato e il clock corrente della GPU AMD Radeon 890M di PVE3.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$ROOT_DIR" || exit 1
+
+ansible-playbook -i ansible/inventory.ini ansible/playbooks/infrastructure/pve3_gpu_power.yml -e gpu_mode=status
