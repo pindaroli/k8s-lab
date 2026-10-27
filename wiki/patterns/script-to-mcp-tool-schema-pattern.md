@@ -47,7 +47,7 @@ Ogni elemento in `tools` supporta:
 - `path`: Percorso relativo dello script/playbook rispetto alla root del repo.
 - `read_only`: Boolean. Se `true`, indica all'LLM che l'operazione non altera lo stato del sistema.
 - `async_capable`: Boolean (default: `false`). Se `true`, indica che il tool è idoneo per l'esecuzione asincrona/background (es. job lunghi, orchestrazioni cluster, scan massivi). Il server MCP o il runtime dell'agente può eseguire il comando come task disaccoppiato restituendo un Job ID o notifica a termine esecuzione.
-- `executionType`: String enum (`"sync"` | `"async"`). Mappatura del protocollo MCP 2.0 che definisce il modello di esecuzione del tool: `"sync"` per chiamate sincrone inline bloccanti (richiesta $\rightarrow$ risposta diretta); `"async"` per chiamate asincrone disaccoppiate (job background, task differiti o polling).
+- `executionType`: String enum (`"SYNCHRONOUS"` | `"ASYNCHRONOUS"`). Mappatura canonica del protocollo MCP 2.0 che definisce il modello di esecuzione del tool: `"SYNCHRONOUS"` per chiamate sincrone inline bloccanti (richiesta $\rightarrow$ risposta diretta); `"ASYNCHRONOUS"` per chiamate asincrone disaccoppiate (job background, task differiti o polling).
 - `timeout_seconds`: Timeout massimo di esecuzione del comando (default: 60s).
 - `parameters`: Oggetto JSON Schema (o schema semplificato) che definisce gli input accettati.
 - `command_template`: Mapping di interpolazione degli argomenti CLI o variabili extra (`extra_vars` per Ansible).
@@ -70,7 +70,7 @@ tools:
     path: "scripts/network/validate_network.py"
     read_only: true
     async_capable: false
-    executionType: "sync"
+    executionType: "SYNCHRONOUS"
     timeout_seconds: 30
     parameters:
       type: object
