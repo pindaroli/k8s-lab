@@ -46,7 +46,7 @@ scp -o BatchMode=yes "${REPO_ROOT}/docker/mcp/docker-compose.yaml" "${TRUENAS_US
 scp -o BatchMode=yes "${REPO_ROOT}/docker/mcp/dynamic.yaml" "${TRUENAS_USER}@${TRUENAS_HOST}:${REMOTE_MCP_DIR}/dynamic.yaml"
 
 # 3. Pre-flight Drain Check
-RUNNING_CONTAINER=$(ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "docker ps -q -f name=homelab-executor")
+RUNNING_CONTAINER=$(ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "sudo docker ps -q -f name=homelab-executor")
 
 if [[ -n "$RUNNING_CONTAINER" ]] && [[ "$FORCE" != "true" ]]; then
     echo "[INFO] homelab-executor is currently active. Checking for running automation jobs..."
@@ -54,7 +54,7 @@ if [[ -n "$RUNNING_CONTAINER" ]] && [[ "$FORCE" != "true" ]]; then
     START_TIME=$(date +%s)
 
     while true; do
-        ACTIVE_PIDS=$(ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "docker exec homelab-executor pgrep -af 'ansible-playbook|python3.*go\.py|sops' 2>/dev/null" || true)
+        ACTIVE_PIDS=$(ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "sudo docker exec homelab-executor pgrep -af 'ansible-playbook|python3.*go\.py|sops' 2>/dev/null" || true)
 
         if [[ -z "$ACTIVE_PIDS" ]]; then
             echo "[INFO] No active automation tasks running. Proceeding with rollout."
@@ -80,11 +80,11 @@ fi
 
 # 4. Pull Latest Container Image
 echo "[INFO] Pulling latest ghcr.io/pindaroli/homelab-executor image on TrueNAS..."
-ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "cd ${REMOTE_MCP_DIR} && docker compose pull homelab-executor"
+ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "cd ${REMOTE_MCP_DIR} && sudo docker compose pull homelab-executor"
 
 # 5. Rollout with nohup
 echo "[INFO] Launching decoupled rollout with nohup..."
-ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "cd ${REMOTE_MCP_DIR} && nohup docker compose up -d homelab-executor > /tmp/homelab-executor-rollout.log 2>&1 &"
+ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "cd ${REMOTE_MCP_DIR} && sudo nohup docker compose up -d homelab-executor > /tmp/homelab-executor-rollout.log 2>&1 &"
 
 # 6. Readiness and Health Verification
 echo "[INFO] Waiting for service to become healthy..."
@@ -94,7 +94,7 @@ for i in {1..30}; do
 
     if [[ -z "$HEALTH_RESP" ]]; then
         # Fallback check directly via docker exec in case Traefik is reloading
-        HEALTH_RESP=$(ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "docker exec homelab-executor curl -fs http://127.0.0.1:8000/health 2>/dev/null" || true)
+        HEALTH_RESP=$(ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "sudo docker exec homelab-executor curl -fs http://127.0.0.1:8000/health 2>/dev/null" || true)
     fi
 
     if [[ -n "$HEALTH_RESP" ]] && echo "$HEALTH_RESP" | grep -q '"status":"healthy"'; then
@@ -115,6 +115,6 @@ done
 
 if [[ "$READY" != "true" ]]; then
     echo "[ERROR] Health check failed after 90 seconds. Dumping container logs:"
-    ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "docker logs --tail 40 homelab-executor"
+    ssh -o BatchMode=yes "${TRUENAS_USER}@${TRUENAS_HOST}" "sudo docker logs --tail 40 homelab-executor"
     exit 1
 fi

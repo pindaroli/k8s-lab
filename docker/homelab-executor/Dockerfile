@@ -47,9 +47,10 @@ RUN ARCH="${TARGETARCH}"; \
     # verify installed binaries \
     sops --version && kubectl version --client && talosctl version --client
 
-# 3. Create executor user and group (UID 1000, GID 1000)
+# 3. Create executor user and group (UID 1000, GID 1000) with unlocked account for SSH pubkey
 RUN groupadd -g 1000 executor && \
-    useradd -u 1000 -g 1000 -m -s /bin/bash executor
+    useradd -u 1000 -g 1000 -m -s /bin/bash executor && \
+    usermod -p '*' executor
 
 # 4. SSH daemon & client configuration
 COPY docker/homelab-executor/sshd_config /etc/ssh/sshd_config
