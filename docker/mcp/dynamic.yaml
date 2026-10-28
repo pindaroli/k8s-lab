@@ -56,6 +56,14 @@ http:
       tls:
         certResolver: cloudflare
 
+    executor-https:
+      rule: "Host(`executor.pindaroli.org`) || Host(`executor-internal.pindaroli.org`)"
+      entryPoints:
+        - websecure
+      service: executor-svc
+      tls:
+        certResolver: cloudflare
+
   services:
     homepage-truenas-svc:
       loadBalancer:
@@ -88,3 +96,10 @@ http:
         serversTransport: insecure-transport
         servers:
           - url: "https://10.10.20.50:8443"
+
+    executor-svc:
+      loadBalancer:
+        responseForwarding:
+          flushInterval: "100ms"
+        servers:
+          - url: "http://homelab-executor:8000"

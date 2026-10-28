@@ -1,0 +1,16 @@
+# OpenSSH Client Configuration for Homelab Executor
+Host *
+    BatchMode yes
+    StrictHostKeyChecking yes
+    UserKnownHostsFile /home/executor/.ssh/known_hosts
+    IdentityFile /home/executor/.ssh/id_ed25519
+    IdentityFile /home/executor/.ssh/id_rsa
+    ConnectTimeout 10
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+
+Host 192.168.2.1 extreme extreme.pindaroli.org
+    IdentityFile /home/executor/.ssh/id_rsa_extreme
+    HostKeyAlgorithms +ssh-rsa
+    PubkeyAcceptedKeyTypes +ssh-rsa
+    PubkeyAcceptedAlgorithms +ssh-rsa

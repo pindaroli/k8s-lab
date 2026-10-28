@@ -140,7 +140,7 @@ flowchart LR
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Revisione Architetturale SRE completata e approvata dall'utente su tutti i 7 punti.
-- **Ultima Azione Completata**: Aggiornamento del piano operativo `wiki/plans/homelab-executor-container-and-ci-pipeline.md` con le scelte architetturali definitive (1A, 2A, 3A, 4A, 5A solo da Mac Studio fuori da `mcp_tools.yaml`, 6B, 7A).
-- **Prossimo Passo Operativo**: Avvio implementazione della **Fase 1** (`docker/homelab-executor/`).
-- **Blocchi/Decisioni Pendenti**: Nessuno. Tutte le decisioni architetturali sono congelate.
+- **Fase Attiva**: Fase 5: Validazione Locale, Push, Esecuzione Pipeline GitHub Actions e Collaudo End-to-End
+- **Ultima Azione Completata**: Implementate Fasi 1, 2, 3 e 4. Build locale `arm64` e avvio `read_only` con `tini` + `sshd` + `uvicorn` FastMCP/FastAPI validati con successo su Mac Studio. Segreti e host keys caricati su TrueNAS SCALE. Script di rollout `update_homelab_executor.sh` implementato e reso eseguibile.
+- **Prossimo Passo Operativo**: Commit e push su `main`, trigger pipeline GitHub Actions, pubblicazione su GHCR ed esecuzione del rollout su TrueNAS SCALE.
+- **Blocchi/Decisioni Pendenti**: Nessuno.

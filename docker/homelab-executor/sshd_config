@@ -1,0 +1,21 @@
+# OpenSSH Server Configuration for Homelab Executor Container
+Port 22
+Protocol 2
+
+# Security & Access Control
+PermitRootLogin no
+AllowUsers executor
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile /home/executor/.ssh/authorized_keys
+StrictModes yes
+
+# Process & Runtime
+PidFile /run/sshd.pid
+UsePAM no
+X11Forwarding no
+PrintMotd no
+AcceptEnv LANG LC_*
+
+# Subsystems
+Subsystem sftp internal-sftp

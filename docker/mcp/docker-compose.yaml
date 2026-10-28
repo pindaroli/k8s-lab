@@ -461,3 +461,40 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  # ============================================================================
+  # 13. HOMELAB EXECUTOR — Container Immutabile CI/CD per scripts/go.py & MCP
+  # ============================================================================
+  homelab-executor:
+    container_name: homelab-executor
+    image: ghcr.io/pindaroli/homelab-executor:1.0
+    restart: unless-stopped
+    read_only: true
+    stop_grace_period: 120s
+    ports:
+      - "2222:22"
+    expose:
+      - "8000"
+    tmpfs:
+      - /tmp
+      - /run
+      - /home/executor
+    volumes:
+      - /mnt/stripe/truenas-docker/mcp/secrets/host-secrets:/run/host-secrets:ro
+      - /mnt/stripe/truenas-docker/mcp/secrets/host_keys:/etc/ssh/host_keys:ro
+    networks:
+      - mcp-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-executor.entrypoints=mcp"
+      - "traefik.http.routers.mcp-executor.rule=PathPrefix(`/executor`)"
+      - "traefik.http.middlewares.strip-executor.stripprefix.prefixes=/executor"
+      - "traefik.http.routers.mcp-executor.middlewares=strip-executor"
+      - "traefik.http.services.mcp-executor.loadbalancer.server.port=8000"
+      - "traefik.http.services.mcp-executor.loadbalancer.responseforwarding.flushinterval=100ms"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://127.0.0.1:8000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

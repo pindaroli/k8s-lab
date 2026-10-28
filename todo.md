@@ -1,10 +1,10 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
 ## 📌 [ ] Pipeline DevOps CI/CD e Container Immutabile Homelab Executor per `scripts/go.py` [[homelab-executor-container-and-ci-pipeline]]
-- [ ] Fase 1: Creazione Componenti del Container (`docker/homelab-executor/`: `VERSION`, `requirements.txt`, `server/main.py`, `entrypoint.sh`, `Dockerfile`)
-- [ ] Fase 2: Configurazione della Pipeline CI/CD GitHub Actions (`.github/workflows/docker-homelab-executor.yml` con path filter e SemVer)
-- [ ] Fase 3: Configurazione dello Stack Docker su TrueNAS SCALE (`docker/mcp/docker-compose.yaml` e Traefik `dynamic.yaml`)
-- [ ] Fase 4: Implementazione dello Script di Rollout (`scripts/infrastructure/update_homelab_executor.sh`) e Integrazione in `scripts/go.py` e `scripts/mcp_tools.yaml`
+- [x] Fase 1: Creazione Componenti del Container (`docker/homelab-executor/`: `VERSION`, `requirements.txt`, `sshd_config`, `ssh_config`, `server/main.py`, `entrypoint.sh`, `Dockerfile`)
+- [x] Fase 2: Configurazione della Pipeline CI/CD GitHub Actions (`.github/workflows/docker-homelab-executor.yml` con path filter e SemVer)
+- [x] Fase 3: Configurazione dello Stack Docker su TrueNAS SCALE (`docker/mcp/docker-compose.yaml`, Traefik `dynamic.yaml`, bootstrap chiavi host e secrets)
+- [x] Fase 4: Implementazione dello Script di Rollout (`scripts/infrastructure/update_homelab_executor.sh`) solo da Mac Studio e con drain pre-flight (escluso da MCP)
 - [ ] Fase 5: Validazione Locale, Push, Esecuzione Pipeline GitHub Actions e Collaudo End-to-End
 
 ## 📌 [ ] Rivalutazione Metriche Memoria Dozzle e Dimensionamento Limiti Container (OrbStack Failover)
