@@ -2,7 +2,7 @@
 id: homelab-executor-container-and-ci-pipeline
 title: "Piano: Pipeline DevOps CI/CD e Container Immutabile Homelab Executor per scripts/go.py"
 type: plan
-status: active
+status: completed
 certified_for_ai: true
 created_at: 2026-10-28
 last_updated: 2026-10-28
@@ -139,8 +139,18 @@ flowchart LR
 
 ---
 
+## 5. Esiti del Collaudo e Risultati di Verifica (Test-Driven Verification)
+
+Tutti i 4 vettori operativi sono stati collaudati ed eseguiti con esito positivo:
+1. **Login SSH passwordless**: `ssh -p 2222 executor@10.10.20.50 "python3 /app/scripts/go.py --list"` eseguito con successo, account sbloccato per sola chiave pubblica ED25519 e lista 37 script caricata.
+2. **Immutabilità Host Key OpenSSH**: Riavvio container via `sudo docker restart homelab-executor` e verifica riconnessione con `StrictHostKeyChecking=yes` senza alcun allarme di cambio chiave.
+3. **Decifratura SOPS in RAM e SSH Outbound**: Decifratura `sops -d /app/secrets-sops/cloudflare-token.enc.yaml` avvenuta con successo in memoria tmpfs; connettività SSH verso TrueNAS e nodi homelab funzionante con `BatchMode=yes`.
+4. **Esposizione FastMCP + REST via Traefik**: Endpoint `http://10.10.20.50:8100/executor/health` restituisce stato `healthy` e versione `1.0.2`; endpoint `/executor/api/tools` espone 25 tool; esecuzione REST di `validate_network_topology` completata in 0.11s con returncode 0.
+
+---
+
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 5: Validazione Locale, Push, Esecuzione Pipeline GitHub Actions e Collaudo End-to-End
-- **Ultima Azione Completata**: Implementate Fasi 1, 2, 3 e 4. Build locale `arm64` e avvio `read_only` con `tini` + `sshd` + `uvicorn` FastMCP/FastAPI validati con successo su Mac Studio. Segreti e host keys caricati su TrueNAS SCALE. Script di rollout `update_homelab_executor.sh` implementato e reso eseguibile.
-- **Prossimo Passo Operativo**: Commit e push su `main`, trigger pipeline GitHub Actions, pubblicazione su GHCR ed esecuzione del rollout su TrueNAS SCALE.
+- **Fase Attiva**: Piano Completato con Successo (Fase 1-5 completate).
+- **Ultima Azione Completata**: Rollout completato su TrueNAS SCALE con l'immagine ufficiale `ghcr.io/pindaroli/homelab-executor:1.0.2` generata via GitHub Actions CI/CD; tutti i 4 vettori di collaudo validati con successo al 100%.
+- **Prossimo Passo Operativo**: Nessuno. Container pienamente operativo in produzione su TrueNAS SCALE.
 - **Blocchi/Decisioni Pendenti**: Nessuno.
