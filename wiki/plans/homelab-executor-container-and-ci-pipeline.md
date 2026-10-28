@@ -24,22 +24,23 @@ tags:
 
 ---
 
-## 1. Obiettivo e Decisioni Consolidate (Sessione `/grill-me`)
+## 1. Obiettivo e Decisioni Consolidate (Sessione `/grill-me` + Revisione Architetturale SRE)
 
 L'obiettivo è implementare una pipeline CI/CD GitOps su GitHub Actions e un container Docker dedicato (`ghcr.io/pindaroli/homelab-executor`) per consentire l'esecuzione remota sicura e centralizzata dei tool di `scripts/go.py` e delle procedure censite in `scripts/mcp_tools.yaml`.
 
-### 🧭 Matrice delle Decisioni Architetturali Approvate
+### 🧭 Matrice delle Decisioni Architetturali Approvate (Consolidata)
 
-| # | Ambito | Decisione Approvata | Specifiche Tecniche |
+| # | Ambito | Decisione Approvata | Specifiche Tecniche Vincolanti |
 |---|---|---|---|
-| **1** | **Ruolo del Container & Protocolli** | **Triplice Esposizione (MCP + REST API + SSH)** | Unico container che espone: <br>1. **Server MCP nativo (FastMCP / SSE)** per Antigravity/Agenti basato su `scripts/mcp_tools.yaml`. <br>2. **REST API (FastAPI)** per trigger programmatici (`/api/run/{tool_name}`). <br>3. **OpenSSH Server** (porta dedicata es. `2222`) con login via sola chiave pubblica per esecuzioni TTY interattive di `go.py`. |
-| **2** | **Gestione Segreti SOPS** | **Runtime SOPS Trasparente (Zero Plaintext Secrets)** | Binario `sops` pre-installato nel container; iniezione della chiave Age (`SOPS_AGE_KEY`) o montaggio read-only del file di chiavi `keys.txt` a runtime + montaggio chiave privata SSH (`~/.ssh/id_rsa`). Tutti gli script esistenti (`utils.sh`, `switch_failover_dns.py`, `cleanup_torrents.py`) decifrano on-the-fly senza alcuna modifica al codice. |
-| **3** | **Immagine Base & Strato Software** | **`python:3.12-slim` Parametrizzato + Toolset DevOps** | `ARG PYTHON_BASE_IMAGE=python:3.12-slim` facilmente modificabile. Corredo di sistema completo: `ansible-core`, `sops`, `openssh-server`, `openssh-client`, `kubectl`, `talosctl`, `rsync`, `jq`, `curl`, `dnsutils`, `iputils-ping`, `socat`/`wakeonlan`. |
-| **4** | **Snapshot Immutabile del Repo** | **Build Snapshot Completo al Commit** | L'immagine copia al proprio interno `scripts/`, `ansible/`, `rete.json`, `storage.json` e `secrets-sops/`. Nessun montaggio del codice da storage locale a runtime: l'immagine rappresenta lo snapshot esatto e immutabile del repository al momento del commit. |
-| **5** | **Versionamento Semantico & Registry** | **SemVer Incrementale via Run Number (`ghcr.io`)** | File `docker/homelab-executor/VERSION` (es. `1.0`). La CI genera i tag semantici: <br>- `1.0.${{ github.run_number }}` (univoco immutabile) <br>- `1.0` (rolling minor) <br>- `latest` (rolling edge) <br>- `sha-${{ github.sha }}` |
-| **6** | **Trigger CI/CD GitHub Actions** | **Path Filtering Dichiarativo su Push `main`** | Trigger automatico ad ogni push sul branch `main` che modifica: `ansible/**`, `rete.json`, `storage.json`, `scripts/**`, `docker/homelab-executor/**`, `.github/workflows/docker-homelab-executor.yml`. |
-| **7** | **Ambiente Target & Routing** | **TrueNAS SCALE Bare Metal (`10.10.20.50`) + Traefik** | Servizio integrato nello stack Docker di TrueNAS con routing Traefik HTTPS su `mcp.pindaroli.org:8100/executor/mcp` e `executor-internal.pindaroli.org`. Porta SSH `2222` mappata sull'host `10.10.20.50`. |
-| **8** | **Workflow Operativo di Aggiornamento (Step 4)** | **Script Dedicato & Voce `go.py` (`update_homelab_executor.sh`)** | Script idempotente conforme a [[go-launcher-script-pattern]] che connette via SSH a TrueNAS, esegue `docker compose pull homelab-executor && docker compose up -d homelab-executor` e attesta l'endpoint `/health`. |
+| **1** | **Ruolo del Container & Protocolli** | **Triplice Esposizione (MCP + REST API + SSH)** | Unico container che espone:<br>1. **Server MCP nativo (FastMCP / SSE)** basato su `scripts/mcp_tools.yaml`.<br>2. **REST API (FastAPI)** per trigger programmatici (`/api/run/{tool_name}`) e `/health`.<br>3. **OpenSSH Server** (porta `2222:22`) con login via sola chiave pubblica per esecuzioni TTY interattive di `go.py` (`ssh -p 2222 executor@10.10.20.50`). |
+| **2** | **Supervisione Multi-Processo (PID 1)** | **`tini` (PID 1) + `entrypoint.sh` con `wait -n` e `trap`** *(Scelta 1A)* | `ENTRYPOINT ["/usr/bin/tini", "--", "/app/entrypoint.sh"]`. `tini` garantisce il reaping dei processi zombie generati da Ansible/SSH; `entrypoint.sh` intercetta `SIGTERM`/`SIGINT` per il graceful drain e usa `wait -n` per il fail-fast simmetrico tra `sshd` e `uvicorn`. |
+| **3** | **Modello Utente & Permessi SSH / ZFS** | **Utente `executor` (`UID 1000`) + Secret Staging in RAM + Codice `root` Read-Only** *(Scelta 2A)* | • Il codice in `/app` appartiene a `root:root` (`0755`/`0644`) ed è immodificabile a runtime.<br>• I segreti da TrueNAS sono montati in `/run/host-secrets/:ro` e copiati all'avvio da `entrypoint.sh` in `/home/executor/` (su `tmpfs`) con `chown executor:executor` e `chmod 0600` (bypass totale dei problemi `StrictModes` su ACL ZFS).<br>• `sshd` permette esclusivamente `AllowUsers executor` (`PermitRootLogin no`) e `uvicorn` gira come `executor` tramite `gosu`. |
+| **4** | **Persistenza Identità SSH (In/Out)** | **Host Key `sshd` persistita su TrueNAS + `known_hosts` verificato** *(Scelta 3A)* | • **Ingresso**: Chiave host `ssh_host_ed25519_key` generata una tantum su TrueNAS e montata in `/etc/ssh/host_keys/:ro` per evitare `REMOTE HOST IDENTIFICATION HAS CHANGED` su Mac Studio.<br>• **Uscita**: File `known_hosts` pre-popolato con le chiavi pubbliche dei nodi (`pve1..3`, `truenas`, `opnsense`, `switch`) e `StrictHostKeyChecking=yes` per piena compatibilità con `BatchMode=yes`. |
+| **5** | **Gestione Segreti SOPS & Filesystem Runtime** | **`read_only: true` + `tmpfs` in RAM + Isolamento Porta `8000` dietro Traefik** *(Scelta 6B)* | • Root filesystem del container impostato a `read_only: true`.<br>• `/tmp`, `/run` e `/home/executor` montati in RAM (`tmpfs`) così nessun segreto decifrato tocca mai i dischi ZFS.<br>• Porta `8000` non esposta sull'host TrueNAS (`expose: ["8000"]` solo sulla bridge `mcp_network` per Traefik, senza necessità di Bearer Token applicativo in Python). |
+| **6** | **Immagine Base & Multi-Arch Build** | **`Dockerfile` Dinamico (`TARGETARCH`), CI pubblica solo `linux/amd64`** *(Scelta 7A)* | `ARG PYTHON_BASE_IMAGE=python:3.12-slim` e `ARG TARGETARCH`. Il `Dockerfile` scarica `sops`, `kubectl` e `talosctl` per `arm64` (build/test locale nativo su Mac Studio) o `amd64` (produzione TrueNAS). La pipeline GitHub Actions compila e pubblica esclusivamente `linux/amd64`. |
+| **7** | **Trigger CI/CD GitHub Actions** | **Filtro `paths` con `secrets-sops/**`, esclusione `!**/*.md` e `.dockerignore`** *(Scelta 4A)* | Trigger automatico su `main` per `scripts/**`, `ansible/**`, `secrets-sops/**`, `schemas/mcp-tools.schema.json`, `rete.json`, `storage.json`, `docker/homelab-executor/**`, escludendo documentazione (`!**/*.md`, `!**/docs/**`, `!**/tests/**`) e ri-includendo `**/requirements.txt`. |
+| **8** | **Versionamento Semantico & Registry** | **SemVer Incrementale via Run Number (`ghcr.io`)** | File `docker/homelab-executor/VERSION` (es. `1.0`). La CI genera i tag `1.0.${{ github.run_number }}`, `1.0`, `latest`, `sha-${{ github.sha }}` e inietta la versione esatta nel container per l'endpoint `/health`. |
+| **9** | **Rollout su TrueNAS (Step 4)** | **Pre-Flight Drain + `stop_grace_period: 120s` + `nohup` — SOLO da Mac Studio CLI** *(Scelta 5A modificata)* | `scripts/infrastructure/update_homelab_executor.sh` esegue il pre-flight drain (attende il termine di `ansible-playbook`/`go.py`/`sops`), effettua il `pull`, lancia `nohup docker compose up -d` con `stop_grace_period: 120s` e verifica `/health`.<br>**Vincolo di Sicurezza**: Lo script è lanciabile **solo da Mac Studio** (anche come voce locale di `go.py` se non registrata in MCP) e **NON deve comparire in `scripts/mcp_tools.yaml`** per impedire che un agente AI riavvii il container MCP stesso. |
 
 ---
 
@@ -47,12 +48,12 @@ L'obiettivo è implementare una pipeline CI/CD GitOps su GitHub Actions e un con
 
 ```mermaid
 flowchart LR
-    DEV["1. Sviluppo & Test Locale<br>(Mac Studio in k8s-lab)"] --> MCP_CONF["2. Aggiornamento<br>scripts/mcp_tools.yaml"]
-    MCP_CONF --> GIT_PUSH["3. Git Commit & Push<br>(trigger path-filter)"]
-    GIT_PUSH --> GHA["GitHub Actions CI<br>Build Docker & Push GHCR"]
+    DEV["1. Sviluppo & Test Nativo arm64<br>(Mac Studio in k8s-lab)"] --> MCP_CONF["2. Aggiornamento Tool<br>scripts/mcp_tools.yaml"]
+    MCP_CONF --> GIT_PUSH["3. Git Commit & Push<br>(path-filter con secrets-sops/**<br>ed esclusione !**/*.md)"]
+    GIT_PUSH --> GHA["GitHub Actions CI<br>Build linux/amd64 & Push GHCR"]
     GHA --> GHCR[("ghcr.io/pindaroli/<br>homelab-executor:1.0.X")]
-    GHCR --> DEPLOY["4. Deploy / Aggiornamento<br>./scripts/go.py -> update_homelab_executor.sh"]
-    DEPLOY --> TRUENAS["Container Attivo su TrueNAS<br>(10.10.20.50:2222 / Traefik)"]
+    GHCR --> DEPLOY["4. Rollout Solo da Mac Studio<br>update_homelab_executor.sh<br>(Pre-Flight Drain + nohup)"]
+    DEPLOY --> TRUENAS["Container Immutabile su TrueNAS<br>(SSH :2222 executor | Traefik :8100)"]
 ```
 
 ---
@@ -61,16 +62,18 @@ flowchart LR
 
 | Percorso File | Operazione | Scopo |
 |---|---|---|
+| `.dockerignore` | **Creazione / Modifica** | Esclude `.git/`, `wiki/`, `**/*.md`, `.github/`, `.venv/`, `__pycache__/` per non invalidare la cache Docker. |
 | `docker/homelab-executor/VERSION` | **Creazione** | Base version semantica (es. `1.0`). |
 | `docker/homelab-executor/requirements.txt` | **Creazione** | Dipendenze Python: `fastapi`, `uvicorn[standard]`, `mcp`, `pyyaml`, `requests`, `pydantic`. |
-| `docker/homelab-executor/server/main.py` | **Creazione** | Server FastMCP + FastAPI che legge dinamicamente `scripts/mcp_tools.yaml` ed espone sia i tool MCP sia le REST API `/api/run/{tool}` e l'endpoint `/health`. |
-| `docker/homelab-executor/entrypoint.sh` | **Creazione** | Script di bootstrap del container: setup chiavi SSH autorizzate, avvio `sshd` e avvio server Python. |
-| `docker/homelab-executor/Dockerfile` | **Creazione** | Dockerfile multi-stage / hardened con `ARG PYTHON_BASE_IMAGE=python:3.12-slim`, installazione binari (`sops`, `kubectl`, `talosctl`, `ansible`) e copia dello snapshot immutabile del repo. |
-| `.github/workflows/docker-homelab-executor.yml` | **Creazione** | Workflow GitHub Actions con path filter, buildx, estrazione metadati SemVer e push su `ghcr.io/pindaroli/homelab-executor`. |
-| `docker/truenas/docker-compose.yaml` (o `docker/mcp/`) | **Modifica** | Dichiarazione del servizio `homelab-executor` con bind mount chiavi (Age + SSH) e variabili d'ambiente. |
-| `docker/mcp/dynamic.yaml` | **Modifica** | Router e Service Traefik per l'esposizione HTTPS sicura del server MCP / API. |
-| `scripts/infrastructure/update_homelab_executor.sh` | **Creazione** | Script operativo per il pull e rollout dell'immagine aggiornata su TrueNAS con probe di verifica. |
-| `scripts/mcp_tools.yaml` | **Modifica** | Registrazione del nuovo tool `update_homelab_executor` nel server MCP e nel menu `scripts/go.py`. |
+| `docker/homelab-executor/sshd_config` | **Creazione** | Configurazione hardened OpenSSH (`Port 22`, `PermitRootLogin no`, `AllowUsers executor`, `HostKey /etc/ssh/host_keys/ssh_host_ed25519_key`). |
+| `docker/homelab-executor/ssh_config` | **Creazione** | Configurazione SSH client per `executor` (`BatchMode yes`, `StrictHostKeyChecking yes`, `UserKnownHostsFile /home/executor/.ssh/known_hosts`). |
+| `docker/homelab-executor/server/main.py` | **Creazione** | Server FastMCP + FastAPI con esecuzione asincrona (`asyncio.create_subprocess_exec`), tracking dei job attivi e `/health` con versione. |
+| `docker/homelab-executor/entrypoint.sh` | **Creazione** | Staging segreti da `/run/host-secrets` a `/home/executor` (`tmpfs`, `0600`), trap `SIGTERM` e supervisione `sshd` + `gosu executor uvicorn` con `wait -n`. |
+| `docker/homelab-executor/Dockerfile` | **Creazione** | Dockerfile multi-arch dinamico (`TARGETARCH`), installazione `tini`, `gosu`, `sops`, `kubectl`, `talosctl`, `ansible-core`, utente `executor` (`UID 1000`) e snapshot `/app` di proprietà `root:root`. |
+| `.github/workflows/docker-homelab-executor.yml` | **Creazione** | Workflow GitHub Actions con path filter (`secrets-sops/**` incluso, `!**/*.md` escluso), buildx `linux/amd64`, cache GHA e push su GHCR. |
+| `docker/mcp/docker-compose.yaml` (o `docker/truenas/`) | **Modifica** | Servizio `homelab-executor` con `read_only: true`, `tmpfs` (`/tmp`, `/run`, `/home/executor`), `stop_grace_period: 120s`, `ports: ["2222:22"]`, `expose: ["8000"]` e bind mount `:ro` in `/run/host-secrets/` e `/etc/ssh/host_keys/`. |
+| `docker/mcp/dynamic.yaml` | **Modifica** | Router e Service Traefik con `flushInterval: "100ms"` per streaming SSE MCP verso `http://homelab-executor:8000`. |
+| `scripts/infrastructure/update_homelab_executor.sh` | **Creazione** | Script di rollout eseguibile **esclusivamente da Mac Studio** (con blocco se invocato dentro il container), drain pre-flight, pull, `nohup docker compose up -d` e verifica versione su `/health`. |
 | `todo.md` & `GEMINI.md` | **Modifica** | Tracciamento avanzamento piano e allineamento indici wiki. |
 
 ---
@@ -78,57 +81,66 @@ flowchart LR
 ## 4. Fasi Operative Dettagliate
 
 ### Fase 1: Creazione Componenti del Container (`docker/homelab-executor/`)
-1. Creazione file `VERSION` e `requirements.txt`.
-2. Sviluppo del server unificato `server/main.py` che:
-   - Effettua il parsing di `scripts/mcp_tools.yaml`.
-   - Registra ogni entry come tool nativo MCP.
-   - Espone endpoint REST FastAPI corrispondenti per esecuzioni asincrone/sincrone.
-   - Implementa l'endpoint di salute `/health`.
-3. Scrittura di `entrypoint.sh` con configurazione permissiva per SSH client/server (`sshd`), configurazione `authorized_keys` da volume e avvio supervisionato.
-4. Scrittura del `Dockerfile` conforme a:
-   - `ARG PYTHON_BASE_IMAGE=python:3.12-slim`
-   - Download sicuro del binario `sops` ufficiale (v3.9.x)
-   - Download di `kubectl` e `talosctl`
-   - Installazione `ansible-core` e collections di base
-   - Copia di `scripts/`, `ansible/`, `rete.json`, `storage.json`, `secrets-sops/`.
+1. Creazione `.dockerignore`, `docker/homelab-executor/VERSION` (`1.0`) e `requirements.txt`.
+2. Creazione delle configurazioni SSH `sshd_config` (ingresso su porta 22 per il solo utente `executor`) e `ssh_config` (uscita con `BatchMode=yes` e `StrictHostKeyChecking=yes`).
+3. Sviluppo di `docker/homelab-executor/server/main.py`:
+   - Caricamento di `/app/scripts/mcp_tools.yaml`.
+   - Registrazione dinamica dei tool MCP (escludendo sempre `update_homelab_executor` che resta solo CLI su Mac Studio) ed esposizione REST `POST /api/run/{tool_name}`.
+   - Esecuzione non bloccante tramite `asyncio.create_subprocess_exec` con contatore `active_jobs` e gestione dello stato `draining` su `SIGTERM`.
+   - Endpoint `GET /health` che restituisce stato, versione build (`APP_VERSION`), `draining` e numero di job attivi.
+4. Scrittura di `docker/homelab-executor/entrypoint.sh`:
+   - Copia dei segreti da `/run/host-secrets/*` a `/home/executor/.ssh/` e `/home/executor/.config/sops/age/keys.txt` con `install -o executor -g executor -m 0600`.
+   - Verifica presenza `/etc/ssh/host_keys/ssh_host_ed25519_key` (con generazione effimera di fallback solo per test locali su Mac Studio).
+   - Avvio di `/usr/sbin/sshd -D -e` e `gosu executor uvicorn server.main:app --host 0.0.0.0 --port 8000 --timeout-graceful-shutdown 90`, coordinati da `trap` e `wait -n`.
+5. Scrittura di `docker/homelab-executor/Dockerfile`:
+   - `ARG PYTHON_BASE_IMAGE=python:3.12-slim` e `ARG TARGETARCH`.
+   - Installazione pacchetti Debian: `tini`, `gosu`, `openssh-server`, `openssh-client`, `rsync`, `jq`, `curl`, `dnsutils`, `iputils-ping`, `socat`, `wakeonlan`, `ca-certificates`.
+   - Download dinamico in base a `${TARGETARCH}` (`amd64` / `arm64`) di `sops`, `kubectl` e `talosctl`.
+   - Creazione gruppo e utente `executor` (`UID 1000`, `GID 1000`, shell `/bin/bash`).
+   - Copia dello snapshot immutabile (`scripts/`, `ansible/`, `rete.json`, `storage.json`, `secrets-sops/`, `schemas/`) in `/app` con ownership `root:root` e permessi di sola lettura/esecuzione per `executor`.
+   - `ENTRYPOINT ["/usr/bin/tini", "--", "/app/entrypoint.sh"]`.
 
 ### Fase 2: Configurazione della Pipeline CI/CD GitHub Actions
-1. Creazione del workflow `.github/workflows/docker-homelab-executor.yml`.
-2. Configurazione trigger su branch `main` con i filtri di percorso richiesti.
-3. Configurazione estrazione SemVer:
-   - Lettura di `VERSION` da `docker/homelab-executor/VERSION`.
-   - Generazione tag `${VERSION}.${{ github.run_number }}` e tag galleggianti.
-4. Configurazione login GHCR, Buildx e build-and-push su `ghcr.io/pindaroli/homelab-executor`.
+1. Creazione di `.github/workflows/docker-homelab-executor.yml`:
+   - Trigger `push` su `main` con filtro `paths` che include `scripts/**`, `ansible/**`, `secrets-sops/**`, `schemas/mcp-tools.schema.json`, `rete.json`, `storage.json`, `docker/homelab-executor/**`, esclude `!**/*.md`, `!**/*.txt`, `!**/docs/**`, `!**/tests/**` e ri-include `docker/homelab-executor/requirements.txt` e `scripts/**/requirements.txt`.
+   - Trigger manuale `workflow_dispatch`.
+   - Build per `platforms: linux/amd64` con `cache-from: type=gha` e `cache-to: type=gha,mode=max`, passando `--build-arg APP_VERSION=${VERSION}.${GITHUB_RUN_NUMBER}`.
+   - Push su `ghcr.io/pindaroli/homelab-executor` con tag `1.0.${run_number}`, `1.0`, `latest`, `sha-${short_sha}`.
 
-### Fase 3: Configurazione dello Stack Docker su TrueNAS SCALE
-1. Aggiunta della definizione del servizio `homelab-executor` in `docker/mcp/docker-compose.yaml` (o `docker/truenas/docker-compose.yaml`):
-   - Immagine: `ghcr.io/pindaroli/homelab-executor:1.0` (o tag pin)
-   - Porte: `2222:22` (porta SSH dedicata)
-   - Volumi:
-     - Chiave Age: `/root/.config/sops/age/keys.txt` (read-only)
-     - Chiave SSH: `/root/.ssh/id_rsa` (read-only)
-     - Chiavi pubbliche autorizzate: `/root/.ssh/authorized_keys`
-   - Network: `mcp_network`
-2. Aggiornamento `docker/mcp/dynamic.yaml` per il routing Traefik (`/executor/mcp` e `/api/`).
+### Fase 3: Bootstrap Segreti Host e Configurazione Stack Docker su TrueNAS SCALE
+1. **Preparazione una tantum su TrueNAS (`10.10.20.50`)**:
+   - Creazione della Host Key persistente del container:
+     `ssh-keygen -t ed25519 -f /mnt/pool/secrets/ssh/host_keys/ssh_host_ed25519_key -N "" -C "homelab-executor@truenas"`
+   - Creazione del file `/mnt/pool/secrets/ssh/known_hosts` tramite `ssh-keyscan -t ed25519,rsa 10.10.10.11 10.10.10.21 10.10.10.31 10.10.20.50 10.10.20.254 10.10.20.253`.
+   - Verifica presenza di `keys.txt` (Age), `id_rsa` (chiave SSH per nodi) e `authorized_keys` (chiave pubblica di Mac Studio).
+2. **Aggiornamento `docker/mcp/docker-compose.yaml`**:
+   - Configurazione del servizio `homelab-executor` con `read_only: true`, `tmpfs` per `/tmp`, `/run` e `/home/executor`, `stop_grace_period: 120s`, `ports: ["2222:22"]`, `expose: ["8000"]` e volumi `:ro` mappati su `/run/host-secrets/` e `/etc/ssh/host_keys/`.
+3. **Aggiornamento `docker/mcp/dynamic.yaml`**:
+   - Aggiunta router/service Traefik verso `http://homelab-executor:8000` con `flushInterval: "100ms"`.
 
-### Fase 4: Implementazione dello Script di Rollout e Integrazione in `go.py`
+### Fase 4: Implementazione dello Script di Rollout (Solo da Mac Studio)
 1. Sviluppo di `scripts/infrastructure/update_homelab_executor.sh`:
-   - Connessione SSH passwordless a TrueNAS (`10.10.20.50`).
-   - Esecuzione `docker compose pull homelab-executor && docker compose up -d homelab-executor`.
-   - Health check su `http://10.10.20.50:8100/executor/health` o endpoint locale.
-2. Registrazione in `scripts/mcp_tools.yaml` e verifica che sia indicizzato nel launcher interattivo `scripts/go.py`.
+   - **Guardrail di Contesto**: Verifica all'inizio che lo script **non** stia girando dentro il container (`if [[ -f /.dockerenv ]]; then echo "Errore: eseguire solo da Mac Studio"; exit 1; fi`).
+   - **Pre-Flight Drain**: Interroga TrueNAS via SSH (`docker exec homelab-executor pgrep -af 'ansible-playbook|go.py|sops'`) e attende fino a 180s il completamento dei job attivi (bypassabile con `--force`).
+   - **Pull & Rollout Disaccoppiato**: Esegue `docker compose pull homelab-executor` e poi avvia `nohup docker compose up -d homelab-executor` su TrueNAS.
+   - **Readiness & Version Check**: Attende `200 OK` da `/health` e stampa a terminale la nuova versione attiva (`1.0.X`).
+2. **Esclusione da MCP**: `update_homelab_executor.sh` **non** viene aggiunto a `scripts/mcp_tools.yaml` (rimane invocabile solo localmente da Mac Studio).
 
 ### Fase 5: Validazione Locale, Push e Collaudo End-to-End
-1. Test locale di validazione syntax e linting (JSON Schema di `mcp_tools.yaml` e validazione Dockerfile).
-2. Esecuzione script di conformità rete e wiki context:
+1. Build nativa `arm64` di test su Mac Studio (`docker build -t homelab-executor:local -f docker/homelab-executor/Dockerfile .`) e verifica avvio di `tini` + `sshd` + `uvicorn` con filesystem `read_only`.
+2. Validazione rete e rigenerazione contesto wiki:
    `python3 scripts/network/validate_network.py && python3 scripts/wiki/build_wiki_context.py`
-3. Commit e Push del codice su GitHub per verificare l'innesco automatico della pipeline GitHub Actions.
-4. Collaudo dell'aggiornamento del container con il tool sviluppato.
+3. Commit e Push su `main`, verifica build `linux/amd64` su GitHub Actions e pubblicazione su GHCR.
+4. Esecuzione di `./scripts/infrastructure/update_homelab_executor.sh` da Mac Studio e collaudo dei 4 vettori:
+   - Login SSH passwordless come `executor`: `ssh -p 2222 executor@10.10.20.50 "python3 /app/scripts/go.py --list"`
+   - Verifica immutabilità Host Key dopo `docker restart homelab-executor`
+   - Decifratura SOPS in RAM (`sops -d`) e connettività SSH verso Proxmox/OPNsense con `BatchMode=yes`
+   - Verifica endpoint MCP/REST tramite Traefik (`mcp.pindaroli.org:8100`).
 
 ---
 
 ## 💾 Stato di Ripristino (AI Save-State)
-- **Fase Attiva**: Fase 0 completata (Intervista `/grill-me` conclusa con tutte le decisioni architetturali concordate al 100%).
-- **Ultima Azione Completata**: Redazione del piano operativo canonico `wiki/plans/homelab-executor-container-and-ci-pipeline.md`.
-- **Prossimo Passo Operativo**: Presentazione del piano all'utente per approvazione e avvio della Fase 1 (creazione di `docker/homelab-executor/`).
-- **Blocchi/Decisioni Pendenti**: Attesa approvazione formale dell'utente per procedere all'esecuzione della Fase 1.
+- **Fase Attiva**: Revisione Architetturale SRE completata e approvata dall'utente su tutti i 7 punti.
+- **Ultima Azione Completata**: Aggiornamento del piano operativo `wiki/plans/homelab-executor-container-and-ci-pipeline.md` con le scelte architetturali definitive (1A, 2A, 3A, 4A, 5A solo da Mac Studio fuori da `mcp_tools.yaml`, 6B, 7A).
+- **Prossimo Passo Operativo**: Avvio implementazione della **Fase 1** (`docker/homelab-executor/`).
+- **Blocchi/Decisioni Pendenti**: Nessuno. Tutte le decisioni architetturali sono congelate.
