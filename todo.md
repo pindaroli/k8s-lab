@@ -1,5 +1,18 @@
 # 🚨 ACTIVE INCIDENTS (High Priority)
 
+## 📌 [ ] Pipeline DevOps CI/CD e Container Immutabile Homelab Executor per `scripts/go.py` [[homelab-executor-container-and-ci-pipeline]]
+- [ ] Fase 1: Creazione Componenti del Container (`docker/homelab-executor/`: `VERSION`, `requirements.txt`, `server/main.py`, `entrypoint.sh`, `Dockerfile`)
+- [ ] Fase 2: Configurazione della Pipeline CI/CD GitHub Actions (`.github/workflows/docker-homelab-executor.yml` con path filter e SemVer)
+- [ ] Fase 3: Configurazione dello Stack Docker su TrueNAS SCALE (`docker/mcp/docker-compose.yaml` e Traefik `dynamic.yaml`)
+- [ ] Fase 4: Implementazione dello Script di Rollout (`scripts/infrastructure/update_homelab_executor.sh`) e Integrazione in `scripts/go.py` e `scripts/mcp_tools.yaml`
+- [ ] Fase 5: Validazione Locale, Push, Esecuzione Pipeline GitHub Actions e Collaudo End-to-End
+
+## 📌 [ ] Rivalutazione Metriche Memoria Dozzle e Dimensionamento Limiti Container (OrbStack Failover)
+- [ ] Analizzare e verificare nel dettaglio i dati forniti sull'occupazione di memoria Dozzle (`AVG. MEMORY`):
+  - Verifica delle soglie di colorazione native di Dozzle (giallo/verde) per il consumo RAM rispetto al `mem_limit`.
+  - Verifica puntuale dei limiti impostati in `docker/orbstack/docker-compose.yaml` per `litellm` (768m), `mcp-opnsense` (256m) e `mcp-ollama` (256m).
+  - Valutare l'opportunità di impostare un `mem_limit` anche per `hermes-agent` o di ricalibrare i limiti esistenti per evitare falsi positivi visivi o OOM risk durante carichi elevati.
+
 ## 🚀 [x] ✅ COMPLETATO: Hardening Gestione Errori, Health Gate CNPG e Probe Cross-Platform [[infrastructure-error-handling-and-probe-hardening]]
 - [x] Fase 1: Hardening Fail-Fast e rimozione `ignore_errors: true` su VM Talos e Gate CNPG in `ansible/playbooks/infrastructure/ensure_compute_on.yml` ✅
 - [x] Fase 2: Ottimizzazione Connect Timeout macOS (`-G 1`) e allineamento nomi container failover in `scripts/infrastructure/lab_mode_status.sh` ✅
